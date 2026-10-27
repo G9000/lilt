@@ -3,7 +3,7 @@ import { micInUse } from "../micuse";
 
 /**
  * The lo-fi radio: music made live with Web Audio (electric-piano chords through a wobbling
- * tape delay, a sine bass, swung drums from noise, vinyl crackle, and rain on one mood).
+ * tape delay, a sine bass, swung drums from noise, and rain on one mood).
  * Nothing is downloaded or sent anywhere. It pauses itself whenever the microphone is in use.
  */
 
@@ -14,6 +14,9 @@ const MOODS: Mood[] = [
   { name: "City at dusk", bpm: 66, rain: false, prog: [[51, 55, 58, 62], [56, 60, 63, 67], [53, 56, 60, 63], [58, 62, 65, 68]] },
 ];
 const mtof = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
+function loadVolume() {
+  try { const v = parseFloat(localStorage.getItem("lilt.radio.volume") ?? ""); return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0.8; } catch { return 0.8; }
+}
 
 class Engine {
   private ctx: AudioContext | null = null;
@@ -26,6 +29,7 @@ class Engine {
   private step = 0;
   mood = 0;
   playing = false;
+  volume = loadVolume();
 
   private buffer(sec: number, fn: (i: number) => number) {
     const ctx = this.ctx!, b = ctx.createBuffer(1, ctx.sampleRate * sec, ctx.sampleRate), d = b.getChannelData(0);
@@ -49,11 +53,6 @@ class Engine {
     trem.connect(tdepth).connect(this.keys.gain); trem.start();
     this.keys.connect(wow).connect(this.master);
     this.noise = this.buffer(1, () => Math.random() * 2 - 1);
-    const crackle = ctx.createBufferSource(); crackle.loop = true;
-    crackle.buffer = this.buffer(4, () => (Math.random() < 0.0007 ? (Math.random() * 2 - 1) * 0.8 : (Math.random() * 2 - 1) * 0.01));
-    const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 1500;
-    const cg = ctx.createGain(); cg.gain.value = 0.55;
-    crackle.connect(hp).connect(cg).connect(this.master); crackle.start();
     let last = 0;
     const rain = ctx.createBufferSource(); rain.loop = true;
     rain.buffer = this.buffer(6, () => { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; return last * 3.2; });
@@ -116,7 +115,7 @@ class Engine {
     await ctx.resume();
     if (!this.timer) { this.next = ctx.currentTime + 0.08; this.timer = window.setInterval(this.tick, 25); }
     this.master.gain.cancelScheduledValues(ctx.currentTime);
-    this.master.gain.setTargetAtTime(0.5, ctx.currentTime, 0.35);
+    this.master.gain.setTargetAtTime(0.5 * this.volume, ctx.currentTime, 0.35);
     this.rain.gain.setTargetAtTime(MOODS[this.mood].rain ? 0.32 : 0, ctx.currentTime, 0.5);
     this.playing = true;
   }
@@ -129,6 +128,12 @@ class Engine {
     this.master.gain.setTargetAtTime(0, ctx.currentTime, 0.12);
     window.clearInterval(this.timer); this.timer = 0;
     window.setTimeout(() => { if (!this.playing) void ctx.suspend(); }, 700);
+  }
+
+  setVolume(v: number) {
+    this.volume = Math.max(0, Math.min(1, v));
+    try { localStorage.setItem("lilt.radio.volume", String(this.volume)); } catch { /* private mode */ }
+    if (this.ctx && this.playing) this.master.gain.setTargetAtTime(0.5 * this.volume, this.ctx.currentTime, 0.05);
   }
 
   skip(d: number) {
@@ -153,8 +158,8 @@ if (typeof window !== "undefined") {
   });
 }
 
-export interface RadioState { playing: boolean; ducked: boolean; mood: string }
-const snapshot = (): RadioState => ({ playing: engine.playing, ducked, mood: MOODS[engine.mood].name });
+export interface RadioState { playing: boolean; ducked: boolean; mood: string; volume: number }
+const snapshot = (): RadioState => ({ playing: engine.playing, ducked, mood: MOODS[engine.mood].name, volume: engine.volume });
 
 export const radio = {
   async toggle() {
@@ -164,6 +169,7 @@ export const radio = {
     changed();
   },
   skip(d: number) { engine.skip(d); changed(); },
+  setVolume(v: number) { engine.setVolume(v); changed(); },
 };
 
 export function useRadio(): RadioState {

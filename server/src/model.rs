@@ -25,6 +25,9 @@ pub struct Profile {
     /// New voice cards introduced per day.
     #[serde(default = "default_new_cards")]
     pub new_cards_per_day: u32,
+    /// The sticky note on the room's wall. None until first edited (the room shows the goal).
+    #[serde(default)]
+    pub room_note: Option<String>,
     pub updated_utc: String,
 }
 
@@ -62,6 +65,7 @@ impl Default for Profile {
             external_processing: false,
             comfort_range_hz: None,
             new_cards_per_day: 2,
+            room_note: None,
             updated_utc: crate::util::now_utc(),
         }
     }

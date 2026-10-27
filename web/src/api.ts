@@ -210,6 +210,7 @@ export interface Profile {
   external_processing: boolean;
   comfort_range_hz: [number, number] | null;
   new_cards_per_day?: number;
+  room_note?: string | null;
   updated_utc: string;
 }
 

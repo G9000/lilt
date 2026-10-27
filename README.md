@@ -53,8 +53,12 @@ Then open <http://127.0.0.1:7878>.
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: the lo-fi radio over the speaker (the
-     same player as on the desk), your goal from Settings as a sticky note taped to the photo wall
-     (it lifts and glows when you hover), and your stage in the window. A widget whose spot
+     same player as on the desk) and a sticky note taped to the photo wall. The note starts as your
+     goal; click it to write anything (up to 280 characters), click away to keep it. It's saved on
+     the server (`room_note` in the profile). **Drag either one anywhere**; it remembers its spot
+     in the painting (in this browser). Today's cards move too: drag the small grip under the pile
+     (swiping the cards still flips through them). **Reset layout** in the menu bar puts
+     everything back. Widgets near an edge slide inward rather than disappear. A widget whose spot
      is cropped off a small screen steps aside; a phone shows just the stack.
    - Or click the **computer** itself (it glows and says how many cards are waiting), or press
      <kbd>Enter</kbd>, to sit down at the desk.
@@ -77,7 +81,8 @@ Then open <http://127.0.0.1:7878>.
      a plant that grows a leaf for each day you practised this week (it never shrinks or scolds),
      and the lo-fi radio.
    - **Lo-fi radio:** three moods ("Rain on the window", "Desk lamp", "City at dusk") made live in
-     the browser: electric-piano chords, a soft bass, swung drums, vinyl crackle and rain. Nothing is
+     the browser: electric-piano chords, a soft bass, swung drums, and rain on one mood. Both
+     radios have a volume slider and a mute button, remembered in this browser. Nothing is
      downloaded or sent anywhere. The record spins while it plays, and the track shows in the menu
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live
      pitch), so music never reaches a take or a pitch reading, then picks up again.

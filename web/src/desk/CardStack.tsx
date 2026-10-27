@@ -1,7 +1,8 @@
-import { animate, AnimatePresence, motion, type PanInfo, useMotionValue, useTransform } from "motion/react";
+import { animate, AnimatePresence, motion, type PanInfo, useDragControls, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Deck, DeckItem } from "../api";
 import { currentLight } from "../room/scene";
+import { setSpot, useLayoutStore } from "./Floaters";
 
 /**
  * Today's cards on the room, as a pile: one card per practice card left. Swipe the top card
@@ -49,8 +50,39 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   const label = !deck ? "Today's practice, loading" : done ? "Today's practice is done" : deck.paused ? "Resting today"
     : `Today's practice: ${n} card${n === 1 ? "" : "s"}. Card on top: ${top?.card.front}. Swipe or use the arrow keys to see the others; press Enter to start it.`;
 
+  // The whole pile can be moved by its grip (swiping the cards still flips through them). Where
+  // you put it is remembered as an offset from its corner, and it always stays on screen.
+  const saved = useLayoutStore().stack;
+  const sx = useMotionValue(saved?.x ?? 0), sy = useMotionValue(saved?.y ?? 0);
+  const grip = useDragControls();
+  const self = useRef<HTMLElement>(null);
+  const [moving, setMoving] = useState(false);
+  const onScreen = () => {
+    const r = self.current?.getBoundingClientRect();
+    if (!r) return { x: sx.get(), y: sy.get() };
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const dx = r.left < 6 ? 6 - r.left : r.right > vw - 6 ? vw - 6 - r.right : 0;
+    const dy = r.top < 40 ? 40 - r.top : r.bottom > vh - 6 ? vh - 6 - r.bottom : 0;
+    return { x: sx.get() + dx, y: sy.get() + dy };
+  };
+  useEffect(() => { sx.set(saved?.x ?? 0); sy.set(saved?.y ?? 0); }, [saved?.x, saved?.y]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const fit = () => { const p = onScreen(); sx.set(p.x); sy.set(p.y); };
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const placed = () => {
+    setMoving(false);
+    const p = onScreen();
+    const spring = { type: "spring", stiffness: 380, damping: 32 } as const;
+    void animate(sx, p.x, spring); void animate(sy, p.y, spring);
+    setSpot("stack", Math.hypot(p.x, p.y) < 4 ? null : { x: Math.round(p.x), y: Math.round(p.y) });
+  };
+
   return (
-    <section className="cs" tabIndex={0} aria-label={label} onKeyDown={onKey}>
+    <motion.section ref={self} className={`cs${moving ? " moving" : ""}`} tabIndex={0} aria-label={label} onKeyDown={onKey}
+      style={{ x: sx, y: sy }} drag dragListener={false} dragControls={grip} dragMomentum={false}
+      onDragStart={() => setMoving(true)} onDragEnd={placed}>
       <div className="cs-cards">
         {!deck || done || deck.paused ? (
           <StaticCard light={light} title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
@@ -72,7 +104,10 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
           {items.map((it) => <i key={it.card.id} className={it.card.id === pile[0] ? "on" : undefined} />)}
         </div>
       )}
-    </section>
+      <button className="cs-grip" aria-label="Move today's cards (drag)" onPointerDown={(e) => { e.preventDefault(); grip.start(e); }}>
+        <span className="cs-grip-tip" aria-hidden="true">Drag to move</span>
+      </button>
+    </motion.section>
   );
 }
 

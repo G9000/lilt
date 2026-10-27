@@ -4,6 +4,8 @@ import { go } from "../App";
 import { Icon } from "../components/bits";
 import { currentLight, Light } from "../room/scene";
 import { radio, useRadio } from "./lofi";
+import { Volume } from "./Volume";
+import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
 import { LeaveIcon, Mark, ProgressIcon, RecordingsIcon, StudioIcon, TextsIcon, TodayIcon } from "./icons";
 
@@ -211,6 +213,7 @@ function RadioWidget() {
               : <svg viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: 2 }}><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>}
           </button>
           <button className="ds-r-skip" onClick={() => radio.skip(1)} aria-label="Next mood"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12 3v10M3 3l7 5-7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
+          <Volume />
         </div>
       </div>
     </article>
@@ -220,12 +223,14 @@ function RadioWidget() {
 /** The room's menu bar, the same as the desk's: the mark, what's playing, notifications, date and time. */
 export function RoomTop({ inbox }: { inbox: InboxState }) {
   const now = useNow();
+  const moved = useLayoutMoved();
   const r = useRadio();
   return (
     <header className="ds-roomtop">
       <span className="ds-rt-mark"><Mark />Lilt</span>
       <span className="ds-rt-r">
         {r.playing && <button className="ds-np" onClick={() => void radio.toggle()} aria-label={`Pause ${r.mood}`}><span className="ds-eq" aria-hidden="true"><i /><i /><i /></span>{r.mood}</button>}
+        {moved && <button className="ds-mb-btn ds-reset" onClick={resetLayout}>Reset layout</button>}
         <InboxButton inbox={inbox} />
         <span className="ds-hide-s">{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
         <span>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>

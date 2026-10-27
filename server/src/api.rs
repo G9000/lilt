@@ -171,6 +171,11 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
         return Err(anyhow::anyhow!("external processing is not implemented in this release; it stays off").into());
     }
     p.session_minutes = p.session_minutes.clamp(2, 30);
+    if let Some(n) = &p.room_note {
+        if n.chars().count() > 280 {
+            return Err(anyhow::anyhow!("the note can hold up to 280 characters").into());
+        }
+    }
     p.schema = "lilt.profile/1".into();
     p.updated_utc = util::now_utc();
     store::write_json(&app.paths.profile(), &p)?;

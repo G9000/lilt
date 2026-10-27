@@ -214,9 +214,9 @@
 @media (max-width: 760px) { .nc-scrim { background: rgba(8, 8, 18, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); } }
 
 /* ===== Today's cards on the room: a swipeable pile ===== */
-.cs { position: fixed; z-index: 4; right: 40px; bottom: 30px; width: 300px; height: 330px; outline: none; transition: opacity 0.3s ease-out; scale: var(--fs, 1); transform-origin: 100% 100%; }
+.cs { position: fixed; z-index: 4; right: 40px; bottom: 24px; width: 300px; height: 348px; outline: none; transition: opacity 0.3s ease-out; scale: var(--fs, 1); transform-origin: 100% 100%; }
 .outside-leaving .cs { opacity: 0; pointer-events: none; }
-.cs-cards { position: absolute; left: 0; right: 0; bottom: 22px; height: 262px; }
+.cs-cards { position: absolute; left: 0; right: 0; bottom: 40px; height: 262px; }
 .cs-card { position: absolute; inset: 0; transform-origin: 50% 85%; }
 .cs-drag { position: absolute; inset: 0; padding: 8px; border-radius: 32px; background: #0c0c0f; color: #fff; user-select: none; -webkit-user-select: none; touch-action: pan-y; transform-origin: 50% 85%;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 24px 50px -22px rgba(0, 0, 0, 0.85); }
@@ -240,7 +240,7 @@
 .cs-go { flex: none; width: 38px; height: 38px; border-radius: 50%; background: #fff; color: #111; display: grid; place-items: center; }
 .cs-go svg { width: 16px; height: 16px; }
 .cs-shade { position: absolute; inset: 0; border-radius: 32px; background: #000; pointer-events: none; transition: opacity 0.4s ease; }
-.cs-dots { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 6px; }
+.cs-dots { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; justify-content: center; gap: 6px; }
 .cs-dots i { width: 6px; height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.4); transition: width 0.35s var(--ease), background-color 0.35s; }
 .cs-dots i.on { width: 18px; background: #fff; }
 @media (max-width: 1100px), (max-height: 760px) { .cs { --fs: 0.86; right: 24px; bottom: 20px; } }
@@ -257,25 +257,27 @@
 .fl.off * { pointer-events: none !important; }
 .fl-bob { display: grid; justify-items: center; animation: fl-bob 5.5s ease-in-out infinite; animation-delay: var(--d); }
 @keyframes fl-bob { 50% { translate: 0 -5px; } }
-.fl-bob > :first-child { translate: var(--nudge, 0px) 0; }
-.fl-card { pointer-events: auto; display: flex; flex-direction: column; gap: 7px; padding: 9px 13px 10px 12px; border-radius: 16px; color: #fff;
-  background: rgba(20, 18, 30, 0.55); backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 14px 30px -14px rgba(0, 0, 0, 0.7); }
-.fl-txt { display: grid; line-height: 1.25; }
-.fl-txt b { font-size: 13px; font-weight: 600; white-space: nowrap; }
-.fl-txt small { font-size: 11.5px; color: rgba(255, 255, 255, 0.72); white-space: nowrap; }
-.fl-bar { height: 4px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); overflow: hidden; }
-.fl-bar i { display: block; height: 100%; background: #ff9a6b; border-radius: inherit; }
+.fl-nudge { translate: var(--nudge, 0px) var(--nudge-y, 0px); }
+.fl-drag { pointer-events: auto; cursor: grab; touch-action: none; }
+.fl.dragging .fl-drag { cursor: grabbing; }
+.fl.dragging .fl-bob { animation-play-state: paused; }
+.fl.dragging { z-index: 5; }
 .fl-sticky { position: relative; pointer-events: auto; width: 160px; padding: 16px 13px 15px; background: linear-gradient(170deg, #fff7bf, #fff0a0); color: #4a3f10; font: 500 15px/1.25 var(--font); rotate: -4deg; cursor: default;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 14px 26px -12px rgba(0, 0, 0, 0.6);
-  transition: rotate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, filter 0.4s ease; }
-.fl-sticky span { display: block; font-size: 10.5px; font-weight: 600; color: #8a7a2c; margin-bottom: 3px; }
+  transition: rotate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; }
 /* a strip of washi tape holds it to the wall */
 .fl-washi { position: absolute; left: 50%; top: -9px; width: 74px; height: 20px; margin-left: -37px; rotate: 3deg; opacity: 0.88;
   background: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.35) 0 4px, transparent 4px 9px), linear-gradient(#f5a3b8, #ef8fa8);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); clip-path: polygon(0 8%, 4% 0, 9% 10%, 14% 0, 100% 0, 96% 12%, 100% 24%, 96% 38%, 100% 52%, 96% 66%, 100% 80%, 96% 92%, 100% 100%, 6% 100%, 0 90%, 4% 76%, 0 62%, 4% 48%, 0 34%, 4% 20%); }
-/* on hover it lifts a little, straightens, and catches the lamp's warm light */
-.fl-sticky:hover { rotate: -1.5deg; translate: 0 -5px; filter: brightness(1.06);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 0 0 1.5px rgba(255, 226, 150, 0.85), 0 0 22px 4px rgba(255, 205, 110, 0.75), 0 0 60px 18px rgba(255, 175, 80, 0.4), 0 22px 34px -14px rgba(0, 0, 0, 0.65); }
+/* on hover (and while you write) it lifts a little and straightens */
+.fl-note-text { margin: 0; white-space: pre-wrap; overflow-wrap: break-word; }
+.fl-note-text.empty { color: #9a8a3c; font-style: italic; }
+.fl-sticky.editing { rotate: -1deg; cursor: text; }
+.fl-sticky textarea { display: block; width: 100%; min-height: 84px; margin: 0; padding: 0; border: 0; outline: none; resize: none; background: transparent; color: inherit; font: inherit; box-shadow: none; }
+.fl-sticky textarea:focus { box-shadow: none; border: 0; }
+.fl-note-hint { display: block; margin-top: 6px; font-size: 10.5px; color: #8a7a2c; }
+.fl-sticky:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.fl-sticky:not(.editing):hover, .fl-sticky.editing { rotate: -1.5deg; translate: 0 -4px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 22px 30px -14px rgba(0, 0, 0, 0.65); }
 /* the room's radio is the desk's radio, smaller */
 .fl-radio { pointer-events: auto; position: relative; width: 268px; height: 104px; border-radius: 22px; overflow: hidden; color: #fff; display: grid; grid-template-columns: 86px 1fr; align-items: center;
   background: linear-gradient(135deg, #24212d, #121118); box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 22px 40px -18px rgba(0, 0, 0, 0.8); }
@@ -289,3 +291,34 @@
 .fl-r-info .ds-r-skip { width: 26px; height: 26px; min-height: 26px; }
 @media (max-width: 760px) { .fl { display: none; } }
 @media (prefers-reduced-motion: reduce) { .fl-bob { animation: none; } .fl-sticky { transition: none; } }
+.ds-reset { width: auto !important; padding: 0 8px !important; }
+
+/* the grip under the pile: drag it to move today's cards anywhere */
+.cs-grip { position: absolute; left: 50%; bottom: 0; width: 64px; height: 16px; min-height: 0; margin-left: -32px; padding: 0; border-radius: 99px; cursor: grab; touch-action: none; }
+.cs-grip::before { content: ""; position: absolute; left: 14px; right: 14px; top: 6px; height: 4px; border-radius: 99px; background: rgba(255, 255, 255, 0.35); transition: background-color 0.2s, left 0.2s var(--ease), right 0.2s var(--ease); }
+.cs-grip:hover::before, .cs.moving .cs-grip::before { background: rgba(255, 255, 255, 0.85); left: 8px; right: 8px; }
+.cs.moving .cs-grip { cursor: grabbing; }
+.cs-grip-tip { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(4px); padding: 3px 9px; border-radius: 8px; background: rgba(20, 20, 30, 0.85); color: #fff; font-size: 11.5px; font-weight: 500; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.2s var(--ease); }
+.cs-grip:hover .cs-grip-tip { opacity: 1; transform: translateX(-50%); }
+.cs.moving .cs-grip-tip { opacity: 0; }
+.cs.moving .cs-cards { filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45)); }
+
+/* radio volume: a speaker to mute, and a slim slider */
+.vol { display: inline-flex; align-items: center; gap: 4px; margin-left: 2px; flex: 0 1 100px; min-width: 0; }
+.vol-icon { width: 24px; height: 24px; min-height: 0; padding: 0; border-radius: 50%; color: #cfcdd8; flex: none; }
+.vol-icon:hover { background: rgba(255, 255, 255, 0.1); }
+.vol-icon svg { width: 15px; height: 15px; }
+.vol input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1 1 auto; min-width: 36px; width: 100%; height: 18px; min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; cursor: pointer; box-shadow: none; }
+.vol input[type="range"]:focus { box-shadow: none; }
+.vol input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 99px; background: linear-gradient(90deg, #fff var(--v), rgba(255, 255, 255, 0.2) var(--v)); }
+.vol input[type="range"]::-moz-range-track { height: 4px; border-radius: 99px; background: rgba(255, 255, 255, 0.2); }
+.vol input[type="range"]::-moz-range-progress { height: 4px; border-radius: 99px; background: #fff; }
+.vol input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; margin-top: -4px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45); transition: transform 0.15s var(--ease); }
+.vol input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45); }
+.vol input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.2); }
+.vol input[type="range"]:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 99px; }
+.fl-radio { width: 300px; }
+.fl-r-info .ds-r-ctl, .ds-r-ctl { flex-wrap: nowrap; min-width: 0; }
+.fl-r-info { padding-right: 16px; }
+.ds-radio .ds-r-ctl { gap: 6px; }
+.ds-radio .ds-r-info { padding-right: 4px; }
