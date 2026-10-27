@@ -1,0 +1,325 @@
+// Typed client for the Lilt server API.
+
+export type Signal = "target_met" | "target_not_met" | "unsure" | "info" | "comfort_stop";
+
+export interface Cue { id: string; text: string; use_when: string }
+export interface QOption { id: string; label: string; signal: Signal }
+export interface CheckQuestion { id: string; text: string; options: QOption[] }
+export interface LadderStep { id: string; text: string; recordable: boolean; spontaneous: boolean }
+export interface Variant { id: string; label: string }
+
+export interface Exercise {
+  id: string;
+  version: number;
+  title: string;
+  areas: string[];
+  primary_area: string;
+  stage: string;
+  purpose: string;
+  instructions: string[];
+  primary_cue: { id: string; text: string };
+  cues: Cue[];
+  practice_task: { prompt_id: string; prompt_text: string; duration_hint_s: number; variants: Variant[] };
+  check_questions: CheckQuestion[];
+  ladder?: LadderStep[];
+  dose_guidance: { text: string; from_source: boolean } | null;
+  progression_rule?: { text: string; source_basis: string };
+  expected_observations: string[];
+  common_misunderstandings: string[];
+  stop_conditions: string[];
+  adaptations: string[];
+  limitations: string[];
+  source: { url: string; organization: string; title: string; section: string; issued: string | null; date_checked: string };
+  license_note: string;
+  review: { status: string; reviewer: string; clinician_reviewed: boolean; notes: string };
+  examples: { kind: string; label: string; url: string }[];
+  next: string[];
+}
+
+export interface Plan {
+  version: number;
+  created_utc: string;
+  author: string;
+  exercise_id: string;
+  exercise_version: number;
+  focus_area: string;
+  cue_id: string | null;
+  ladder_step: number | null;
+  rationale: string;
+  evidence_refs: { review_id: string; pointer_id: string | null }[];
+  paused: boolean;
+}
+
+export type TakeRole = "reference" | "exercise" | "follow_up" | "spontaneous" | "retry" | "free";
+export type TakeStatus = "recording" | "saving" | "saved" | "analysis_pending" | "analysis_failed" | "review_ready";
+
+export interface QualityFlag { code: string; message: string; blocks_voice_feedback: boolean; segments?: [number, number][] }
+
+export interface Take {
+  id: string;
+  session_id: string;
+  role: TakeRole;
+  phase: "pre" | "post" | "none";
+  prompt_id: string;
+  prompt_text: string;
+  exercise_id: string | null;
+  exercise_version: number | null;
+  cue_id: string | null;
+  retry_of: string | null;
+  triggered_by_review: string | null;
+  mime: string;
+  device_label: string | null;
+  status: TakeStatus;
+  completeness: "complete" | "missing_tail" | "interrupted" | null;
+  original: { file: string; bytes: number; sha256: string; chunk_count: number } | null;
+  created_utc: string;
+  favourite: boolean;
+  note: string | null;
+  self_report: { answers: Record<string, string>; reported_utc: string } | null;
+  analysis_run: string | null;
+  analysis_error: string | null;
+  read_along?: { starts: (number | null)[]; text: string | null; method: string } | null;
+  card?: { card_id: string; rating: string; rated_utc: string } | null;
+  analysis_summary: {
+    run_id: string;
+    status: string;
+    duration_s: number | null;
+    voiced_duration_s: number | null;
+    f0_median_hz: number | null;
+    quality_flags: QualityFlag[];
+    pitch_algorithm: string;
+  } | null;
+  audio_url: string;
+  local_date?: string;
+}
+
+export interface Session {
+  id: string;
+  kind: "full" | "check_in" | "studio" | "deck";
+  state: "in_progress" | "completed";
+  plan_version: number | null;
+  exercise_id: string | null;
+  exercise_version: number | null;
+  focus_area: string | null;
+  ladder_step: number | null;
+  local_date: string;
+  started_utc: string;
+  completed_utc: string | null;
+  comfort: { comfort: string; effort: number | null; hoarseness: boolean; likes_sound: string | null; note: string | null } | null;
+}
+
+export interface Evidence {
+  class: "measured" | "self_reported" | "human_perceived" | "model_perceived" | "inferred";
+  session_id: string;
+  take_id: string | null;
+  segment: [number, number] | null;
+  analysis_run: string | null;
+  measure: { name: string; value: number; unit: string | null } | null;
+  self_report: Record<string, string> | null;
+  comparison_take_id: string | null;
+  comparison_segment: [number, number] | null;
+  description: string;
+}
+
+export interface Pointer {
+  id: string;
+  kind: "pause" | "capture" | "practice_focus" | "progress" | "stable" | "more_evidence" | "descriptive";
+  area: string;
+  observation: string;
+  evidence: Evidence[];
+  goal_connection: string;
+  confidence_basis: { data_quality: string; comparability: string; method_status: string; uncertainty: string };
+  next_action: { exercise_id: string; exercise_version: number; cue_id: string | null; cue_text: string | null; summary: string } | null;
+  recheck: { prompt_id: string; prompt_text: string; compare_with_take: string | null; ask: string } | null;
+}
+
+export interface Review {
+  id: string;
+  session_id: string;
+  author: { kind: string; name: string; model: string | null; received_audio: boolean };
+  created_utc: string;
+  take_ids: string[];
+  active_pointer: Pointer | null;
+  other_observations: Pointer[];
+  abstention: { reason: string; next_action: string } | null;
+  summary: string | null;
+  proposed_plan: { exercise_id: string; exercise_version: number; focus_area: string; cue_id: string | null; ladder_step: number | null; rationale: string } | null;
+  applied_plan_version: number | null;
+  responses: { response: string; note: string | null; created_utc: string; pointer_id: string | null }[];
+  evidence_deleted: string[];
+}
+
+export interface Prompts {
+  reference: { prompt_id: string; text: string; source_note: string };
+  spontaneous: { prompt_id: string; questions: string[]; source_note: string };
+}
+
+export interface Today {
+  local_date: string;
+  local_time: string;
+  timezone: string;
+  goal: { summary: string; descriptors: string[] };
+  plan: Plan;
+  exercise: Exercise;
+  cue: Cue | null;
+  ladder_step: LadderStep | null;
+  session_minutes: number;
+  unfinished_session: Session | null;
+  today_sessions: { id: string; kind: Session["kind"]; state: Session["state"]; completed_utc: string | null; take_count: number; comfort: boolean;
+    roles: { role: TakeRole; phase: string; self_report: boolean }[] }[];
+  latest_review: Review | null;
+  participation: { days_this_week: number; last_practice_date: string | null; partial_sessions: number; practised_today: boolean };
+  reminder: { time: string | null; due: boolean | null };
+  pending_jobs: number;
+  external_processing: boolean;
+  prompts: Prompts;
+}
+
+export interface SkillCard {
+  area: string;
+  state: "not_assessed" | "recording_issue" | "more_evidence" | "stable" | "practice_focus" | "progress";
+  reason: string;
+  next_action: string;
+  evidence: { session_id: string; take_id: string; self_report_signal: string; effort: number | null }[];
+  capability: { guided_practice: string; acoustic_measurement: string; listening_feedback: string; validation_status: string };
+  learner_disagreement: string | null;
+}
+
+export interface Comparison {
+  take_a: string;
+  take_b: string;
+  outcome: "not_comparable" | "insufficient_evidence" | "stable" | "difference_noted";
+  comparable_task: boolean;
+  reasons: string[];
+  limitations: string[];
+  measures: { name: string; a: number | null; b: number | null; delta: number | null; unit: string; definition: string }[];
+  segment_a: [number, number] | null;
+  segment_b: [number, number] | null;
+  method_status: string;
+}
+
+export interface Profile {
+  schema: string;
+  goal: { summary: string; descriptors: string[]; preferred_take_ids: string[] };
+  language: string;
+  timezone: string;
+  reminder_time: string | null;
+  appearance: string;
+  session_minutes: number;
+  comparison_window_days: number;
+  external_processing: boolean;
+  comfort_range_hz: [number, number] | null;
+  new_cards_per_day?: number;
+  updated_utc: string;
+}
+
+export interface TextItem { id: string; text: string; hint: string }
+export interface TextLevel { id: string; level: number; title: string; subtitle: string; kind: string; basis: string; source_url: string | null; written_by: string; items: TextItem[] }
+export interface Texts { note: string; levels: TextLevel[] }
+
+export type Rating = "again" | "hard" | "good" | "easy";
+export interface DeckCard {
+  id: string; stage: number; deck: string; deck_title: string; kind: "reference" | "exercise" | "text";
+  front: string; hint: string; area: string; level_id: string; text_kind: string;
+  exercise_id: string | null; exercise_version: number | null; prompt_id: string; source: string;
+}
+export interface DeckItem {
+  card: DeckCard;
+  kind: "daily" | "new" | "review" | "again";
+  done_today: boolean;
+  rating_today: Rating | "ouch" | null;
+  preview: Record<Rating, string>;
+  state: { reps: number; interval_days: number; due: string | null; lapses: number; suspended: boolean };
+}
+export interface Deck {
+  local_date: string; paused: boolean; message?: string; items: DeckItem[]; all_done?: boolean;
+  counts: { new: number; review: number; again: number };
+  open_stage: number; stages?: number; cap: number; next_due?: string | null; learned?: number; total_cards?: number;
+  participation?: { days_this_week: number; dates_this_week: string[]; practised_today: boolean };
+}
+
+export class ApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+  }
+}
+
+async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
+  const res = await fetch(path, {
+    method,
+    headers: body !== undefined ? { "content-type": "application/json" } : undefined,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : null;
+  if (!res.ok) throw new ApiError(res.status, data?.error ?? res.statusText);
+  return data as T;
+}
+
+export const api = {
+  today: () => call<Today>("GET", "/api/today"),
+  texts: () => call<Texts>("GET", "/api/texts"),
+  studioSession: () => call<Session>("POST", "/api/studio/session"),
+  profile: () => call<Profile>("GET", "/api/profile"),
+  saveProfile: (p: Profile) => call<Profile>("PUT", "/api/profile", p),
+  exercises: () => call<{ exercises: Exercise[]; capability_matrix: { area: string; capability: SkillCard["capability"] }[] }>("GET", "/api/exercises"),
+  deck: () => call<Deck>("GET", "/api/deck/today"),
+  deckSession: () => call<Session>("POST", "/api/deck/session"),
+  rateCard: (card_id: string, take_id: string | null, rating: Rating | "ouch") =>
+    call<{ card_id: string; next?: string; paused?: boolean; duplicate?: boolean; deck: Deck }>("POST", "/api/deck/review", { card_id, take_id, rating }),
+  resumePlan: () => call<Plan>("POST", "/api/plan/resume"),
+  choosePlan: (exercise_id: string) => call<Plan>("POST", "/api/plan/choose", { exercise_id }),
+  planHistory: () => call<Plan[]>("GET", "/api/plan/history"),
+  createSession: (kind: "full" | "check_in") => call<Session>("POST", "/api/sessions", { kind }),
+  sessions: (cursor = 0) => call<{ sessions: (Session & { take_count: number })[]; next_cursor: number | null; total: number }>("GET", `/api/sessions?cursor=${cursor}&limit=20`),
+  session: (id: string) => call<{ session: Session; takes: Take[]; reviews: Review[]; exercise: Exercise | null }>("GET", `/api/sessions/${id}`),
+  patchSession: (id: string, body: unknown) => call<Session>("PATCH", `/api/sessions/${id}`, body),
+  deleteSession: (id: string, deleteReviews: boolean) => call<unknown>("DELETE", `/api/sessions/${id}?reviews=${deleteReviews ? "delete" : "mark"}`),
+  reviewSession: (id: string) => call<Review>("POST", `/api/sessions/${id}/review`),
+  createTake: (body: unknown) => call<Take>("POST", "/api/takes", body),
+  take: (id: string) => call<Take>("GET", `/api/takes/${id}`),
+  patchTake: (id: string, body: unknown) => call<Take>("PATCH", `/api/takes/${id}`, body),
+  deleteTake: (id: string, deleteReviews: boolean) => call<unknown>("DELETE", `/api/takes/${id}?reviews=${deleteReviews ? "delete" : "mark"}`),
+  finalize: (id: string, chunk_count: number, interrupted = false) => call<Take>("POST", `/api/takes/${id}/finalize`, { chunk_count, interrupted }),
+  analysis: (id: string) => call<any>("GET", `/api/takes/${id}/analysis`),
+  reanalyze: (id: string) => call<Take>("POST", `/api/takes/${id}/reanalyze`),
+  history: (params: { prompt_id?: string; days?: number } = {}) => {
+    const q = new URLSearchParams();
+    if (params.prompt_id) q.set("prompt_id", params.prompt_id);
+    if (params.days) q.set("days", String(params.days));
+    return call<{ from: string; to: string; window_days: number; takes: Take[]; aggregation: string }>("GET", `/api/history?${q}`);
+  },
+  compare: (a: string, b: string) => call<Comparison>("GET", `/api/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`),
+  progress: () => call<{ skills: SkillCard[]; participation: Today["participation"]; goal: Today["goal"]; missing_evaluation_assets: string[] }>("GET", "/api/progress"),
+  review: (id: string) => call<Review>("GET", `/api/reviews/${id}`),
+  respond: (id: string, body: { pointer_id?: string | null; response: string; note?: string; chosen_exercise_id?: string }) =>
+    call<{ review: Review; plan: Plan | null }>("POST", `/api/reviews/${id}/respond`, body),
+};
+
+export const AREA_LABEL: Record<string, string> = {
+  listening: "Listening & goals",
+  lightness: "Lightness",
+  resonance: "Resonance",
+  pitch: "Pitch",
+  intonation: "Intonation & expression",
+  carryover: "Conversation & carryover",
+  recording: "Recording",
+};
+
+export const STATE_LABEL: Record<SkillCard["state"], string> = {
+  not_assessed: "Not assessed",
+  recording_issue: "Recording issue",
+  more_evidence: "More evidence needed",
+  stable: "Stable in this task",
+  practice_focus: "Practice focus",
+  progress: "Supported progress",
+};
+
+export const STATUS_LABEL: Record<TakeStatus, string> = {
+  recording: "Recording",
+  saving: "Saving…",
+  saved: "Saved",
+  analysis_pending: "Saved · analysing",
+  analysis_failed: "Saved · analysis failed",
+  review_ready: "Saved · analysed",
+};

@@ -1,0 +1,163 @@
+import { useEffect, useState } from "react";
+import { api, Comparison, Take } from "../api";
+import { noteName, recentMedian } from "../pitch";
+import { useLivePitch } from "./LivePitch";
+import { contourPoints, PitchPoint } from "./PianoRoll";
+
+/** Pitch scale used by the meter and the result chart: log Hz between LO and HI. */
+const LO = 75, HI = 450;
+const frac = (hz: number) => Math.max(0, Math.min(1, Math.log(hz / LO) / Math.log(HI / LO)));
+
+/**
+ * Live pitch while you record: Hz and note, and the last few seconds as a line over your
+ * comfortable range. Display only.
+ */
+export function LivePitchMeter({ stream, active, band }: { stream: MediaStream | null; active: boolean; band: [number, number] | null }) {
+  const points = useLivePitch(stream, active);
+  const hz = recentMedian(points.map((p) => p.hz));
+
+  const inBand = hz !== null && band ? hz >= band[0] && hz <= band[1] : null;
+  const end = points.length ? points[points.length - 1].t : 0;
+  const recent = points.filter((p) => p.t >= end - 5);
+  const Wd = 600, Ht = 64;
+  let d = "", pen = false;
+  for (const p of recent) {
+    if (!p.hz) { pen = false; continue; }
+    const x = ((p.t - (end - 5)) / 5) * Wd, y = Ht - frac(p.hz) * Ht;
+    d += `${pen ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
+    pen = true;
+  }
+  return (
+    <div className="prc-live" aria-live="off">
+      <div className="prc-live-top">
+        <b>{hz ? `${Math.round(hz)} Hz` : "–"}</b>
+        <span>{hz ? noteName(hz) : active ? "listening…" : ""}</span>
+        {inBand !== null && <em className={inBand ? "in" : "out"}>{inBand ? "In your range" : "Outside your range"}</em>}
+      </div>
+      <svg viewBox={`0 0 ${Wd} ${Ht}`} preserveAspectRatio="none" aria-hidden="true">
+        {band && <rect x="0" width={Wd} y={Ht - frac(band[1]) * Ht} height={(frac(band[1]) - frac(band[0])) * Ht} className="prc-band" />}
+        <path d={d} className="prc-line" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <p className="prc-cap">Live pitch. Display only, it never decides your rating.</p>
+    </div>
+  );
+}
+
+export interface Measured { median: number | null; take: Take }
+
+const fmtHz = (hz: number | null | undefined) => (hz ? `${Math.round(hz)} Hz` : "–");
+
+/** What the analysis measured for a take, with last time on the same card when they're comparable. */
+export function TakeResult({ take: initial, band, onMeasured }: { take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void }) {
+  const [take, setTake] = useState(initial);
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [prev, setPrev] = useState<{ take: Take; cmp: Comparison | null; analysis: any } | null>(null);
+
+  // Analysis runs in the background; poll until it lands.
+  useEffect(() => {
+    let live = true;
+    const tick = async () => {
+      const t = await api.take(initial.id).catch(() => null);
+      if (!live || !t) return;
+      setTake(t);
+      if (t.analysis_summary || t.analysis_error || t.status === "analysis_failed") {
+        const a = t.analysis_summary ? await api.analysis(t.id).catch(() => null) : null;
+        if (!live) return;
+        setAnalysis(a);
+        onMeasured?.({ median: a?.measures?.f0_median_hz?.value ?? null, take: t });
+        return;
+      }
+      window.setTimeout(tick, 1200);
+    };
+    void tick();
+    return () => { live = false; };
+  }, [initial.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Last time on this card (same prompt), if any.
+  useEffect(() => {
+    if (!analysis) return;
+    let live = true;
+    void api.history({ prompt_id: take.prompt_id, days: 60 }).then(async (h) => {
+      const earlier = h.takes.filter((t) => t.id !== take.id && t.analysis_summary?.f0_median_hz && t.created_utc < take.created_utc).sort((a, b) => b.created_utc.localeCompare(a.created_utc))[0];
+      if (!earlier || !live) return;
+      const [cmp, a] = await Promise.all([api.compare(earlier.id, take.id).catch(() => null), api.analysis(earlier.id).catch(() => null)]);
+      if (live) setPrev({ take: earlier, cmp, analysis: a });
+    });
+    return () => { live = false; };
+  }, [analysis, take.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!analysis) {
+    if (take.analysis_error || take.status === "analysis_failed") return <div className="prc-result"><p className="prc-wait">Couldn't measure this one{take.analysis_error ? `: ${take.analysis_error}` : ""}. Your recording is still saved.</p></div>;
+    return <div className="prc-result"><p className="prc-wait"><i className="prc-spin" aria-hidden="true" />Measuring your pitch…</p></div>;
+  }
+
+  const m = analysis.measures ?? {};
+  const median: number | null = m.f0_median_hz?.value ?? null;
+  const p10: number | null = m.f0_p10_hz?.value ?? null, p90: number | null = m.f0_p90_hz?.value ?? null;
+  const voiced: number | null = m.voiced_frame_coverage?.value ?? null;
+  const flags: { code: string; message: string }[] = analysis.quality_flags ?? [];
+  const pts = contourPoints(analysis);
+  const prevPts = prev?.analysis ? contourPoints(prev.analysis) : null;
+  const comparable = prev?.cmp && prev.cmp.outcome !== "not_comparable";
+  const prevMedian = prev?.take.analysis_summary?.f0_median_hz ?? null;
+
+  return (
+    <div className="prc-result" aria-label="What Lilt measured" role="group">
+      {median === null ? (
+        <p className="prc-wait">No clear pitch in this take (it may have been very quiet, whispered or noisy). That's fine, it's still saved.</p>
+      ) : (
+        <>
+          <div className="prc-stats">
+            <div><span>Middle pitch</span><b>{fmtHz(median)}<small>{noteName(median)}</small></b></div>
+            <div><span>Usual range</span><b>{p10 && p90 ? `${Math.round(p10)}–${Math.round(p90)} Hz` : "–"}</b></div>
+            <div><span>Voice heard</span><b>{voiced !== null ? `${Math.round(voiced * 100)}%` : "–"}</b></div>
+          </div>
+          <ContourChart pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
+          {prev && (
+            <p className="prc-prev">
+              {comparable && prevMedian ? (
+                <>Last time on this card ({prev.take.local_date ?? prev.take.created_utc.slice(0, 10)}): <b>{fmtHz(prevMedian)}</b>. This time is <b>{median - prevMedian >= 0 ? "+" : "−"}{Math.abs(Math.round(median - prevMedian))} Hz</b>.</>
+              ) : (
+                <>Not compared with last time: {prev.cmp?.reasons[0] ?? "the recordings aren't comparable"}.</>
+              )}
+            </p>
+          )}
+        </>
+      )}
+      {flags.length > 0 && <ul className="prc-flags">{flags.map((f) => <li key={f.code}>{f.message}</li>)}</ul>}
+      <p className="prc-cap">Describes the recording. Never a grade, never your rating.</p>
+    </div>
+  );
+}
+
+function ContourChart({ pts, prev, median, band }: { pts: PitchPoint[]; prev: PitchPoint[] | null; median: number; band: [number, number] | null }) {
+  const Wd = 600, Ht = 96;
+  const dur = Math.max(pts.length ? pts[pts.length - 1].t : 1, prev?.length ? prev[prev.length - 1].t : 0, 0.5);
+  const path = (ps: PitchPoint[]) => {
+    let d = "", pen = false;
+    for (const p of ps) {
+      if (!p.hz) { pen = false; continue; }
+      d += `${pen ? "L" : "M"}${((p.t / dur) * Wd).toFixed(1)},${(Ht - frac(p.hz) * Ht).toFixed(1)}`;
+      pen = true;
+    }
+    return d;
+  };
+  const y = (hz: number) => Ht - frac(hz) * Ht;
+  return (
+    <figure className="prc-chart">
+      <svg viewBox={`0 0 ${Wd} ${Ht}`} preserveAspectRatio="none" role="img" aria-label={`Measured pitch over the take; middle ${Math.round(median)} Hz`}>
+        {band && <rect x="0" width={Wd} y={y(band[1])} height={y(band[0]) - y(band[1])} className="prc-band" />}
+        {[110, 165, 220, 330].map((g) => <line key={g} x1="0" x2={Wd} y1={y(g)} y2={y(g)} className="prc-grid" />)}
+        {prev && <path d={path(prev)} className="prc-prevline" vectorEffect="non-scaling-stroke" />}
+        <line x1="0" x2={Wd} y1={y(median)} y2={y(median)} className="prc-median" vectorEffect="non-scaling-stroke" />
+        <path d={path(pts)} className="prc-line" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <figcaption>
+        <span><i className="prc-k now" />this take</span>
+        {prev && <span><i className="prc-k prev" />last time</span>}
+        <span><i className="prc-k mid" />middle</span>
+        {band && <span><i className="prc-k band" />your range</span>}
+      </figcaption>
+    </figure>
+  );
+}

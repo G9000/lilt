@@ -1,0 +1,138 @@
+{
+  "id": "nhsfife.forward-hum",
+  "version": 1,
+  "title": "Forward hum",
+  "areas": [
+    "resonance",
+    "lightness"
+  ],
+  "primary_area": "resonance",
+  "stage": "beginner",
+  "prerequisites": [],
+  "purpose": "Feel resonance move up and forward into your face and lips. The source presents this as part of lightening and brightening a voice.",
+  "instructions": [
+    "Breathe in through your nose, then hum gently on a comfortable pitch. Notice where you feel the vibration.",
+    "Hum again, aiming the sound forward. See if you can make your lips tingle.",
+    "When that feels comfortable, keep smiling and move from the hum into a vowel: mmmee, mmmaa, mmmoo.",
+    "Then say short words that start with m, holding the m a little longer at first: meet, many, maybe, Mary, magic."
+  ],
+  "primary_cue": {
+    "id": "aim-forward",
+    "text": "Aim the hum forward until your lips tingle."
+  },
+  "cues": [
+    {
+      "id": "aim-forward",
+      "text": "Aim the hum forward until your lips tingle.",
+      "use_when": "default"
+    },
+    {
+      "id": "smile",
+      "text": "Smile while you hum.",
+      "use_when": "target_not_met"
+    },
+    {
+      "id": "nose-air",
+      "text": "Let a little air out through your nose just before you hum, like “hhhmmm”.",
+      "use_when": "target_not_met"
+    },
+    {
+      "id": "throw-forward",
+      "text": "Imagine throwing your voice onto the ground in front of you.",
+      "use_when": "target_not_met"
+    },
+    {
+      "id": "quiet-build",
+      "text": "Smile and start with a quiet hum, then slowly get a little louder until you feel a tingle on your lips.",
+      "use_when": "target_not_met"
+    }
+  ],
+  "practice_task": {
+    "prompt_id": "nhsfife.forward-hum.m-words",
+    "prompt_text": "Hum forward, then say: mmmee, mmmaa, mmmoo — meet, many, maybe, Mary, magic.",
+    "duration_hint_s": 25,
+    "variants": []
+  },
+  "check_questions": [
+    {
+      "id": "where_felt",
+      "text": "Where did you feel the vibration most?",
+      "options": [
+        {
+          "id": "lips_face_nose",
+          "label": "Lips, face or nose",
+          "signal": "target_met"
+        },
+        {
+          "id": "mouth",
+          "label": "In my mouth",
+          "signal": "unsure"
+        },
+        {
+          "id": "throat_chest",
+          "label": "Throat or chest",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "not_sure",
+          "label": "Not sure",
+          "signal": "unsure"
+        }
+      ]
+    }
+  ],
+  "dose_guidance": {
+    "text": "This activity gives no repetition count. Take your time and don't move on too fast. The NHS Fife progression page suggests short, frequent practice in general.",
+    "from_source": true
+  },
+  "expected_observations": [
+    "Vibration in the face, lips and nose; the lips may tingle.",
+    "Over time, noticing when resonance has “dropped” and bringing it back up."
+  ],
+  "common_misunderstandings": [
+    "Pitch alone does not decide how a voice sounds. Where you feel resonance also matters.",
+    "Lighter does not mean quieter or whispery."
+  ],
+  "stop_conditions": [
+    "Stop the activity if you feel pain or discomfort, or notice unintended voice changes such as hoarseness. The source says this may mean you are going too quickly.",
+    "Take time to look after your voice, and try again when it feels better.",
+    "If problems persist or keep coming back, seek advice from a voice professional such as a speech and language therapist."
+  ],
+  "adaptations": [
+    "You can make up your own m-words.",
+    "You can stay on the hum and vowel steps for as long as you need."
+  ],
+  "limitations": [
+    "Public NHS patient-advice material written for self-guided practice. Lilt cannot check your technique, and it does not replace a speech and language therapist.",
+    "Lilt does not measure resonance automatically. Feedback comes from what you report and from listening back."
+  ],
+  "source": {
+    "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/",
+    "organization": "NHS Fife Speech and Language Therapy",
+    "author": null,
+    "title": "Shaping your voice: Lighten brighten: pitch and resonance",
+    "issued": "November 2023",
+    "date_checked": "2026-10-26",
+    "section": "If you are looking to lighten and brighten your voice — Activity 1: Bringing your resonance up and forward"
+  },
+  "license_note": "NHS Fife copyright, all rights reserved. Their terms allow use for private research, study or in-house use only. Lilt stores a short paraphrase for your personal practice and links to the original. Do not publish or redistribute this content.",
+  "review": {
+    "status": "source_checked",
+    "reviewer": "AI-assisted source check on 2026-10-26 (not clinical review)",
+    "clinician_reviewed": false,
+    "notes": "No clinician has reviewed how Lilt presents this activity."
+  },
+  "examples": [
+    {
+      "kind": "link",
+      "label": "Read the original activity (NHS Fife)",
+      "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/"
+    }
+  ],
+  "next": [
+    "nhsfife.smile-brighten",
+    "nhsfife.gentle-pitch-count",
+    "nhsfife.progression-ladder"
+  ],
+  "schema": "lilt.exercise/1"
+}

@@ -1,0 +1,152 @@
+{
+  "id": "nhsfife.smile-brighten",
+  "version": 1,
+  "title": "Smile to brighten",
+  "areas": [
+    "lightness"
+  ],
+  "primary_area": "lightness",
+  "stage": "beginner",
+  "prerequisites": [],
+  "purpose": "Hear and feel how smiling while you speak changes your voice. The source says it can make a voice sound brighter and lighter.",
+  "instructions": [
+    "Say a short everyday phrase the way you usually would.",
+    "Say it again while smiling.",
+    "Listen to both. Notice how smiling feels as well as how it sounds.",
+    "Through the day, try smiling a little more when you talk with people, and notice what changes."
+  ],
+  "primary_cue": {
+    "id": "smile-while-speaking",
+    "text": "Smile as you speak the phrase."
+  },
+  "cues": [
+    {
+      "id": "smile-while-speaking",
+      "text": "Smile as you speak the phrase.",
+      "use_when": "default"
+    },
+    {
+      "id": "smile-more",
+      "text": "Smile a little more while you speak, then compare the two takes again.",
+      "use_when": "target_not_met"
+    },
+    {
+      "id": "notice-feel",
+      "text": "Pay attention to how the smiling version feels as well as how it sounds.",
+      "use_when": "unsure"
+    }
+  ],
+  "practice_task": {
+    "prompt_id": "nhsfife.smile-brighten.phrase",
+    "prompt_text": "Black coffee, please. What are you up to today?",
+    "duration_hint_s": 8,
+    "variants": [
+      {
+        "id": "plain",
+        "label": "Say it as you usually would"
+      },
+      {
+        "id": "smile",
+        "label": "Now say it while smiling"
+      }
+    ]
+  },
+  "check_questions": [
+    {
+      "id": "brighter_take",
+      "text": "Listen to both takes. Which sounds lighter and brighter to you?",
+      "options": [
+        {
+          "id": "smile",
+          "label": "The smiling take",
+          "signal": "target_met"
+        },
+        {
+          "id": "plain",
+          "label": "The usual take",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "no_difference",
+          "label": "No difference",
+          "signal": "unsure"
+        },
+        {
+          "id": "not_sure",
+          "label": "Not sure",
+          "signal": "unsure"
+        }
+      ]
+    },
+    {
+      "id": "smile_feel",
+      "text": "How did smiling while speaking feel?",
+      "options": [
+        {
+          "id": "comfortable",
+          "label": "Comfortable",
+          "signal": "info"
+        },
+        {
+          "id": "effortful",
+          "label": "Took effort",
+          "signal": "info"
+        },
+        {
+          "id": "strained",
+          "label": "Strained",
+          "signal": "comfort_stop"
+        }
+      ]
+    }
+  ],
+  "dose_guidance": null,
+  "expected_observations": [
+    "Smiling shortens the space between your voice box and your lips. The source says a smaller space means less “echo”, which can make a voice brighter and lighter."
+  ],
+  "common_misunderstandings": [
+    "Lighter does not mean quieter, breathier or whispering.",
+    "What counts is how it sounds and feels to you. This is not a universal score."
+  ],
+  "stop_conditions": [
+    "Stop the activity if you feel pain or discomfort, or notice unintended voice changes such as hoarseness. The source says this may mean you are going too quickly.",
+    "Take time to look after your voice, and try again when it feels better.",
+    "If problems persist or keep coming back, seek advice from a voice professional such as a speech and language therapist."
+  ],
+  "adaptations": [
+    "Use phrases you actually say in daily life."
+  ],
+  "limitations": [
+    "Public NHS patient-advice material written for self-guided practice. Lilt cannot check your technique, and it does not replace a speech and language therapist.",
+    "Lilt does not measure lightness. Your own A/B listening is the evidence."
+  ],
+  "source": {
+    "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lightenbrighten-articulation/",
+    "organization": "NHS Fife Speech and Language Therapy",
+    "author": null,
+    "title": "Shaping your voice: Lighten/brighten: articulation",
+    "issued": "November 2023",
+    "date_checked": "2026-10-26",
+    "section": "Exploring how your lips affect your voice"
+  },
+  "license_note": "NHS Fife copyright, all rights reserved. Their terms allow use for private research, study or in-house use only. Lilt stores a short paraphrase for your personal practice and links to the original. Do not publish or redistribute this content.",
+  "review": {
+    "status": "source_checked",
+    "reviewer": "AI-assisted source check on 2026-10-26 (not clinical review)",
+    "clinician_reviewed": false,
+    "notes": "No clinician has reviewed how Lilt presents this activity."
+  },
+  "examples": [
+    {
+      "kind": "link",
+      "label": "Read the original activity (NHS Fife)",
+      "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lightenbrighten-articulation/"
+    }
+  ],
+  "next": [
+    "nhsfife.forward-hum",
+    "nhsfife.real-phrases-intonation",
+    "nhsfife.progression-ladder"
+  ],
+  "schema": "lilt.exercise/1"
+}

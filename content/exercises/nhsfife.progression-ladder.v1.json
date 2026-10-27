@@ -1,0 +1,184 @@
+{
+  "id": "nhsfife.progression-ladder",
+  "version": 1,
+  "title": "Carryover ladder",
+  "areas": [
+    "carryover"
+  ],
+  "primary_area": "carryover",
+  "stage": "beginner",
+  "prerequisites": [],
+  "purpose": "Carry the voice you like from simple, automatic speech into longer and more spontaneous speech, one step at a time.",
+  "instructions": [
+    "Start with short, simple, automatic speech, so you can focus on how you say it rather than what you say.",
+    "Use your practised voice for the current step.",
+    "Only move up a step when you can produce your voice comfortably and consistently.",
+    "If a step feels too hard, step back and spend more time on the previous one."
+  ],
+  "primary_cue": {
+    "id": "comfortable-consistent",
+    "text": "Keep your practised voice for the whole step, comfortably."
+  },
+  "cues": [
+    {
+      "id": "comfortable-consistent",
+      "text": "Keep your practised voice for the whole step, comfortably.",
+      "use_when": "default"
+    },
+    {
+      "id": "step-back",
+      "text": "Step back to the previous step and give it more time.",
+      "use_when": "target_not_met"
+    }
+  ],
+  "practice_task": {
+    "prompt_id": "nhsfife.progression-ladder.step",
+    "prompt_text": "Use your practised voice for the current ladder step.",
+    "duration_hint_s": 30,
+    "variants": []
+  },
+  "ladder": [
+    {
+      "id": "count-1-10",
+      "text": "Count from 1 to 10.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "months",
+      "text": "Say the months of the year.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "count-50-75",
+      "text": "Count from 50 to 75.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "name-address",
+      "text": "Say your name, address and phone number (record it privately, or use made-up details).",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "news-sentences",
+      "text": "Read a few short sentences from a news website.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "talk-one-minute",
+      "text": "Talk aloud for one minute on any topic you like.",
+      "recordable": true,
+      "spontaneous": true
+    },
+    {
+      "id": "real-life-phrases",
+      "text": "Say short phrases you use in real life, like getting on the bus, answering the phone, or greeting someone.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "book-paragraphs",
+      "text": "Read several paragraphs from a book aloud.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "conversation-known",
+      "text": "Have a short conversation with someone you know well.",
+      "recordable": false,
+      "spontaneous": true
+    },
+    {
+      "id": "phone-call",
+      "text": "Have a phone conversation.",
+      "recordable": false,
+      "spontaneous": true
+    }
+  ],
+  "check_questions": [
+    {
+      "id": "held_voice",
+      "text": "Could you keep your practised voice comfortably through this step?",
+      "options": [
+        {
+          "id": "yes_consistent",
+          "label": "Yes, comfortably and consistently",
+          "signal": "target_met"
+        },
+        {
+          "id": "partly",
+          "label": "Partly",
+          "signal": "unsure"
+        },
+        {
+          "id": "no",
+          "label": "No, too hard",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "uncomfortable",
+          "label": "It felt uncomfortable",
+          "signal": "comfort_stop"
+        }
+      ]
+    }
+  ],
+  "dose_guidance": {
+    "text": "The source suggests short, frequent practice through the day, for example 3–4 minutes around 8–10 times a day, to build muscle memory and reduce voice fatigue. It sets no time per step. Lilt only records what you choose to log.",
+    "from_source": true
+  },
+  "progression_rule": {
+    "text": "Lilt offers the next step after two sessions in a row where you report “comfortably and consistently” at the current step.",
+    "from_source": false,
+    "source_basis": "The source says to increase difficulty only when you can produce your voice comfortably and consistently. It gives no count; two sessions is Lilt's own setting."
+  },
+  "expected_observations": [
+    "It is not usually a steady process. Some steps take longer than others."
+  ],
+  "common_misunderstandings": [
+    "Doing well in reading does not show how your voice works in everyday conversation.",
+    "Moving up faster is not better."
+  ],
+  "stop_conditions": [
+    "Stop the activity if you feel pain or discomfort, or notice unintended voice changes such as hoarseness. The source says this may mean you are going too quickly.",
+    "Take time to look after your voice, and try again when it feels better.",
+    "If problems persist or keep coming back, seek advice from a voice professional such as a speech and language therapist.",
+    "Respond to any pain or discomfort by stopping and taking a step back."
+  ],
+  "adaptations": [
+    "Build your own order of speech situations that works for you."
+  ],
+  "limitations": [
+    "Public NHS patient-advice material written for self-guided practice. Lilt cannot check your technique, and it does not replace a speech and language therapist.",
+    "The last two steps happen away from Lilt. Lilt records only what you report about them."
+  ],
+  "source": {
+    "url": "https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/",
+    "organization": "NHS Fife Speech and Language Therapy",
+    "author": null,
+    "title": "Progression activities to shape your authentic voice",
+    "issued": null,
+    "date_checked": "2026-10-26",
+    "section": "Progression activities (examples list and guidance)"
+  },
+  "license_note": "NHS Fife copyright, all rights reserved. Their terms allow use for private research, study or in-house use only. Lilt stores a short paraphrase for your personal practice and links to the original. Do not publish or redistribute this content.",
+  "review": {
+    "status": "source_checked",
+    "reviewer": "AI-assisted source check on 2026-10-26 (not clinical review)",
+    "clinician_reviewed": false,
+    "notes": "No clinician has reviewed how Lilt presents this activity."
+  },
+  "examples": [
+    {
+      "kind": "link",
+      "label": "Read the original guidance (NHS Fife)",
+      "url": "https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/"
+    }
+  ],
+  "next": [],
+  "schema": "lilt.exercise/1"
+}

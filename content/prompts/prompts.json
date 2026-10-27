@@ -1,0 +1,19 @@
+{
+  "schema": "lilt.prompts/1",
+  "reference": {
+    "prompt_id": "ref.count-1-10",
+    "text": "Count from one to ten at an easy pace, in your everyday voice.",
+    "source_note": "Counting is an automatic-speech task listed in the NHS Fife progression activities. Lilt uses the same prompt every time so recordings stay comparable."
+  },
+  "spontaneous": {
+    "prompt_id": "spont.short-answer",
+    "questions": [
+      "What did you do this morning?",
+      "What would you like to eat later, and why?",
+      "Describe the room you are in right now.",
+      "What is something you are looking forward to this week?",
+      "Tell me about a place you like to go."
+    ],
+    "source_note": "Answering a question is the NHS Fife example of speech that needs you to think about what you say."
+  }
+}

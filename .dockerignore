@@ -1,0 +1,7 @@
+**/node_modules
+**/target
+**/.venv
+web/dist
+lilt-data
+analysis/tests/fixtures
+.git

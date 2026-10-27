@@ -1,0 +1,23 @@
+[project]
+name = "lilt-analysis"
+version = "1.0.0"
+description = "Local acoustic-analysis helper for Lilt (descriptive pitch/level measures via Praat/Parselmouth)"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "praat-parselmouth",
+    "numpy",
+    "av",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["lilt_analysis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

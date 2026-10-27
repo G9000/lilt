@@ -1,0 +1,10 @@
+Third-party design skills, copied as text only (installed 2026-10-27).
+Scripts, launchers and binaries were deliberately left out; nothing here runs code.
+
+emilkowalski_skills 2d22863
+Nutlope_hallmark 7ec8682
+pbakaus_impeccable d34c87e
+
+emilkowalski/skills   MIT        https://github.com/emilkowalski/skills
+Nutlope/hallmark      MIT        https://github.com/Nutlope/hallmark       (scripts/ and agents/ omitted)
+pbakaus/impeccable    Apache-2.0 https://github.com/pbakaus/impeccable     (scripts/ omitted: its launcher downloads a binary)

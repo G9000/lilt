@@ -1,0 +1,126 @@
+/* Practice texts (#/texts), Exercises (#/library) and Settings (#/settings).
+   Each renders inside an app window's .ds-body. Tokens and base controls come from styles.css. */
+
+.tx, .st { container-type: inline-size; }
+.tx-loading { margin: 0; padding: 48px 0; text-align: center; font-size: 13px; color: var(--ink-3); }
+
+/* ---------- shared page head ---------- */
+.tx-head { margin: 10px 0 22px; }
+.tx-head h1 { font-size: 28px; line-height: 1.15; letter-spacing: -0.035em; margin: 0 0 8px; }
+.tx-head p { margin: 0; max-width: 62ch; color: var(--ink-2); }
+.tx-foot { margin: 32px 0 0; max-width: 64ch; text-wrap: pretty; font-size: 13px; color: var(--ink-3); }
+.tx-foot a, .tx-credit a { color: var(--ink-2); text-decoration: none; }
+.tx-foot a:hover, .tx-credit a:hover { color: var(--ink); text-decoration: underline; text-decoration-color: currentColor; }
+
+/* ---------- level picker: the base .segmented, full width, fading at a scrollable edge ---------- */
+@property --tx-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --tx-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+.tx-levels { display: flex; width: 100%; -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--tx-l), #000 calc(100% - var(--tx-r)), transparent); mask-image: linear-gradient(to right, transparent, #000 var(--tx-l), #000 calc(100% - var(--tx-r)), transparent); }
+.tx-levels button { font-size: 13px; }
+@supports (animation-timeline: scroll()) {
+  .tx-levels { animation: tx-edges linear both; animation-timeline: scroll(self inline); }
+}
+@keyframes tx-edges {
+  0% { --tx-l: 0px; --tx-r: 36px; }
+  6% { --tx-l: 36px; }
+  94% { --tx-r: 36px; }
+  100% { --tx-l: 36px; --tx-r: 0px; }
+}
+
+/* ---------- a level and its texts ---------- */
+.tx-level { margin-top: 28px; }
+.tx-levels + .tx-level { margin-top: 22px; }
+.tx-level-head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 2px; margin-bottom: 6px; }
+.tx-level-head h2 { margin: 0; font-size: 17px; letter-spacing: -0.02em; }
+.tx-level-head p { margin: 0; font-size: 13px; color: var(--ink-3); }
+
+.tx-list { list-style: none; margin: 0 -10px; padding: 0; }
+.tx-list li { position: relative; }
+.tx-list li::before { content: ""; position: absolute; left: 10px; right: 10px; top: 0; border-top: 1px solid var(--hair); transition: opacity 0.15s; }
+@media (hover: hover) { .tx-list li:hover::before, .tx-list li:hover + li::before { opacity: 0; } }
+.tx-list li:focus-within::before, .tx-list li:focus-within + li::before { opacity: 0; }
+.tx-row { width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px; border-radius: 10px; text-align: left; font-weight: 400; color: var(--ink); }
+@media (hover: hover) { .tx-row:hover { background: var(--fill); } .tx-row:hover .tx-go { background: var(--fill-2); color: var(--ink); } }
+.tx-row:active:not(:disabled) { transform: none; background: var(--fill-2); }
+.tx-say { display: grid; gap: 2px; min-width: 0; }
+.tx-text { font-weight: 450; overflow-wrap: anywhere; }
+.tx-text.passage { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.tx-hint { font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+.tx-go { flex: none; padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--ink-2); transition: background-color 0.15s, color 0.15s; }
+.tx-row:focus-visible .tx-go { background: var(--fill-2); color: var(--ink); }
+.tx-credit { margin: 8px 0 0; font-size: 12px; color: var(--ink-3); }
+
+/* ---------- Exercises ---------- */
+.lb-list { list-style: none; margin: 0; padding: 0; }
+.lb-list > li { padding: 24px 0; border-top: 1px solid var(--hair); }
+.lb-list > li:first-child { padding-top: 4px; border-top: 0; }
+.lb-ex { display: grid; gap: 12px; justify-items: start; }
+.lb-ex > * { margin: 0; }
+.lb-ex-head { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.lb-ex-head h2 { margin: 0; font-size: 18px; letter-spacing: -0.02em; }
+.lb-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: -4px; }
+.lb-tags { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.lb-tags li { padding: 2px 9px; border-radius: 999px; background: var(--fill); font-size: 11.5px; font-weight: 600; color: var(--ink-2); }
+.lb-meta { font-size: 13px; color: var(--ink-3); }
+.lb-purpose { max-width: 62ch; }
+.lb-cue { display: flex; gap: 10px; align-items: baseline; max-width: 62ch; color: var(--ink-2); }
+.lb-cue span { flex: none; font-size: 13px; font-weight: 500; color: var(--ink-3); }
+.lb-more { width: 100%; }
+.lb-more > .body { font-size: 14px; color: var(--ink-2); }
+.lb-more ol { margin: 0 0 12px; padding-left: 20px; }
+.lb-more ol li + li { margin-top: 4px; }
+.lb-more h3 { margin: 4px 0 6px; font-size: 14px; color: var(--ink); }
+.lb-more dl { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 8px 16px; margin: 4px 0 0; padding-top: 12px; border-top: 1px solid var(--hair); }
+.lb-more dt { font-weight: 600; color: var(--ink); }
+.lb-more dd { margin: 0; }
+.lb-more a { color: var(--ink); }
+.lb-licence { margin: 12px 0 0; font-size: 12px; color: var(--ink-3); }
+
+.lb-caps { margin-top: 4px; padding-top: 24px; border-top: 1px solid var(--hair); }
+.lb-caps h2 { margin: 0 0 10px; font-size: 18px; letter-spacing: -0.02em; }
+.lb-caps table { font-size: 13px; }
+.lb-caps th, .lb-caps td { padding: 10px 10px 10px 0; }
+.lb-caps td { color: var(--ink-2); }
+.lb-caps thead th { font-size: 12px; font-weight: 500; }
+.lb-caps tbody th { width: 17%; font-size: 13px; font-weight: 600; color: var(--ink); }
+.lb-caps .tx-foot { margin-top: 14px; }
+
+@container (max-width: 560px) {
+  .lb-more dl { grid-template-columns: 1fr; gap: 2px; }
+  .lb-more dd + dt { margin-top: 8px; }
+  .lb-caps thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .lb-caps table, .lb-caps tbody, .lb-caps tr, .lb-caps th, .lb-caps td { display: block; }
+  .lb-caps tr { padding: 12px 0; border-bottom: 1px solid var(--hair); }
+  .lb-caps th, .lb-caps td { padding: 0; border: 0; }
+  .lb-caps tbody th { width: auto; font-size: 15px; margin-bottom: 6px; }
+  .lb-caps td + td { margin-top: 6px; }
+  .lb-caps td::before { content: attr(data-label); display: block; font-size: 12px; color: var(--ink-3); }
+}
+
+/* ---------- Settings: grouped rows, label left, control right ---------- */
+.st { display: grid; gap: 28px; padding-top: 14px; }
+.st-group h2 { margin: 0 0 8px 2px; font-size: 15px; letter-spacing: -0.01em; }
+.st-box { padding: 0 16px; border-radius: 12px; background: var(--fill); }
+.st-box > * + * { border-top: 1px solid var(--hair); }
+.st-row { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 8px 20px; padding: 10px 0; }
+.st-row > :first-child { min-width: 0; }
+.st-row label, .st-label { display: block; margin: 0; font-weight: 500; }
+.st-field { padding: 14px 0; }
+.st-field label { margin: 0 0 8px; font-weight: 500; }
+.st-help { margin: 2px 0 0; font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+.st-field .st-help { margin-top: 6px; }
+.st-note { margin: 8px 2px 0; max-width: 64ch; font-size: 13px; line-height: 1.45; color: var(--ink-3); }
+.st-group > .callout { margin-bottom: 0; }
+.st-unit { flex: none; display: inline-flex; align-items: center; gap: 8px; }
+.st .st-unit input { width: 96px; text-align: right; font-variant-numeric: tabular-nums; }
+.st-unit > span { min-width: 30px; font-size: 13px; color: var(--ink-3); }
+.st .st-wide { flex: none; width: 240px; }
+.st .st-mid { flex: none; width: 140px; }
+.st-btn { flex: none; min-height: 34px; padding: 6px 12px; font-size: 13px; }
+.st-save { display: grid; gap: 12px; justify-items: start; }
+.st input::placeholder, .st textarea::placeholder { color: var(--ink-3); }
+
+@container (max-width: 480px) {
+  .st-row:has(.st-wide), .st-row:has(.st-btn.btn-secondary) { align-items: stretch; flex-direction: column; }
+  .st .st-wide { width: 100%; }
+}

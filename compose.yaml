@@ -1,0 +1,15 @@
+services:
+  lilt:
+    build: .
+    image: lilt:local
+    container_name: lilt
+    restart: unless-stopped
+    ports:
+      # Published on loopback only. See README before exposing to other devices.
+      - "127.0.0.1:7878:7878"
+    volumes:
+      # Your recordings and records live here on the host. This is persistence, not a backup.
+      - ./lilt-data:/data
+    environment:
+      TZ: Asia/Kuala_Lumpur
+      # LILT_MCP_TOKEN: set a long random value to require a bearer token on /mcp

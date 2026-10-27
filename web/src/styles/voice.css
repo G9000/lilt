@@ -1,0 +1,187 @@
+/* Voice surfaces: Studio, the guided session (Today) and the practice steps. See DESIGN.md.
+   This file is bundled before styles.css (main.tsx imports App first), so
+   anything that overrides a base or legacy rule is scoped under one of this file's roots
+   (.vpage, .vrec, .vmic, .vplan) to win on specificity, not on order. */
+
+/* ---------- page rhythm and type ---------- */
+.vpage > * + * { margin-top: 18px; }
+.vpage > .sr-only + * { margin-top: 0; }
+.vloading { color: var(--ink-3); font-size: 13px; text-align: center; margin: 72px 0; }
+.vh { font-size: 28px; font-weight: 600; letter-spacing: -0.035em; line-height: 1.12; margin: 0; text-wrap: balance; }
+.vh.vh-sm { font-size: 17px; letter-spacing: -0.015em; color: var(--ink-2); }
+.vphrase { font-size: 32px; font-weight: 600; letter-spacing: -0.035em; line-height: 1.16; margin: 0; color: var(--ink); text-wrap: balance; }
+.vtip { color: var(--ink-2); font-size: 15px; line-height: 1.55; margin: 0; max-width: 64ch; }
+.vcap { color: var(--ink-3); font-size: 13px; line-height: 1.45; margin: 0; }
+.vlede { color: var(--ink-2); font-size: 16px; line-height: 1.5; margin: 0; max-width: 56ch; }
+.vpill { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 600; line-height: 1.4; padding: 3px 9px; border-radius: 999px; background: var(--fill); color: var(--ink-2); white-space: nowrap; }
+.vpill.ok { background: var(--ok-soft); color: var(--ok); }
+.vpill.next { background: var(--accent-soft); color: var(--accent-ink); }
+.vpills { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.vactions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.vext { width: 0.72em; height: 0.72em; margin-left: 3px; vertical-align: 0; }
+.vpage kbd, .vrec kbd { font-family: var(--mono); }
+
+/* ---------- the record surface ---------- */
+.vrec > * + * { margin-top: 14px; }
+.vrec-title { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; margin: 0; }
+.vrec .vphrase { margin: 0; }
+
+/* The text to read: set big, in ink; the current word in the accent. */
+.vrec .readtext, .vpage .readtext { font: 600 36px/1.18 var(--font); letter-spacing: -0.035em; color: var(--ink); margin: 0; text-wrap: balance; }
+.vrec .readtext.hum, .vpage .readtext.hum { font-size: 40px; letter-spacing: -0.02em; }
+.vrec .readtext.passage, .vpage .readtext.passage { font-size: 22px; font-weight: 500; line-height: 1.55; letter-spacing: -0.015em; text-wrap: pretty; max-width: 62ch; }
+.vrec .readtext.has-pitch { line-height: 1.75; }
+.vrec .readtext.passage.has-pitch { line-height: 2.1; }
+.vrec .readtext .w { position: relative; cursor: default; padding: 0 0.1em; margin: 0 -0.1em; border-radius: 0.2em; color: inherit; transition: background-color 0.15s ease-out, color 0.15s ease-out; }
+.vrec .readtext.is-following .w { cursor: pointer; }
+.vrec .readtext.is-following .w.done { color: var(--ink-3); }
+.vrec .readtext .w.now { background: var(--accent); color: #fff; }
+.vrec .readtext .w.annotated::after { content: attr(data-n); position: relative; top: -0.95em; margin-left: 0.08em; font-size: 0.4em; font-weight: 600; letter-spacing: 0; color: var(--accent-ink); }
+.vrec .readtext .w.now.annotated::after { color: #fff; }
+.vrec .readtext .w .wpitch { position: absolute; left: 0; right: 0; bottom: -0.36em; height: 0.36em; pointer-events: none; overflow: visible; }
+.vrec .follow-status { font: 500 13px/1.4 var(--font); letter-spacing: 0; text-transform: none; color: var(--ink-3); min-height: 18px; margin-top: 8px; }
+
+/* Live pitch: a light panel, never a black screen. */
+.vlive { border-radius: 16px; background: var(--fill); padding: 14px 16px 12px; --line: rgba(0, 0, 0, 0.1); }
+:root[data-theme="dark"] .vlive { --line: rgba(255, 255, 255, 0.12); }
+.vlive-top { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.vlive-top b, .vlive .readout .hz { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.vlive-top span { color: var(--ink-3); font-size: 13px; }
+.vlive .vline { display: block; width: 100%; height: 64px; margin-top: 6px; }
+.vlive .readout { gap: 4px 10px; align-items: baseline; }
+.vlive .readout .note { font: 500 14px var(--font); letter-spacing: 0; color: var(--ink-3); line-height: 1.2; }
+.vlive .readout .vpill { margin-left: auto; align-self: center; }
+.vlive .steady { margin-top: 12px; gap: 12px; }
+.vlive .steady .steady-k { flex: none; width: 84px; font-size: 13px; color: var(--ink-2); }
+.vlive .steady .steady-v { flex: none; width: 104px; font-size: 13px; color: var(--ink-3); text-align: right; }
+.vlive .steady .steady-bar { background: var(--fill-2); }
+.vlive .pianoroll { background: transparent; margin-top: 10px; border-radius: 10px; }
+.vlive-foot { margin: 6px 0 0; color: var(--ink-3); font-size: 12.5px; }
+
+/* One white button with a red dot; the dot becomes a rounded square while recording. */
+.vrecrow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
+.vrec .vrecrow { margin-top: 18px; }
+.vrec .rec-btn { flex: none; width: 60px; height: 60px; min-height: 60px; background: #fff; box-shadow: 0 0 0 1px var(--hair), 0 6px 16px -6px rgba(0, 0, 0, 0.3); }
+.vrec .rec-btn .dot { width: 24px; height: 24px; border-radius: 50%; }
+.vrec .rec-btn.stop .dot { width: 20px; height: 20px; border-radius: 6px; }
+.vrec .rec-btn:hover:not(:disabled) { box-shadow: 0 0 0 1px var(--line-strong), 0 8px 18px -6px rgba(0, 0, 0, 0.34); }
+.vrec .rec-btn:focus-visible { outline-offset: 3px; border-radius: 50%; }
+.vrec-t { min-width: 0; flex: 1 1 140px; }
+.vrec-t > b { display: block; font-weight: 600; font-size: 15px; line-height: 1.3; }
+.vrec-t > span { display: block; color: var(--ink-3); font-size: 12.5px; line-height: 1.4; margin-top: 2px; }
+.vrec-t .vrec-st { display: flex; align-items: center; gap: 8px; }
+.vclock { font-variant-numeric: tabular-nums; color: var(--ink-2); font-size: 13px; }
+.vkeys { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.vkeys > button { min-height: 38px; padding: 7px 14px; font-weight: 500; font-size: 14px; }
+.vkeys > button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-ink); }
+@media (hover: none) and (pointer: coarse) { .vkbd { visibility: hidden; } .vfoot kbd { display: none; } }
+
+/* ---------- quiet notes under the controls ---------- */
+.vpage .notes { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 6px; font: 400 14px/1.5 var(--font); color: var(--ink-2); max-width: 66ch; }
+.vpage .notes li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; align-items: baseline; }
+.vpage .notes b { font-size: 12.5px; font-weight: 600; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.vpage .notes b:empty::before { content: ""; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--ink-3); vertical-align: 0.2em; }
+.vpage .notes small { color: var(--ink-3); font-size: 12.5px; }
+
+/* ---------- Studio ---------- */
+.vpage .segmented.vseg { display: flex; width: 100%; }
+.vstudio .vrec { margin-top: 26px; }
+.vfoot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
+.vfoot .textlink { font-size: 14px; }
+.vfoot kbd { margin-left: 4px; }
+.vresult { border-top: 1px solid var(--hair); padding-top: 22px; }
+.vpage > .vresult { margin-top: 26px; }
+.vresult > * + * { margin-top: 12px; }
+.vresult-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.vresult-head h2 { font-size: 17px; letter-spacing: -0.015em; margin: 0 4px 0 0; }
+.vresult .vactions > button { min-height: 38px; padding: 7px 12px; font-weight: 500; font-size: 14px; }
+.vfav svg { width: 15px; height: 15px; flex: none; }
+.vfav[aria-pressed="true"] { color: var(--accent-ink); }
+
+/* ---------- practice steps ---------- */
+.vprogress { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; }
+.vprogress .textlink { font-size: 14px; }
+.vpage .vprogress .steps { grid-column: 1 / -1; margin: 0; }
+.vpage > .vprogress + * { margin-top: 24px; }
+.vstep > * + * { margin-top: 16px; }
+.vstep > .vh + .vphrase { margin-top: 18px; }
+.vstep > .vh-sm + .vphrase { margin-top: 6px; }
+.vstep > .vh + .vtip, .vstep > .vphrase + .vtip { margin-top: 8px; }
+.vstep > .vrec { margin-top: 22px; }
+.vstep > .vactions { margin-top: 24px; }
+.vpage ol.body.vinstr { margin: 0; padding: 0 16px 14px 36px; color: var(--ink-2); }
+.vinstr li + li { margin-top: 6px; }
+.vexamples { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; font-size: 14px; }
+.vexamples a { color: var(--ink-2); text-decoration: none; }
+.vexamples a:hover { color: var(--ink); }
+.vtake { display: grid; gap: 8px; }
+.vbadges { display: flex; flex-wrap: wrap; gap: 6px; }
+.vpage .vcheck { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; font-weight: 500; }
+.vpage .vcheck input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); }
+.vdone-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.vdone-role { min-width: 150px; font-weight: 500; }
+.vnext h2 { font-size: 17px; letter-spacing: -0.015em; margin: 0 0 6px; }
+.vnext p { margin: 0 0 10px; }
+.vnext .vactions { margin-top: 14px; }
+
+/* microphone check */
+.vmic > * + * { margin-top: 16px; }
+.vmic > .vh + .vtip { margin-top: 8px; }
+.vmic .levelbar { display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px; margin: 14px 0 10px; }
+.vmic .levelbar i { height: 10px; border-radius: 3px; background: var(--fill-2); transition: background-color 0.06s linear; }
+.vmic .levelbar i.on { background: var(--ok); }
+.vmic .levelbar i.warm { background: #e9a23b; }
+.vmic .levelbar i.hot { background: var(--rec); }
+.vmic-state { margin: 0; font-weight: 600; color: var(--ink-3); }
+.vmic-state.ok { color: var(--ok); }
+.vmic-state.hot { color: var(--warn); }
+.vmic-select { max-width: 360px; }
+
+/* ---------- Today (guided session) ---------- */
+.vtoday h1 { font-size: 28px; letter-spacing: -0.035em; line-height: 1.12; margin: 0; }
+.vtoday-head .vlede { margin-top: 10px; }
+.vtoday-head .vcap { margin-top: 12px; }
+.vreminder { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; font-size: 13px; font-weight: 500; color: var(--accent-ink); }
+.vreminder i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+.vpage > .vplan { margin-top: 24px; }
+.vplan-head { margin: 0 0 4px; font-size: 13px; font-weight: 500; color: var(--ink-3); }
+.vplan .setlist { list-style: none; margin: 0; padding: 0; display: block; font-size: 15px; }
+.vplan .setlist li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 0; color: var(--ink); font-weight: 400; border-bottom: 1px solid var(--hair); }
+.vplan .setlist li.now, .vplan .setlist li.done { color: var(--ink); font-weight: 400; }
+.vplan .setlist li:last-child { border-bottom: 0; }
+.vplan .setlist li > span.tx, .vplan .setlist li > span.vpill { overflow: visible; white-space: normal; text-overflow: clip; }
+.vplan .setlist li > span.vpill { white-space: nowrap; }
+.vplan .setlist li .mk { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--fill); color: var(--ink-3); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.vplan .setlist li .mk svg { width: 13px; height: 13px; }
+.vplan .setlist li.done .mk { background: var(--ok-soft); color: var(--ok); }
+.vplan .setlist li.done .tx { color: var(--ink-3); }
+.vplan .setlist li.now .mk { background: var(--accent); color: #fff; }
+.vplan .setlist li.now .tx { font-weight: 600; }
+.vplan-note h2 { font-size: 17px; letter-spacing: -0.015em; margin: 0 0 6px; }
+.vplan-note p { margin: 0 0 4px; color: var(--ink-2); }
+.vplan .vgo { width: 100%; min-height: 50px; margin-top: 18px; border-radius: 14px; font-size: 15px; box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.5); }
+.vlinks { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.vpage > .vlinks { margin-top: 14px; }
+.vlinks .textlink { font-size: 14px; }
+.vmemo { border-top: 1px solid var(--hair); padding-top: 18px; }
+.vpage > .vmemo { margin-top: 26px; }
+.vmemo h2 { font-size: 17px; letter-spacing: -0.015em; margin: 0 0 6px; }
+.vmemo p { margin: 0 0 6px; max-width: 64ch; }
+.vmemo .textlink { font-size: 14px; }
+
+/* ---------- phone: the window is a full-width sheet ---------- */
+@media (max-width: 760px) {
+  .vh, .vtoday h1 { font-size: 24px; }
+  .vphrase { font-size: 26px; }
+  .vrec .readtext, .vpage .readtext { font-size: 27px; }
+  .vrec .readtext.hum, .vpage .readtext.hum { font-size: 32px; }
+  .vrec .readtext.passage, .vpage .readtext.passage { font-size: 18px; }
+  .vstudio .vrec { margin-top: 18px; }
+  .vrec > * + * { margin-top: 12px; }
+  .vrec .vrecrow { margin-top: 14px; }
+  .vlive { padding: 12px 14px 10px; }
+  .vlive .vline { height: 48px; }
+  .vkeys { margin-left: 0; width: 100%; }
+  .vkeys > button { flex: 1 1 0; }
+  .vlive .steady .steady-v { width: auto; }
+}
