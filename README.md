@@ -52,9 +52,9 @@ Then open <http://127.0.0.1:7878>.
      arrow, to practise that one first. The others stay in today's run. The stack deals in when
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
      Built with Motion (springs and drag).
-   - **Floating in the room**, pinned to the painting: the lo-fi radio over the speaker (the same
-     player as on the desk), the days you practised this week by the plant, your goal from Settings
-     as a sticky note on the photo wall, and your stage hanging in the window. A widget whose spot
+   - **Floating in the room**, over spots in the painting: the lo-fi radio over the speaker (the
+     same player as on the desk), your goal from Settings as a sticky note taped to the photo wall
+     (it lifts and glows when you hover), and your stage in the window. A widget whose spot
      is cropped off a small screen steps aside; a phone shows just the stack.
    - Or click the **computer** itself (it glows and says how many cards are waiting), or press
      <kbd>Enter</kbd>, to sit down at the desk.

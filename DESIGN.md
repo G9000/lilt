@@ -8,8 +8,8 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 - **Room** (`#/`): the painting full screen in the light of the hour (morning, day, sunset,
   night), with its small animations (birds, dust, the sleeping cat). Today's cards sit in the
   bottom-right as a swipeable stack (folder-style cards, one per practice card, Motion springs);
-  tapping the top card starts it. A few small widgets float in the painting on thin pins (radio,
-  week, goal, stage), riding the camera; they step aside rather than cover the stack. The
+  tapping the top card starts it. A few small widgets float in the painting (radio, goal, stage),
+  riding the camera; they step aside rather than cover the stack. The
   computer itself is the other way in (the middle monitor glows on hover).
 - **The move**: the camera pushes into the painted monitor (about 1.1 s, ease in-out). As the
   screen fills the view, the desktop fades up out of a blur. Leaving reverses it. No rectangles
