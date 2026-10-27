@@ -57,14 +57,14 @@
 @keyframes ds-eq { from { height: 3px; } to { height: 10px; } }
 
 /* widgets */
-.ds-widgets { position: absolute; left: 50%; top: 50%; z-index: 5; display: grid; grid-template-columns: 348px 168px 168px; grid-template-rows: 168px 168px; gap: 16px; transform: translate(-50%, calc(-50% - 24px)); }
+.ds-widgets { position: absolute; left: 50%; top: 50%; z-index: 5; display: grid; grid-template-columns: 348px; grid-template-rows: 352px; transform: translate(-50%, calc(-50% - 24px)); }
 .ds:not(.in) .ds-widgets.ds-boot { transform: translate(-50%, calc(-50% - 12px)); }
 .ds-w { position: relative; border-radius: 26px; overflow: hidden; box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.25), 0 26px 50px -24px rgba(5, 5, 20, 0.7); transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), opacity 0.3s ease-out, filter 0.3s ease-out; }
 .ds-w:hover { transform: translateY(-3px); }
 .ds.app-open .ds-w { opacity: 0.3; filter: blur(3px) saturate(0.9); pointer-events: none; }
 .ds.app-open .ds-cat { opacity: 0; }
 
-.ds-today { grid-row: 1 / 3; background: #0d0d10; overflow: visible; color: #fff; }
+.ds-today { background: #0d0d10; overflow: visible; color: #fff; }
 .ds-t-img { position: absolute; inset: 9px 9px auto 9px; height: 120px; border-radius: 19px 19px 0 0; background-position: 50% 42%; background-size: 300% auto; background-repeat: no-repeat; }
 .ds-t-shape { position: absolute; left: 9px; bottom: 9px; width: calc(100% - 18px); height: calc(100% - 88px); fill: #1b1b20; }
 .ds-t-body { position: absolute; left: 9px; right: 9px; bottom: 9px; top: 79px; padding: 12px 18px 16px; display: flex; flex-direction: column; }
@@ -162,8 +162,8 @@
   .ds-hint { display: none; }
   .ds-hide-s, .ds-leave span { display: none; }
   .ds-menubar b { max-width: 34vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ds-widgets { top: 46px; left: 10px; right: 10px; transform: none !important; grid-template-columns: 1fr 1fr; grid-template-rows: auto; max-height: calc(100% - 140px); overflow: auto; padding-top: 46px; }
-  .ds-today { grid-row: auto; grid-column: 1 / 3; min-height: 380px; }
+  .ds-widgets { top: 46px; left: 10px; right: 10px; transform: none !important; grid-template-columns: 1fr; grid-template-rows: auto; max-height: calc(100% - 140px); overflow: auto; padding-top: 46px; }
+  .ds-today { min-height: 380px; }
   .ds-clock, .ds-plant { min-height: 160px; }
   .ds-radio { grid-column: 1 / 3; min-height: 160px; order: 1; }
   .ds-clock, .ds-plant { order: 2; }
@@ -322,3 +322,8 @@
 .fl-r-info { padding-right: 16px; }
 .ds-radio .ds-r-ctl { gap: 6px; }
 .ds-radio .ds-r-info { padding-right: 4px; }
+
+/* the clock and the plant live in the room now, at their widget size */
+.fl .ds-w { width: 168px; height: 168px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.4), 0 22px 40px -16px rgba(0, 0, 0, 0.8); }
+.fl .ds-clock .ds-clock-img { filter: saturate(1.15) brightness(0.88); background-position: 70% 30%; background-size: 420% auto; }
+.fl .ds-clock::after { z-index: 1; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); border-radius: inherit; }

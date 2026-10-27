@@ -3,16 +3,18 @@ import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
 import { radio, useRadio } from "./lofi";
 import { Volume } from "./Volume";
+import { ClockWidget, PlantWidget } from "./Desk";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
- * radio over the speaker and a note on the wall of photos. Drag them anywhere; each remembers its
+ * radio over the speaker, a note on the wall of photos, a clock in the window, and the plant (the
+ * days you practised this week) by the potted plant. Drag them anywhere; each remembers its
  * spot in the painting (in this browser), so it rides the room's camera. One near the edge slides
  * inward to stay on screen; one left at home that would cover today's cards steps out of the way.
  */
 
 type Spot = { x: number; y: number };
-const HOME: Record<string, Spot> = { radio: { x: 1262, y: 452 }, note: { x: 150, y: 232 } };
+const HOME: Record<string, Spot> = { radio: { x: 1262, y: 452 }, note: { x: 150, y: 232 }, clock: { x: 1180, y: 236 }, plant: { x: 118, y: 560 } };
 const KEY = "lilt.room.layout";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
 let layout = load();
@@ -107,7 +109,7 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
   );
 }
 
-export function RoomFloaters({ inside }: { deck?: Deck | null; inside: boolean }) {
+export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();
   const [note, setNote] = useState<string | null>(null);
   const [writing, setWriting] = useState(false);
@@ -173,6 +175,14 @@ export function RoomFloaters({ inside }: { deck?: Deck | null; inside: boolean }
           </div>
         </div>
       </Widget>
+      <Widget id="clock" delay={-1.1} label="Clock">
+        <ClockWidget />
+      </Widget>
+      {deck && (
+        <Widget id="plant" delay={-3.4} label="This week">
+          <PlantWidget days={deck.participation?.days_this_week ?? 0} />
+        </Widget>
+      )}
       {note !== null && (
         <Widget id="note" delay={-2.6} label="Note" still={writing}>
           <Note text={note} onSave={(t) => void saveNote(t)} onEditing={setWriting} />

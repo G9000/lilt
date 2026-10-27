@@ -4,7 +4,6 @@ import { go } from "../App";
 import { Icon } from "../components/bits";
 import { currentLight, Light } from "../room/scene";
 import { radio, useRadio } from "./lofi";
-import { Volume } from "./Volume";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
 import { LeaveIcon, Mark, ProgressIcon, RecordingsIcon, StudioIcon, TextsIcon, TodayIcon } from "./icons";
@@ -85,16 +84,6 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
 
       <section className="ds-widgets ds-boot" aria-label="Widgets">
         <TodayWidget deck={deck} light={light} reload={() => void loadDeck()} />
-        <article className="ds-w ds-clock" aria-label="Time">
-          <div className="ds-clock-img" style={{ backgroundImage: `url(room/room-${light}.webp)` }} />
-          <div className="ds-clock-top">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M2 11h12M4 11a4 4 0 018 0M8 3v1.5M3.2 5.5l1 1M12.8 5.5l-1 1" /></svg>
-            {LIGHT_NAME[light]}
-          </div>
-          <div className="ds-clock-time">{now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}</div>
-        </article>
-        <PlantWidget days={deck?.participation?.days_this_week ?? 0} />
-        <RadioWidget />
       </section>
 
       {win && (
@@ -175,7 +164,7 @@ function TodayWidget({ deck, light, reload }: { deck: Deck | null; light: Light;
 
 /** A plant that grows a leaf for each day you practised this week. It never shrinks or scolds. */
 const LEAVES: [number, number, number][] = [[61, 74, -1], [60, 64, 1], [60, 54, -1], [61, 45, 1], [61, 37, -1], [61, 31, 1], [61, 27, 0]];
-function PlantWidget({ days }: { days: number }) {
+export function PlantWidget({ days }: { days: number }) {
   return (
     <article className="ds-w ds-plant" aria-label={`Practised ${days} day${days === 1 ? "" : "s"} this week`}>
       <svg viewBox="22 14 76 94" aria-hidden="true">
@@ -195,27 +184,18 @@ function PlantWidget({ days }: { days: number }) {
   );
 }
 
-function RadioWidget() {
-  const r = useRadio();
+/** A window onto the room at this hour, with the time. */
+export function ClockWidget() {
+  const now = useNow();
+  const light = currentLight();
   return (
-    <article className={`ds-w ds-radio${r.playing ? " playing" : ""}`} aria-label="Lo-fi radio">
-      <div className="ds-disc" aria-hidden="true"><div className="ds-label" /></div>
-      <svg className="ds-arm" viewBox="0 0 60 120" aria-hidden="true"><circle cx="46" cy="14" r="9" fill="#2c2b33" stroke="#4a4955" /><circle cx="46" cy="14" r="3.5" fill="#9b9aa8" /><path d="M46 14 L44 78 Q43 92 30 102" stroke="#c9c8d2" strokeWidth="3.2" fill="none" strokeLinecap="round" /><rect x="21" y="98" width="13" height="9" rx="2" transform="rotate(35 27 102)" fill="#e9e8ee" /></svg>
-      <div className="ds-r-info">
-        <span className="ds-r-k">{r.playing && <span className="ds-eq" aria-hidden="true"><i /><i /><i /></span>}{r.ducked ? "Paused while the mic is on" : r.playing ? "Now playing" : "Lo-fi radio"}</span>
-        <b>{r.mood}</b>
-        <span className="ds-r-sub">Made live on your desk</span>
-        <div className="ds-r-ctl">
-          <button className="ds-r-skip" onClick={() => radio.skip(-1)} aria-label="Previous mood"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3v10M13 3L6 8l7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
-          <button className="ds-r-play" onClick={() => void radio.toggle()} aria-label={r.playing || r.ducked ? "Pause lo-fi radio" : "Start lo-fi radio"}>
-            {r.playing || r.ducked
-              ? <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5h2.2v9H3zM6.8 1.5H9v9H6.8z" fill="currentColor" /></svg>
-              : <svg viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: 2 }}><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>}
-          </button>
-          <button className="ds-r-skip" onClick={() => radio.skip(1)} aria-label="Next mood"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12 3v10M3 3l7 5-7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
-          <Volume />
-        </div>
+    <article className="ds-w ds-clock" aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
+      <div className="ds-clock-img" style={{ backgroundImage: `url(room/room-${light}.webp)` }} />
+      <div className="ds-clock-top">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M2 11h12M4 11a4 4 0 018 0M8 3v1.5M3.2 5.5l1 1M12.8 5.5l-1 1" /></svg>
+        {LIGHT_NAME[light]}
       </div>
+      <div className="ds-clock-time">{now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}</div>
     </article>
   );
 }

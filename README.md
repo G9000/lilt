@@ -52,9 +52,9 @@ Then open <http://127.0.0.1:7878>.
      arrow, to practise that one first. The others stay in today's run. The stack deals in when
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
      Built with Motion (springs and drag).
-   - **Floating in the room**, over spots in the painting: the lo-fi radio over the speaker (the
-     same player as on the desk) and a sticky note taped to the photo wall. The note starts as your
-     goal; click it to write anything (up to 280 characters), click away to keep it. It's saved on
+   - **Floating in the room**, over spots in the painting: the lo-fi radio over the speaker, a
+     clock in the window, the plant by the potted plant, and a sticky note taped to the photo wall.
+     The note starts as your goal; click it to write anything (up to 280 characters), click away to keep it. It's saved on
      the server (`room_note` in the profile). **Drag either one anywhere**; it remembers its spot
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
@@ -77,9 +77,9 @@ Then open <http://127.0.0.1:7878>.
      with a greeting for the time of day. It only holds real things: your feedback is ready, a new
      stage opened, your reminder time, resting today, recordings recovered from a closed page. Never
      streaks or missed days. Read and cleared notifications are remembered in this browser only.
-   - **Widgets:** today's practice as a folder (the cards waiting and Start), a clock over the room,
-     a plant that grows a leaf for each day you practised this week (it never shrinks or scolds),
-     and the lo-fi radio.
+   - **The desk** shows today's practice as a folder (the cards waiting and Start). The clock, the
+     plant (a leaf for each day you practised this week; it never shrinks or scolds) and the lo-fi
+     radio live in the room instead, as floating widgets you can drag.
    - **Lo-fi radio:** three moods ("Rain on the window", "Desk lamp", "City at dusk") made live in
      the browser: electric-piano chords, a soft bass, swung drums, and rain on one mood. Both
      radios have a volume slider and a mute button, remembered in this browser. Nothing is
