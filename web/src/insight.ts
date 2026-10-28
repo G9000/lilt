@@ -55,3 +55,20 @@ export function describeTake({ median, spanSt, band, pts }: InsightInput): Insig
     cue: "Keep it just like this. Notice how it feels, so you can find it again.",
   };
 }
+
+/** Where a speaking pitch sits against typical men's and women's voices, in words and semitones. Never a score. */
+export interface PitchRef { men_mean: number; men_sd: number; women_mean: number; women_sd: number; overlap_low: number; overlap_high: number }
+
+export function placePitch(hz: number, r: PitchRef): string {
+  const womenLow = r.women_mean - r.women_sd, womenHigh = r.women_mean + r.women_sd, menHigh = r.men_mean + r.men_sd;
+  const zone = hz > womenHigh ? "above the typical women's range"
+    : hz >= womenLow ? "within the typical women's range"
+    : hz >= r.overlap_low && hz <= r.overlap_high ? "in the overlap, where pitch alone can be heard either way"
+    : hz > menHigh ? "between the typical men's and women's ranges"
+    : hz >= r.men_mean - r.men_sd ? "within the typical men's range"
+    : "below the typical men's range";
+  const gap = Math.round(st(r.women_mean, hz) * 2) / 2;
+  const relation = gap === 0 ? "right at the typical women's average"
+    : `about ${Math.abs(gap)} semitone${Math.abs(gap) === 1 ? "" : "s"} ${gap > 0 ? "below" : "above"} the typical women's average (${Math.round(r.women_mean)} Hz)`;
+  return `${Math.round(hz)} Hz sits ${zone}, ${relation}.`;
+}

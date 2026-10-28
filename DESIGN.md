@@ -37,6 +37,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   Today opened with nothing picked tags the next card **Start here** and offers "Start today's
   cards" by the recorder. If the microphone can't be used, a calm help box says what happened and
   the one step that fixes it, with **Try again**.
+  **Under that note, a pitch reference scale**: typical men's (grey), the overlap where pitch can be
+  heard either way (striped) and typical women's (coral) speaking ranges, each average ± 1 SD, with a
+  tick at each average and your middle pitch as a coral dot; then one sentence placing it in words
+  and semitones from the women's average, and a caption that pitch is one part of how a voice is
+  heard. Never percentages, never a score. Numbers and source live in `content/texts/_pitch.md`.
   **Every take's result leads with words**: one observation and one thing to try (comfort first,
   then an end drop, then range and movement), on an accent-soft panel, before any numbers.
   **Recordings** opens inside Practice, listed with Home above the tree (and as a chip on phones):

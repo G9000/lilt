@@ -1,7 +1,7 @@
 // node --test src/insight.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { describeTake, endDropSt } from "./insight.ts";
+import { describeTake, endDropSt, placePitch } from "./insight.ts";
 
 const line = (hz: (i: number) => number, n = 100) => Array.from({ length: n }, (_, i) => ({ t: i / 50, hz: hz(i) }));
 
@@ -27,4 +27,16 @@ test("below the range, level, lively and steady", () => {
 test("nothing to say without a pitch, or with too little voice", () => {
   assert.equal(describeTake({ median: null, spanSt: null, band: null, pts: [] }), null);
   assert.equal(endDropSt(line(() => 200, 10)), null);
+});
+
+const REF = { men_mean: 115, men_sd: 21, women_mean: 199, women_sd: 28, overlap_low: 145, overlap_high: 165 };
+
+test("a pitch is placed in words and semitones, never a percentage", () => {
+  assert.equal(placePitch(199, REF), "199 Hz sits within the typical women's range, right at the typical women's average.");
+  assert.match(placePitch(172, REF), /^172 Hz sits within the typical women's range, about 2\.5 semitones below/);
+  assert.match(placePitch(155, REF), /in the overlap/);
+  assert.match(placePitch(140, REF), /between the typical men's and women's ranges/);
+  assert.match(placePitch(115, REF), /within the typical men's range, about 9\.5 semitones below/);
+  assert.match(placePitch(240, REF), /above the typical women's range, about 3 semitones above/);
+  assert.doesNotMatch(placePitch(172, REF), /%/);
 });

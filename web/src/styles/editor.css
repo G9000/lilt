@@ -384,6 +384,21 @@
 .prc-insight .c b { color: var(--accent-ink); font-weight: 600; margin-right: 4px; }
 .prc-result .prc-insight { margin-bottom: 14px; }
 
+/* where your middle pitch sits against typical men's and women's voices: bands, averages, you */
+.pscale { margin: 0 0 16px; }
+.pscale-track { position: relative; height: 14px; border-radius: 99px; background: var(--fill); }
+.pscale-track > span { position: absolute; top: 0; bottom: 0; border-radius: 99px; }
+.pscale-track .men { background: color-mix(in srgb, var(--ink) 14%, transparent); }
+.pscale-track .either { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink) 10%, transparent) 0 3px, transparent 3px 6px); }
+.pscale-track .women { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.pscale-track .avg { position: absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 35%, transparent); }
+.pscale-track .you { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card), 0 2px 6px rgba(224, 100, 60, 0.45); }
+.pscale-labels { position: relative; height: 34px; margin-top: 6px; }
+.pscale-labels span { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; font-size: 12px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+.pscale-labels small { font-size: 12px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pscale figcaption { margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.pscale figcaption span { display: block; margin-top: 2px; font-size: 12px; color: var(--ink-3); }
+
 /* a free take's summary in the text column, when the screen isn't split */
 .ve-free { margin: 0 0 36px; }
 .ve-free h2 { margin: 0 0 12px; font: 700 21px/1.2 var(--font); letter-spacing: -0.03em; }

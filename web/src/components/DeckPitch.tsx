@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { api, Comparison, Take } from "../api";
-import { describeTake } from "../insight";
+import { api, Comparison, PitchReference, Take } from "../api";
+import { describeTake, placePitch } from "../insight";
 import { noteName } from "../pitch";
 import { contourPoints, PitchPoint } from "./PianoRoll";
 
@@ -18,6 +18,44 @@ function InsightNote({ analysis, band }: { analysis: any; band: [number, number]
   return <div className="prc-insight"><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
 }
 
+let reference: Promise<PitchReference | null> | null = null;
+const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_reference ?? null, () => null));
+
+/**
+ * Where your middle pitch sits against typical men's and women's speaking voices, on a scale, with one
+ * sentence in semitones. Descriptive only: no percentages, no score. The numbers come from
+ * content/texts/_pitch.md.
+ */
+export function PitchScale({ median }: { median: number }) {
+  const [ref, setRef] = useState<PitchReference | null>(null);
+  useEffect(() => { void pitchReference().then(setRef); }, []);
+  if (!ref) return null;
+  const LO = 80, HI = 280, at = (hz: number) => Math.max(0, Math.min(100, (Math.log(hz / LO) / Math.log(HI / LO)) * 100));
+  const band = (lo: number, hi: number) => ({ left: `${at(lo)}%`, width: `${at(hi) - at(lo)}%` });
+  const men: [number, number] = [ref.men_mean - ref.men_sd, ref.men_mean + ref.men_sd], women: [number, number] = [ref.women_mean - ref.women_sd, ref.women_mean + ref.women_sd];
+  return (
+    <figure className="pscale">
+      <div className="pscale-track" role="img" aria-label={placePitch(median, ref)}>
+        <span className="men" style={band(...men)} />
+        <span className="either" style={band(ref.overlap_low, ref.overlap_high)} />
+        <span className="women" style={band(...women)} />
+        <i className="avg" style={{ left: `${at(ref.men_mean)}%` }} />
+        <i className="avg" style={{ left: `${at(ref.women_mean)}%` }} />
+        <b className="you" style={{ left: `${at(median)}%` }} />
+      </div>
+      <div className="pscale-labels" aria-hidden="true">
+        <span style={{ left: `${at(ref.men_mean)}%` }}>Typical men<small>{Math.round(men[0])}–{Math.round(men[1])} Hz</small></span>
+        <span style={{ left: `${at((ref.overlap_low + ref.overlap_high) / 2)}%` }}>Either<small>{ref.overlap_low}–{ref.overlap_high}</small></span>
+        <span style={{ left: `${at(ref.women_mean)}%` }}>Typical women<small>{Math.round(women[0])}–{Math.round(women[1])} Hz</small></span>
+      </div>
+      <figcaption>
+        {placePitch(median, ref)}{" "}
+        <span title={ref.source}>Pitch is one part of how a voice is heard; resonance and intonation matter as much. Typical ranges from Leung et al. (2022).</span>
+      </figcaption>
+    </figure>
+  );
+}
+
 /** The note for a take that's shown elsewhere (a chapter's players): loads its analysis once ready. */
 export function TakeInsight({ take, band }: { take: Take; band: [number, number] | null }) {
   const [analysis, setAnalysis] = useState<any>(null);
@@ -28,7 +66,8 @@ export function TakeInsight({ take, band }: { take: Take; band: [number, number]
     void api.analysis(take.id).then((a) => { if (live) setAnalysis(a); }, () => undefined);
     return () => { live = false; };
   }, [take.id, ready]);
-  return analysis ? <InsightNote analysis={analysis} band={band} /> : null;
+  const median: number | null = analysis?.measures?.f0_median_hz?.value ?? null;
+  return analysis ? <><InsightNote analysis={analysis} band={band} />{median && <PitchScale median={median} />}</> : null;
 }
 
 const fmtHz = (hz: number | null | undefined) => (hz ? `${Math.round(hz)} Hz` : "–");
@@ -94,6 +133,7 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
       ) : (
         <>
           <InsightNote analysis={analysis} band={band} />
+          <PitchScale median={median} />
           <div className="prc-stats">
             <div><span>Middle pitch</span><b>{fmtHz(median)}<small>{noteName(median)}</small></b></div>
             <div><span>Usual range</span><b>{p10 && p90 ? `${Math.round(p10)}–${Math.round(p90)} Hz` : "–"}</b></div>

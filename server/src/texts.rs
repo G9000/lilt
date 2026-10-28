@@ -1,6 +1,7 @@
 //! Practice texts, written as Markdown in `content/texts` so they can be edited without code
 //! (in any editor, or as an Obsidian vault). `index.md` is the Practice home page, served as raw
-//! Markdown, with an optional `cover: images/<file>` banner in its front matter; `_about.md` holds the version and the closing note; each `NN-<id>.md` is one chapter,
+//! Markdown, with an optional `cover: images/<file>` banner in its front matter; `_pitch.md`
+//! holds the typical speaking pitch references (numbers in front matter, the source as its body); `_about.md` holds the version and the closing note; each `NN-<id>.md` is one chapter,
 //! in file-name order:
 //!
 //! ```markdown
@@ -104,6 +105,19 @@ pub fn load(dir: &Path) -> Result<Value> {
     let (mut out, note) = front_matter(&about_src).with_context(|| format!("in {}", about.display()))?;
     out.insert("version".into(), json!(out.get("version").and_then(Value::as_str).and_then(|v| v.parse::<u64>().ok()).unwrap_or(1)));
     out.insert("note".into(), Value::String(joined(note.lines())));
+    let pitch = dir.join("_pitch.md");
+    if pitch.exists() {
+        let src = read(&pitch)?;
+        let (meta, source) = front_matter(&src).with_context(|| format!("in {}", pitch.display()))?;
+        let mut reference = Map::new();
+        for key in ["men_mean", "men_sd", "women_mean", "women_sd", "overlap_low", "overlap_high"] {
+            let v = meta.get(key).and_then(Value::as_str).and_then(|v| v.parse::<f64>().ok())
+                .ok_or_else(|| anyhow!("{} needs a number for `{key}`", pitch.display()))?;
+            reference.insert(key.into(), json!(v));
+        }
+        reference.insert("source".into(), Value::String(joined(source.lines())));
+        out.insert("pitch_reference".into(), Value::Object(reference));
+    }
     let index = dir.join("index.md");
     if index.exists() {
         let src = read(&index)?;
@@ -167,6 +181,8 @@ mod tests {
         let t = load(&dir).unwrap();
         assert_eq!(t["schema"], "lilt.texts/1");
         assert!(t["home"].as_str().unwrap().contains("## Sources"));
+        assert_eq!(t["pitch_reference"]["women_mean"], 199.0);
+        assert!(t["pitch_reference"]["source"].as_str().unwrap().contains("Leung"));
         let cover = t["home_cover"].as_str().unwrap();
         assert!(dir.join(cover).exists(), "cover {cover} is missing");
         let levels = t["levels"].as_array().unwrap();
