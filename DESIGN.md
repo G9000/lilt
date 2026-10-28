@@ -39,8 +39,10 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick.
   Wider than 1100px, the screen splits in half: the text on the left, the recorder on the right.
   **While idle** (not recording or listening) the right half is just artwork and the record pill:
-  the room painting in the current light, cropped to the skyline window in a 24px-radius frame,
-  drifting slowly (48 s), with "Ready when you are" and the hint in white over a soft bottom shade.
+  the room's **cat asleep on its blanket** in the current light (the painting's bed corner with the
+  three cat layers placed as in the room, in a 24px-radius frame), breathing, its tail swaying and
+  ear twitching now and then, with little "z"s floating up; "Ready when you are" and the hint sit
+  centred under it, and the group is centred in the panel.
   **In use**, the instruments rise in, top to bottom: a big live **Now** readout (Geist 200, 68px, note
   under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
   graph straight on the panel (comfortable band, faint Hz guide lines labelled on the right,

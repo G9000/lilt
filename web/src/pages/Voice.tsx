@@ -133,6 +133,25 @@ interface Pt { t: number; hz: number | null }
 const LO = 80, HI = 400;
 const fy = (hz: number, h: number) => { const pad = h * 0.1; return h - pad - (Math.log(hz / LO) / Math.log(HI / LO)) * (h - 2 * pad); };
 
+/**
+ * The room's cat asleep on its blanket, shown while the recorder is idle: the painting's bed corner
+ * (x 0–440, y 610–941) with the three cat layers placed where the room draws them (x 0–375, y 710–881).
+ */
+function SleepingCat({ hint }: { hint: string }) {
+  const light = currentLight();
+  return (
+    <div className="ve-art">
+      <div className="ve-cat" style={{ backgroundImage: `url(room/room-${light}.webp)` }} aria-hidden="true">
+        <img className="tail" src={`room/cat-tail-${light}.webp`} alt="" />
+        <img className="body" src={`room/cat-body-${light}.webp`} alt="" />
+        <img className="ear" src={`room/cat-ear-${light}.webp`} alt="" />
+        <span className="ve-zzz"><i>z</i><i>z</i><i>z</i></span>
+      </div>
+      <p className="ve-art-copy"><b>Ready when you are</b><span>{hint}</span></p>
+    </div>
+  );
+}
+
 /** The recorder at the bottom: one button, the waveform with the pitch line on it, and the numbers. */
 function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, quiet = false }: {
   meta: TakeMeta | null; band: [number, number] | null; allowRetake: boolean; quiet?: boolean;
@@ -272,10 +291,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   return (
     <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
-      <div className="ve-art" aria-hidden="true">
-        <div className="ve-art-img" style={{ backgroundImage: `url(room/room-${currentLight()}.webp)` }} />
-        <div className="ve-art-copy"><b>Ready when you are</b><span>{idleHint}</span></div>
-      </div>
+      <SleepingCat hint={idleHint} />
       <div className="ve-now" aria-live="off">
         <div className="ve-now-read">
           <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
