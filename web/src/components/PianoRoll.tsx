@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { hzToMidi, midiToHz, noteName } from "../pitch";
+import { useEffect, useRef, useState } from "react";
+import { cleanContour, hzToMidi, midiToHz, noteName } from "../pitch";
 
 export interface PitchPoint { t: number; hz: number | null }
 
@@ -11,116 +11,190 @@ interface Props {
   onSeek?: (t: number) => void;
   /** Learner-chosen comfortable range, shaded. Never a gendered zone. */
   band?: [number, number] | null;
-  /** Live mode: show the last `windowS` seconds and follow the newest point. */
+  /** Live mode: show the last `windowS` seconds (filling from the left first) and mark the newest point. */
   live?: boolean;
   windowS?: number;
-  height?: number;
+  /** A fixed pitch range in Hz, so a live chart never rescales under you. Otherwise it fits the take. */
+  range?: [number, number];
+  /** The take's middle pitch, as a dashed line. */
+  median?: number | null;
+  /** Last time's take, as a quiet grey line to compare with. */
+  prev?: PitchPoint[] | null;
+  /** Loudness while live (0..1 over time), drawn as a faint voice-memo waveform behind the line. */
+  levels?: { t: number; v: number }[];
+  /** No note labels (a slim chart). */
+  compact?: boolean;
+  height?: number | string;
   label: string;
 }
 
 const NATURAL = new Set([0, 2, 4, 5, 7, 9, 11]);
 
-export function PianoRoll({ points, duration, currentTime, onSeek, band, live, windowS = 8, height = 200, label }: Props) {
+/**
+ * The pitch chart, the same everywhere (live while recording, after a take, in a chapter): notes
+ * up the side on a semitone grid, your comfortable range shaded, every cleaned reading a faint
+ * dot, and a smooth line through them (see `cleanContour`: octave slips, single-frame misreads
+ * and clicks are taken out first). After a take, a playhead follows playback; click to play from there.
+ */
+export function PianoRoll({ points, duration, currentTime, onSeek, band, live, windowS = 8, range, median, prev, levels, compact, height = 200, label }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const [size, setSize] = useState(0);
+  const [hover, setHover] = useState<number | null>(null);
 
   useEffect(() => {
     const c = ref.current;
     if (!c) return;
-    const dpr = window.devicePixelRatio || 1;
+    const ro = new ResizeObserver(() => setSize((n) => n + 1));
+    ro.observe(c);
+    return () => ro.disconnect();
+  }, []);
+
+  const padL = compact ? 4 : 40;
+  const tEnd = live ? Math.max(duration, windowS) : Math.max(duration, 0.1);
+  const tStart = live ? tEnd - windowS : 0;
+
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
     const w = c.clientWidth, h = c.clientHeight;
     if (!w || !h) return;
-    c.width = w * dpr;
-    c.height = h * dpr;
+    c.width = Math.round(w * dpr);
+    c.height = Math.round(h * dpr);
     const g = c.getContext("2d")!;
-    g.scale(dpr, dpr);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
     const css = getComputedStyle(c);
     const v = (name: string, fb: string) => css.getPropertyValue(name).trim() || fb;
-    const ink = v("--ink", "#333"), muted = v("--muted", "#888"), line = v("--line-strong", v("--line", "#ddd"));
-    const accent = v("--accent", "#c2416f"), bandFill = v("--band", "rgba(194,65,111,0.12)");
+    const ink = v("--ink", "#333"), muted = v("--ink-3", v("--muted", "#888")), grid = v("--ink-3", "#999");
+    const accent = "#e0643c";
 
-    const tEnd = live ? Math.max(duration, windowS) : Math.max(duration, 0.1);
-    const tStart = live ? tEnd - windowS : 0;
-    const voiced = points.filter((p) => p.hz !== null && p.t >= tStart) as { t: number; hz: number }[];
-    // Vertical range: fit the data and the band, at least an octave, padded by 2 semitones.
-    const ms = voiced.map((p) => hzToMidi(p.hz));
-    if (band) ms.push(hzToMidi(band[0]), hzToMidi(band[1]));
-    let lo = ms.length ? Math.min(...ms) : hzToMidi(110);
-    let hi = ms.length ? Math.max(...ms) : hzToMidi(330);
-    if (hi - lo < 12) { const mid = (hi + lo) / 2; lo = mid - 6; hi = mid + 6; }
-    lo = Math.floor(lo - 2); hi = Math.ceil(hi + 2);
-    const padL = 40;
+    // Only the visible stretch (and a little before it) is cleaned and drawn.
+    const seen = points.filter((p) => p.t >= tStart - 0.3);
+    const clean = cleanContour(seen).filter((p) => p.t >= tStart);
+    const before = prev ? cleanContour(prev) : null;
+
+    // Vertical range: fixed when given; else the take's 5th–95th percentile and the band, at least an octave, padded.
+    let lo: number, hi: number;
+    if (range) { lo = hzToMidi(range[0]); hi = hzToMidi(range[1]); }
+    else {
+      const ms = clean.filter((p) => p.hz).map((p) => hzToMidi(p.hz as number)).sort((a, b) => a - b);
+      const pick = (f: number) => ms[Math.min(ms.length - 1, Math.floor(ms.length * f))];
+      const fit = ms.length ? [pick(0.05), pick(0.95)] : [hzToMidi(110), hzToMidi(330)];
+      if (band) fit.push(hzToMidi(band[0]), hzToMidi(band[1]));
+      if (median) fit.push(hzToMidi(median));
+      lo = Math.min(...fit); hi = Math.max(...fit);
+      if (hi - lo < 12) { const mid = (hi + lo) / 2; lo = mid - 6; hi = mid + 6; }
+      lo = Math.floor(lo - 2); hi = Math.ceil(hi + 2);
+    }
     const X = (t: number) => padL + ((t - tStart) / (tEnd - tStart)) * (w - padL - 6);
-    const Y = (m: number) => h - 6 - ((m - lo) / (hi - lo)) * (h - 12);
+    const Y = (m: number) => h - 5 - ((m - lo) / (hi - lo)) * (h - 10);
+    const yHz = (hz: number) => Y(hzToMidi(Math.max(midiToHz(lo), Math.min(midiToHz(hi), hz))));
 
     g.clearRect(0, 0, w, h);
-    // Band
+    // Your comfortable range.
     if (band) {
-      g.fillStyle = bandFill;
-      const y1 = Y(hzToMidi(band[1])), y0 = Y(hzToMidi(band[0]));
+      g.fillStyle = "rgba(224,100,60,0.09)";
+      const y1 = yHz(band[1]), y0 = yHz(band[0]);
       g.fillRect(padL, y1, w - padL, y0 - y1);
     }
-    // Semitone grid with note labels on naturals.
+    // Semitone grid: C strongest, other naturals light, sharps faintest; naturals labelled when there's room.
     g.font = `500 11px ${v("--font", "system-ui, sans-serif")}`;
     g.textBaseline = "middle";
     let lastLabelY = Infinity;
-    for (let m = lo; m <= hi; m++) {
+    const step = h / (hi - lo) < 5 ? 2 : 1;
+    for (let m = Math.ceil(lo); m <= hi; m++) {
       const pc = ((m % 12) + 12) % 12;
-      const y = Y(m);
-      g.strokeStyle = line;
-      g.globalAlpha = pc === 0 ? 0.9 : NATURAL.has(pc) ? 0.45 : 0.18;
+      if (step === 2 && !NATURAL.has(pc)) continue;
+      const y = Math.round(Y(m)) + 0.5;
+      g.strokeStyle = grid;
+      g.globalAlpha = pc === 0 ? 0.32 : NATURAL.has(pc) ? 0.13 : 0.06;
+      g.lineWidth = 1;
       g.beginPath(); g.moveTo(padL, y); g.lineTo(w, y); g.stroke();
       g.globalAlpha = 1;
-      // Label naturals, skipping any that would crowd the previous label (C always wins).
-      if (NATURAL.has(pc) && (lastLabelY - y >= 13 || (pc === 0 && lastLabelY - y >= 8))) {
+      if (!compact && NATURAL.has(pc) && (lastLabelY - y >= 14 || (pc === 0 && lastLabelY - y >= 9))) {
         g.fillStyle = pc === 0 ? ink : muted;
+        g.globalAlpha = pc === 0 ? 0.8 : 0.7;
         g.fillText(noteName(midiToHz(m)), 4, y);
+        g.globalAlpha = 1;
         lastLabelY = y;
       }
     }
-    // Contour: connect points closer than 80 ms; gaps stay gaps.
-    g.strokeStyle = accent;
-    g.lineWidth = 2.5;
-    g.lineJoin = "round";
-    g.lineCap = "round";
-    let prev: { t: number; hz: number } | null = null;
+    // Loudness, live: one thin bar every 6 px, faint.
+    if (levels?.length) {
+      const lEnd = levels[levels.length - 1].t, lStart = Math.max(levels[0].t, lEnd - windowS);
+      const lx = (t: number) => padL + ((t - lStart) / windowS) * (w - padL - 6);
+      const bars = new Map<number, number>();
+      for (const a of levels) { if (a.t < lStart) continue; const k = Math.floor(lx(a.t) / 6); bars.set(k, Math.max(bars.get(k) ?? 0, a.v)); }
+      g.fillStyle = grid;
+      g.globalAlpha = 0.1;
+      for (const [k, val] of bars) { const hh = Math.max(2, val * h * 0.4); g.beginPath(); g.roundRect(k * 6, h / 2 - hh / 2, 2, hh, 1); g.fill(); }
+      g.globalAlpha = 1;
+    }
+    // Last time, quietly.
+    if (before) {
+      g.strokeStyle = grid; g.globalAlpha = 0.45; g.lineWidth = 1.5; g.lineJoin = g.lineCap = "round";
+      g.beginPath();
+      let pen = false;
+      for (const p of before) { if (!p.line) { pen = false; continue; } const x = X(p.t), y = yHz(p.line); if (pen) g.lineTo(x, y); else g.moveTo(x, y); pen = true; }
+      g.stroke(); g.globalAlpha = 1;
+    }
+    // The middle, dashed.
+    if (median) {
+      g.strokeStyle = ink; g.globalAlpha = 0.35; g.lineWidth = 1; g.setLineDash([4, 4]);
+      const y = Math.round(yHz(median)) + 0.5;
+      g.beginPath(); g.moveTo(padL, y); g.lineTo(w, y); g.stroke();
+      g.setLineDash([]); g.globalAlpha = 1;
+    }
+    // Every reading, a faint dot.
+    g.fillStyle = accent;
+    g.globalAlpha = 0.28;
+    for (const p of clean) { if (!p.hz) continue; g.beginPath(); g.arc(X(p.t), yHz(p.hz), 1.5, 0, Math.PI * 2); g.fill(); }
+    g.globalAlpha = 1;
+    // The smooth line through them.
+    g.strokeStyle = accent; g.lineWidth = compact ? 2 : 2.5; g.lineJoin = g.lineCap = "round";
+    g.shadowColor = "rgba(224,100,60,0.35)"; g.shadowBlur = 6;
     g.beginPath();
-    for (const p of voiced) {
-      const x = X(p.t), y = Y(hzToMidi(p.hz));
-      if (prev && p.t - prev.t < 0.08) g.lineTo(x, y);
-      else { g.moveTo(x, y); g.arc(x, y, 0.8, 0, Math.PI * 2); g.moveTo(x, y); }
-      prev = p;
+    let pen = false, tip: [number, number] | null = null;
+    for (const p of clean) {
+      if (!p.line) { pen = false; tip = null; continue; }
+      const x = X(p.t), y = yHz(p.line);
+      if (pen) g.lineTo(x, y); else g.moveTo(x, y);
+      pen = true; tip = [x, y];
     }
-    g.stroke();
-    // Live head marker
-    if (live && voiced.length) {
-      const last = voiced[voiced.length - 1];
-      if (tEnd - last.t < 0.15) {
-        g.fillStyle = accent;
-        g.beginPath(); g.arc(X(last.t), Y(hzToMidi(last.hz)), 5, 0, Math.PI * 2); g.fill();
-      }
+    g.stroke(); g.shadowBlur = 0;
+    // Live: the newest point.
+    if (live && tip && clean.length && tEnd - clean[clean.length - 1].t < 0.2) {
+      g.fillStyle = "rgba(224,100,60,0.22)"; g.beginPath(); g.arc(tip[0], tip[1], 9, 0, Math.PI * 2); g.fill();
+      g.fillStyle = accent; g.beginPath(); g.arc(tip[0], tip[1], 4, 0, Math.PI * 2); g.fill();
     }
-    // Playhead
-    if (currentTime !== undefined && !live) {
-      g.strokeStyle = ink;
-      g.lineWidth = 1.5;
-      const x = X(currentTime);
-      g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
-    }
-  }, [points, duration, currentTime, band, live, windowS, height]);
+    // Playhead, with a dot where it meets the line.
+    const head = (t: number, alpha: number) => {
+      const x = X(t);
+      g.strokeStyle = ink; g.globalAlpha = alpha; g.lineWidth = 1.5;
+      g.beginPath(); g.moveTo(x, 2); g.lineTo(x, h - 2); g.stroke();
+      const near = clean.reduce<{ d: number; p: (typeof clean)[number] | null }>((b, p) => (p.line && Math.abs(p.t - t) < b.d ? { d: Math.abs(p.t - t), p } : b), { d: 0.06, p: null }).p;
+      if (near?.line) { g.fillStyle = ink; g.beginPath(); g.arc(x, yHz(near.line), 3.5, 0, Math.PI * 2); g.fill(); }
+      g.globalAlpha = 1;
+    };
+    if (!live && hover !== null) head(hover, 0.25);
+    if (!live && currentTime !== undefined && currentTime > 0) head(currentTime, 0.9);
+  }, [points, duration, currentTime, band, live, windowS, range, median, prev, levels, compact, size, hover, tStart, tEnd, padL]);
 
+  const at = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const f = (e.clientX - r.left - padL) / (r.width - padL - 6);
+    return Math.max(0, Math.min(1, f)) * duration;
+  };
   return (
     <canvas
       ref={ref}
       className="pianoroll"
-      style={{ height, cursor: onSeek ? "pointer" : "default" }}
+      style={{ height, cursor: onSeek && !live ? "pointer" : "default" }}
       role="img"
       aria-label={label}
-      onPointerDown={(e) => {
-        if (!onSeek || live) return;
-        const r = e.currentTarget.getBoundingClientRect();
-        const f = (e.clientX - r.left - 40) / (r.width - 46);
-        onSeek(Math.max(0, Math.min(1, f)) * duration);
-      }}
+      onPointerMove={(e) => { if (onSeek && !live) setHover(at(e)); }}
+      onPointerLeave={() => setHover(null)}
+      onPointerDown={(e) => { if (onSeek && !live) onSeek(at(e)); }}
     />
   );
 }

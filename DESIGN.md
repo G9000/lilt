@@ -40,7 +40,8 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   the one step that fixes it, with **Try again**.
   **A take's result reads top to bottom**: the note in words; then "Your middle pitch 165 Hz · E3"
   once, the scale and its sentence, and one quiet line of facts (usual range, voice heard, last time
-  with the difference); the pitch line folded behind "See the pitch line"; one small footnote.
+  with the difference); the take's pitch chart, open and ready to play (click the line to hear that
+  moment; the listen-back button and the chart share one audio and move together); one small footnote.
   The ratings carry a face for how it felt (😣 Again, 😕 Hard, 🙂 Good, 😌 Easy), and "Record it again"
   and "It hurt or felt strained" are pill buttons with drawn icons (the latter tinted `--rec`).
   While you rate a card, the recorder half says "Nice one / Listen back, then rate how it felt"
@@ -107,8 +108,9 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   last free take. Picking a card or text makes it the exercise; exercise results stay under the item.
   **In use**, the instruments rise in, top to bottom: a big live **Now** readout (Geist 200, 68px, note
   under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
-  graph straight on the panel (comfortable band, faint Hz guide lines labelled on the right,
-  rounded loudness bars, the live pitch line in coral with a soft glow and a dot at its tip); three
+  graph straight on the panel (note names up the side on a semitone grid from E2 to G4, comfortable
+  band, faint loudness bars, every reading a faint dot and a smooth coral line through them with a
+  soft glow and a dot at its tip); three
   white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a compact centred
   **record pill** (ink, red dot, "Record", `Space`) that turns red with a white square, "Stop" and
   the timer while recording; hints under it. A take keeps the half second before you press Record (a
@@ -118,9 +120,10 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   quarter semitone and changes at most about seven times a second; through a pause it keeps your
   last pitch at half opacity with "Last heard · E3" (and after Stop), and the tiles hold their last
   values instead of dropping to a dash. The pitch graph fills from the left and scrolls once it
-  reaches the edge (8 s across); each point is the median of its five neighbours, so a one-frame
-  octave misread doesn't spike the line; loudness behind it is a faint voice-memo waveform, one thin
-  bar every 4 px. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
+  reaches the edge (8 s across). It reads your voice every 10 ms, and the line is cleaned before it is
+  drawn (`cleanContour` in `pitch.ts`): octave slips are folded back, each point is the median of its
+  five neighbours, blips under 60 ms are dropped, and the line eases in semitones, so it glides
+  rather than jumps; loudness behind it is a faint voice-memo waveform, one thin bar every 6 px. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
   record pill and its links), and the pitch readout, graph and numbers open only while recording or
   listening; it steps away while you rate a card. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
@@ -237,7 +240,10 @@ in `--ink-3`. Big numbers are Geist 300 with tight tracking. Sentence case every
 - **Lists**: rows with hairline separators. No card inside a card.
 - **Stats**: small `--fill` tiles, caption above, number below.
 - **Pills**: 11.5px / 600, sentence case, `--fill` (or `--accent-soft` for "up next").
-- **Pitch lines**: accent line on a soft accent band for the comfortable range.
+- **Pitch charts**: one chart everywhere (`PianoRoll`: live, after a take, in a chapter): note names
+  on a semitone grid (C lines strongest), a soft accent band for the comfortable range, faint accent
+  dots for each reading, a smooth accent line, the middle pitch dashed, last time as a grey line, and
+  after a take a playhead with a dot where it meets the line; click to play from there.
 
 ## Motion
 

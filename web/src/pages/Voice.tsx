@@ -20,9 +20,11 @@ import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer"
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
 import { Measured, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
 import { useLivePitch } from "../components/LivePitch";
+import { PianoRoll } from "../components/PianoRoll";
+import { useTakeAudio } from "../components/takeAudio";
 import { useMic } from "../components/Recording";
 import { ReadAlong, ReadNotes } from "../components/ReadAlong";
-import { noteName, recentMedian, steadinessSt } from "../pitch";
+import { cleanContour, noteName, recentMedian, steadinessSt } from "../pitch";
 import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
 
 /**
@@ -480,8 +482,8 @@ function useSplit() {
 }
 
 interface Pt { t: number; hz: number | null }
+/** The live chart's fixed pitch range, so it never rescales while you speak. */
 const LO = 80, HI = 400;
-const fy = (hz: number, h: number) => { const pad = h * 0.1; return h - pad - (Math.log(hz / LO) / Math.log(HI / LO)) * (h - 2 * pad); };
 
 /**
  * The room's cat asleep on its blanket, filling the right half while the recorder is idle: the whole
@@ -552,17 +554,15 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   if (points.length) kept.current = points;
   const shown = points.length ? points : kept.current;
   const amps = useRef<{ t: number; v: number }[]>([]);
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const [size, setSize] = useState(0);
-
-  // Redraw when the scope changes size (the split view stretches it with the window).
+  // Narrower than the split view, the recorder docks at the bottom with a slim chart: no note labels.
+  const [narrow, setNarrow] = useState(() => window.matchMedia("(max-width: 1100px)").matches);
   useEffect(() => {
-    const cv = canvas.current;
-    if (!cv) return;
-    const ro = new ResizeObserver(() => setSize((n) => n + 1));
-    ro.observe(cv);
-    return () => ro.disconnect();
+    const mq = window.matchMedia("(max-width: 1100px)");
+    const on = () => setNarrow(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
   }, []);
+
 
   useEffect(() => { onRecording(recording); }, [recording]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => onRecording(false), []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -592,57 +592,6 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
     return () => clearInterval(id);
   }, [recording]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Draw: comfortable range, guide lines, the waveform, and the pitch line over it.
-  useEffect(() => {
-    const cv = canvas.current;
-    if (!cv) return;
-    const g = cv.getContext("2d");
-    if (!g) return;
-    const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
-    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
-    const w = cv.width, h = cv.height;
-    g.clearRect(0, 0, w, h);
-    if (band) { g.fillStyle = "rgba(224,100,60,.10)"; g.fillRect(0, fy(band[1], h), w, fy(band[0], h) - fy(band[1], h)); }
-    g.strokeStyle = "rgba(127,127,127,.13)"; g.lineWidth = dpr;
-    g.fillStyle = "rgba(127,127,127,.6)"; g.font = `500 ${11 * dpr}px "Geist Variable", system-ui, sans-serif`; g.textAlign = "right";
-    for (const f of [110, 220, 330]) { const y = Math.round(fy(f, h)) + 0.5; g.beginPath(); g.moveTo(0, y); g.lineTo(r.height > 120 ? w - 44 * dpr : w, y); g.stroke(); if (r.height > 120) g.fillText(`${f} Hz`, w - 4 * dpr, y + 4 * dpr); }
-    g.textAlign = "left";
-    // The line fills from the left, then scrolls once it reaches the edge (8 s across), like a voice memo.
-    const span = 8;
-    const end = shown.length ? shown[shown.length - 1].t : 0, from = Math.max(shown.length ? shown[0].t : 0, end - span);
-    const x = (t: number) => ((t - from) / span) * w;
-    const aEnd = amps.current.length ? amps.current[amps.current.length - 1].t : 0, aFrom = Math.max(amps.current.length ? amps.current[0].t : 0, aEnd - span);
-    const ax = (t: number) => ((t - aFrom) / span) * w;
-    // Loudness as a voice-memo waveform: one thin bar every 4 px (the loudest moment in it), faint,
-    // so the pitch line stays what you read.
-    g.fillStyle = "rgba(127,127,127,.14)";
-    const col = 4 * dpr, bars = new Map<number, number>();
-    for (const a of amps.current) { if (a.t < aFrom) continue; const k = Math.floor(ax(a.t) / col); bars.set(k, Math.max(bars.get(k) ?? 0, a.v)); }
-    for (const [k, v] of bars) { const hh = Math.max(2 * dpr, v * h * 0.55); g.beginPath(); g.roundRect(k * col, h / 2 - hh / 2, 2 * dpr, hh, dpr); g.fill(); }
-    g.strokeStyle = "#e0643c"; g.lineWidth = 3 * dpr; g.lineJoin = g.lineCap = "round";
-    g.shadowColor = "rgba(224,100,60,.45)"; g.shadowBlur = 10 * dpr; g.beginPath();
-    let pen = false, tip: [number, number] | null = null;
-    // Each point is the middle of its five neighbours, so a one-frame misread (often an octave
-    // off) doesn't spike the line; the shape of your voice stays.
-    const steady = shown.map((p, i) => {
-      if (!p.hz) return null;
-      const near = shown.slice(Math.max(0, i - 2), i + 3).map((q) => q.hz).filter((v): v is number => v !== null).sort((a, b) => a - b);
-      return near[near.length >> 1];
-    });
-    for (let i = 0; i < shown.length; i++) {
-      const p = shown[i], hz = steady[i];
-      if (p.t < from) continue;
-      if (!hz) { pen = false; tip = null; continue; }
-      const X = x(p.t), Y = fy(Math.max(LO, Math.min(HI, hz)), h);
-      if (pen) g.lineTo(X, Y); else g.moveTo(X, Y);
-      pen = true; tip = [X, Y];
-    }
-    g.stroke(); g.shadowBlur = 0;
-    if (tip && (recording || listening)) {
-      g.fillStyle = "rgba(224,100,60,.22)"; g.beginPath(); g.arc(tip[0] - 6 * dpr, tip[1], 10 * dpr, 0, Math.PI * 2); g.fill();
-      g.fillStyle = "#e0643c"; g.beginPath(); g.arc(tip[0] - 6 * dpr, tip[1], 4.5 * dpr, 0, Math.PI * 2); g.fill();
-    }
-  }, [shown, band, size, recording, listening]);
 
   const start = async () => {
     if (!metaRef.current) return;
@@ -674,7 +623,8 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const voiced = shown.filter((p) => p.hz).map((p) => p.hz as number);
   const sorted = [...voiced].sort((a, b) => a - b);
   const live = recording || listening;
-  const nowRaw = live ? recentMedian(shown.map((p) => p.hz)) : null;
+  // The readout reads the cleaned tail (octave slips and clicks removed), not raw frames.
+  const nowRaw = live ? recentMedian(cleanContour(shown.slice(-80)).map((p) => p.hz), 9) : null;
   const mid = sorted.length > 8 ? sorted[sorted.length >> 1] : null;
   const range = sorted.length > 8 ? [sorted[Math.floor(sorted.length * 0.1)], sorted[Math.floor(sorted.length * 0.9)]] : null;
   const last2 = shown.length ? shown.filter((p) => p.t > shown[shown.length - 1].t - 2).map((p) => p.hz) : [];
@@ -707,7 +657,8 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
         <span className={`ve-state ${recording ? "rec" : listening ? "live" : state}`}><i aria-hidden="true" />{status}</span>
       </div>
       <div className="ve-scope">
-        <canvas ref={canvas} aria-hidden="true" />
+        <PianoRoll live points={shown} duration={shown.length ? shown[shown.length - 1].t : 0} band={band} range={[LO, HI]}
+          levels={amps.current} compact={narrow} height="100%" label="Your pitch, live, over the last eight seconds" />
         {!active && <span className="ve-scope-idle">{idleHint}</span>}
         {inBand !== null && <span className={`ve-pill${inBand ? " ok" : ""}`}>{inBand ? "In your range" : "Outside your range"}</span>}
       </div>
@@ -1159,24 +1110,20 @@ type Phase = { k: "say"; retryOf: string | null } | { k: "rate"; take: Take } | 
 const PlayIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>;
 const PauseIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /><rect x="7.1" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /></svg>;
 function ListenBack({ src }: { src: string }) {
-  const audio = useRef<HTMLAudioElement>(null);
+  const play = useTakeAudio(src);
   const [bars, setBars] = useState<number[]>([]);
-  const [pos, setPos] = useState(0);
-  const [playing, setPlaying] = useState(false);
   useEffect(() => {
     let live = true;
     void loadPeaks(src, 72).then((p) => { if (!live || !p) return; const max = Math.max(0.01, ...Array.from(p)); setBars(Array.from(p, (v) => 0.12 + 0.88 * (v / max))); });
     return () => { live = false; };
   }, [src]);
-  const toggle = () => { const a = audio.current; if (!a) return; if (a.paused) void a.play(); else a.pause(); };
+  const pos = play.dur > 0 && !play.ended ? play.t / play.dur : 0;
   return (
     <div className="prc-player">
-      <button className="play-btn" onClick={toggle} aria-label={playing ? "Pause" : "Play your recording"}>{playing ? <PauseIcon /> : <PlayIcon />}</button>
+      <button className="play-btn" onClick={play.toggle} aria-label={play.playing ? "Pause" : "Play your recording"}>{play.playing ? <PauseIcon /> : <PlayIcon />}</button>
       <div className="prc-wave" aria-hidden="true">
         {(bars.length ? bars : Array(72).fill(0.15)).map((h, i, arr) => <i key={i} className={i / arr.length < pos ? "on" : ""} style={{ transform: `scaleY(${h.toFixed(3)})` }} />)}
       </div>
-      <audio ref={audio} src={src} preload="auto" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); setPos(0); }}
-        onTimeUpdate={(e) => { const a = e.currentTarget; if (isFinite(a.duration) && a.duration > 0) setPos(a.currentTime / a.duration); }} />
     </div>
   );
 }

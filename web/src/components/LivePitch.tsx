@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { noteName, recentMedian, steadinessSt, trackLive } from "../pitch";
+import { noteName, recentMedian, steadinessSt, trackLiveFine } from "../pitch";
 import { PianoRoll, PitchPoint } from "./PianoRoll";
 
 /** Live pitch frames from a stream while `active`. Display only; nothing here is saved. */
@@ -11,7 +11,7 @@ export function useLivePitch(stream: MediaStream | null, active: boolean) {
     buf.current = [];
     setPoints([]);
     let raf = 0;
-    const tracker = trackLive(stream, (t, f) => { buf.current.push({ t, hz: f.hz }); });
+    const tracker = trackLiveFine(stream, (t, f) => { buf.current.push({ t, hz: f.hz }); });
     const paint = () => {
       // Keep the last 30 s for display.
       const b = buf.current;
@@ -55,5 +55,5 @@ export function LiveReadout({ points, band, showSteadiness }: { points: PitchPoi
 
 export function LiveRoll({ points, band, height = 200 }: { points: PitchPoint[]; band?: [number, number] | null; height?: number }) {
   const dur = points.length ? points[points.length - 1].t : 0;
-  return <PianoRoll points={points} duration={dur} live windowS={8} band={band} height={height} label="Live pitch over the last eight seconds" />;
+  return <PianoRoll points={points} duration={dur} live windowS={8} band={band} range={[80, 400]} height={height} label="Live pitch over the last eight seconds" />;
 }

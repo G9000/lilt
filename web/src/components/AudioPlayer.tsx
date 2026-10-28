@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { PianoRoll, PitchPoint, contourPoints } from "./PianoRoll";
+import { knowDuration } from "./takeAudio";
 
 // Waveform peaks from the actual recording, decoded in the browser. Decoding only
 // reads the downloaded bytes; nothing is written back.
@@ -229,7 +230,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
         ref={audio}
         src={src}
         preload="metadata"
-        onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (isFinite(d)) setDur(d); }}
+        onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (isFinite(d)) setDur(d); else knowDuration(e.currentTarget); }}
         onDurationChange={(e) => { const d = e.currentTarget.duration; if (isFinite(d)) setDur(d); }}
         onTimeUpdate={(e) => {
           const ct = e.currentTarget.currentTime;

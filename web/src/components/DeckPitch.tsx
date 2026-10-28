@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
 import { describeTake, placePitch } from "../insight";
 import { noteName } from "../pitch";
-import { contourPoints, PitchPoint } from "./PianoRoll";
+import { contourPoints, PianoRoll, PitchPoint } from "./PianoRoll";
+import { useTakeAudio } from "./takeAudio";
 
-/** Pitch scale used by the meter and the result chart: log Hz between LO and HI. */
-const LO = 75, HI = 450;
-const frac = (hz: number) => Math.max(0, Math.min(1, Math.log(hz / LO) / Math.log(HI / LO)));
 
 export interface Measured { median: number | null; take: Take }
 
@@ -144,10 +142,7 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
               {prev && comparable && prevMedian && <span>Last time <b>{fmtHz(prevMedian)}</b> ({shift! >= 0 ? "+" : "−"}{Math.abs(shift!)} Hz)</span>}
             </p>
           </section>
-          <details className="tr-line">
-            <summary>See the pitch line</summary>
-            <ContourChart pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
-          </details>
+          <TakeChart src={take.audio_url} pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
           {prev && !comparable && <p className="prc-prev">Not compared with last time: {prev.cmp?.reasons[0] ?? "the recordings aren't comparable"}.</p>}
         </>
       )}
@@ -157,33 +152,23 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
   );
 }
 
-function ContourChart({ pts, prev, median, band }: { pts: PitchPoint[]; prev: PitchPoint[] | null; median: number; band: [number, number] | null }) {
-  const Wd = 600, Ht = 96;
-  const dur = Math.max(pts.length ? pts[pts.length - 1].t : 1, prev?.length ? prev[prev.length - 1].t : 0, 0.5);
-  const path = (ps: PitchPoint[]) => {
-    let d = "", pen = false;
-    for (const p of ps) {
-      if (!p.hz) { pen = false; continue; }
-      d += `${pen ? "L" : "M"}${((p.t / dur) * Wd).toFixed(1)},${(Ht - frac(p.hz) * Ht).toFixed(1)}`;
-      pen = true;
-    }
-    return d;
-  };
-  const y = (hz: number) => Ht - frac(hz) * Ht;
+/**
+ * The take's pitch line, playable: the same chart as the live one, with a playhead that follows
+ * the recording (shared with the listen-back button above). Click anywhere to hear that moment.
+ */
+function TakeChart({ src, pts, prev, median, band }: { src: string; pts: PitchPoint[]; prev: PitchPoint[] | null; median: number; band: [number, number] | null }) {
+  const play = useTakeAudio(src);
+  const dur = Math.max(play.dur, pts.length ? pts[pts.length - 1].t : 0.5);
   return (
-    <figure className="prc-chart">
-      <svg viewBox={`0 0 ${Wd} ${Ht}`} preserveAspectRatio="none" role="img" aria-label={`Measured pitch over the take; middle ${Math.round(median)} Hz`}>
-        {band && <rect x="0" width={Wd} y={y(band[1])} height={y(band[0]) - y(band[1])} className="prc-band" />}
-        {[110, 165, 220, 330].map((g) => <line key={g} x1="0" x2={Wd} y1={y(g)} y2={y(g)} className="prc-grid" />)}
-        {prev && <path d={path(prev)} className="prc-prevline" vectorEffect="non-scaling-stroke" />}
-        <line x1="0" x2={Wd} y1={y(median)} y2={y(median)} className="prc-median" vectorEffect="non-scaling-stroke" />
-        <path d={path(pts)} className="prc-line" vectorEffect="non-scaling-stroke" />
-      </svg>
+    <figure className="prc-chart tr-chart">
+      <PianoRoll points={pts} duration={dur} currentTime={play.ended ? undefined : play.t} onSeek={play.seek} band={band} median={median} prev={prev} height={150}
+        label={`Your pitch over the take, middle ${Math.round(median)} Hz. Click to hear that moment.`} />
       <figcaption>
         <span><i className="prc-k now" />this take</span>
         {prev && <span><i className="prc-k prev" />last time</span>}
         <span><i className="prc-k mid" />middle</span>
         {band && <span><i className="prc-k band" />your range</span>}
+        <span className="tr-hint">Click the line to hear that moment</span>
       </figcaption>
     </figure>
   );

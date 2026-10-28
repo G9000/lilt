@@ -422,8 +422,13 @@
 .tr-facts { margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--ink-3); }
 .tr-facts b { margin-left: 4px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 /* the pitch line, folded: a quiet text toggle rather than the default grey details box */
-.tr-line { margin-top: 14px; background: none; }
-.tr-line > summary { width: max-content; min-height: 0; padding: 0; font-size: 13px; color: var(--ink-2); }
+/* the take's pitch line, playable: the shared chart on a quiet panel, its legend under it */
+.prc .tr-chart { margin: 14px 0 0; }
+.tr-chart .pianoroll { display: block; width: 100%; border-radius: 12px; background: var(--ve-card, var(--panel)); box-shadow: 0 0 0 1px var(--hair); }
+.prc .tr-chart figcaption { align-items: center; }
+.prc .prc-k.mid { height: 0; background: none; border-top: 1.5px dashed var(--ink-2); opacity: 0.6; }
+.tr-hint { margin-left: auto; color: var(--ink-3); }
+@media (max-width: 640px) { .tr-hint { margin-left: 0; flex-basis: 100%; } }
 .prc .prc-cap { margin: 14px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
 
 /* a free take's summary in the text column, when the screen isn't split */
@@ -647,3 +652,5 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 
 /* "Your mic hears you very quietly": a gentle amber nudge in place of the usual line */
 .ve-dock-msg.quiet-mic { color: var(--warn); font-weight: 500; }
+/* the live chart is the shared pitch chart, drawn straight on the recorder */
+.ve-scope .pianoroll { background: transparent; border-radius: 0; }

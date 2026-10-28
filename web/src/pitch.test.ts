@@ -1,7 +1,7 @@
 // node --test src/pitch.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { yin, noteName, steadinessSt, recentMedian, noiseFloor } from "./pitch.ts";
+import { yin, noteName, steadinessSt, recentMedian, noiseFloor, cleanContour } from "./pitch.ts";
 
 const SR = 48000;
 function tone(hz: number, n = 2048, harmonics = 1, amp = 0.3): Float32Array {
@@ -60,4 +60,32 @@ test("the voice gate follows the room: a quiet mic in a quiet room still hears a
   const loud = noiseFloor();
   for (let i = 0; i < 80; i++) gate = loud.gate(0.02); // a noisy room: never above the old gate
   assert.equal(gate, 0.008);
+});
+
+const frames = (hz: (i: number) => number | null, n = 60, dt = 0.01) => Array.from({ length: n }, (_, i) => ({ t: i * dt, hz: hz(i) }));
+
+test("cleaning: a one-frame octave slip goes back to its neighbours' octave, then the median smooths", () => {
+  const out = cleanContour(frames((i) => (i === 30 ? 360 : 180)));
+  assert.ok(out.every((p) => p.hz === null || Math.abs(p.hz - 180) < 1), JSON.stringify(out[30]));
+  const low = cleanContour(frames((i) => (i === 20 ? 92 : 185)));
+  assert.ok(Math.abs((low[20].hz as number) - 185) < 3);
+});
+
+test("cleaning: a real, sustained change is kept", () => {
+  const out = cleanContour(frames((i) => (i < 30 ? 180 : 240)));
+  assert.ok(Math.abs((out[10].hz as number) - 180) < 1 && Math.abs((out[50].hz as number) - 240) < 1);
+  assert.ok((out[55].line as number) > 235, "the line arrives at the new pitch");
+});
+
+test("cleaning: bursts shorter than 60 ms (clicks, breaths) are dropped; speech isn't", () => {
+  const out = cleanContour(frames((i) => (i >= 10 && i < 14 ? 300 : i >= 30 && i < 50 ? 200 : null)));
+  assert.ok(out.slice(10, 14).every((p) => p.hz === null), "4-frame click dropped");
+  assert.ok(out.slice(32, 48).every((p) => p.hz !== null), "20-frame phrase kept");
+});
+
+test("cleaning: the smooth line eases in semitones and restarts after a pause", () => {
+  const out = cleanContour(frames((i) => (i < 20 ? 150 : i < 40 ? null : 220)));
+  assert.equal(out[40].line, 220, "after a pause the line starts at the new pitch, not sliding from the old one");
+  const jump = cleanContour(frames((i) => (i < 20 ? 150 : 200)));
+  assert.ok((jump[21].line as number) > 150 && (jump[21].line as number) < 200, "a jump without a pause eases");
 });
