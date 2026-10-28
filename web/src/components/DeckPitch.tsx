@@ -26,7 +26,7 @@ const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_refe
  * sentence in semitones. Descriptive only: no percentages, no score. The numbers come from
  * content/texts/_pitch.md.
  */
-export function PitchScale({ median }: { median: number }) {
+export function PitchScale({ median, note = true }: { median: number; note?: boolean }) {
   const [ref, setRef] = useState<PitchReference | null>(null);
   useEffect(() => { void pitchReference().then(setRef); }, []);
   if (!ref) return null;
@@ -45,12 +45,12 @@ export function PitchScale({ median }: { median: number }) {
       </div>
       <div className="pscale-labels" aria-hidden="true">
         <span style={{ left: `${at(ref.men_mean)}%` }}>Average man<small>{Math.round(men[0])}–{Math.round(men[1])} Hz</small></span>
-        <span style={{ left: `${at((ref.overlap_low + ref.overlap_high) / 2)}%` }}>Either<small>{ref.overlap_low}–{ref.overlap_high}</small></span>
+        <span style={{ left: `${at((ref.overlap_low + ref.overlap_high) / 2)}%` }}>Either<small>{ref.overlap_low}–{ref.overlap_high} Hz</small></span>
         <span style={{ left: `${at(ref.women_mean)}%` }}>Average woman<small>{Math.round(women[0])}–{Math.round(women[1])} Hz</small></span>
       </div>
       <figcaption>
-        {placePitch(median, ref)}{" "}
-        <span title={ref.source}>Pitch is one part of how a voice is heard; resonance and intonation matter as much. Averages from Leung et al. (2022).</span>
+        {placePitch(median, ref)}
+        {note && <span title={ref.source}>Pitch is one part of how a voice is heard; resonance and intonation matter as much. Averages from Leung et al. (2022).</span>}
       </figcaption>
     </figure>
   );
@@ -126,6 +126,7 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
   const comparable = prev?.cmp && prev.cmp.outcome !== "not_comparable";
   const prevMedian = prev?.take.analysis_summary?.f0_median_hz ?? null;
 
+  const shift = comparable && prevMedian ? Math.round(median! - prevMedian) : null;
   return (
     <div className="prc-result" aria-label="What Lilt measured" role="group">
       {median === null ? (
@@ -133,26 +134,25 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
       ) : (
         <>
           <InsightNote analysis={analysis} band={band} />
-          <PitchScale median={median} />
-          <div className="prc-stats">
-            <div><span>Middle pitch</span><b>{fmtHz(median)}<small>{noteName(median)}</small></b></div>
-            <div><span>Usual range</span><b>{p10 && p90 ? `${Math.round(p10)}–${Math.round(p90)} Hz` : "–"}</b></div>
-            <div><span>Voice heard</span><b>{voiced !== null ? `${Math.round(voiced * 100)}%` : "–"}</b></div>
-          </div>
-          <ContourChart pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
-          {prev && (
-            <p className="prc-prev">
-              {comparable && prevMedian ? (
-                <>Last time on this card ({prev.take.local_date ?? prev.take.created_utc.slice(0, 10)}): <b>{fmtHz(prevMedian)}</b>. This time is <b>{median - prevMedian >= 0 ? "+" : "−"}{Math.abs(Math.round(median - prevMedian))} Hz</b>.</>
-              ) : (
-                <>Not compared with last time: {prev.cmp?.reasons[0] ?? "the recordings aren't comparable"}.</>
-              )}
+          {/* Your pitch: the number once, where it sits, then the other facts in one quiet line. */}
+          <section className="tr-pitch" aria-label="Your pitch">
+            <p className="tr-head">Your middle pitch <b>{fmtHz(median)}</b><span>{noteName(median)}</span></p>
+            <PitchScale median={median} note={false} />
+            <p className="tr-facts">
+              {p10 && p90 && <span>Usual range <b>{Math.round(p10)}–{Math.round(p90)} Hz</b></span>}
+              {voiced !== null && <span>Voice heard <b>{Math.round(voiced * 100)}%</b></span>}
+              {prev && comparable && prevMedian && <span>Last time <b>{fmtHz(prevMedian)}</b> ({shift! >= 0 ? "+" : "−"}{Math.abs(shift!)} Hz)</span>}
             </p>
-          )}
+          </section>
+          <details className="tr-line">
+            <summary>See the pitch line</summary>
+            <ContourChart pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
+          </details>
+          {prev && !comparable && <p className="prc-prev">Not compared with last time: {prev.cmp?.reasons[0] ?? "the recordings aren't comparable"}.</p>}
         </>
       )}
       {flags.length > 0 && <ul className="prc-flags">{flags.map((f) => <li key={f.code}>{f.message}</li>)}</ul>}
-      <p className="prc-cap">Describes the recording. Never a grade, never your rating.</p>
+      <p className="prc-cap">Describes the recording, never a grade. Pitch is one part of how a voice is heard; averages from Leung et al. (2022).</p>
     </div>
   );
 }

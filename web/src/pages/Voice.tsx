@@ -300,7 +300,7 @@ const fy = (hz: number, h: number) => { const pad = h * 0.1; return h - pad - (M
  * painting, anchored bottom-left and scaled to cover, with the three cat layers placed where the room
  * draws them (x 0–375, y 710–881 of 1672×941).
  */
-function SleepingCat({ hint }: { hint: string }) {
+function SleepingCat({ hint, title = "Ready when you are" }: { hint: string; title?: string }) {
   const light = currentLight();
   return (
     <div className="ve-art">
@@ -312,7 +312,7 @@ function SleepingCat({ hint }: { hint: string }) {
           <span className="ve-zzz"><i>z</i><i>z</i><i>z</i></span>
         </div>
       </div>
-      <p className="ve-art-copy"><b>Ready when you are</b><span>{hint}</span></p>
+      <p className="ve-art-copy"><b>{title}</b><span>{hint}</span></p>
     </div>
   );
 }
@@ -459,7 +459,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   return (
     <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
-      {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} />}
+      {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
       <div className="ve-now" aria-live="off">
         <div className="ve-now-read">
           <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
@@ -1025,7 +1025,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
           {RATINGS.map((r, i) => (
             <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={`${r.label}, next ${item.preview[r.r]}`}>
               <span className="l">{r.label}<kbd aria-hidden="true">{i + 1}</kbd></span>
-              <small>{item.preview[r.r] === "later today" ? "in a few minutes" : item.preview[r.r]}</small>
+              <small>{item.preview[r.r] === "later today" ? "in a few min" : item.preview[r.r]}</small>
             </button>
           ))}
         </div>
@@ -1110,7 +1110,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       ) : !ended && item && (
         <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k === "rate"}
           onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
-          idleHint="Press record and say the card">
+          idleHint={phase.k === "rate" ? "Listen back, then rate how it felt" : "Press record and say the card"}>
           {phase.k === "say" && !recOn && <button className="ve-link ouch" onClick={ouchNow}>Stop, my voice hurts</button>}
         </Dock>
       )}

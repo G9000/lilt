@@ -86,6 +86,12 @@ async function main() {
   await page.locator(".ve-item.on").waitFor();
   await record(page);
   await page.getByText("How did that feel?").waitFor({ timeout: 15000 });
+  await page.locator(".ve-item.on .tr-pitch").waitFor({ timeout: 60000 });
+  await page.locator(".ve-item.on .tr-pitch").scrollIntoViewIfNeeded();
+  await shot(page, "3b-rate");
+  await page.locator(".ve-item.on .tr-line > summary").click();
+  check("the pitch line opens on request", await page.locator(".ve-item.on .tr-line .prc-chart").isVisible());
+  await shot(page, "3c-rate-line");
   await page.getByRole("button", { name: /^Good,/ }).click();
   await page.waitForFunction(() => !document.body.innerText.includes("How did that feel?"), null, { timeout: 8000 });
   check("a card is recorded and rated", true);

@@ -36,7 +36,7 @@ export function describeTake({ median, spanSt, band, pts }: InsightInput): Insig
   const drop = endDropSt(pts);
   if (drop !== null && drop >= 2) return {
     note: "Your voice settled lower towards the end.",
-    cue: "Try keeping the last few words as light and bright as the first ones.",
+    cue: "Keep the last few words as light and bright as the first ones.",
   };
   if (band && median < band[0] * 0.97) return {
     note: "This take sat a little below your comfortable range.",

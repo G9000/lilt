@@ -393,11 +393,25 @@
 .pscale-track .women { background: color-mix(in srgb, var(--accent) 30%, transparent); }
 .pscale-track .avg { position: absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 35%, transparent); }
 .pscale-track .you { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card), 0 2px 6px rgba(224, 100, 60, 0.45); }
-.pscale-labels { position: relative; height: 34px; margin-top: 6px; }
+.pscale-labels { position: relative; height: 34px; margin-top: 8px; }
 .pscale-labels span { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; font-size: 12px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .pscale-labels small { font-size: 12px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.pscale figcaption { margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.pscale figcaption { margin-top: 12px; font-size: 14px; line-height: 1.5; color: var(--ink); }
 .pscale figcaption span { display: block; margin-top: 2px; font-size: 12px; color: var(--ink-3); }
+
+/* a take's result: the note, then your pitch once with the scale and facts, the line folded away */
+.prc .prc-insight { margin-bottom: 20px; }
+.tr-pitch { display: grid; gap: 4px; }
+.tr-head { margin: 0 0 10px; display: flex; align-items: baseline; gap: 8px; font-size: 14px; color: var(--ink-2); }
+.tr-head b { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.tr-head span { font-size: 13px; color: var(--ink-3); }
+.tr-pitch .pscale { margin: 0; }
+.tr-facts { margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--ink-3); }
+.tr-facts b { margin-left: 4px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* the pitch line, folded: a quiet text toggle rather than the default grey details box */
+.tr-line { margin-top: 14px; background: none; }
+.tr-line > summary { width: max-content; min-height: 0; padding: 0; font-size: 13px; color: var(--ink-2); }
+.prc .prc-cap { margin: 14px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
 
 /* a free take's summary in the text column, when the screen isn't split */
 .ve-free { margin: 0 0 36px; }
@@ -406,7 +420,9 @@
 /* rating, inside the card you just said */
 .ve-rate-box { display: grid; gap: 10px; padding-top: 4px; }
 .ve-rate { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.ve .ve-rate button { display: grid; gap: 1px; padding: 10px 12px; border-radius: 12px; background: var(--fill); text-align: left; color: var(--ink); transition: background-color 0.15s ease, transform 0.16s var(--ease); }
+.ve .ve-rate button { display: grid; justify-content: stretch; justify-items: start; align-content: start; gap: 2px; padding: 10px 12px; border-radius: 12px; background: var(--fill); text-align: left; color: var(--ink); transition: background-color 0.15s ease, transform 0.16s var(--ease); }
+.ve .ve-rate .l { width: 100%; }
+.ve .ve-rate small { white-space: nowrap; }
 .ve .ve-rate button:active:not(:disabled) { transform: scale(0.97); }
 .ve .ve-rate .l { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 14px; font-weight: 600; }
 .ve .ve-rate small { font-size: 12px; color: var(--ink-3); }
@@ -481,6 +497,8 @@
   .ve-dock.art .ve-ghost, .ve-dock.art .ve-link { background: none; padding: 4px 8px; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.72); }
   .ve-dock.art .ve-ghost:hover:not(:disabled), .ve-dock.art .ve-link:hover:not(:disabled) { background: none; color: #fff; }
   .ve-dock.art .ve-err { color: #ffd2d6; }
+  /* while you rate a card there's nothing to record: no button, just what to do */
+  .ve-dock.art.quiet .ve-rec, .ve-dock.art.quiet .ve-dock-sub { display: none; }
   .ve-dock.art .ve-mic-help { grid-row: 5; align-self: start; justify-self: center; max-width: 440px; margin-top: 18px; background: rgba(255, 255, 255, 0.94); box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.5); }
   .ve-dock.art .ve-mic-help p { color: #4c4c58; }
   .ve-dock.art .ve-mic-help b { color: #17171d; }
