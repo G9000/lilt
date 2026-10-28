@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { DEFAULT_COURSE, parseTextId } from "../courses";
 import { api, Take, TakeStatus, Texts } from "../api";
 import { loadPeaks } from "../components/AudioPlayer";
 import { Icon, takeName, Toast, useToast } from "../components/bits";
@@ -25,7 +26,8 @@ const length = (s: number | null | undefined) => (s ? `${Math.floor(s / 60)}:${S
 function takeTitle(t: Take, texts: Texts | null) {
   if (t.prompt_id === "free") return "Free recording";
   if (t.prompt_id.startsWith("ref.")) return "Reference line";
-  const level = t.prompt_id.startsWith("text.") ? texts?.levels.find((l) => l.id === t.prompt_id.split(".")[1]) : null;
+  const named = parseTextId(t.prompt_id);
+  const level = named && named.course === DEFAULT_COURSE ? texts?.levels.find((l) => l.id === named.chapter) : null;
   return level ? level.title : takeName(t);
 }
 

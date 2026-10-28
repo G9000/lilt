@@ -7,6 +7,10 @@ import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { LeaveIcon, SettingsAppIcon, StudioIcon, TextsIcon } from "../desk/icons";
 import { PracticeSettings } from "./Settings";
+import { DEFAULT_COURSE, textId } from "../courses";
+
+/** The course Practice shows. */
+const COURSE = DEFAULT_COURSE;
 import { HistoryPage } from "./History";
 import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
@@ -193,7 +197,7 @@ function Medal({ className }: { className?: string }) {
     </svg>
   );
 }
-const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(`text.${l.id}.${it.id}`));
+const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(textId(COURSE, l.id, it.id)));
 
 const Chevron = ({ open }: { open: boolean }) => (
   <svg className={`ve-chev${open ? " open" : ""}`} viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -381,11 +385,11 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
       <h6>Chapters{texts && <span>{texts.levels.filter((l) => chapterDone(l, practised)).length} of {texts.levels.length} complete</span>}</h6>
       <ul className="ve-tree">
         {texts?.levels.map((l) => {
-          const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
+          const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
           return (
             <Folder key={l.id} id={l.id} label={l.title} current={current === l.id && !itemId} open={open.has(l.id)} onToggle={toggle} onOpen={() => go(`/studio/${l.id}`)} locked={locked}
               extra={d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}>
-              {l.items.map((it) => file(it.id, it.text, practised.has(`text.${l.id}.${it.id}`), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
+              {l.items.map((it) => file(it.id, it.text, practised.has(textId(COURSE, l.id, it.id)), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
             </Folder>
           );
         })}
@@ -686,7 +690,7 @@ function HomeDoc({ texts, deck, practised, history, profile, onRecording, onTake
             <h2>The chapters</h2>
             <ol className="ve-chapters">
               {texts.levels.map((l) => {
-                const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
+                const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
                 return (
                   <li key={l.id}>
                     <a href={`#/studio/${l.id}`}>
@@ -878,7 +882,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   useEffect(() => { if (fresh) setToast(`Chapter complete: ${level.title}`); }, [fresh]); // eslint-disable-line react-hooks/exhaustive-deps
   const band = profile.comfort_range_hz ?? null;
   const item = sel >= 0 ? level.items[sel] : null;
-  const promptId = item ? `text.${level.id}.${item.id}` : FREE.prompt_id;
+  const promptId = item ? textId(COURSE, level.id, item.id) : FREE.prompt_id;
   const isPrompt = level.kind === "prompt";
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
 

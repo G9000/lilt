@@ -299,6 +299,11 @@ pub fn texts(app: &App) -> Value {
     app.texts.read().unwrap().clone()
 }
 
+/// Any course's texts as the app would show them: the app's own is kept loaded, others are read now.
+pub fn course_texts(app: &App, c: &Course) -> Result<Value> {
+    if c.id == courses::DEFAULT { Ok(texts(app)) } else { load_active(app, c) }
+}
+
 fn current(app: &App, c: &Course) -> Files {
     files(&active_dir(app, c))
 }

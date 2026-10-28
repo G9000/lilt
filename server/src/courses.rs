@@ -26,6 +26,22 @@ use std::path::PathBuf;
 /// The course the app shows (Practice), and the one tools use when none is named.
 pub const DEFAULT: &str = "voice";
 
+/// The id of a course's text, used for its takes, cards and progress. The app's course keeps the
+/// ids it always had (`text.<chapter>.<text>`); every other course's are `<course>/text.<chapter>.<text>`,
+/// so two courses can both have a "greetings" chapter without sharing progress.
+pub fn text_id(course: &str, chapter: &str, text: &str) -> String {
+    if course == DEFAULT { format!("text.{chapter}.{text}") } else { format!("{course}/text.{chapter}.{text}") }
+}
+
+/// The course, chapter and text a text id names (see `text_id`). For the next kind of practice,
+/// to group takes and progress by course; unused until then.
+#[allow(dead_code)]
+pub fn parse_text_id(id: &str) -> Option<(&str, &str, &str)> {
+    let (course, rest) = id.split_once('/').unwrap_or((DEFAULT, id));
+    let mut parts = rest.strip_prefix("text.")?.splitn(2, '.');
+    Some((course, parts.next()?, parts.next()?))
+}
+
 #[derive(Clone, Debug)]
 pub struct Course {
     pub id: String,
@@ -125,6 +141,15 @@ mod tests {
     fn ids() {
         for ok in ["voice", "mandarin", "spanish-2"] { assert!(valid_id(ok), "{ok}"); }
         for bad in ["", "Voice", "../voice", "a/b", "a b", "x".repeat(41).as_str()] { assert!(!valid_id(bad), "{bad}"); }
+    }
+
+    #[test]
+    fn text_ids_keep_voice_as_it_was_and_name_other_courses() {
+        assert_eq!(text_id("voice", "warmup", "hum"), "text.warmup.hum");
+        assert_eq!(text_id("mandarin", "greetings", "nihao"), "mandarin/text.greetings.nihao");
+        assert_eq!(parse_text_id("text.warmup.hum"), Some(("voice", "warmup", "hum")));
+        assert_eq!(parse_text_id("mandarin/text.greetings.nihao"), Some(("mandarin", "greetings", "nihao")));
+        assert_eq!(parse_text_id("ref.count-1-10"), None);
     }
 
     #[test]

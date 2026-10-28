@@ -120,10 +120,10 @@ pub fn all_cards(app: &App) -> Vec<Card> {
         for it in l["items"].as_array().cloned().unwrap_or_default() {
             let iid = it["id"].as_str().unwrap_or_default();
             out.push(Card {
-                id: format!("text.{lid}.{iid}"), stage, deck: lid.into(), deck_title: ltitle.into(), kind: "text".into(),
+                id: crate::courses::text_id(crate::courses::DEFAULT, lid, iid), stage, deck: lid.into(), deck_title: ltitle.into(), kind: "text".into(),
                 front: it["text"].as_str().unwrap_or_default().into(), hint: it["hint"].as_str().unwrap_or_default().into(),
                 area: level_area(lid).into(), level_id: lid.into(), text_kind: lkind.into(),
-                exercise_id: None, exercise_version: None, prompt_id: format!("text.{lid}.{iid}"),
+                exercise_id: None, exercise_version: None, prompt_id: crate::courses::text_id(crate::courses::DEFAULT, lid, iid),
                 source: l["written_by"].as_str().unwrap_or_default().into(),
             });
         }

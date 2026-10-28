@@ -294,7 +294,8 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 
 export const api = {
   today: () => call<Today>("GET", "/api/today"),
-  texts: () => call<Texts>("GET", "/api/texts"),
+  /** A course's texts (the Practice course when none is named). */
+  texts: (course?: string) => call<Texts>("GET", `/api/texts${course ? `?course=${encodeURIComponent(course)}` : ""}`),
   studioSession: () => call<Session>("POST", "/api/studio/session"),
   profile: () => call<Profile>("GET", "/api/profile"),
   saveProfile: (p: Profile) => call<Profile>("PUT", "/api/profile", p),

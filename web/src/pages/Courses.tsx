@@ -1,9 +1,10 @@
 import "../styles/courses.css";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { api, Course, CourseChange, CourseFiles } from "../api";
 import { go } from "../App";
 import { UpdatesDoc } from "./Voice";
 import { openSettings } from "../desk/SettingsSheet";
+import { KindTile, kindOf } from "../courses";
 
 /** "3 min ago", "yesterday", or the date. */
 function ago(iso: string) {
@@ -14,26 +15,6 @@ function ago(iso: string) {
   if (s < 86400) return `${Math.round(s / 3600)} h ago`;
   if (s < 172800) return "yesterday";
   return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
-}
-
-/** What each kind of practice is called, and its tile. */
-const KINDS: Record<string, { label: string; tile: string; glyph: ReactNode }> = {
-  voice: { label: "Voice", tile: "#f59a6c,#e0643c",
-    glyph: <path d="M5 11.5v1M8 9v6M11 6.5v11M14 9.5v5M17 8v8M20 11v2" /> },
-  language: { label: "Language", tile: "#7aa6ff,#3d63d6",
-    glyph: <><path d="M5 6.5h8M9 5v1.5c0 3.5-1.8 6.3-4.5 7.5M7 9.5c1 2 2.7 3.6 5 4.5" /><path d="M12.5 19l3.5-8.5 3.5 8.5M13.8 16h4.4" /></> },
-};
-const OTHER = { label: "Course", tile: "#9b8cff,#6a4fd6", glyph: <path d="M6 5.5h9a3 3 0 013 3v10H9a3 3 0 01-3-3zM6 15.5a3 3 0 013-3h9" /> };
-const kindOf = (k: string) => KINDS[k] ?? OTHER;
-
-function KindTile({ kind, size = 44 }: { kind: string; size?: number }) {
-  const k = kindOf(kind);
-  const [a, b] = k.tile.split(",");
-  return (
-    <span className="co-tile" style={{ width: size, height: size, background: `linear-gradient(180deg, ${a}, ${b})` }} aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{k.glyph}</svg>
-    </span>
-  );
 }
 
 /** Your copy at a glance: original, or yours with how many changes; updates waiting. */
@@ -77,7 +58,7 @@ function CourseList() {
                 <KindTile kind={c.kind} />
                 <span className="co-card">
                   <b>{c.title}</b>
-                  <small>{kindOf(c.kind).label}{c.shown_in_app ? " · in Practice" : ""}</small>
+                  <small>{kindOf(c.kind).label}{kindOf(c.kind).practice(c) ? "" : " · practice coming later"}</small>
                   <span className="co-sum">{c.summary}</span>
                   <Status c={c} />
                 </span>
@@ -114,6 +95,7 @@ function CoursePage({ id }: { id: string }) {
   if (err && !c) return <div className="co"><p className="co-error" role="alert">{err}</p><a href="#/courses">All courses</a></div>;
   if (!c || !files || !changes) return <div className="co"><p className="co-note">Loading…</p></div>;
   const chapters = files.files.filter((f) => f.chapter_id);
+  const open = kindOf(c.kind).practice(c);
   const mine = c.using === "mine";
   const latest = changes[0];
   const examples = c.kind === "voice"
@@ -132,7 +114,7 @@ function CoursePage({ id }: { id: string }) {
           <p>{c.summary}</p>
           <Status c={c} />
         </div>
-        {c.shown_in_app && <button className="btn-primary" onClick={() => go("/studio")}>Open in Practice</button>}
+        {open && <button className="btn-primary" onClick={() => go(open)}>Practise</button>}
       </header>
 
       {said && <p className="co-said" role="status">{said}</p>}

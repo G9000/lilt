@@ -194,8 +194,10 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
     Ok(Json(p))
 }
 
-async fn texts(State(app): State<Shared>) -> Json<Value> {
-    Json(crate::syllabus::texts(&app))
+/// A course's texts (`?course=<id>`), the app's course when left out.
+async fn texts(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
+    let c = crate::courses::pick(&app, q.course.as_deref())?;
+    Ok(Json(crate::syllabus::course_texts(&app, &c)?))
 }
 
 async fn studio_session(State(app): State<Shared>) -> R<Json<Session>> {

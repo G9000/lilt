@@ -873,5 +873,8 @@ async fn courses_are_kept_apart_and_old_copies_move_over() {
     assert_eq!(router.clone().oneshot(post).await.unwrap().status(), StatusCode::OK);
     assert_eq!(syllabus::list(&app, &m)["using"], "original");
     assert_eq!(json(router.clone().oneshot(get("/api/syllabus/history?course=mandarin")).await.unwrap()).await["changes"][0]["action"], "reset");
+    let zh_texts = json(router.clone().oneshot(get("/api/texts?course=mandarin")).await.unwrap()).await;
+    assert_eq!((zh_texts["levels"][0]["id"].as_str(), zh_texts["edition"]["course"].as_str()), (Some("greetings"), Some("mandarin")));
+    assert_eq!(json(router.clone().oneshot(get("/api/texts")).await.unwrap()).await["edition"]["course"], "voice");
     assert_eq!(router.oneshot(get("/api/syllabus?course=nope")).await.unwrap().status(), StatusCode::BAD_REQUEST);
 }
