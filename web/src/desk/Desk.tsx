@@ -6,6 +6,7 @@ import { currentLight, Light } from "../room/scene";
 import { radio, useRadio } from "./lofi";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
+import { SettingsButton } from "./SettingsSheet";
 import { LeaveIcon, Mark, ProgressIcon, RecordingsIcon, StudioIcon, TextsIcon, TodayIcon } from "./icons";
 
 /**
@@ -212,6 +213,7 @@ export function RoomTop({ inbox }: { inbox: InboxState }) {
         {r.playing && <button className="ds-np" onClick={() => void radio.toggle()} aria-label={`Pause ${r.mood}`}><span className="ds-eq" aria-hidden="true"><i /><i /><i /></span>{r.mood}</button>}
         {moved && <button className="ds-mb-btn ds-reset" onClick={resetLayout}>Reset layout</button>}
         <InboxButton inbox={inbox} />
+        <SettingsButton />
         <span className="ds-hide-s">{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
         <span>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
       </span>

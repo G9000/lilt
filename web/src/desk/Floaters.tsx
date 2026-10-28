@@ -4,17 +4,20 @@ import { api, Deck } from "../api";
 import { radio, useRadio } from "./lofi";
 import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
+import { openSettings } from "./SettingsSheet";
+import { Icon } from "../components/bits";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
- * radio over the speaker, a note on the wall of photos, a clock in the window, and the plant (the
- * days you practised this week) by the potted plant. Drag them anywhere; each remembers its
+ * radio over the speaker, a note on the wall of photos, a clock in the window, the plant (the
+ * days you practised this week) by the potted plant, and your AI (which assistant last used Lilt,
+ * with Connect and Settings) on the window beside the clock. Drag them anywhere; each remembers its
  * spot in the painting (in this browser), so it rides the room's camera. One near the edge slides
  * inward to stay on screen; one left at home that would cover today's cards steps out of the way.
  */
 
 type Spot = { x: number; y: number };
-const HOME: Record<string, Spot> = { radio: { x: 1262, y: 452 }, note: { x: 150, y: 232 }, clock: { x: 1180, y: 236 }, plant: { x: 118, y: 560 } };
+const HOME: Record<string, Spot> = { radio: { x: 1262, y: 452 }, note: { x: 150, y: 232 }, clock: { x: 1180, y: 236 }, plant: { x: 118, y: 560 }, ai: { x: 1440, y: 236 } };
 const KEY = "lilt.room.layout";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
 let layout = load();
@@ -109,6 +112,34 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
   );
 }
 
+function ago(iso: string) {
+  const s = (Date.now() - Date.parse(iso)) / 1000;
+  return s < 60 ? "just now" : s < 3600 ? `${Math.round(s / 60)} min ago` : s < 86400 ? `${Math.round(s / 3600)} h ago` : s < 172800 ? "yesterday" : new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+/** Your AI: which assistant last used Lilt and when, a way to connect one, and Settings. */
+function AiWidget({ inside }: { inside: boolean }) {
+  const [last, setLast] = useState<{ client: string; last_used: string } | null | undefined>(undefined);
+  useEffect(() => { void api.connectInfo().then((c) => setLast(c.activity[0] ?? null), () => setLast(null)); }, [inside]);
+  if (last === undefined) return null;
+  return (
+    <div className="fl-ai">
+      <span className="fl-ai-mark" aria-hidden="true">
+        <svg viewBox="0 0 20 20"><path d="M10 2.5l1.6 4.4 4.4 1.6-4.4 1.6L10 14.5l-1.6-4.4L4 8.5l4.4-1.6zM15.5 13l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="currentColor" /></svg>
+      </span>
+      <div className="fl-ai-info">
+        <span className="ds-r-k">Your AI</span>
+        <b>{last ? last.client : "Not connected yet"}</b>
+        <small>{last ? `Used Lilt ${ago(last.last_used)}` : "Let Claude or ChatGPT help with your practice"}</small>
+      </div>
+      <div className="fl-ai-ctl">
+        <button className="fl-ai-go ss-open" onClick={() => openSettings("ai")}>{last ? "Manage" : "Connect"}</button>
+        <button className="fl-ai-gear ss-open" onClick={() => openSettings()} aria-label="Settings">{Icon.settings}</button>
+      </div>
+    </div>
+  );
+}
+
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();
   const [note, setNote] = useState<string | null>(null);
@@ -174,6 +205,9 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
             </div>
           </div>
         </div>
+      </Widget>
+      <Widget id="ai" delay={-1.8} label="Your AI">
+        <AiWidget inside={inside} />
       </Widget>
       <Widget id="clock" delay={-1.1} label="Clock">
         <ClockWidget />

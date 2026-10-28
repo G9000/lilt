@@ -1,3 +1,4 @@
+import { SettingsSheet } from "./desk/SettingsSheet";
 import { ReactNode, useEffect, useState } from "react";
 import { api, Deck } from "./api";
 import { CardStack } from "./desk/CardStack";
@@ -105,6 +106,7 @@ export function App() {
       <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}
         onTheme={() => setTheme(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox} />
       <NotificationCenter inbox={inbox} />
+      <SettingsSheet />
     </MicProvider>
   );
 }
