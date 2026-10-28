@@ -216,6 +216,10 @@
 .ve-sp { flex: 1; }
 .ve-dock > .ve-err, .ve-dock > .btn-secondary { grid-column: 1 / -1; justify-self: start; }
 
+/* a free take's summary in the text column, when the screen isn't split */
+.ve-free { margin: 0 0 36px; }
+.ve-free h2 { margin: 0 0 12px; font: 700 20px/1.2 var(--font); letter-spacing: -0.03em; }
+
 /* rating, inside the card you just said */
 .ve-rate-box { display: grid; gap: 10px; padding-top: 4px; }
 .ve-rate { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }

@@ -353,6 +353,22 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   );
 }
 
+/* ---------------------------------------------------------------- free recording */
+
+/** Nothing chosen yet: the recorder takes a free recording, saved in today's Studio session. */
+const FREE = { role: "free" as const, prompt_id: "free", prompt_text: "Free recording" };
+const FREE_HINT = "Talk freely, or pick one on the left";
+
+/** A free take's summary: listen back, then the measured pitch line and numbers once analysis lands. */
+function FreeResult({ take, band }: { take: Take; band: [number, number] | null }) {
+  return (
+    <div className="prc ve-result" key={take.id}>
+      <ListenBack src={take.audio_url} />
+      <Measures take={take} band={band} />
+    </div>
+  );
+}
+
 /* ---------------------------------------------------------------- a chapter: practice texts */
 
 function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, practised, onTake }: {
@@ -361,7 +377,8 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
 }) {
   const mic = useMic();
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [sel, setSel] = useState(() => Math.max(0, level.items.findIndex((i) => i.id === itemId)));
+  // -1 until a text is picked; the recorder takes free recordings meanwhile.
+  const [sel, setSel] = useState(() => (itemId ? Math.max(0, level.items.findIndex((i) => i.id === itemId)) : -1));
   const [takes, setTakes] = useState<Take[]>([]);
   const [previous, setPrevious] = useState<Take | null>(null);
   const [recording, setRec] = useState(false);
@@ -373,8 +390,8 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   const fresh = complete && !wasComplete.current;
   useEffect(() => { if (fresh) setToast(`Chapter complete: ${level.title}`); }, [fresh]); // eslint-disable-line react-hooks/exhaustive-deps
   const band = profile.comfort_range_hz ?? null;
-  const item = level.items[sel];
-  const promptId = `text.${level.id}.${item.id}`;
+  const item = sel >= 0 ? level.items[sel] : null;
+  const promptId = item ? `text.${level.id}.${item.id}` : FREE.prompt_id;
   const isPrompt = level.kind === "prompt";
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
 
@@ -403,7 +420,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
 
   const onSaved = async (t: Take) => {
     let saved = t;
-    if (starts.current && !isPrompt) saved = await api.patchTake(t.id, { read_along: { starts: starts.current, text: item.text } }).catch(() => t);
+    if (starts.current && item && !isPrompt) saved = await api.patchTake(t.id, { read_along: { starts: starts.current, text: item.text } }).catch(() => t);
     starts.current = null;
     setTakes((xs) => [...xs, saved]);
     onTake(saved);
@@ -417,7 +434,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   };
 
   const split = useSplit();
-  const takeView = latest && <ChapterTake take={latest} before={before} band={band} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />;
+  const freeView = !item && latest && <FreeResult take={latest} band={band} />;
   const n = level.items.length;
   return (
     <>
@@ -438,6 +455,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             <b>How to do it</b>
             {howTo(level.basis)} <span className="ve-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</span>
           </blockquote>
+          {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
           <ol className="ve-items">
             {level.items.map((it, i) => {
               const on = i === sel;
@@ -452,7 +470,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                   <p className="ve-hint">{it.hint}</p>
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
-                  {on && !split && takeView}
+                  {on && latest && <ChapterTake take={latest} before={before} band={band} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
                 </li>
               );
             })}
@@ -460,10 +478,10 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
           <p className="ve-end">{texts.note}</p>
         </article>
       </div>
-      <Dock key={promptId} meta={sessionId ? { session_id: sessionId, role: "free", prompt_id: promptId, prompt_text: item.text } : null}
-        band={band} allowRetake onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? takeView : null}
-        idleHint="Press record and read the highlighted text">
-        <button className="ve-link" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1}>Next text <kbd>↓</kbd></button>
+      <Dock key={promptId} meta={sessionId ? { session_id: sessionId, ...FREE, ...(item && { prompt_id: promptId, prompt_text: item.text }) } : null}
+        band={band} allowRetake onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
+        idleHint={item ? "Press record and read the highlighted text" : FREE_HINT}>
+        <button className="ve-link" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1}>{item ? "Next text" : "Start with text 1"} <kbd>↓</kbd></button>
       </Dock>
       <Toast text={toast} />
     </>
@@ -542,6 +560,11 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const curRef = useRef<HTMLLIElement>(null);
   const split = useSplit();
+  // Opened from the computer, no card is chosen yet: the recorder takes free recordings meanwhile.
+  const [chosen, setChosen] = useState(!!first);
+  const [studio, setStudio] = useState<string | null>(null);
+  const [freeTake, setFreeTake] = useState<Take | null>(null);
+  useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
 
   useEffect(() => {
     Promise.all([api.deck(), api.deckSession()]).then(([d, s]) => {
@@ -559,7 +582,9 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   useEffect(() => { if (phase.k === "end" || phase.k === "hurt") titleRef.current?.focus({ preventScroll: true }); }, [phase.k]);
 
   const choose = (j: number) => {
-    if (phase.k !== "say" || recOn || j <= idx) return;
+    if (phase.k !== "say" || recOn) return;
+    if (!chosen) setChosen(true);
+    if (j <= idx) return;
     setQueue((q) => { const n = [...q]; const [it] = n.splice(j, 1); n.splice(idx, 0, it); return n; });
     setPhase({ k: "say", retryOf: null });
   };
@@ -619,6 +644,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   } : null;
   const date = new Date(`${deck.local_date}T12:00:00`).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
   // Listen back, the measured pitch and the rating: under the card, or in the right half when split.
+  const free = (!chosen && phase.k === "say") || phase.k === "end";
+  const freeView = free && freeTake && <FreeResult take={freeTake} band={band} />;
   const rateView = phase.k === "rate" && (
     <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={phase.take.id}>
       <ListenBack src={phase.take.audio_url} />
@@ -672,8 +699,9 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
             </div>
           ) : (
             <blockquote className="ve-how"><b>How to do it</b>
-              Say each card in your practice voice, listen back, then rate how it felt. Your rating decides when a card comes back; pitch numbers never do.</blockquote>
+              {!chosen && "Pick a card to start, or just press record and talk freely. "}Say each card in your practice voice, listen back, then rate how it felt. Your rating decides when a card comes back; pitch numbers never do.</blockquote>
           )}
+          {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
           <ol className="ve-items">
             {earlier.map((it) => (
               <li key={`e-${it.card.id}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
@@ -685,7 +713,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                 <p className="ve-hint"><span className={`ve-tag ${r.rating}`}>{label(r.rating)}</span>{r.median ? `${Math.round(r.median)} Hz, ${noteName(r.median)}` : deckName(r.item)}</p></li>
             ))}
             {!ended && queue.slice(idx).map((it, k) => {
-              const j = idx + k, on = k === 0;
+              const j = idx + k, on = chosen && k === 0;
               return (
                 <li key={`q-${j}-${it.card.id}`} ref={on ? curRef : undefined} className={`ve-item${on ? " on" : ""}`} onClick={() => { if (!on) choose(j); }}>
                   <span className="ve-mk num" aria-hidden="true">{doneCount + k + 1}.</span>
@@ -695,7 +723,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                     : <p className="readtext ve-read" aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
                   {it.card.hint && <p className="ve-hint">{it.card.hint}</p>}
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(j)} disabled={phase.k !== "say" || recOn}>Practise {it.card.front.slice(0, 40)} next</button>}
-                  {on && !split && rateView}
+                  {on && rateView}
                 </li>
               );
             })}
@@ -703,10 +731,14 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
           {err && <p role="alert" className="ve-err">{err}</p>}
         </article>
       </div>
-      {!ended && item && (
+      {free ? (
+        <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake
+          onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
+          idleHint={FREE_HINT} result={split ? freeView : null} />
+      ) : !ended && item && (
         <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k === "rate"}
           onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
-          idleHint="Press record and say the card" result={split ? rateView : null}>
+          idleHint="Press record and say the card">
           {phase.k === "say" && !recOn && <button className="ve-link ouch" onClick={ouchNow}>Stop, my voice hurts</button>}
         </Dock>
       )}
