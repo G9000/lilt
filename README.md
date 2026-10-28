@@ -290,10 +290,12 @@ cd server && cargo test                     # 15 acceptance-scenario tests (uses
 cd analysis && .venv/bin/python -m pytest   # 27 analysis tests on fixed fixtures
 cd analysis && .venv/bin/python scripts/evaluate.py   # regenerates EVALUATION.md
 cd web && node --test src/pitch.test.ts     # live pitch tracker (YIN) on synthetic tones
+cd web && node --test src/insight.test.ts   # the note in words after each take
 cd web && node --test src/room/scene.test.ts  # room: monitor warp, light blending, zoom box
 cd web && pnpm dev                          # UI on :5173, proxies to a server on :7878
 # Browser end-to-end with Chrome's fake microphone (server running on :7979 with a scratch data dir):
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flow.mjs /tmp/shots   # MOBILE=1 for phone size
+cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # the Practice window; needs a fresh data dir
 ```
 
 ## Troubleshooting

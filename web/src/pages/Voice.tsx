@@ -111,7 +111,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
   const level = texts ? texts.levels.find((l) => l.id === levelId) ?? texts.levels[0] : null;
   const chips = useRef<HTMLElement>(null);
   const page = useRef<HTMLDivElement>(null);
-  const docRef = useRef<HTMLElement>(null);
+  const docRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useLayout();
   const toggleSide = () => setLayout((l) => ({ ...l, collapsed: !l.collapsed }));
   // ⌘\ or Ctrl+\ hides and shows the sidebar, as in most editors.
@@ -137,7 +137,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
-      <main className={`ve-doc${doc === "recordings" || doc === "progress" ? " solo" : ""}`} ref={docRef}>
+      <div className={`ve-doc${doc === "recordings" || doc === "progress" ? " solo" : ""}`} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
@@ -157,7 +157,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
           ? <TodayDoc key={first ?? ""} first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : texts && level && profile && <ChapterDoc key={level.id} texts={texts} level={level} itemId={itemId} profile={profile} onProfile={setProfile} onRecording={setRecording}
               practised={practised} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />}
-      </main>
+      </div>
     </div>
   );
 }

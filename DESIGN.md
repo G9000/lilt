@@ -28,7 +28,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   sheet** over the blurred room (white glass about 58–80% with a 40px backdrop blur; the sidebar,
   text and recorder are split by hairlines, and the text is the most opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
-  the sidebar, like a Mac app). **Home** (`#/studio`, the dock's Chapters app) is the Practice index, read like a Notion page:
+  the sidebar, like a Mac app). **A new voice starts** at `#/studio/start`: read the reference line once in your everyday voice;
+  Lilt offers that take's range as your comfortable range and keeps it as Day 1. Until then Home
+  shows a "start here" card; after, **your practice**: days this month, the last two weeks as dots,
+  and **Then and now** (your first and latest take of the same text, the reference line first).
+  **Every take's result leads with words**: one observation and one thing to try (comfort first,
+  then an end drop, then range and movement), on an accent-soft panel, before any numbers.
+  **Recordings and Progress** open inside Practice, listed with Home above the tree.
+  **Home** (`#/studio`, the dock's Chapters app) is the Practice index, read like a Notion page:
   a full-width cover (`cover:` in `content/texts/index.md`), then the owner's words and pictures
   from that file (why it exists, an honest note, how it's laid out, looking after your voice, how to
   contribute, sources), then the chapters with progress, generated. The recorder takes free

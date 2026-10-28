@@ -418,7 +418,8 @@
   .ve { grid-template-columns: minmax(0, 1fr); }
   .ve-side, .ve .ve-side-toggle, .ve-resize { display: none !important; }
   /* the window's traffic lights share the row with the chapter chips */
-  .ve-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px 10px 80px; border-bottom: 1px solid var(--hair); scrollbar-width: none; background: var(--ve-glass); backdrop-filter: var(--ve-blur); -webkit-backdrop-filter: var(--ve-blur); }
+  .ve-chips { -webkit-mask-image: linear-gradient(to right, transparent 70px, #000 86px); mask-image: linear-gradient(to right, transparent 70px, #000 86px);
+    display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px 10px 80px; border-bottom: 1px solid var(--hair); scrollbar-width: none; background: var(--ve-glass); backdrop-filter: var(--ve-blur); -webkit-backdrop-filter: var(--ve-blur); }
   .ve .ve-chips button { flex: none; padding: 6px 12px; border-radius: 99px; background: var(--fill); font-size: 13px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
   .ve .ve-chips button[aria-current="page"] { background: var(--ink); color: var(--ve-paper); }
   .ve-col { padding: 24px 18px 40px; }

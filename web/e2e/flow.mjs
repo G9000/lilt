@@ -19,7 +19,7 @@ const check = (name, ok, detail = "") => { results.push({ name, ok, detail }); c
 
 async function record(page, seconds = 2.5) {
   await page.getByRole("button", { name: "Start recording" }).click();
-  await page.getByText("Recording", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "Stop recording" }).waitFor();
   await page.waitForTimeout(seconds * 1000);
   await page.getByRole("button", { name: "Stop recording" }).click();
   await page.getByRole("status").filter({ hasText: /^✓?\s*Saved/ }).first().waitFor({ timeout: 15000 });
@@ -56,12 +56,16 @@ async function main() {
   check("Arrow keys flip through the stack and back", /one, two, three/i.test(first) && nTop >= 2 && (await topText()) === first, `${first.slice(0, 20)} → ${second.slice(0, 20)}`);
   await snap("00-room");
   await page.getByRole("button", { name: /^Sit down at the computer/ }).click();
-  await page.locator(".ve-item.on .readtext").waitFor();
+  await page.locator(".ve-item .readtext").first().waitFor();
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);
   const listed = await page.locator(".ve-item").count();
-  const chapters = await page.locator(".ve-nav li").count();
-  check("The computer opens Practice full screen, reference card first, with today's cards and the chapters",
-    deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item.on .readtext").innerText()), `${listed} cards, ${chapters} chapters`);
+  const chapters = await page.locator(".ve-folder").count() - 1; // the tree's folders: Today, then the chapters
+  const nothingPicked = await page.locator(".ve-item.on").count() === 0;
+  // Opened from the computer, nothing is picked yet (the recorder takes free recordings); pick the first card.
+  await page.locator(".ve-item").first().click();
+  await page.locator(".ve-item.on .readtext").waitFor();
+  check("The computer opens Practice full screen with nothing picked, today's cards (reference first) and the chapters",
+    nothingPicked && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item.on .readtext").innerText()), `${listed} cards, ${chapters} chapters`);
   await snap("00-deck");
   const ratings = ["good", "again", "good", "good", "good", "good"];
   let rated = 0;
@@ -231,7 +235,7 @@ async function main() {
   let note = "–";
   for (let i = 0; i < 25 && !/^[A-G]♯?\d$/.test(note.trim()); i++) {
     await page.waitForTimeout(200);
-    note = await page.locator(".readout .note").innerText();
+    note = await page.locator(".ve-now-read > span").innerText();
   }
   check("Live pitch readout shows a note while listening", /^[A-G]♯?\d$/.test(note.trim()), note);
   await snap("13-studio-live");
@@ -260,7 +264,8 @@ async function main() {
   await page.getByRole("button", { name: "Use this take's range as my comfortable range" }).click();
   await page.getByText(/Your range is now \d+–\d+ Hz/).waitFor();
   check("A take's range can become the comfortable range", true);
-  check("The chapter counts the practised text", /^1\/\d+$/.test(await page.locator('.ve-nav button[aria-current="page"] .c').textContent()));
+  // The open chapter folder in the tree (the second list; the first holds Today).
+  check("The chapter counts the practised text", /^1\/\d+$/.test(await page.locator(".ve-tree").nth(1).locator(".ve-folder.open .ve-open .c").first().textContent()));
   await snap("14-studio-result");
   await page.goto(`${BASE}/#/studio/warmup`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
