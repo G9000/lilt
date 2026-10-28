@@ -121,7 +121,9 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   last pitch at half opacity with "Last heard · E3" (and after Stop), and the tiles hold their last
   values instead of dropping to a dash. The pitch graph fills from the left and scrolls once it
   reaches the edge (8 s across). It reads your voice every 10 ms, and the line is cleaned before it is
-  drawn (`cleanContour` in `pitch.ts`): octave slips are folded back, each point is the median of its
+  drawn (`cleanContour` in `pitch.ts`): octave slips are folded back; a wild reading goes when the
+  detector was unsure of it or it sits beside a pause (a clear jump mid-speech stays); quiet, dead-steady
+  hum (a fan, a fridge) under a fifth of your speech's loudness goes; each point is the median of its
   five neighbours, blips under 60 ms are dropped, and the line eases in semitones, so it glides
   rather than jumps; loudness behind it is a faint voice-memo waveform, one thin bar every 6 px. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
   record pill and its links), and the pitch readout, graph and numbers open only while recording or
@@ -243,7 +245,8 @@ in `--ink-3`. Big numbers are Geist 300 with tight tracking. Sentence case every
 - **Pitch charts**: one chart everywhere (`PianoRoll`: live, after a take, in a chapter): note names
   on a semitone grid (C lines strongest), a soft accent band for the comfortable range, faint accent
   dots for each reading, a smooth accent line, the middle pitch dashed, last time as a grey line, and
-  after a take a playhead with a dot where it meets the line; click to play from there.
+  after a take a playhead with a dot where it meets the line; click to play from there. Hovering shows
+  what's there in a small ink label above the line ("1.8 s · 172 Hz · F3").
 
 ## Motion
 

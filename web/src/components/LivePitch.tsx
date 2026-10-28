@@ -11,7 +11,7 @@ export function useLivePitch(stream: MediaStream | null, active: boolean) {
     buf.current = [];
     setPoints([]);
     let raf = 0;
-    const tracker = trackLiveFine(stream, (t, f) => { buf.current.push({ t, hz: f.hz }); });
+    const tracker = trackLiveFine(stream, (t, f) => { buf.current.push({ t, hz: f.hz, c: f.clarity, v: f.rms }); });
     const paint = () => {
       // Keep the last 30 s for display.
       const b = buf.current;

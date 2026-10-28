@@ -216,16 +216,31 @@ export interface CleanPoint { t: number; hz: number | null; line: number | null 
 const med = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return s[s.length >> 1]; };
 
 /**
+ * A reading's pitch, plus what the live tracker knows about it: `c`, its clarity (YIN, 0..1), and
+ * `v`, its loudness (RMS). Praat's contour has neither, so those steps are skipped for it.
+ */
+export interface ContourPoint { t: number; hz: number | null; c?: number; v?: number }
+
+/** Below this clarity a reading is unsure. Across 40 real takes, 77% of wild readings fell under it, and 26% of good ones. */
+export const UNSURE = 0.92;
+
+/**
  * A pitch contour made readable, before it's drawn:
  * 1. local octave fix: a reading about twice (or half) the pitch of its neighbours on both sides
  *    is moved back into their octave, so one bad frame can't drag the line;
- * 2. a 5-point median, so single-frame misreads disappear;
- * 3. bursts shorter than `minRun` frames are dropped (clicks and breaths, not speech);
- * 4. `line`: the pitch eased in semitones (about 50 ms), restarting after a pause, to draw as a
+ * 2. wild readings out: one more than 3 semitones (and 3 spreads) from its neighbours' middle is
+ *    dropped when it's unsure (clarity under `UNSURE`) or right beside a pause, where misreads
+ *    gather. A clear jump in the middle of speech stays;
+ * 3. background hum out: a stretch of quiet, dead-steady pitch, under a fifth of the loudness of
+ *    your speech around it (a fan, a fridge, a monitor's whine), is dropped. A note you hold is as loud as
+ *    your speech, so it stays;
+ * 4. a 5-point median, so single-frame misreads disappear;
+ * 5. bursts shorter than `minRun` frames are dropped (clicks and breaths, not speech);
+ * 6. `line`: the pitch eased in semitones (about 50 ms), restarting after a pause, to draw as a
  *    smooth line over the dots.
  * Frame times may be uneven; gaps over 150 ms break the line.
  */
-export function cleanContour(pts: { t: number; hz: number | null }[], minRun = 6): CleanPoint[] {
+export function cleanContour(pts: ContourPoint[], minRun = 6): CleanPoint[] {
   const n = pts.length, hz = pts.map((p) => p.hz);
   const fixed = hz.slice();
   for (let i = 0; i < n; i++) {
@@ -238,6 +253,43 @@ export function cleanContour(pts: { t: number; hz: number | null }[], minRun = 6
     if (r > 1.8 && r < 2.25) fixed[i] = v / 2;
     else if (r > 0.44 && r < 0.56) fixed[i] = v * 2;
   }
+  const st = fixed.map((v) => (v === null ? null : 12 * Math.log2(v / 440)));
+  const drop = new Array<boolean>(n).fill(false);
+  for (let i = 0; i < n; i++) {
+    const x = st[i];
+    if (x === null) continue;
+    const near: number[] = [];
+    for (let j = Math.max(0, i - 15); j <= Math.min(n - 1, i + 15); j++) if (j !== i && st[j] !== null) near.push(st[j] as number);
+    if (near.length < 8) continue;
+    const m = med(near), spread = med(near.map((y) => Math.abs(y - m)));
+    if (Math.abs(x - m) <= Math.max(3, 3 * spread)) continue;
+    const unsure = pts[i].c !== undefined && pts[i].c! < UNSURE;
+    let byPause = false;
+    for (let d = -3; d <= 3 && !byPause; d++) {
+      const j = i + d;
+      if (d === 0 || j < 0 || j >= n) continue;
+      if (hz[j] === null || Math.abs(pts[j].t - pts[i].t) > 0.15) byPause = true;
+    }
+    if (unsure || byPause) drop[i] = true;
+  }
+  const loud = pts.filter((p, i) => st[i] !== null && p.v !== undefined).map((p) => p.v as number).sort((a, b) => a - b);
+  if (loud.length >= 50) {
+    const speech = loud[Math.floor(loud.length * 0.8)];
+    for (let i = 0; i < n; i++) {
+      if (st[i] === null || pts[i].v === undefined) continue;
+      // Its neighbours at the same pitch (within a semitone), so the edge of a hum next to speech counts too.
+      const ys: number[] = [], vs: number[] = [];
+      for (let j = Math.max(0, i - 25); j <= Math.min(n - 1, i + 25); j++) {
+        const y = st[j];
+        if (y !== null && pts[j].v !== undefined && Math.abs(y - (st[i] as number)) < 1) { ys.push(y); vs.push(pts[j].v as number); }
+      }
+      if (ys.length < 20) continue;
+      ys.sort((a, b) => a - b);
+      const steady = ys[Math.floor(ys.length * 0.8)] - ys[Math.floor(ys.length * 0.2)] < 0.4;
+      if (steady && med(vs) < 0.2 * speech) drop[i] = true;
+    }
+  }
+  for (let i = 0; i < n; i++) if (drop[i]) fixed[i] = null;
   const smooth: (number | null)[] = fixed.map((v, i) => {
     if (v === null) return null;
     const near: number[] = [];

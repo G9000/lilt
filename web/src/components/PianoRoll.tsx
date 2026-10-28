@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { cleanContour, hzToMidi, midiToHz, noteName } from "../pitch";
+import { cleanContour, ContourPoint, hzToMidi, midiToHz, noteName } from "../pitch";
 
-export interface PitchPoint { t: number; hz: number | null }
+/** A reading; live ones also carry clarity and loudness (see `ContourPoint`). */
+export type PitchPoint = ContourPoint;
 
 interface Props {
   points: PitchPoint[];
@@ -175,9 +176,24 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
       const near = clean.reduce<{ d: number; p: (typeof clean)[number] | null }>((b, p) => (p.line && Math.abs(p.t - t) < b.d ? { d: Math.abs(p.t - t), p } : b), { d: 0.06, p: null }).p;
       if (near?.line) { g.fillStyle = ink; g.beginPath(); g.arc(x, yHz(near.line), 3.5, 0, Math.PI * 2); g.fill(); }
       g.globalAlpha = 1;
+      return near;
     };
-    if (!live && hover !== null) head(hover, 0.25);
+    const hovered = !live && hover !== null ? head(hover, 0.25) : null;
     if (!live && currentTime !== undefined && currentTime > 0) head(currentTime, 0.9);
+    if (!live && hover !== null) {
+      // What's under the pointer, in words: "1.8 s · 172 Hz · F3", on top of everything.
+      const near = hovered;
+      const text = near?.hz ? `${fmtTime(hover)} · ${Math.round(near.hz)} Hz · ${noteName(near.hz)}` : fmtTime(hover);
+      g.font = `600 11.5px ${v("--font", "system-ui, sans-serif")}`;
+      const tw = g.measureText(text).width, bw = tw + 16, bh = 22;
+      const x = Math.max(padL, Math.min(w - bw - 2, X(hover) - bw / 2));
+      const dotY = near?.line ? yHz(near.line) : h / 2;
+      const y = dotY - bh - 10 >= 2 ? dotY - bh - 10 : Math.min(h - bh - 2, dotY + 10);
+      g.fillStyle = ink; g.globalAlpha = 0.92;
+      g.beginPath(); g.roundRect(x, y, bw, bh, 7); g.fill();
+      g.globalAlpha = 1; g.fillStyle = v("--panel", "#fff"); g.textBaseline = "middle";
+      g.fillText(text, x + 8, y + bh / 2 + 0.5);
+    }
   }, [points, duration, currentTime, band, live, windowS, range, median, prev, levels, compact, size, hover, tStart, tEnd, padL]);
 
   const at = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -206,4 +222,11 @@ export function contourPoints(analysis: any): PitchPoint[] {
   const step: number = analysis.contour.time_step ?? 0.01;
   const t0: number = analysis.contour.t0 ?? 0;
   return f0.map((hz, i) => ({ t: t0 + i * step, hz }));
+}
+
+/** "1.8 s" under a minute, "1:04.2" after. */
+function fmtTime(t: number): string {
+  if (t < 60) return `${t.toFixed(1)} s`;
+  const m = Math.floor(t / 60), s = t - m * 60;
+  return `${m}:${s.toFixed(1).padStart(4, "0")}`;
 }

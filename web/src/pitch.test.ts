@@ -89,3 +89,23 @@ test("cleaning: the smooth line eases in semitones and restarts after a pause", 
   const jump = cleanContour(frames((i) => (i < 20 ? 150 : 200)));
   assert.ok((jump[21].line as number) > 150 && (jump[21].line as number) < 200, "a jump without a pause eases");
 });
+
+test("cleaning: a wild reading goes when it's unsure or beside a pause; a clear one mid-speech stays", () => {
+  const at = (c: number) => frames((i) => (i >= 30 && i < 33 ? 300 : 180)).map((p) => ({ ...p, c: p.hz === 300 ? c : 0.97 }));
+  assert.ok(cleanContour(at(0.88)).slice(30, 33).every((p) => p.hz === null || Math.abs(p.hz - 180) < 1), "unsure burst dropped");
+  assert.ok(Math.abs((cleanContour(at(0.97))[31].hz as number) - 300) < 1, "clear burst mid-speech kept");
+  const byPause = frames((i) => (i < 20 ? 180 : i < 24 ? null : i < 27 ? 300 : 180)).map((p) => ({ ...p, c: 0.97 }));
+  assert.ok(cleanContour(byPause).slice(24, 27).every((p) => p.hz === null || Math.abs(p.hz - 180) < 1), "burst beside a pause dropped");
+});
+
+test("cleaning: quiet steady hum goes; a note held as loud as speech stays", () => {
+  const pts = frames((i) => (i < 100 ? 200 * 2 ** (Math.sin(i / 6) / 12) : i < 160 ? 120 : 220), 220).map((p, i) => ({
+    ...p, c: 0.97, v: i >= 100 && i < 160 ? 0.004 : 0.05,
+  }));
+  const out = cleanContour(pts);
+  assert.ok(out.slice(110, 150).every((p) => p.hz === null), "hum dropped");
+  assert.ok(out.slice(170, 210).every((p) => p.hz !== null), "held note kept");
+  assert.ok(out.slice(10, 90).every((p) => p.hz !== null), "speech kept");
+  const noLoudness = cleanContour(frames((i) => (i < 60 ? 120 : null)));
+  assert.ok(noLoudness.slice(5, 55).every((p) => p.hz !== null), "Praat contours (no loudness) are left alone");
+});

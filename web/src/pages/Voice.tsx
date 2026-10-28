@@ -20,7 +20,7 @@ import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer"
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
 import { Measured, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
 import { useLivePitch } from "../components/LivePitch";
-import { PianoRoll } from "../components/PianoRoll";
+import { PianoRoll, PitchPoint } from "../components/PianoRoll";
 import { useTakeAudio } from "../components/takeAudio";
 import { useMic } from "../components/Recording";
 import { ReadAlong, ReadNotes } from "../components/ReadAlong";
@@ -481,7 +481,7 @@ function useSplit() {
   return split;
 }
 
-interface Pt { t: number; hz: number | null }
+type Pt = PitchPoint;
 /** The live chart's fixed pitch range, so it never rescales while you speak. */
 const LO = 80, HI = 400;
 
@@ -624,7 +624,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const sorted = [...voiced].sort((a, b) => a - b);
   const live = recording || listening;
   // The readout reads the cleaned tail (octave slips and clicks removed), not raw frames.
-  const nowRaw = live ? recentMedian(cleanContour(shown.slice(-80)).map((p) => p.hz), 9) : null;
+  const nowRaw = live ? recentMedian(cleanContour(shown.slice(-300)).slice(-80).map((p) => p.hz), 9) : null;
   const mid = sorted.length > 8 ? sorted[sorted.length >> 1] : null;
   const range = sorted.length > 8 ? [sorted[Math.floor(sorted.length * 0.1)], sorted[Math.floor(sorted.length * 0.9)]] : null;
   const last2 = shown.length ? shown.filter((p) => p.t > shown[shown.length - 1].t - 2).map((p) => p.hz) : [];
