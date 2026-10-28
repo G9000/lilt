@@ -22,11 +22,16 @@
 .ve-side h6 { margin: 18px 10px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 600 12px var(--font); color: var(--ink-3); }
 .ve-side h6 span { font-size: 11.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
 /* Home: a row like the folders, its icon where their chevrons sit */
-.ve .ve-home { width: 100%; height: 28px; display: flex; align-items: center; justify-content: flex-start; gap: 2px; margin: 0 0 6px; padding: 0 8px 0 0; border-radius: 7px; color: var(--ink); font-weight: 550; text-align: left; transition: background-color 0.12s ease; }
+.ve .ve-home { width: 100%; height: 28px; display: flex; align-items: center; justify-content: flex-start; gap: 2px; margin: 0 0 1px; padding: 0 8px 0 0; border-radius: 7px; color: var(--ink); font-weight: 550; text-align: left; transition: background-color 0.12s ease; }
 .ve-home-ic { flex: none; width: 22px; display: grid; place-items: center; color: var(--ink-2); }
 .ve-home-ic svg { width: 14px; height: 14px; }
 .ve .ve-home[aria-current="page"] { background: var(--fill-2); }
 .ve-tree, .ve-files { list-style: none; margin: 0; padding: 0; }
+.ve-home + .ve-tree { margin-top: 8px; }
+/* Recordings and Progress open inside Practice, one column wide */
+.ve-doc.solo { grid-template-columns: minmax(0, 1fr); }
+.ve-doc.solo .ve-resize.split { display: none; }
+.ve-col.ve-embed { max-width: 860px; }
 .ve-row { display: flex; align-items: center; border-radius: 7px; transition: background-color 0.12s ease; }
 .ve .ve-fold { flex: none; width: 22px; height: 28px; display: grid; place-items: center; color: var(--ink-3); border-radius: 6px; }
 .ve-chev { width: 12px; height: 12px; transition: transform 0.18s var(--ease); }

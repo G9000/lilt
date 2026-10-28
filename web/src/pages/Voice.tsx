@@ -6,6 +6,8 @@ import { api, Deck, DeckItem, Profile, Rating, Session, Take, TextLevel, Texts }
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { LeaveIcon, StudioIcon, TextsIcon } from "../desk/icons";
+import { HistoryPage } from "./History";
+import { ProgressPage } from "./Progress";
 import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
@@ -92,7 +94,7 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "today" | "chapter"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "today" | "chapter" | "recordings" | "progress"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -135,7 +137,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
-      <main className="ve-doc" ref={docRef}>
+      <main className={`ve-doc${doc === "recordings" || doc === "progress" ? " solo" : ""}`} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
@@ -145,7 +147,9 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
             {texts.levels.map((l) => <button key={l.id} aria-current={doc === "chapter" && l.id === level?.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={recording}>{l.title}</button>)}
           </nav>
         )}
-        {doc === "home"
+        {doc === "recordings" || doc === "progress"
+          ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressPage />}</div></div>
+          : doc === "home"
           ? texts && profile && <HomeDoc texts={texts} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "start"
           ? profile && <StartDoc profile={profile} onProfile={setProfile} onRecording={setRecording} onTake={(t) => { setPractised((s) => new Set([...s, t.prompt_id])); setHistory((h) => [...h, t]); }} />
@@ -194,6 +198,13 @@ function Folder({ id, label, extra, current, open, onToggle, onOpen, locked, chi
   );
 }
 
+/** The places above the tree: Home, your recordings and your progress. */
+const PLACES = [
+  { id: "home", label: "Home", to: "/studio", icon: "M2.8 7.2L8 2.8l5.2 4.4V13a.8.8 0 01-.8.8H9.6V10H6.4v3.8H3.6a.8.8 0 01-.8-.8z" },
+  { id: "recordings", label: "Recordings", to: "/history", icon: "M3 6.5v3M5.5 4v8M8 2.5v11M10.5 5v6M13 7v2" },
+  { id: "progress", label: "Progress", to: "/progress", icon: "M2.5 13.5h11M4 11V8.5M7 11V5.5M10 11V7M13 11V3.5" },
+];
+
 /**
  * The sidebar as a file tree, like Obsidian: Today and each chapter are folders, their cards and
  * texts the files. The page you're on opens its folder; the chevrons fold the rest.
@@ -215,10 +226,12 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
   );
   return (
     <nav className="ve-side" aria-label="Practice">
-      <button className="ve-home" onClick={() => go("/studio")} disabled={locked} aria-current={current === "home" ? "page" : undefined}>
-        <span className="ve-home-ic"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.8 7.2L8 2.8l5.2 4.4V13a.8.8 0 01-.8.8H9.6V10H6.4v3.8H3.6a.8.8 0 01-.8-.8z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></span>
-        <span className="t">Home</span>
-      </button>
+      {PLACES.map((p) => (
+        <button key={p.id} className="ve-home" onClick={() => go(p.to)} disabled={locked} aria-current={current === p.id ? "page" : undefined}>
+          <span className="ve-home-ic"><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+          <span className="t">{p.label}</span>
+        </button>
+      ))}
       <ul className="ve-tree">
         <Folder id="today" label="Today" current={current === "today"} open={open.has("today")} onToggle={toggle} onOpen={() => go("/deck")} locked={locked}
           extra={deck && !deck.paused ? (left === 0 && total ? <Tick className="ve-tick" /> : <span className="c">{total - left}/{total}</span>) : null}>

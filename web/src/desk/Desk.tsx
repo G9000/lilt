@@ -22,8 +22,8 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   studio: { title: "Practice", width: 1120, full: true },
   texts: { title: "Practice texts", width: 760 },
   library: { title: "Exercises", width: 760 },
-  progress: { title: "Progress", width: 840 },
-  history: { title: "Recordings", width: 780 },
+  progress: { title: "Progress", width: 840, full: true },
+  history: { title: "Recordings", width: 780, full: true },
   settings: { title: "Settings", width: 640 },
 };
 
