@@ -288,6 +288,8 @@ export const api = {
   finalize: (id: string, chunk_count: number, interrupted = false) => call<Take>("POST", `/api/takes/${id}/finalize`, { chunk_count, interrupted }),
   analysis: (id: string) => call<any>("GET", `/api/takes/${id}/analysis`),
   reanalyze: (id: string) => call<Take>("POST", `/api/takes/${id}/reanalyze`),
+  /** Measure takes analysed with an older method again; earlier results are kept. */
+  remeasureStale: () => call<{ queued: number; method: string }>("POST", "/api/remeasure"),
   history: (params: { prompt_id?: string; days?: number } = {}) => {
     const q = new URLSearchParams();
     if (params.prompt_id) q.set("prompt_id", params.prompt_id);

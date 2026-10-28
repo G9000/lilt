@@ -542,3 +542,33 @@ fn hurt_card_is_suspended_pauses_plan_and_resume_brings_it_back() {
     cards::resume_suspended(&app).unwrap();
     assert!(!cards::load_state(&app)[&card].suspended);
 }
+
+#[test]
+fn remeasure_keeps_the_earlier_run_and_points_at_the_new_one() {
+    let (_d, app) = app();
+    let s = session(&app);
+    let t = upload(&app, &s.id, T::default(), "harmonic_240.webm");
+    let first = t.analysis_run.clone().unwrap();
+    let first_doc = app.analysis(&s.id, &first).unwrap();
+    // The bundled helper reports the method version the server expects.
+    assert_eq!(first_doc["method"]["method_version"], jobs::ANALYSIS_METHOD);
+    assert_eq!(jobs::remeasure_stale(&app).unwrap(), 0, "a current measurement is not re-measured");
+
+    // Pretend it came from an older method: it is now stale and gets a new run.
+    let mut old = first_doc.clone();
+    old["method"]["method_version"] = serde_json::json!("lilt-analysis/1");
+    store::write_json(&app.paths.analyses_dir(&s.id).join(format!("{first}.json")), &old).unwrap();
+    assert_eq!(jobs::remeasure_stale(&app).unwrap(), 1);
+    assert!(matches!(app.take(&t.id).unwrap().status, TakeStatus::AnalysisPending));
+    assert!(jobs::remeasure(&app, &t.id).is_err(), "already being measured");
+    jobs::run_pending(&app);
+
+    let after = app.take(&t.id).unwrap();
+    let second = after.analysis_run.clone().unwrap();
+    assert_eq!(second, format!("run-{}-a2", t.id));
+    assert!(matches!(after.status, TakeStatus::ReviewReady));
+    assert!(app.analysis(&s.id, &first).is_ok(), "the earlier run stays on disk");
+    assert_eq!(app.analysis(&s.id, &second).unwrap()["method"]["method_version"], jobs::ANALYSIS_METHOD);
+    assert_eq!(jobs::remeasure_stale(&app).unwrap(), 0);
+}
+

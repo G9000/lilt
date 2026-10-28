@@ -312,6 +312,14 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # th
 - **Laptop was asleep:** nothing runs while it sleeps. Pending analysis catches up on wake, and
   you'll see at most one reminder, not a backlog.
 
+## Measuring older takes again
+
+When the analysis improves, older takes keep the numbers they were first measured with. **Measure
+older takes again** at the bottom of Recordings (or `curl -X POST http://127.0.0.1:7878/api/remeasure`)
+re-measures every take analysed with an older method. Each take gets a new analysis run
+(`run-<take>-a2.json`, …) and the earlier runs stay on disk, so reviews that cite them keep their
+evidence; re-measuring never rewrites feedback you've already read.
+
 ## Content and licensing
 
 The practice texts (the chapters and today's text cards) are Markdown files in `content/texts`,

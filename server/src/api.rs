@@ -67,6 +67,8 @@ pub fn router(app: Shared) -> Router {
         .route("/api/takes/{id}/audio", get(take_audio))
         .route("/api/takes/{id}/analysis", get(take_analysis))
         .route("/api/takes/{id}/reanalyze", post(reanalyze))
+        .route("/api/takes/{id}/remeasure", post(remeasure))
+        .route("/api/remeasure", post(remeasure_stale))
         .route("/api/history", get(history))
         .route("/api/compare", get(compare_takes))
         .route("/api/progress", get(get_progress))
@@ -455,6 +457,16 @@ async fn take_analysis(State(app): State<Shared>, Path(id): Path<String>) -> R<J
 async fn reanalyze(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<Value>> {
     jobs::retry_failed(&app, &id)?;
     Ok(Json(take_view(&app, &app.take(&id)?)))
+}
+
+async fn remeasure(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<Value>> {
+    jobs::remeasure(&app, &id)?;
+    Ok(Json(take_view(&app, &app.take(&id)?)))
+}
+
+/// Re-measure every take analysed with an older method; the earlier results are kept.
+async fn remeasure_stale(State(app): State<Shared>) -> R<Json<Value>> {
+    Ok(Json(json!({ "queued": jobs::remeasure_stale(&app)?, "method": jobs::ANALYSIS_METHOD })))
 }
 
 #[derive(Deserialize)]

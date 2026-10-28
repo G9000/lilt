@@ -2,7 +2,7 @@ node_modules/
 target/
 .venv/
 web/dist/
-lilt-data/
+lilt-data*/
 __pycache__/
 .DS_Store
 # Exercise content is NHS Fife copyright (personal-use paraphrase). Don't publish this repo with it.

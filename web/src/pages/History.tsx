@@ -53,6 +53,11 @@ export function HistoryPage() {
     void load();
   };
   const update = (t: Take) => setTakes((xs) => xs?.map((x) => (x.id === t.id ? t : x)) ?? null);
+  const remeasure = async () => {
+    const r = await api.remeasureStale();
+    setToast(r.queued ? `Measuring ${r.queued} take${r.queued === 1 ? "" : "s"} again` : "Every take already uses the latest measurement");
+    if (r.queued) window.setTimeout(() => void load(), 4000);
+  };
 
   return (
     <div className="rl">
@@ -69,6 +74,7 @@ export function HistoryPage() {
         </section>
       ))}
       {takes && takes.length > 0 && <button className="rl-more" onClick={() => setDays((d) => d + 365)}>Show older</button>}
+      <p className="rl-foot">Measurements improve now and then. <button className="rl-link" onClick={() => void remeasure()}>Measure older takes again</button> with the latest analysis; the earlier results are kept.</p>
       <p className="rl-foot">Everything lives in Lilt's data folder as ordinary audio and JSON files, and <a href="/api/export" download>the export</a> is a full copy. Deleting a recording removes it from Lilt only; copies you've exported or backed up elsewhere stay where they are.</p>
       <Toast text={toast} />
     </div>
