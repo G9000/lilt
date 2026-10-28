@@ -5,6 +5,7 @@ import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Profile, Rating, Session, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { setRoom } from "../room/Room";
+import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
 import { Measured, TakeResult as Measures } from "../components/DeckPitch";
@@ -266,9 +267,15 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const startListening = async () => { const s = mic.stream ?? (await mic.request()); if (s) setListening(true); };
 
   const dash = <span className="ve-none">–</span>;
+  // Until the microphone is in use, the right half is just the room's window and the record button.
+  const idle = !recording && !listening && state !== "saving" && state !== "error";
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   return (
-    <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
+    <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
+      <div className="ve-art" aria-hidden="true">
+        <div className="ve-art-img" style={{ backgroundImage: `url(room/room-${currentLight()}.webp)` }} />
+        <div className="ve-art-copy"><b>Ready when you are</b><span>{idleHint}</span></div>
+      </div>
       <div className="ve-now" aria-live="off">
         <div className="ve-now-read">
           <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>

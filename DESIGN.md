@@ -37,8 +37,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   soft `--fill` panel, then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
   under each and a quiet number in the margin. The active text has no card: it is in full ink with its
   number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick.
-  Wider than 1100px, the screen splits in half: the text on the left, the recorder standing on the
-  right on the sidebar's tone, top to bottom: a big live **Now** readout (Geist 200, 68px, note
+  Wider than 1100px, the screen splits in half: the text on the left, the recorder on the right.
+  **While idle** (not recording or listening) the right half is just artwork and the record pill:
+  the room painting in the current light, cropped to the skyline window in a 24px-radius frame,
+  drifting slowly (48 s), with "Ready when you are" and the hint in white over a soft bottom shade.
+  **In use**, the instruments rise in, top to bottom: a big live **Now** readout (Geist 200, 68px, note
   under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
   graph straight on the panel (comfortable band, faint Hz guide lines labelled on the right,
   rounded loudness bars, the live pitch line in coral with a soft glow and a dot at its tip); three
