@@ -28,10 +28,10 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   sheet** over the blurred room (white glass about 58–80% with a 40px backdrop blur; the sidebar,
   text and recorder are split by hairlines, and the text is the most opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
-  the sidebar, like a Mac app). **Home** (`#/studio`, the dock's Chapters app) is the Practice index: the owner's words from
-  `content/texts/index.md` rendered as a document (what it's for, why, how to use it, looking after
-  your voice, sources), then the chapters with progress, generated; nothing is picked, so the
-  recorder takes free recordings. The 272px sidebar is a **file tree, like Obsidian**, with a Home
+  the sidebar, like a Mac app). **Home** (`#/studio`, the dock's Chapters app) is the Practice index, a full-width page like a
+  note with no recorder: the owner's words and pictures from `content/texts/index.md` (a 2:1 hero
+  of the room with the cat asleep, a warm "Hey girlies, welcome in", what it's for, why, how to use
+  it, being kind to your voice, sources), then the chapters with progress, generated. The 272px sidebar is a **file tree, like Obsidian**, with a Home
   row at the top: **Today** and each
   **chapter** are folders (a chevron that folds, the name, a count, or a small medal once a chapter
   is complete); their cards and texts are the files, under a hairline indent guide, with a green

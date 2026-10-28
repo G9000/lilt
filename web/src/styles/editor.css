@@ -225,10 +225,15 @@
 .ve-dock > .ve-err, .ve-dock > .btn-secondary { grid-column: 1 / -1; justify-self: start; }
 
 /* the Practice home: Markdown from content/texts/index.md, read like a document */
-.ve-md { max-width: 62ch; color: var(--ink-2); font-size: 15.5px; line-height: 1.65; }
+.ve-col.ve-home-col { max-width: 880px; padding-top: 40px; }
+.ve-md { max-width: 66ch; color: var(--ink-2); font-size: 15.5px; line-height: 1.65; }
 .ve-md > :first-child { margin-top: 0; }
 .ve-md p { margin: 0 0 16px; }
-.ve-md p:first-child { font-size: 18px; line-height: 1.55; color: var(--ink); }
+.ve-md h1 { margin: 0 0 14px; font: 760 48px/1.04 var(--font); letter-spacing: -0.05em; color: var(--ink); text-wrap: balance; }
+.ve-md h1 + p { font-size: 18.5px; line-height: 1.55; color: var(--ink); }
+.ve-md figure { margin: 0 0 32px; }
+.ve-md figure img, .ve-md p img { display: block; width: 100%; border-radius: 22px; }
+.ve-md figure img { aspect-ratio: 2 / 1; object-fit: cover; box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 24px 50px -28px rgba(10, 10, 40, 0.55); }
 .ve-md h2 { margin: 40px 0 12px; font: 720 24px/1.2 var(--font); letter-spacing: -0.035em; color: var(--ink); }
 .ve-md h3 { margin: 28px 0 8px; font: 650 17px/1.3 var(--font); color: var(--ink); }
 .ve-md ul, .ve-md ol { margin: 0 0 16px; padding-left: 20px; }
@@ -284,6 +289,7 @@
 
 /* wide screens: the text on the left half, the recorder standing on the right half */
 @media (min-width: 1101px) {
+  .ve-doc.home { grid-template-columns: minmax(0, 1fr); }
   .ve-doc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
   .ve-page { grid-row: 1; grid-column: 1; }
   .ve-col { padding: 64px 40px 88px 72px; }
@@ -356,6 +362,9 @@
   .ve-col { padding: 24px 18px 40px; }
   .ve-mk { display: none; }
   .ve-head h1 { font-size: 40px; }
+  .ve-md h1 { font-size: 34px; }
+  .ve-md figure { margin-bottom: 24px; }
+  .ve-md figure img { border-radius: 16px; }
   .ve-item { margin: 0 -4px 4px; padding: 14px 16px; }
   .ve .readtext { font-size: 22px; }
   .ve .readtext.passage, .ve-item.passage .readtext { font-size: 18px; }

@@ -2,37 +2,50 @@
 title: Practice
 ---
 
-A few minutes a day of saying things out loud in your practice voice, listening back, and
-noticing what changed. Lilt is built around one goal: a lighter, brighter speaking voice that
-sounds natural, feels comfortable and works in everyday conversation.
+![The room at sunset, with the cat asleep on the bed](images/room-sunset.webp)
+
+# Hey girlies, welcome in
+
+Hi lovely, and hello to everyone finding their voice here. This is your little practice room: a
+calm corner to try things out, hear yourself and notice how far you've come. No grades and no
+pressure. Just you, your voice, and a sleepy cat.
+
+## What this is for
+
+Lilt helps you practise a lighter, brighter speaking voice: one that sounds like _you_, feels
+comfortable, and holds up in real life, ordering a coffee, answering the phone, chatting with
+friends. A few minutes a day is plenty. You're not trying to perform a voice; you're helping the
+one you want become easy.
 
 ## Why it works this way
 
-- **Short and often beats long and rare.** A voice changes through small, regular repetitions,
-  so a day's practice takes about as many minutes as you have cards.
-- **Easy before hard.** The chapters follow the NHS Fife progression: hums first, then speech you
-  don't have to think about (counting, days, months), then phrases, sentences, passages and your
-  own words. Move on when the current chapter feels comfortable and consistent.
+- **Little and often.** Voices change through small, regular repetitions, not marathon sessions.
+  Most days take only a few minutes.
+- **Easy before hard.** The chapters follow the NHS Fife progression: hums first, then things you
+  don't have to think about (counting, days, months), then phrases, sentences, passages and finally
+  your own words. Move on when a chapter feels comfortable and consistent, not before.
 - **Your ear decides.** You rate how each card felt, and that rating decides when it comes back.
-  Pitch numbers describe a take; they never mark it right or wrong.
-- **Comfort first.** Nothing here should hurt or strain. If it does, stop and rest.
+  Pitch is one part of a voice, not a score: resonance, rhythm and how it feels matter just as much.
+- **Comfort first.** Nothing here should hurt or strain. If it does, that's your cue to rest.
 
 ## How to use it
 
-- **Today** holds your cards for the day. Say each one, listen back, then rate it: _Again_ brings
-  it back in a few minutes, _Hard_, _Good_ and _Easy_ space it further out.
-- **Chapters** are the seven levels of reading material. Pick a text, read it aloud, and compare
-  your take with the one before. Practise every text in a chapter to earn its medal.
-- **Free recording**: with nothing picked, the recorder just listens. Talk about anything and you
-  get your pitch line and numbers back.
-- **The recorder** shows your pitch live, with your comfortable range as a soft band. Saved takes
-  are measured again more carefully once you stop.
+- **Today** has your cards for the day. Say each one, listen back, then rate it: _Again_ brings it
+  back in a few minutes, and _Hard_, _Good_ and _Easy_ space it further out.
+- **Chapters** are seven levels of things to read aloud. Pick a text, say it, and compare with your
+  last take. Practise every text in a chapter to earn its medal.
+- **Free recording**: with nothing picked, the recorder just listens. Talk about your day and get
+  your pitch line and numbers back.
+- **The recorder** shows your pitch live, with your comfortable range as a soft band. Once you stop,
+  your take is measured again more carefully.
 
-## Look after your voice
+## Be kind to your voice (and to yourself)
 
-Sip water, take breaks, and keep the effort low. If speaking hurts, or hoarseness lasts more than a
-couple of days, stop practising and check in with a GP or a speech and language therapist. Lilt is
-a practice tool, not a clinical one: it doesn't diagnose, and it doesn't replace a therapist.
+Sip water, take breaks, and keep the effort low. Some days will sound better than others, and
+that's completely normal; it isn't going backwards. If speaking hurts, or hoarseness lasts more than
+a couple of days, stop practising and check in with a GP or a speech and language therapist. Many
+therapists also offer gender-affirming voice support. Lilt is a practice tool, not a clinical one:
+it doesn't diagnose, and it doesn't replace a therapist.
 
 ## Sources
 

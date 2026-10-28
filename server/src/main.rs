@@ -68,8 +68,11 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
         }));
     let index = config.web_dir.join("index.html");
     let static_files = ServeDir::new(&config.web_dir).fallback(ServeFile::new(index));
+    // Pictures used by the practice texts' Markdown (content/texts/images), as `images/<file>`.
+    let text_images = ServeDir::new(config.content_dir.join("texts/images"));
     api::router(app)
         .merge(mcp_router)
+        .nest_service("/texts/images", text_images)
         .fallback_service(static_files)
 }
 

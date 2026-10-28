@@ -54,7 +54,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "toda
   return (
     <div className="ve">
       <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
-      <main className="ve-doc">
+      <main className={`ve-doc${doc === "home" ? " home" : ""}`}>
         {texts && (
           <nav className="ve-chips" aria-label="Chapters" ref={chips}>
             <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
@@ -63,7 +63,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "toda
           </nav>
         )}
         {doc === "home"
-          ? texts && <HomeDoc texts={texts} practised={practised} band={profile?.comfort_range_hz ?? null} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          ? texts && <HomeDoc texts={texts} practised={practised} />
           : doc === "today"
           ? <TodayDoc key={first ?? ""} first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : texts && level && profile && <ChapterDoc key={level.id} texts={texts} level={level} itemId={itemId} profile={profile} onProfile={setProfile} onRecording={setRecording}
@@ -407,46 +407,33 @@ function FreeResult({ take, band }: { take: Take; band: [number, number] | null 
 /* ---------------------------------------------------------------- home: what Practice is for */
 
 /**
- * The Practice home: the owner's words from content/texts/index.md, then the chapters with your
- * progress (generated, so it never goes stale). Nothing is picked, so the recorder takes free takes.
+ * The Practice home, a full-width page like a note: the owner's words and pictures from
+ * content/texts/index.md, then the chapters with your progress (generated, so it never goes stale).
  */
-function HomeDoc({ texts, practised, band, onRecording, onTake }: {
-  texts: Texts; practised: Set<string>; band: [number, number] | null; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
-}) {
-  const split = useSplit();
-  const [studio, setStudio] = useState<string | null>(null);
-  const [freeTake, setFreeTake] = useState<Take | null>(null);
-  useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
-  const freeView = freeTake && <FreeResult take={freeTake} band={band} />;
+function HomeDoc({ texts, practised }: { texts: Texts; practised: Set<string> }) {
   return (
-    <>
-      <div className="ve-page">
-        <article className="ve-col">
-          <header className="ve-head"><h1>Practice</h1></header>
-          {texts.home && <Markdown src={texts.home} className="ve-md" />}
-          <section className="ve-md">
-            <h2>The chapters</h2>
-            <ol className="ve-chapters">
-              {texts.levels.map((l) => {
-                const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
-                return (
-                  <li key={l.id}>
-                    <a href={`#/studio/${l.id}`}>
-                      <span className="n">{l.level}</span>
-                      <span className="t"><b>{l.title}</b><small>{l.subtitle}</small></span>
-                      {d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}
-                    </a>
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
-          {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
-        </article>
-      </div>
-      <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake
-        onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} result={split ? freeView : null} />
-    </>
+    <div className="ve-page">
+      <article className="ve-col ve-home-col">
+        {texts.home ? <Markdown src={texts.home} className="ve-md" /> : <header className="ve-head"><h1>Practice</h1></header>}
+        <section className="ve-md">
+          <h2>The chapters</h2>
+          <ol className="ve-chapters">
+            {texts.levels.map((l) => {
+              const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
+              return (
+                <li key={l.id}>
+                  <a href={`#/studio/${l.id}`}>
+                    <span className="n">{l.level}</span>
+                    <span className="t"><b>{l.title}</b><small>{l.subtitle}</small></span>
+                    {d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}
+                  </a>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      </article>
+    </div>
   );
 }
 

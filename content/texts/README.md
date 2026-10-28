@@ -5,7 +5,9 @@ or open this folder as an Obsidian vault. Restart Lilt afterwards (with Docker, 
 `docker compose up -d --build`). If a file has a mistake, Lilt won't start and says which file.
 
 - `index.md`: the Practice home page (what it's for, why, how to use it, sources). Plain Markdown:
-  `##` headings, paragraphs, `-` lists, `> ` quotes, `**bold**`, `_italic_` and `[links](https://…)`.
+  `#`/`##` headings, paragraphs, `-` lists, `> ` quotes, `**bold**`, `_italic_`, `[links](https://…)`
+  and pictures: put the file in `images/` and write `![what it shows](images/name.webp)` on its own
+  line (it opens the same way in Obsidian).
   The list of chapters under it is added automatically.
 - `_about.md`: the version, the date the sources were checked, and the note shown at the end of
   every chapter.
