@@ -14,9 +14,9 @@
 //! its history; removing or renaming an id leaves its past takes in Recordings only.
 
 use crate::app::App;
+use crate::courses::texts;
 use crate::courses::{self, Course};
 use crate::store;
-use crate::courses::texts;
 use anyhow::{Context, Result, anyhow, bail, ensure};
 use serde_json::{Value, json};
 use std::collections::BTreeMap;

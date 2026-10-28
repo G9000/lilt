@@ -4,7 +4,6 @@ mod app;
 mod coach;
 mod courses;
 mod http;
-mod model;
 mod practice;
 mod recordings;
 mod store;

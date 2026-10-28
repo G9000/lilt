@@ -1,9 +1,9 @@
 //! Coach reviews: asking for one, reading it, and the learner's response.
 
 use crate::app::Shared;
+use crate::coach::model::{Review, ReviewResponse};
 use crate::coach;
 use crate::http::R;
-use crate::model::*;
 use axum::{
     Json, Router,
     extract::{Path, State},

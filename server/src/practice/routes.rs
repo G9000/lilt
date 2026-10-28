@@ -2,8 +2,9 @@
 
 use crate::app::Shared;
 use crate::http::R;
-use crate::model::*;
+use crate::practice::model::Plan;
 use crate::practice::{cards, exercises, progress};
+use crate::recordings::model::*;
 use crate::{analysis, coach::routes::review_view, recordings, util};
 use axum::{
     Json, Router,

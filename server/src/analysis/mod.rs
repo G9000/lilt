@@ -5,12 +5,28 @@ pub mod compare;
 pub mod routes;
 
 use crate::app::{App, Shared};
-use crate::model::*;
+use crate::recordings::model::*;
 use crate::store;
 use crate::util;
 use anyhow::{Result, anyhow};
+use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::time::Duration;
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Job {
+    pub schema: String,
+    pub id: String,
+    pub kind: String,
+    pub session_id: String,
+    pub take_id: String,
+    pub status: String,
+    pub attempts: u32,
+    pub run_id: String,
+    pub created_utc: String,
+    pub updated_utc: String,
+    pub error: Option<String>,
+}
 
 pub const ANALYSIS_MAJOR: &str = "a1";
 const MAX_ATTEMPTS: u32 = 3;

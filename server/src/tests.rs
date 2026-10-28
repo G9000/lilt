@@ -1,8 +1,10 @@
 //! Acceptance-scenario tests (PRD §14) against a temporary data root, using the real
 //! Python analysis helper and fixed fixture audio from analysis/tests/fixtures.
 
+use crate::analysis::Job;
 use crate::app::{App, Config, Shared};
-use crate::model::*;
+use crate::coach::model::*;
+use crate::recordings::model::*;
 use crate::recordings::{self, ChunkOutcome, FinalizeReq, NewSession, NewTake, SessionUpdate, ComfortInput, TakeUpdate, UploadError};
 use crate::{coach, analysis::compare, analysis, practice::progress, store, coach::validate};
 use std::collections::BTreeMap;

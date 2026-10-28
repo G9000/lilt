@@ -3,8 +3,9 @@
 use crate::app::Shared;
 use crate::coach::routes::review_view;
 use crate::http::{ApiError, R};
-use crate::model::*;
 use crate::practice::exercises;
+use crate::practice::model::Plan;
+use crate::recordings::model::*;
 use crate::{recordings, util};
 use axum::{
     Json, Router,

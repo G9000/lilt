@@ -7,8 +7,8 @@
 //! remixing). Nothing about your recordings or practice.
 
 use crate::app::Shared;
-use crate::courses::{self, Course};
 use crate::courses::syllabus;
+use crate::courses::{self, Course};
 use anyhow::{Context, Result, anyhow, bail, ensure};
 use axum::extract::{Json, State};
 use axum::http::StatusCode;

@@ -1,9 +1,10 @@
 //! MCP server: a small typed tool set over IDs only (no paths, no shell). Uses the
 //! same record access and validation as the HTTP API.
 
-use crate::recordings::routes::{self as views, ListQuery};
 use crate::app::Shared;
-use crate::model::*;
+use crate::coach::model::EvidenceRef;
+use crate::practice::model::Plan;
+use crate::recordings::routes::{self as views, ListQuery};
 use crate::{analysis::compare, coach::validate, courses::syllabus, practice::progress, util};
 use base64::Engine;
 use rmcp::{

@@ -4,12 +4,15 @@
 //! measurements are descriptive only and never select a cue or change the plan.
 
 pub mod validate;
+pub mod model;
 pub mod routes;
 
-use crate::app::App;
 use crate::analysis::compare;
+use crate::app::App;
+use crate::coach::model::*;
 use crate::practice::exercises::Exercise;
-use crate::model::*;
+use crate::practice::model::Plan;
+use crate::recordings::model::*;
 use crate::store;
 use crate::util;
 use anyhow::{Result, anyhow};

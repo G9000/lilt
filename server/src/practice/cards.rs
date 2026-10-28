@@ -8,7 +8,7 @@
 //! and an "it hurt" answer that suspends the card and pauses the plan.
 
 use crate::app::App;
-use crate::model::*;
+use crate::practice::model::Plan;
 use crate::store;
 use crate::util;
 use anyhow::{Result, anyhow, bail};

@@ -3,7 +3,7 @@
 //! claims. This screen cannot prove arbitrary prose true.
 
 use crate::app::App;
-use crate::model::*;
+use crate::coach::model::*;
 use crate::store;
 use crate::util;
 use anyhow::{Result, anyhow, bail};

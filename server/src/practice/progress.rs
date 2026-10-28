@@ -1,10 +1,10 @@
 //! Per-skill assessment states (PRD §9). Missing data, skipped days, new tasks and
 //! recording faults never turn into a low score or a regression claim.
 
+use crate::analysis::compare;
 use crate::app::App;
 use crate::coach;
-use crate::analysis::compare;
-use crate::model::*;
+use crate::recordings::model::*;
 use serde::Serialize;
 use serde_json::{Value, json};
 

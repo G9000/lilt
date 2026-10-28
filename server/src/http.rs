@@ -2,7 +2,7 @@
 //! Each feature serves its own routes from its `routes` module; MCP tools reuse the same functions.
 
 use crate::app::Shared;
-use crate::model::*;
+use crate::practice::model::Profile;
 use crate::{ai, analysis, coach, courses, practice, recordings, store, util};
 use axum::{
     Json, Router,

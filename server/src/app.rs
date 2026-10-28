@@ -1,7 +1,9 @@
 //! Shared application state and record access.
 
+use crate::coach::model::{Review, ReviewResponse};
 use crate::practice::exercises::Registry;
-use crate::model::*;
+use crate::practice::model::{Plan, Profile};
+use crate::recordings::model::{Session, Take};
 use crate::store::{self, Paths};
 use crate::util;
 use anyhow::{Context, Result, anyhow};

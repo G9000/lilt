@@ -2,7 +2,7 @@
 //! strongest measured outcome here is "stable" or "difference noted", never progress.
 
 use crate::app::App;
-use crate::model::*;
+use crate::recordings::model::*;
 use anyhow::Result;
 use serde::Serialize;
 use serde_json::Value;
