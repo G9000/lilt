@@ -75,7 +75,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
           <span className="ds-hide-s">{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
           <span>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
           <button className="ds-mb-btn" onClick={onTheme} aria-label={`Theme: ${theme}. Switch theme`} title={`Theme: ${theme}`}>{theme === "dark" ? Icon.moon : Icon.sun}</button>
-          <button className="ds-mb-btn" onClick={() => go("/settings")} aria-label="Settings">{Icon.settings}</button>
+          <SettingsButton />
           <button className="ds-leave" onClick={() => go("/")}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9.5 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5.5M7 8h6.5M11 5.5L13.5 8 11 10.5" /></svg>
             <span>Leave desk</span>

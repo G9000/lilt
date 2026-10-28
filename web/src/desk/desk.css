@@ -328,29 +328,24 @@
 .fl .ds-clock .ds-clock-img { filter: saturate(1.15) brightness(0.88); background-position: 70% 30%; background-size: 420% auto; }
 .fl .ds-clock::after { z-index: 1; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); border-radius: inherit; }
 
-/* Settings over the room: a sheet from the right edge, like Notification Center */
-.ss { position: fixed; z-index: 60; top: 38px; right: 10px; bottom: 10px; width: 560px; max-width: calc(100vw - 20px); display: grid; grid-template-rows: auto minmax(0, 1fr); border-radius: 22px; overflow: hidden; color: var(--ink);
-  background: var(--win); backdrop-filter: blur(30px) saturate(1.7); -webkit-backdrop-filter: blur(30px) saturate(1.7); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 30px 80px -20px rgba(0, 0, 0, 0.6);
-  transform: translateX(24px); opacity: 0; pointer-events: none; transition: transform 0.35s var(--ease), opacity 0.25s ease-out; }
-.ss.open { transform: none; opacity: 1; pointer-events: auto; }
-.ss-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 10px 24px; }
-.ss-head b { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
-.ss-close { width: 32px; height: 32px; min-height: 32px; padding: 0; border-radius: 999px; background: var(--fill); color: var(--ink-2); }
-.ss-close:hover { background: var(--fill-2); color: var(--ink); }
-.ss-close svg { width: 14px; height: 14px; }
-.ss-body { overflow: auto; padding: 4px 24px 28px; scrollbar-width: thin; }
-@media (prefers-reduced-motion: reduce) { .ss { transition: opacity 0.2s; transform: none; } }
-@media (max-width: 640px) { .ss { top: 34px; right: 6px; left: 6px; bottom: 6px; width: auto; } }
+/* Settings, in the room: the app's icon, like one on a Mac desktop */
+.fl-app { pointer-events: auto; display: grid; justify-items: center; gap: 6px; width: 92px; min-height: 0; padding: 6px 4px; border: 0; border-radius: 14px; background: none; color: #fff; cursor: pointer; }
+.fl-app-icon { width: 64px; height: 64px; border-radius: 15px; display: grid; place-items: center; color: #3b3b42;
+  background: radial-gradient(circle at 50% 40%, #f4f4f6 0 30%, #d9d9de 31% 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -2px 3px rgba(0, 0, 0, 0.12), 0 10px 22px -8px rgba(0, 0, 0, 0.7); transition: translate 0.2s var(--ease); }
+.fl-app-icon svg { width: 46px; height: 46px; transition: rotate 0.5s var(--ease); }
+.fl-app:hover .fl-app-icon { translate: 0 -2px; }
+.fl-app:hover .fl-app-icon svg { rotate: 30deg; }
+.fl-app:active .fl-app-icon { scale: 0.96; }
+.fl-app-name { font: 600 12.5px/1.2 var(--font); padding: 1px 6px; border-radius: 5px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.fl-app:focus-visible { outline: none; }
+.fl-app:focus-visible .fl-app-name { background: var(--accent); text-shadow: none; }
 
-/* Settings, in the room: a small dark-glass card, a tap opens every setting over the room */
-.fl-set { pointer-events: auto; width: 188px; min-height: 0; padding: 14px; border: 0; border-radius: 22px; color: #fff; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; text-align: left; cursor: pointer;
-  background: linear-gradient(135deg, rgba(40, 36, 52, 0.92), rgba(18, 17, 24, 0.92)); box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 22px 40px -18px rgba(0, 0, 0, 0.8); transition: background-color 0.15s ease, translate 0.2s var(--ease); }
-.fl-set:hover { translate: 0 -2px; }
-.fl-set:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.fl-set-icon { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: linear-gradient(160deg, #8e8e98, #55555f); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
-.fl-set-icon svg { width: 22px; height: 22px; }
-.fl-set:hover .fl-set-icon svg { rotate: 30deg; }
-.fl-set-icon svg { transition: rotate 0.4s var(--ease); }
-.fl-set-info { display: grid; min-width: 0; }
-.fl-set-info b { font-size: 15px; font-weight: 600; }
-.fl-set-info small { font-size: 12px; line-height: 1.35; color: rgba(255, 255, 255, 0.66); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Settings, its own window over the room or the desk */
+.ss-scrim { position: fixed; inset: 0; z-index: 69; pointer-events: none; opacity: 0; background: rgba(8, 8, 18, 0.35); transition: opacity 0.3s ease-out; }
+.ss-scrim.on { opacity: 1; }
+.ss { position: fixed; z-index: 70; top: 46px; bottom: 22px; left: 50%; width: min(1080px, calc(100vw - 40px)); translate: -50% 12px; scale: 0.98; border-radius: 22px; overflow: hidden; color: var(--ink);
+  background: var(--win); backdrop-filter: blur(30px) saturate(1.7); -webkit-backdrop-filter: blur(30px) saturate(1.7); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 40px 100px -24px rgba(0, 0, 0, 0.65);
+  opacity: 0; pointer-events: none; transition: translate 0.35s var(--ease), scale 0.35s var(--ease), opacity 0.2s ease-out; }
+.ss.open { translate: -50% 0; scale: 1; opacity: 1; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .ss { transition: opacity 0.2s; translate: -50% 0; scale: 1; } }
+@media (max-width: 700px) { .ss { top: 34px; bottom: 6px; width: calc(100vw - 12px); border-radius: 18px; } }

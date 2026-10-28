@@ -1,4 +1,4 @@
-import { SettingsSheet } from "./desk/SettingsSheet";
+import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
 import { ReactNode, useEffect, useState } from "react";
 import { api, Deck } from "./api";
 import { CardStack } from "./desk/CardStack";
@@ -13,7 +13,6 @@ import { PracticePage } from "./pages/Practice";
 import { FeedbackPage } from "./pages/Feedback";
 import { ComparePage } from "./pages/Compare";
 import { LibraryPage } from "./pages/Library";
-import { SettingsPage } from "./pages/Settings";
 import { VoicePage } from "./pages/Voice";
 import { TextsPage } from "./pages/Texts";
 
@@ -72,6 +71,8 @@ export function App() {
   const [deck, setDeck] = useState<Deck | null>(null);
 
   useEffect(() => { applyTheme(theme); }, [theme]);
+  // An old link to #/settings opens the Settings window on the desk.
+  useEffect(() => { if (seg[0] === "settings") { window.location.replace("#/desk"); openSettings(); } }, [seg[0]]); // eslint-disable-line react-hooks/exhaustive-deps
   // Settings changes the theme too.
   useEffect(() => {
     const on = (e: Event) => setTheme((e as CustomEvent<Theme>).detail);
@@ -105,7 +106,7 @@ export function App() {
     case "progress": page = <VoicePage doc="progress" />; break;
     case "history": page = <VoicePage doc="recordings" />; break;
     case "library": page = <LibraryPage />; break;
-    case "settings": page = <SettingsPage />; break;
+    case "settings": page = null; break;
     default: page = null;
   }
   const section = seg[0] && SECTIONS.has(seg[0]) ? seg[0] : "desk";

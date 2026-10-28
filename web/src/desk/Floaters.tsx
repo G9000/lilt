@@ -111,24 +111,12 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
   );
 }
 
-/** Settings, in the room: what's set at a glance (theme, the AI that last used Lilt), and a tap opens them all. */
-function SettingsWidget({ inside }: { inside: boolean }) {
-  const [ai, setAi] = useState<string | null>(null);
-  const [dark, setDark] = useState(document.documentElement.getAttribute("data-theme") === "dark");
-  useEffect(() => { void api.connectInfo().then((c) => setAi(c.activity[0]?.client ?? null), () => setAi(null)); }, [inside]);
-  useEffect(() => {
-    const m = new MutationObserver(() => setDark(document.documentElement.getAttribute("data-theme") === "dark"));
-    m.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => m.disconnect();
-  }, []);
+/** Settings, in the room: just the app's icon, like one on a Mac desktop. A click opens every setting. */
+function SettingsWidget() {
   return (
-    <button className="fl-set ss-open" onClick={() => openSettings()} aria-label="Settings">
-      <span className="fl-set-icon" aria-hidden="true">{GEAR}</span>
-      <span className="fl-set-info">
-        <b>Settings</b>
-        <small>{dark ? "Dark" : "Light"} theme</small>
-        <small>{ai ? `AI: ${ai}` : "AI: not connected"}</small>
-      </span>
+    <button className="fl-app ss-open" onClick={() => openSettings()} aria-label="Settings">
+      <span className="fl-app-icon" aria-hidden="true">{GEAR}</span>
+      <span className="fl-app-name">Settings</span>
     </button>
   );
 }
@@ -207,7 +195,7 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
         </div>
       </Widget>
       <Widget id="settings" delay={-1.8} label="Settings">
-        <SettingsWidget inside={inside} />
+        <SettingsWidget />
       </Widget>
       <Widget id="clock" delay={-1.1} label="Clock">
         <ClockWidget />

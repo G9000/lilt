@@ -1,0 +1,68 @@
+/* Settings, laid out like System Settings: a sidebar of categories with coloured icons and a
+   search field, one pane at a time on the right. */
+.sx { height: 100%; display: grid; grid-template-columns: 248px minmax(0, 1fr); font-size: 14px; }
+.sx-side { min-height: 0; overflow: auto; padding: 14px 10px 16px; background: var(--fill); border-right: 1px solid var(--hair); scrollbar-width: none; }
+.sx-lights { display: flex; gap: 8px; padding: 2px 6px 16px; }
+.sx-lights > * { width: 12px; height: 12px; min-height: 0; padding: 0; border: 0; border-radius: 50%; background: #ff5f57; }
+.sx-lights .sx-l2 { background: #febc2e; } .sx-lights .sx-l3 { background: #28c840; }
+.sx-lights button { cursor: pointer; } .sx-lights button:hover { box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.25); }
+.sx-search { display: flex; align-items: center; gap: 6px; height: 30px; margin: 0 4px 12px; padding: 0 9px; border-radius: 8px; background: var(--fill-2); color: var(--ink-3); }
+.sx-search svg { width: 13px; height: 13px; flex: none; }
+.sx .sx-search input { min-height: 0; height: 28px; padding: 0; border: 0; background: none; box-shadow: none; font-size: 13.5px; }
+.sx-side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.sx-side li button { width: 100%; min-height: 0; display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 5px 8px; border-radius: 8px; font: 500 13.5px var(--font); color: var(--ink); text-align: left; }
+.sx-side li button:hover { background: var(--fill-2); }
+.sx-side li button.on { background: var(--accent); color: #fff; }
+.sx-none { padding: 8px 10px; font-size: 13px; color: var(--ink-3); }
+.sx-tile { flex: none; display: grid; place-items: center; border-radius: 22%; color: #fff; box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.4), 0 0.5px 1px rgba(0, 0, 0, 0.2); }
+.sx-tile svg { width: 64%; height: 64%; }
+
+.sx-main { min-width: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--page); }
+.sx-head { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 24px; border-bottom: 1px solid var(--hair); }
+.sx-head h2 { flex: 1; margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.sx-back { display: none; width: 30px; height: 30px; min-height: 0; padding: 0; border-radius: 8px; color: var(--ink-2); }
+.sx-back svg { width: 16px; height: 16px; }
+.sx-saved { font-size: 12.5px; color: var(--ink-3); transition: opacity 0.3s; }
+.sx-saved.saved { color: var(--ok); } .sx-saved.error { color: var(--warn); }
+.sx-body { overflow: auto; padding: 28px 32px 40px; display: grid; align-content: start; gap: 18px; scrollbar-width: thin; }
+.sx-body > * { width: 100%; max-width: 720px; justify-self: center; zoom: var(--text-zoom); }
+.sx-hero { display: flex; align-items: center; gap: 16px; padding: 4px 0 6px; }
+.sx-hero b { display: block; font-size: 21px; font-weight: 700; letter-spacing: -0.02em; }
+.sx-hero p { margin: 4px 0 0; color: var(--ink-2); line-height: 1.45; }
+
+.sx-group { border-radius: 12px; background: var(--panel); box-shadow: 0 0 0 1px var(--hair); padding: 0 16px; }
+.sx-group > * + * { border-top: 1px solid var(--hair); }
+.sx-row { display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; min-height: 52px; padding: 11px 0; flex-wrap: wrap; }
+.sx-row.stack { display: grid; justify-content: stretch; }
+.sx-row-l { min-width: 0; flex: 1 1 220px; }
+.sx-row-l label, .sx-label { display: block; margin: 0; font-weight: 500; color: var(--ink); }
+.sx-help { margin: 2px 0 0; font-size: 12.5px; line-height: 1.4; color: var(--ink-3); }
+.sx-row-c { flex: none; display: flex; align-items: center; gap: 8px; max-width: 100%; }
+.sx-row.stack .sx-row-c { display: block; }
+.sx-row.stack .segmented { display: flex; width: 100%; }
+.sx-row.stack .segmented button { flex: 1 1 0; min-width: 0; padding: 4px 6px; }
+.sx-row select { width: 240px; max-width: 100%; }
+.sx-row textarea { min-height: 84px; }
+.sx-unit { display: inline-flex; align-items: center; gap: 8px; }
+.sx-unit input { width: 96px; text-align: right; font-variant-numeric: tabular-nums; }
+.sx-unit > span { min-width: 30px; font-size: 13px; color: var(--ink-3); }
+.sx-row input[type="time"] { width: 140px; }
+.sx-btn { min-height: 32px; padding: 4px 14px; font-size: 13px; }
+.sx-note { margin: -6px 2px 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-3); }
+.sx .callout { margin: 0; }
+/* AI connections reuses the earlier boxes; tighten them to this look */
+.sx #st-ai { display: grid; gap: 0; }
+.sx #st-ai .st-box { background: var(--panel); box-shadow: 0 0 0 1px var(--hair); }
+.sx #st-ai .st-sub:first-child { margin-top: 0; }
+
+/* Narrow: the categories are a list; a pane opens over it with a back button. */
+@media (max-width: 700px) {
+  .sx { grid-template-columns: minmax(0, 1fr); }
+  .sx.has-pane .sx-side { display: none; }
+  .sx:not(.has-pane) .sx-main { display: none; }
+  .sx-side { background: none; border: 0; }
+  .sx-side li button { padding: 8px 10px; font-size: 15px; }
+  .sx-back { display: grid; place-items: center; }
+  .sx-head { padding: 0 12px; }
+  .sx-body { padding: 20px 16px 32px; }
+}

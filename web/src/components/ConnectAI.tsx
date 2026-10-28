@@ -52,9 +52,7 @@ export function ConnectAI() {
   const desktop = JSON.stringify({ mcpServers: { lilt: c.stdio } }, null, 2);
 
   return (
-    <section className="st-group" aria-labelledby="st-ai">
-      <h2 id="st-ai">Connect your AI</h2>
-      <p className="st-note st-lead">Let an AI assistant read your practice, write reviews, and rewrite your own copy of the chapters ("make the warm-ups shorter"). Lilt's original chapters stay as they are, and every change can be undone.</p>
+    <section className="st-group" id="st-ai" aria-label="Connect your AI">
 
       <h3 className="st-sub">On this computer</h3>
       <div className="st-box">

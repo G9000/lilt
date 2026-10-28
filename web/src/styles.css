@@ -218,4 +218,4 @@ th { font-size: 0.8rem; font-weight: 600; color: var(--ink-3); }
 :root[data-text="smaller"] { --text-zoom: 0.92; }
 :root[data-text="larger"] { --text-zoom: 1.12; }
 :root[data-text="largest"] { --text-zoom: 1.25; }
-.ve-page > *, .ss-body > *, .ds-win:not(.full) .ds-body > * { zoom: var(--text-zoom); }
+.ve-page > *, .ds-win:not(.full) .ds-body > * { zoom: var(--text-zoom); }

@@ -2,20 +2,22 @@ import { useEffect, useState } from "react";
 import { SettingsPage } from "../pages/Settings";
 import { Icon } from "../components/bits";
 
-/** Open Settings over the room, optionally at one section ("ai" for Connect your AI). */
-export function openSettings(section?: "ai") {
-  window.dispatchEvent(new CustomEvent("lilt:settings", { detail: section ?? null }));
+type Pane = Parameters<typeof SettingsPage>[0]["start"];
+
+/** Open Settings over the room or the desk, optionally at one pane ("ai" for AI connections). */
+export function openSettings(pane?: Pane) {
+  window.dispatchEvent(new CustomEvent("lilt:settings", { detail: pane ?? null }));
 }
 
 /**
- * Settings as a sheet that slides in from the right over the room, like Notification Center, so
- * the room's widget and menu bar can open it without walking to the desk.
+ * Settings as its own window over everything, like System Settings: large, centred, the room or
+ * the desk dimmed behind it. Escape, the red light or a click outside closes it.
  */
 export function SettingsSheet() {
   const [open, setOpen] = useState(false);
-  const [at, setAt] = useState<string | null>(null);
+  const [at, setAt] = useState<Pane>(null);
   useEffect(() => {
-    const on = (e: Event) => { setAt((e as CustomEvent<string | null>).detail); setOpen(true); };
+    const on = (e: Event) => { setAt((e as CustomEvent<Pane>).detail); setOpen(true); };
     window.addEventListener("lilt:settings", on);
     return () => window.removeEventListener("lilt:settings", on);
   }, []);
@@ -27,33 +29,17 @@ export function SettingsSheet() {
     window.addEventListener("keydown", onKey, true);
     return () => { window.removeEventListener("pointerdown", onDown); window.removeEventListener("keydown", onKey, true); };
   }, [open]);
-  // Opened at a section: bring it into view once the page has loaded.
-  useEffect(() => {
-    if (!open || !at) return;
-    let tries = 0;
-    const id = window.setInterval(() => {
-      const el = document.getElementById(`st-${at}`);
-      if (el || ++tries > 20) { window.clearInterval(id); el?.scrollIntoView({ block: "start", behavior: "smooth" }); }
-    }, 100);
-    return () => window.clearInterval(id);
-  }, [open, at]);
   return (
     <>
-      <div className={`nc-scrim${open ? " on" : ""}`} aria-hidden="true" />
-      <section className={`ss${open ? " open" : ""}`} aria-label="Settings" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
-        <header className="ss-head">
-          <b>Settings</b>
-          <button className="ss-close" onClick={() => setOpen(false)} aria-label="Close settings">
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          </button>
-        </header>
-        <div className="ss-body">{open && <SettingsPage />}</div>
+      <div className={`ss-scrim${open ? " on" : ""}`} aria-hidden="true" />
+      <section className={`ss${open ? " open" : ""}`} role="dialog" aria-label="Settings" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
+        {open && <SettingsPage start={at} onClose={() => setOpen(false)} />}
       </section>
     </>
   );
 }
 
-/** The settings button in the room's menu bar. */
+/** The settings button in the menu bar. */
 export function SettingsButton() {
   return <button className="ds-mb-btn ss-open" onClick={() => openSettings()} aria-label="Settings">{Icon.settings}</button>;
 }
