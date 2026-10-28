@@ -15,33 +15,51 @@
 .ve button:disabled { cursor: default; opacity: 0.45; }
 .ve kbd { font: 500 11px var(--mono); border: 1px solid var(--hair); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--ink-2); background: none; }
 
-/* sidebar: the window's traffic lights sit at its top, like a Mac app with a sidebar */
-.ve-side { overflow: auto; padding: 50px 10px 16px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
-.ve-side h6 { margin: 20px 10px 6px; display: flex; justify-content: space-between; gap: 8px; font: 600 11.5px var(--font); color: var(--ink-3); letter-spacing: 0.02em; }
-.ve-side h6 span { font-weight: 500; letter-spacing: 0; }
-.ve .ve-today { margin: 0; padding: 12px 12px 13px; border-radius: 12px; background: var(--ve-card); display: grid; gap: 4px; justify-content: stretch; text-align: left;
-  box-shadow: 0 0 0 1px var(--hair), 0 4px 14px -8px rgba(0, 0, 0, 0.2); transition: box-shadow 0.2s ease, transform 0.16s var(--ease); }
+/* sidebar: the window's traffic lights sit at its top, like a Mac app with a sidebar. Today's card,
+   then the chapters as a path of nodes (a progress ring with the number, a medal once complete),
+   then links with the desk's app icons. */
+.ve-side { overflow: auto; padding: 52px 12px 14px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
+.ve-side h6 { margin: 24px 10px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 650 12px var(--font); color: var(--ink-2); letter-spacing: -0.005em; }
+.ve-side h6 span { font-size: 11.5px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+.ve .ve-today { margin: 0; padding: 14px 14px 15px; border-radius: 16px; background: var(--ve-card); display: grid; gap: 2px; justify-content: stretch; text-align: left;
+  box-shadow: 0 0 0 1px var(--hair), 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 24px -16px rgba(10, 10, 40, 0.35); transition: box-shadow 0.2s ease, transform 0.16s var(--ease); }
 .ve .ve-today:active:not(:disabled) { transform: scale(0.98); }
-.ve .ve-today.on { box-shadow: 0 0 0 1.5px var(--accent), 0 6px 18px -10px rgba(224, 100, 60, 0.6); }
+.ve .ve-today.on { box-shadow: 0 0 0 1.5px var(--accent), 0 10px 26px -14px rgba(224, 100, 60, 0.65); }
 .ve-today-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.ve-today-h b { font-size: 15px; font-weight: 600; }
-.ve-today-h span { font: 500 12px var(--mono); color: var(--ink-3); }
+.ve-today-h b { font-size: 13px; font-weight: 650; color: var(--accent-ink); }
+.ve-today-h span { font-size: 12px; color: var(--ink-3); }
+.ve-today-big { margin-top: 4px; font: 720 21px/1.15 var(--font); letter-spacing: -0.035em; color: var(--ink); }
 .ve-today small { color: var(--ink-3); font-size: 12.5px; }
-.ve-today-bar { height: 4px; margin-top: 6px; border-radius: 99px; background: var(--fill-2); overflow: hidden; }
-.ve-today-bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width 0.4s var(--ease); }
-.ve-nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
-.ve .ve-nav button { width: 100%; display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; text-align: left; color: var(--ink-2); transition: background-color 0.15s ease; }
-.ve .ve-nav button[aria-current="page"] { background: var(--ve-card); color: var(--ink); box-shadow: 0 0 0 1px var(--hair), 0 2px 6px -3px rgba(0, 0, 0, 0.16); }
-.ve-nav .t { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ve-nav .c { font: 500 11.5px var(--mono); color: var(--ink-3); }
-.ve-num { font: 500 11.5px var(--mono); color: var(--ink-3); text-align: center; }
-.ve-ring { width: 16px; height: 16px; display: block; margin: 0 auto; }
-.ve-side-foot { margin-top: auto; padding: 16px 10px 0; display: grid; gap: 0; border-top: 1px solid var(--hair); }
-.ve-side-foot a { padding: 4px 0; font-size: 13px; color: var(--ink-3); text-decoration: none; transition: color 0.15s ease; }
+.ve-today small:empty { display: none; }
+.ve-today-seg { display: flex; gap: 4px; margin-top: 10px; }
+.ve-today-seg i { flex: 1; height: 5px; border-radius: 99px; background: var(--fill-2); transition: background-color 0.4s var(--ease); }
+.ve-today-seg i.on { background: var(--accent); }
+
+.ve-nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.ve-nav li { position: relative; }
+/* the path between nodes; it turns coral below a completed chapter */
+.ve-nav li:not(:last-child)::after { content: ""; position: absolute; left: 22px; top: calc(50% + 15px); height: calc(100% - 28px); width: 2px; border-radius: 2px; background: var(--fill-2); pointer-events: none; }
+.ve-nav li.done:not(:last-child)::after { background: var(--accent); opacity: 0.55; }
+.ve .ve-nav button { width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 12px; text-align: left; color: var(--ink-2); transition: background-color 0.15s ease; }
+.ve .ve-nav button[aria-current="page"] { background: var(--ve-card); color: var(--ink); box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(10, 10, 40, 0.22); }
+.ve-nav .t { min-width: 0; display: grid; }
+.ve-nav .t b { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ve-nav .t small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ve-nav .c { font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.ve-ring { width: 26px; height: 26px; display: block; }
+.ve-ring .bg { fill: var(--ve-paper); }
+.ve-ring text { font: 650 11px var(--font); fill: var(--ink-2); }
+.ve-nav button[aria-current="page"] .ve-ring text { fill: var(--accent-ink); }
+.ve-ring.done { filter: drop-shadow(0 3px 6px rgba(224, 100, 60, 0.35)); }
+
+.ve-side-foot { margin-top: auto; padding: 14px 0 0; display: grid; gap: 1px; border-top: 1px solid var(--hair); }
+.ve-side-foot a { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--ink-2); text-decoration: none; transition: background-color 0.15s ease, color 0.15s ease; }
+.ve-side-foot svg { flex: none; width: 22px; height: 22px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }
 @media (hover: hover) and (pointer: fine) {
   .ve .ve-nav button:hover:not(:disabled):not([aria-current]) { background: var(--fill); }
-  .ve .ve-today:hover:not(:disabled):not(.on) { box-shadow: 0 0 0 1px var(--line-strong), 0 6px 16px -8px rgba(0, 0, 0, 0.25); }
-  .ve-side-foot a:hover { color: var(--ink); }
+  .ve .ve-today:hover:not(:disabled):not(.on) { box-shadow: 0 0 0 1px var(--line-strong), 0 12px 26px -14px rgba(10, 10, 40, 0.4); }
+  .ve-side-foot a:hover { background: var(--fill); color: var(--ink); }
 }
 
 /* the document */
@@ -330,7 +348,7 @@
   .ds-win.full { top: 32px; bottom: 0; left: 0; right: 0; border-radius: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ve-rec i, .ve-today-bar i { transition: none; }
+  .ve-rec i, .ve-today-seg i { transition: none; }
   .ve-state.rec i { animation: none; }
   .ve-award.fresh, .ve-award.fresh .ve-award-medal { animation: none; }
   .ve-cat img, .ve-zzz i, .ve-dock .ve-cat, .ve-dock .ve-now, .ve-dock .ve-scope, .ve-dock .ve-stats, .ve-result-pane { animation: none !important; }

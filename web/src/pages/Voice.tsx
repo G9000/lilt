@@ -4,6 +4,7 @@ import "../styles/editor.css";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Profile, Rating, Session, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
+import { LeaveIcon, StudioIcon, TextsIcon } from "../desk/icons";
 import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
@@ -82,46 +83,53 @@ function Medal({ className }: { className?: string }) {
 }
 const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(`text.${l.id}.${it.id}`));
 
+/** A chapter's node on the path: its number inside a progress ring, then the medal once complete. */
 function Ring({ p, n }: { p: number; n: number }) {
-  const r = 6.5, c = 2 * Math.PI * r;
-  if (p <= 0) return <span className="ve-num" aria-hidden="true">{n}</span>;
+  const r = 11, c = 2 * Math.PI * r;
   if (p >= 1) return <Medal className="ve-ring done" />;
   return (
-    <svg className="ve-ring" viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="8" cy="8" r={r} fill="none" stroke="var(--fill-2)" strokeWidth="2" />
-      {<circle cx="8" cy="8" r={r} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeDasharray={`${c * p} ${c}`} transform="rotate(-90 8 8)" />}
+    <svg className="ve-ring" viewBox="0 0 26 26" aria-hidden="true">
+      <circle className="bg" cx="13" cy="13" r="12.5" />
+      <circle cx="13" cy="13" r={r} fill="none" stroke="var(--fill-2)" strokeWidth="2" />
+      {p > 0 && <circle cx="13" cy="13" r={r} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeDasharray={`${c * p} ${c}`} transform="rotate(-90 13 13)" />}
+      <text x="13" y="13" dy=".35em" textAnchor="middle">{n}</text>
     </svg>
   );
 }
 
 function Sidebar({ texts, deck, practised, current, locked }: { texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; locked: boolean }) {
   const left = deck ? deck.items.filter((i) => !i.done_today) : [];
-  const total = deck?.items.length ?? 0;
   const done = deck && !deck.paused && left.length === 0;
+  const day = deck ? new Date(`${deck.local_date}T12:00:00`).toLocaleDateString(undefined, { weekday: "long" }) : "";
   return (
     <nav className="ve-side" aria-label="Chapters">
       <button className={`ve-today${current === "today" ? " on" : ""}`} onClick={() => go("/deck")} disabled={locked} aria-current={current === "today" ? "page" : undefined}>
-        <span className="ve-today-h"><b>Today</b>{deck && !deck.paused && <span>{total - left.length}/{total}</span>}</span>
-        <small>{!deck ? "Getting your cards…" : deck.paused ? "Resting today" : done ? "All done. Nice work." : `${left.length} card${left.length === 1 ? "" : "s"}, about ${Math.max(1, left.length)} min`}</small>
-        <span className="ve-today-bar" aria-hidden="true"><i style={{ width: `${total ? ((total - left.length) / total) * 100 : 0}%` }} /></span>
+        <span className="ve-today-h"><b>Today</b><span>{day}</span></span>
+        <span className="ve-today-big">{!deck ? "Getting your cards…" : deck.paused ? "Resting today" : done ? "All done" : `${left.length} card${left.length === 1 ? "" : "s"} to go`}</span>
+        <small>{!deck || deck.paused ? "" : done ? "Nice work. Anything more is a bonus." : `About ${Math.max(1, left.length)} min`}</small>
+        {deck && !deck.paused && deck.items.length > 0 && (
+          <span className="ve-today-seg" aria-hidden="true">{deck.items.map((it) => <i key={it.card.id} className={it.done_today ? "on" : ""} />)}</span>
+        )}
       </button>
       <h6>Chapters{texts && <span>{texts.levels.filter((l) => chapterDone(l, practised)).length} of {texts.levels.length} complete</span>}</h6>
-      <ul className="ve-nav">
+      <ol className="ve-nav">
         {texts?.levels.map((l) => {
           const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
           return (
-            <li key={l.id}>
+            <li key={l.id} className={d >= n ? "done" : undefined}>
               <button aria-current={current === l.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={locked}>
-                <Ring p={d / n} n={l.level} /><span className="t">{l.title}</span><span className="c">{d}/{n}</span>
+                <Ring p={d / n} n={l.level} />
+                <span className="t"><b>{l.title}</b><small>{l.subtitle}</small></span>
+                <span className="c">{d}/{n}</span>
               </button>
             </li>
           );
         })}
-      </ul>
+      </ol>
       <div className="ve-side-foot">
-        <a href="#/guided">Guided session with feedback</a>
-        <a href="#/texts">All practice texts</a>
-        <a href="#/">Back to the room</a>
+        <a href="#/guided"><StudioIcon />Guided session</a>
+        <a href="#/texts"><TextsIcon />All practice texts</a>
+        <a href="#/"><LeaveIcon />Back to the room</a>
       </div>
     </nav>
   );
