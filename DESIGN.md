@@ -40,6 +40,8 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   **A take's result reads top to bottom**: the note in words; then "Your middle pitch 165 Hz · E3"
   once, the scale and its sentence, and one quiet line of facts (usual range, voice heard, last time
   with the difference); the pitch line folded behind "See the pitch line"; one small footnote.
+  The ratings carry a face for how it felt (😣 Again, 😕 Hard, 🙂 Good, 😌 Easy), and "Record it again"
+  and "It hurt or felt strained" are pill buttons with drawn icons (the latter tinted `--rec`).
   While you rate a card, the recorder half says "Nice one / Listen back, then rate how it felt"
   with no record button. **The pitch reference scale**: the average man's (grey), the overlap where pitch can be
   heard either way (striped) and the average woman's (coral) speaking ranges, each average ± 1 SD, with a

@@ -427,7 +427,16 @@
 .ve .ve-rate .l { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 14px; font-weight: 600; }
 .ve .ve-rate small { font-size: 12px; color: var(--ink-3); }
 .ve .ve-rate kbd { font-size: 12px; padding: 0 4px; }
-.ve-rate-more { display: flex; gap: 18px; }
+.ve .ve-rate .face { font-size: 22px; line-height: 1.1; margin-bottom: 4px; }
+.ve-rate-more { display: flex; flex-wrap: wrap; gap: 8px; }
+.ve .ve-pill { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px 0 12px; border-radius: 99px; background: var(--fill); font-size: 13px; font-weight: 600; color: var(--ink-2); transition: background-color 0.15s ease, color 0.15s ease, transform 0.16s var(--ease); }
+.ve .ve-pill svg { width: 15px; height: 15px; flex: none; }
+.ve .ve-pill.ouch { color: var(--rec); background: color-mix(in srgb, var(--rec) 9%, transparent); }
+.ve .ve-pill:active:not(:disabled) { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .ve .ve-pill:hover:not(:disabled) { background: var(--fill-2); color: var(--ink); }
+  .ve .ve-pill.ouch:hover:not(:disabled) { background: color-mix(in srgb, var(--rec) 15%, transparent); color: var(--rec); }
+}
 .ve .ve-link { font-size: 13px; font-weight: 500; color: var(--ink-3); transition: color 0.15s ease; }
 @media (hover: hover) and (pointer: fine) {
   .ve .ve-rate button:hover:not(:disabled) { background: var(--fill-2); }

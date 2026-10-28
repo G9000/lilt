@@ -20,7 +20,7 @@ Passing one says nothing about the others. Everything below names how it was che
 | Check | How | Result |
 | --- | --- | --- |
 | Rust acceptance tests | `cd server && cargo test` (23 tests, including the Markdown practice texts; real Python helper, fixture audio; 5 cover the card scheduler: interval growth and caps, first deck, rating + idempotency + same-day "again", no backlog after missed days, hurt → suspend + pause → resume) | **23/23 pass** (28 Oct 2026) |
-| Analysis tests | `cd analysis && .venv/bin/python -m pytest` (27 tests) | **27/27 pass** |
+| Analysis tests | `cd analysis && .venv/bin/python -m pytest` (28 tests, including a 190 Hz voice with mildly uneven cycles that the old octave cost tracked at 95 Hz) | **28/28 pass** (28 Oct 2026) |
 | Live pitch tracker (browser YIN, display only) | `cd web && node --test src/pitch.test.ts` (9 tests; tolerance of 1% on clean harmonic tones from 90–500 Hz, declared before running) | **9/9 pass**. Silence and quiet noise give no pitch; loud white noise is voiced in at most 4 of 40 frames |
 | Take notes in words, and the pitch reference scale | `cd web && node --test src/insight.test.ts` (5 tests: comfort first, end drop, below range, level, lively, steady, nothing to say; placing a pitch in words and semitones, never a percentage) | **5/5 pass** (28 Oct 2026) |
 | Practice window, end to end | `web/e2e/practice.mjs`, same fake audio device, fresh data folder, 1440×900 then 390×844: first run sets the range, Home shows your practice, a free take's summary, a chapter text from the tree, a Today card recorded and rated, the sidebar hides and returns, the phone recorder opens only while recording | **16/16 pass** (28 Oct 2026, twice) |

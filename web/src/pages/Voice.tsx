@@ -24,8 +24,9 @@ import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
  * and a recorder docked at the bottom with the waveform, the pitch line and the numbers.
  */
 
-const RATINGS: { r: Rating; label: string }[] = [
-  { r: "again", label: "Again" }, { r: "hard", label: "Hard" }, { r: "good", label: "Good" }, { r: "easy", label: "Easy" },
+/** How a card felt; the face is how it felt, the label what it does to the card. */
+const RATINGS: { r: Rating; label: string; face: string }[] = [
+  { r: "again", label: "Again", face: "😣" }, { r: "hard", label: "Hard", face: "😕" }, { r: "good", label: "Good", face: "🙂" }, { r: "easy", label: "Easy", face: "😌" },
 ];
 const deckName = (it: DeckItem) => (it.card.kind === "reference" ? "Reference" : it.card.deck_title);
 const friendlyDate = (d: string, today: string) => {
@@ -1024,14 +1025,21 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
         <div className="vc-rate ve-rate" role="group" aria-labelledby="feel-q">
           {RATINGS.map((r, i) => (
             <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={`${r.label}, next ${item.preview[r.r]}`}>
+              <span className="face" aria-hidden="true">{r.face}</span>
               <span className="l">{r.label}<kbd aria-hidden="true">{i + 1}</kbd></span>
               <small>{item.preview[r.r] === "later today" ? "in a few min" : item.preview[r.r]}</small>
             </button>
           ))}
         </div>
         <div className="ve-rate-more">
-          <button className="ve-link" onClick={() => setPhase({ k: "say", retryOf: phase.take.id })} disabled={busy}>Record it again</button>
-          <button className="ve-link ouch" onClick={() => void rate("ouch")} disabled={busy}>It hurt or felt strained</button>
+          <button className="ve-pill" onClick={() => setPhase({ k: "say", retryOf: phase.take.id })} disabled={busy}>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 11-1.5-3.6M13 2.5v3h-3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            Record it again
+          </button>
+          <button className="ve-pill ouch" onClick={() => void rate("ouch")} disabled={busy}>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.3-5.5-7A3 3 0 018 5.2 3 3 0 0113.5 7C13.5 10.7 8 14 8 14z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
+            It hurt or felt strained
+          </button>
         </div>
       </div>
     </div>

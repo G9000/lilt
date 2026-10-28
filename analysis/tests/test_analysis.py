@@ -185,6 +185,20 @@ def test_octave_jump_reported_not_fixed(wavdir, tmp_path):
     assert np.nanmax(f) > 380 and np.nanmin(f) < 220
 
 
+def test_mild_subharmonic_tracked_at_the_true_pitch(tmp_path):
+    """A 190 Hz voice whose every other cycle is 20% weaker (mild unevenness, common in real
+    recordings) must be tracked at 190 Hz, not at its subharmonics (95 or 63 Hz)."""
+    sr, f0 = 16000, 190.0
+    t = np.arange(int(sr * 3.0)) / sr
+    x = sum((1 / k) * np.sin(2 * np.pi * k * f0 * t) for k in range(1, 25))
+    x = x * np.where(np.floor(t * f0).astype(int) % 2 == 0, 1.0, 0.8)
+    wav = tmp_path / "subharmonic.wav"
+    M.write_wav16(str(wav), 0.3 * x / np.abs(x).max(), sr)
+    code, doc = run_cli(wav, tmp_path, tag="subharmonic")
+    assert code == 0 and doc["status"] == "ok"
+    assert abs(doc["measures"]["f0_median_hz"]["value"] / f0 - 1) <= TOLERANCES["median_rel_err"]
+
+
 # --------------------------------------------------------------------------- reproducibility
 def test_same_audio_twice_identical(wavdir, tmp_path):
     _, a = run_cli(wavdir / "mixed_voiced_unvoiced.wav", tmp_path, "a")

@@ -182,14 +182,21 @@ def build_report(rows, trows, method) -> str:
 
     short = next((r for r in rows if r["fixture"] == "octave_jump_short.wav"), None)
     L.append("## Known failures found by this evaluation\n")
-    if short:
+    if short and (short["gross_rate_pct"] or 0) > 1:
         L.append(f"- **Short octave section tracked at the subharmonic.** In `octave_jump_short` (0.3 s at 400 Hz "
-                 f"inside 200 Hz) raw AC with Praat's default path costs reports ~200 Hz throughout: gross error "
+                 f"inside 200 Hz) raw AC reports ~200 Hz throughout: gross error "
                  f"rate {fmt(short['gross_rate_pct'], '{:.1f}')} %, {short['jumps']} suspected jumps, no flag. A "
                  "perfectly periodic synthetic tone is equally periodic at half its frequency, and the octave-jump "
-                 "cost outweighs the small octave cost over 30 frames. With 0.8 s at 400 Hz (`octave_jump`) both "
+                 "cost outweighs the octave cost over 30 frames. With 0.8 s at 400 Hz (`octave_jump`) both "
                  "jumps are tracked and reported. So *the absence of suspected octave jumps does not prove the "
                  "absence of octave errors.* This fixture is reported, not asserted.")
+    elif short:
+        L.append(f"- **Short octave section now tracked.** In `octave_jump_short` (0.3 s at 400 Hz inside 200 Hz) "
+                 f"the gross error rate is {fmt(short['gross_rate_pct'], '{:.1f}')} % with {short['jumps']} suspected "
+                 "jumps reported, since the AC octave cost was raised from Praat's 0.01 to 0.055 (with 0.01 it "
+                 "stayed at ~200 Hz, 13.4 % gross errors). Subharmonics are still possible on other signals: "
+                 "*the absence of suspected octave jumps does not prove the absence of octave errors.* This "
+                 "fixture is reported, not asserted.")
     L.append("- The octave-jump detector flags any abrupt ratio > 1.8 between adjacent voiced frames. It cannot tell "
              "a tracking error from a genuine pitch break (both are in `octave_jump`); jumps are reported, never "
              "corrected.")

@@ -21,7 +21,11 @@ TIME_STEP = 0.01
 PITCH_FLOOR = 60.0
 PITCH_CEILING = 700.0
 
-# Praat "To Pitch (ac)" settings: Praat's documented defaults except floor/ceiling/time step.
+# Praat "To Pitch (ac)" settings: Praat's documented defaults except floor/ceiling/time step and
+# octave cost. With the 60 Hz floor, the default octave cost (0.01) let raw autocorrelation settle on
+# subharmonics: a real voice at 190 Hz with slightly uneven cycles was tracked at 95 and 63 Hz, so the
+# median halved. 0.055 is the octave cost Praat documents for its newer filtered tracker below; it
+# keeps that voice at 190 Hz and still follows genuine period doubling (strongly uneven cycles).
 AC_PARAMS = {
     "praat_command": "To Pitch (ac)",
     "time_step": TIME_STEP,
@@ -30,7 +34,7 @@ AC_PARAMS = {
     "very_accurate": False,
     "silence_threshold": 0.03,
     "voicing_threshold": 0.45,
-    "octave_cost": 0.01,
+    "octave_cost": 0.055,
     "octave_jump_cost": 0.35,
     "voiced_unvoiced_cost": 0.14,
     "pitch_ceiling": PITCH_CEILING,
@@ -138,7 +142,7 @@ def method_block() -> dict:
     return {
         "name": "lilt-analysis",
         "version": "1",
-        "method_version": "lilt-analysis/1",
+        "method_version": "lilt-analysis/2",
         "praat_version": parselmouth.PRAAT_VERSION,
         "praat_version_date": parselmouth.PRAAT_VERSION_DATE,
         "parselmouth_version": parselmouth.__version__,
