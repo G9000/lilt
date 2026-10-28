@@ -5,7 +5,8 @@ import { ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
-import { LeaveIcon, StudioIcon, TextsIcon } from "../desk/icons";
+import { LeaveIcon, SettingsAppIcon, StudioIcon, TextsIcon } from "../desk/icons";
+import { PracticeSettings } from "./Settings";
 import { HistoryPage } from "./History";
 import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
@@ -102,7 +103,7 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "today" | "chapter" | "recordings" | "progress"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "settings" | "today" | "chapter" | "recordings" | "progress"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -124,7 +125,11 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
   const toggleSide = () => setLayout((l) => ({ ...l, collapsed: !l.collapsed }));
   // ⌘\ or Ctrl+\ hides and shows the sidebar, as in most editors.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === "\\") { e.preventDefault(); toggleSide(); } };
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "\\") { e.preventDefault(); toggleSide(); }
+      // ⌘, opens this app's settings, as on a Mac.
+      if ((e.metaKey || e.ctrlKey) && e.key === ",") { e.preventDefault(); go("/studio/settings"); }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -145,7 +150,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" || doc === "updates" ? "home" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
-      <div className={`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" ? " solo" : ""}`} ref={docRef}>
+      <div className={`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "settings" ? " solo" : ""}`} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
@@ -153,6 +158,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
             <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
             <button aria-current={doc === "recordings" ? "page" : undefined} onClick={() => go("/history")} disabled={recording}>Recordings</button>
             <button aria-current={doc === "today" ? "page" : undefined} onClick={() => go("/deck")} disabled={recording}>Today</button>
+            <button aria-current={doc === "settings" ? "page" : undefined} onClick={() => go("/studio/settings")} disabled={recording}>Settings</button>
             {texts.levels.map((l) => <button key={l.id} aria-current={doc === "chapter" && l.id === level?.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={recording}>{l.title}</button>)}
           </nav>
         )}
@@ -160,6 +166,8 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
           ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressSoon />}</div></div>
           : doc === "updates"
           ? <div className="ve-page"><div className="ve-col ve-embed"><UpdatesDoc onTexts={setTexts} /></div></div>
+          : doc === "settings"
+          ? <div className="ve-page"><div className="ve-col ve-embed"><PracticeSettings /></div></div>
           : doc === "home"
           ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "start"
@@ -383,6 +391,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
         })}
       </ul>
       <div className="ve-side-foot">
+        <a href="#/studio/settings" aria-current={current === "settings" ? "page" : undefined}><SettingsAppIcon />Practice settings</a>
         <a href="#/guided"><StudioIcon />Guided session</a>
         <a href="#/texts"><TextsIcon />All practice texts</a>
         <a href="#/"><LeaveIcon />Back to the room</a>

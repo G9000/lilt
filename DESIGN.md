@@ -124,8 +124,12 @@ settings button in the room's and the desk's menu bars, and old `#/settings` lin
 its own window** over the room or the desk (up to 1080px wide, filling the height under the menu bar,
 the world dimmed behind it), laid out like System Settings: a sidebar on `--fill` with the traffic
 lights (red closes), a Search field, and the categories, each a coloured rounded tile with a white
-glyph (Appearance graphite, AI connections coral, Your goal pink, Practice routine orange, Reminders
-red, Comfortable range green, Privacy blue), the open one on `--accent`. The pane on `--page` has a
+glyph (Appearance graphite, AI connections coral, Notifications red, Date & time slate, Privacy
+blue). That window is for Lilt as a whole; each app keeps its own settings inside it, as Mac apps do.
+**Practice settings** (`#/studio/settings`, the sidebar's foot with the Settings icon, a Settings chip on
+phones, or ⌘,) is a page in Practice: a big "Practice settings" title with "Saved", then Your goal,
+Routine (session length, reminder, comparison window) and Comfortable range as grouped rows; it
+saves as you go, the open one on `--accent`. The pane on `--page` has a
 toolbar title and "Saving… / Saved", then a large tile, the pane's name and one line on what it's
 for, then grouped rows on `--panel` (label and help left, control right; choices like Theme and Text
 size full width under their label). Changes save as you make them; there is no Save button. On a

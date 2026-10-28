@@ -38,7 +38,7 @@ function TextSizeChoice() {
   );
 }
 
-type PaneId = "appearance" | "ai" | "goal" | "routine" | "reminders" | "range" | "privacy";
+type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy";
 
 /** Each pane: its sidebar icon (a white glyph on a coloured tile, as in System Settings) and words to search by. */
 const PANES: { id: PaneId; title: string; words: string; tile: string; glyph: ReactNode }[] = [
@@ -46,14 +46,10 @@ const PANES: { id: PaneId; title: string; words: string; tile: string; glyph: Re
     glyph: <><circle cx="10" cy="10" r="6" /><path d="M10 4a6 6 0 0 1 0 12z" fill="currentColor" stroke="none" /></> },
   { id: "ai", title: "AI connections", words: "ai claude chatgpt mcp connect agent assistant desktop code tunnel", tile: "#f59a6c,#e0643c",
     glyph: <path d="M10 3l1.5 4 4 1.5-4 1.5L10 14l-1.5-4-4-1.5 4-1.5zM15 13l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="currentColor" stroke="none" /> },
-  { id: "goal", title: "Your goal", words: "goal qualities aim voice words", tile: "#f37aa2,#d6457a",
-    glyph: <><circle cx="10" cy="10" r="6.5" /><circle cx="10" cy="10" r="3.5" /><circle cx="10" cy="10" r="0.8" fill="currentColor" /></> },
-  { id: "routine", title: "Practice routine", words: "time zone session length minutes comparison window days routine", tile: "#f8b84a,#ec8a10",
-    glyph: <><circle cx="10" cy="10" r="6.5" /><path d="M10 6.5V10l2.5 1.6" /></> },
-  { id: "reminders", title: "Reminders", words: "reminder notification notifications alert bell time", tile: "#ff7171,#e5484d",
+  { id: "notifications", title: "Notifications", words: "notification notifications alert bell browser reminder", tile: "#ff7171,#e5484d",
     glyph: <path d="M6 13.5V9a4 4 0 0 1 8 0v4.5l1 1.2H5zM8.6 16.2a1.6 1.6 0 0 0 2.8 0" /> },
-  { id: "range", title: "Comfortable range", words: "pitch range hz comfortable low high band", tile: "#45d39b,#15936a",
-    glyph: <path d="M3 10.5c1.4 0 1.4-4 2.8-4s1.4 7 2.8 7 1.4-9 2.8-9 1.4 7 2.8 7 1.4-3 2.8-3" /> },
+  { id: "time", title: "Date & time", words: "time zone timezone date clock", tile: "#8f9bb0,#56627a",
+    glyph: <><circle cx="10" cy="10" r="6.5" /><path d="M10 6.5V10l2.5 1.6" /></> },
   { id: "privacy", title: "Privacy", words: "privacy data processing cloud local", tile: "#62a8ff,#2f6fe4",
     glyph: <path d="M10 3.5l5.5 2v4c0 3.4-2.3 6-5.5 7-3.2-1-5.5-3.6-5.5-7v-4z" /> },
 ];
@@ -68,7 +64,7 @@ function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number
 }
 
 /** A labelled row: the label (and a line of help) on the left, the control on the right. */
-function Row({ label, help, htmlFor, children, stack }: { label: string; help?: ReactNode; htmlFor?: string; children?: ReactNode; stack?: boolean }) {
+export function Row({ label, help, htmlFor, children, stack }: { label: string; help?: ReactNode; htmlFor?: string; children?: ReactNode; stack?: boolean }) {
   return (
     <div className={`sx-row${stack ? " stack" : ""}`}>
       <div className="sx-row-l">
@@ -80,22 +76,13 @@ function Row({ label, help, htmlFor, children, stack }: { label: string; help?: 
   );
 }
 
-/**
- * Settings, laid out like System Settings: categories with coloured icons in a sidebar (with
- * search), one pane at a time on the right, changes saved as you make them. On a narrow screen the
- * categories are a list and a pane opens over it, with a back button.
- */
-export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClose?: () => void }) {
-  const [pane, setPane] = useState<PaneId | null>(start ?? (window.innerWidth > 700 ? "appearance" : null));
-  const [q, setQ] = useState("");
+/** The profile, saved a moment after each change, as System Settings does: no Save button. */
+export function useProfileDraft() {
   const [p, setP] = useState<Profile | null>(null);
   const [saved, setSaved] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [err, setErr] = useState<string | null>(null);
-  const [notif, setNotif] = useState(typeof Notification !== "undefined" ? Notification.permission : "unsupported");
   const dirty = useRef(false);
   useEffect(() => { void api.profile().then(setP); }, []);
-  useEffect(() => { if (start) setPane(start); }, [start]);
-  // Save a moment after the last change, as System Settings does: no Save button.
   useEffect(() => {
     if (!p || !dirty.current) return;
     setSaved("saving");
@@ -105,12 +92,29 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
     return () => window.clearTimeout(id);
   }, [p]);
   const edit = (next: Profile) => { dirty.current = true; setP(next); };
+  return { p, edit, saved, err };
+}
+
+export const savedLabel = (s: ReturnType<typeof useProfileDraft>["saved"]) => (s === "saving" ? "Saving…" : s === "saved" ? "Saved" : s === "error" ? "Not saved" : "");
+
+/**
+ * Settings, laid out like System Settings: categories with coloured icons in a sidebar (with
+ * search), one pane at a time on the right, changes saved as you make them. On a narrow screen the
+ * categories are a list and a pane opens over it, with a back button.
+ */
+export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClose?: () => void }) {
+  const [pane, setPane] = useState<PaneId | null>(start ?? (window.innerWidth > 700 ? "appearance" : null));
+  const [q, setQ] = useState("");
+  const { p, edit, saved, err } = useProfileDraft();
+  const [notif, setNotif] = useState(typeof Notification !== "undefined" ? Notification.permission : "unsupported");
+  useEffect(() => { if (start) setPane(start); }, [start]);
   const shown = useMemo(() => {
     const t = q.trim().toLowerCase();
     return t ? PANES.filter((x) => `${x.title} ${x.words}`.toLowerCase().includes(t)) : PANES;
   }, [q]);
   const cur = PANES.find((x) => x.id === pane) ?? null;
   const zones = p ? (ZONES.includes(p.timezone) ? ZONES : [p.timezone, ...ZONES]) : ZONES;
+  const toPractice = () => { onClose?.(); window.location.hash = "#/studio/settings"; };
 
   const content = (id: PaneId): ReactNode => {
     if (id === "appearance") return (
@@ -126,62 +130,28 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
         <p className="sx-note">If you connect an AI app (such as Claude or ChatGPT) to Lilt, whatever it reads (session details, measurements, notes, and audio clips if it asks for them) goes to that app's provider under its own terms.</p>
       </>
     );
-    if (!p) return <p className="sx-note">Loading…</p>;
-    if (id === "goal") return (
-      <div className="sx-group">
-        <Row label="In your words" htmlFor="goal" stack>
-          <textarea id="goal" value={p.goal.summary} onChange={(e) => edit({ ...p, goal: { ...p.goal, summary: e.target.value } })} />
-        </Row>
-        <Row label="Qualities you're aiming for" htmlFor="desc" help="Separate them with commas." stack>
-          <input id="desc" type="text" value={p.goal.descriptors.join(", ")} onChange={(e) => edit({ ...p, goal: { ...p.goal, descriptors: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) } })} />
-        </Row>
-      </div>
-    );
-    if (id === "routine") return (
-      <div className="sx-group">
-        <Row label="Time zone" htmlFor="tz">
-          <select id="tz" value={p.timezone} onChange={(e) => edit({ ...p, timezone: e.target.value })}>{zones.map((z) => <option key={z}>{z}</option>)}</select>
-        </Row>
-        <Row label="Session length" htmlFor="mins" help="A planning guide, not a timer.">
-          <span className="sx-unit"><input id="mins" type="number" min={2} max={30} value={p.session_minutes} onChange={(e) => edit({ ...p, session_minutes: Number(e.target.value) })} /><span>min</span></span>
-        </Row>
-        <Row label="Comparison window" htmlFor="win" help="How many days of recordings to compare against.">
-          <span className="sx-unit"><input id="win" type="number" min={3} max={90} value={p.comparison_window_days} onChange={(e) => edit({ ...p, comparison_window_days: Number(e.target.value) })} /><span>days</span></span>
-        </Row>
-      </div>
-    );
-    if (id === "reminders") return (
+    if (id === "notifications") return (
       <>
         <div className="sx-group">
-          <Row label="Reminder time" htmlFor="rem" help="Optional. Leave it empty for no reminder.">
-            <input id="rem" type="time" value={p.reminder_time ?? ""} onChange={(e) => edit({ ...p, reminder_time: e.target.value || null })} />
-          </Row>
-          {notif !== "unsupported" && (
-            <Row label="Browser notifications" help={notif === "granted" ? "On while Lilt is open." : notif === "denied" ? "Blocked for this page. The in-app reminder still works." : "Off. Lilt can notify you while it's open."}>
+          {notif !== "unsupported" ? (
+            <Row label="Browser notifications" help={notif === "granted" ? "On while Lilt is open." : notif === "denied" ? "Blocked for this page. Reminders still appear inside Lilt." : "Off. Lilt can notify you while it's open."}>
               {notif === "default" && <button className="btn-secondary sx-btn" onClick={() => void Notification.requestPermission().then(setNotif)}>Allow</button>}
             </Row>
-          )}
+          ) : <Row label="Browser notifications" help="This browser can't show notifications. Reminders still appear inside Lilt." />}
+          <Row label="Practice reminder" help="When to be reminded is set in Practice.">
+            <button className="btn-secondary sx-btn" onClick={toPractice}>Practice settings</button>
+          </Row>
         </div>
-        <p className="sx-note">Reminders appear in Lilt, plus a browser notification while Lilt is open if you allow it. Nothing is set up in any outside messaging account. If your computer was asleep, you'll see one reminder, not a backlog.</p>
+        <p className="sx-note">Nothing is set up in any outside messaging account. If your computer was asleep, you'll see one reminder, not a backlog.</p>
       </>
     );
+    if (!p) return <p className="sx-note">Loading…</p>;
     return (
-      <>
-        <div className="sx-group">
-          <Row label="Low" htmlFor="rlo">
-            <span className="sx-unit"><input id="rlo" type="number" min={60} max={700} placeholder="Not set" value={p.comfort_range_hz?.[0] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [Number(e.target.value), p.comfort_range_hz?.[1] ?? Number(e.target.value) + 40] : null })} /><span>Hz</span></span>
-          </Row>
-          <Row label="High" htmlFor="rhi">
-            <span className="sx-unit"><input id="rhi" type="number" min={60} max={700} placeholder="Not set" value={p.comfort_range_hz?.[1] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [p.comfort_range_hz?.[0] ?? Number(e.target.value) - 40, Number(e.target.value)] : null })} /><span>Hz</span></span>
-          </Row>
-          {p.comfort_range_hz && (
-            <Row label={`${p.comfort_range_hz[0]}–${p.comfort_range_hz[1]} Hz`}>
-              <button className="btn-secondary sx-btn" onClick={() => edit({ ...p, comfort_range_hz: null })}>Clear range</button>
-            </Row>
-          )}
-        </div>
-        <p className="sx-note">Optional. A pitch range that feels comfortable and sounds like you. It's shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like in a practice chapter.</p>
-      </>
+      <div className="sx-group">
+        <Row label="Time zone" htmlFor="tz" help="Sets when your practice day starts and when reminders come.">
+          <select id="tz" value={p.timezone} onChange={(e) => edit({ ...p, timezone: e.target.value })}>{zones.map((z) => <option key={z}>{z}</option>)}</select>
+        </Row>
+      </div>
     );
   };
 
@@ -216,7 +186,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
               <h2>{cur.title}</h2>
-              <span className={`sx-saved ${saved}`} aria-live="polite">{saved === "saving" ? "Saving…" : saved === "saved" ? "Saved" : saved === "error" ? "Not saved" : ""}</span>
+              <span className={`sx-saved ${saved}`} aria-live="polite">{savedLabel(saved)}</span>
             </header>
             <div className="sx-body" key={cur.id}>
               <div className="sx-hero"><Tile pane={cur} size={56} /><div><b>{cur.title}</b><p>{HERO[cur.id]}</p></div></div>
@@ -233,9 +203,68 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
 const HERO: Record<PaneId, string> = {
   appearance: "How Lilt looks: light or dark, and how big the text is.",
   ai: "Let an AI assistant read your practice, write reviews, and rewrite your own copy of the chapters. Lilt's original chapters stay as they are, and every change can be undone.",
-  goal: "What you're working towards, in your own words. It starts the note on the wall too.",
-  routine: "Your time zone, how long a session is, and how far back Lilt compares.",
-  reminders: "A gentle nudge to practise, inside Lilt.",
-  range: "A pitch range that feels comfortable and sounds like you.",
+  notifications: "How Lilt can get your attention while it's open.",
+  time: "The time zone your practice days and reminders follow.",
   privacy: "Everything stays on this computer unless you connect an AI app.",
 };
+
+/**
+ * Practice's own settings, inside the Practice app (#/studio/settings): your goal, the routine
+ * (session length, reminder, comparison window) and your comfortable range. Saved as you go.
+ */
+export function PracticeSettings() {
+  const { p, edit, saved, err } = useProfileDraft();
+  if (!p) return <p className="sx-note">Loading…</p>;
+  return (
+    <div className="sx sx-app">
+      <header className="sx-app-head">
+        <h1>Practice settings</h1>
+        <span className={`sx-saved ${saved}`} aria-live="polite">{savedLabel(saved)}</span>
+      </header>
+      <section aria-labelledby="ps-goal">
+        <h2 id="ps-goal">Your goal</h2>
+        <div className="sx-group">
+          <Row label="In your words" htmlFor="goal" help="It starts the note on the wall too." stack>
+            <textarea id="goal" value={p.goal.summary} onChange={(e) => edit({ ...p, goal: { ...p.goal, summary: e.target.value } })} />
+          </Row>
+          <Row label="Qualities you're aiming for" htmlFor="desc" help="Separate them with commas." stack>
+            <input id="desc" type="text" value={p.goal.descriptors.join(", ")} onChange={(e) => edit({ ...p, goal: { ...p.goal, descriptors: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) } })} />
+          </Row>
+        </div>
+      </section>
+      <section aria-labelledby="ps-routine">
+        <h2 id="ps-routine">Routine</h2>
+        <div className="sx-group">
+          <Row label="Session length" htmlFor="mins" help="A planning guide, not a timer.">
+            <span className="sx-unit"><input id="mins" type="number" min={2} max={30} value={p.session_minutes} onChange={(e) => edit({ ...p, session_minutes: Number(e.target.value) })} /><span>min</span></span>
+          </Row>
+          <Row label="Reminder" htmlFor="rem" help="Optional. Leave it empty for no reminder.">
+            <input id="rem" type="time" value={p.reminder_time ?? ""} onChange={(e) => edit({ ...p, reminder_time: e.target.value || null })} />
+          </Row>
+          <Row label="Comparison window" htmlFor="win" help="How many days of recordings to compare against.">
+            <span className="sx-unit"><input id="win" type="number" min={3} max={90} value={p.comparison_window_days} onChange={(e) => edit({ ...p, comparison_window_days: Number(e.target.value) })} /><span>days</span></span>
+          </Row>
+        </div>
+      </section>
+      <section aria-labelledby="ps-range">
+        <h2 id="ps-range">Comfortable range</h2>
+        <div className="sx-group">
+          <Row label="Low" htmlFor="rlo">
+            <span className="sx-unit"><input id="rlo" type="number" min={60} max={700} placeholder="–" value={p.comfort_range_hz?.[0] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [Number(e.target.value), p.comfort_range_hz?.[1] ?? Number(e.target.value) + 40] : null })} /><span>Hz</span></span>
+          </Row>
+          <Row label="High" htmlFor="rhi">
+            <span className="sx-unit"><input id="rhi" type="number" min={60} max={700} placeholder="–" value={p.comfort_range_hz?.[1] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [p.comfort_range_hz?.[0] ?? Number(e.target.value) - 40, Number(e.target.value)] : null })} /><span>Hz</span></span>
+          </Row>
+          {p.comfort_range_hz && (
+            <Row label={`${p.comfort_range_hz[0]}–${p.comfort_range_hz[1]} Hz`}>
+              <button className="btn-secondary sx-btn" onClick={() => edit({ ...p, comfort_range_hz: null })}>Clear range</button>
+            </Row>
+          )}
+        </div>
+        <p className="sx-note">Optional. A pitch range that feels comfortable and sounds like you, shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like.</p>
+      </section>
+      {err && <Callout kind="warn"><p>{err}</p></Callout>}
+      <p className="sx-note">Theme, text size, AI connections and notifications are in Lilt's Settings (the gear in the room or the menu bar).</p>
+    </div>
+  );
+}

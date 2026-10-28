@@ -76,3 +76,12 @@
 .st-apps span { font-size: 12px; color: var(--ink-3); }
 .st-why { margin-top: 0; color: var(--ink-2); }
 .sx #st-ai .st-sub { margin-top: 18px; }
+
+/* An app's own settings, as a page inside the app (Practice settings) */
+.sx.sx-app { display: grid; gap: 14px; height: auto; grid-template-columns: minmax(0, 1fr); font-size: 14px; }
+.sx-app-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.sx-app-head h1 { margin: 0; font: 700 44px/1.05 var(--font); letter-spacing: -0.045em; color: var(--ink); }
+.sx-app section { display: grid; gap: 10px; }
+.sx-app h2 { margin: 18px 0 0 2px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+.sx-app .sx-note { margin: 0 2px; }
+@media (max-width: 700px) { .sx-app-head h1 { font-size: 34px; } .sx.sx-app { grid-template-columns: minmax(0, 1fr); } .sx.sx-app .sx-main, .sx.sx-app .sx-side { display: initial; } }
