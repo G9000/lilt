@@ -1,6 +1,7 @@
 //! Versioned exercise registry. Content is seeded from `content/exercises` into the
 //! data root; an existing version is never overwritten, so edits need a new version.
 
+use crate::app::App;
 use crate::store::{self, Paths};
 use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
@@ -147,6 +148,11 @@ pub fn seed_and_load(paths: &Paths, content_dir: &Path) -> Result<Registry> {
         }
     }
     load(paths)
+}
+
+/// An exercise version as the web UI and MCP see it, or null if that version is unknown.
+pub fn json(app: &App, id: &str, version: u32) -> Value {
+    app.registry.read().unwrap().get(id, version).map(|e| e.raw.clone()).unwrap_or(Value::Null)
 }
 
 pub fn load(paths: &Paths) -> Result<Registry> {

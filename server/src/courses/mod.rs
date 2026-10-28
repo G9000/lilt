@@ -19,6 +19,7 @@
 //! course lives in `<data>/courses/<id>` (see `syllabus`). Voice is the course the app shows today.
 
 pub mod remix;
+pub mod routes;
 pub mod syllabus;
 pub mod texts;
 pub mod updates;

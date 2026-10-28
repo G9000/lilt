@@ -1,10 +1,10 @@
 //! MCP server: a small typed tool set over IDs only (no paths, no shell). Uses the
 //! same record access and validation as the HTTP API.
 
-use crate::api::{self, ListQuery};
+use crate::recordings::routes::{self as views, ListQuery};
 use crate::app::Shared;
 use crate::model::*;
-use crate::{analysis::compare, practice::progress, courses::syllabus, util, coach::validate};
+use crate::{analysis::compare, coach::validate, courses::syllabus, practice::progress, util};
 use base64::Engine;
 use rmcp::{
     ErrorData as McpError, RoleServer, ServerHandler,
@@ -189,13 +189,13 @@ pub fn call(app: &Shared, name: &str, a: &serde_json::Map<String, Value>) -> any
             let caps: Vec<Value> = progress::AREAS.iter().map(|x| json!({"area": x, "capability": progress::capability(x)})).collect();
             ok(json!({"exercises": list, "capability_matrix": caps}))
         }
-        "voice_list_sessions" => ok(api::list_sessions_page(app, &ListQuery {
+        "voice_list_sessions" => ok(views::list_sessions_page(app, &ListQuery {
             from: arg_str(a, "from"),
             to: arg_str(a, "to"),
             cursor: a.get("cursor").and_then(|v| v.as_u64()).map(|v| v as usize),
             limit: a.get("limit").and_then(|v| v.as_u64()).map(|v| v as usize),
         })),
-        "voice_get_session" => ok(api::session_view(app, &req_str(a, "session_id")?)?),
+        "voice_get_session" => ok(views::session_view(app, &req_str(a, "session_id")?)?),
         "voice_get_analysis" => {
             let (_, mut an) = app.analysis_by_run(&req_str(a, "run_id")?)?;
             if !a.get("include_contour").and_then(|v| v.as_bool()).unwrap_or(false) {
@@ -226,7 +226,7 @@ pub fn call(app: &Shared, name: &str, a: &serde_json::Map<String, Value>) -> any
                     let d = app.session(&t.session_id).map(|s| s.local_date).unwrap_or_default();
                     from.as_ref().map(|f| d >= *f).unwrap_or(true) && to.as_ref().map(|x| d <= *x).unwrap_or(true)
                 })
-                .map(|t| api::take_view(app, t)).collect();
+                .map(|t| views::take_view(app, t)).collect();
             ok(json!({"skills": progress::skill_cards(app), "participation": progress::participation(app, &today),
                 "takes": takes, "aggregation": "One entry per take; nothing is averaged across different tasks.",
                 "missing_evaluation_assets": ["Natural-speech recordings with independently checked pitch contours", "Independent listener labels for lightness and resonance", "Clinician review of exercises"]}))
@@ -248,7 +248,7 @@ pub fn call(app: &Shared, name: &str, a: &serde_json::Map<String, Value>) -> any
         "voice_save_review" => {
             let input: validate::AgentReviewInput = serde_json::from_value(Value::Object(a.clone()))
                 .map_err(|e| anyhow::anyhow!("invalid review structure: {e}"))?;
-            let (r, created) = api::agent_review(app, input)?;
+            let (r, created) = validate::save_agent_review(app, input)?;
             ok(json!({"review_id": r.id, "created": created, "duplicate": !created}))
         }
         "voice_set_next_plan" => {

@@ -4,6 +4,7 @@
 //! measurements are descriptive only and never select a cue or change the plan.
 
 pub mod validate;
+pub mod routes;
 
 use crate::app::App;
 use crate::analysis::compare;

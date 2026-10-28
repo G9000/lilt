@@ -3,3 +3,4 @@
 pub mod cards;
 pub mod exercises;
 pub mod progress;
+pub mod routes;

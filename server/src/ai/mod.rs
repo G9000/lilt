@@ -4,3 +4,4 @@ pub mod agents;
 pub mod chatgpt;
 pub mod mcp;
 pub mod oauth;
+pub mod routes;

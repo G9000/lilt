@@ -2,6 +2,7 @@
 //! finalisation or a restart mid-job cannot produce duplicate results.
 
 pub mod compare;
+pub mod routes;
 
 use crate::app::{App, Shared};
 use crate::model::*;

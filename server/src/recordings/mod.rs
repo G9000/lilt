@@ -1,6 +1,8 @@
 //! Sessions, takes and the chunked upload protocol. Original bytes are written once
 //! and never modified; take.json carries mutable status and annotations.
 
+pub mod routes;
+
 use crate::app::App;
 use crate::model::*;
 use crate::store;

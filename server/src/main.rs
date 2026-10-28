@@ -1,9 +1,9 @@
 mod ai;
 mod analysis;
-mod api;
 mod app;
 mod coach;
 mod courses;
+mod http;
 mod model;
 mod practice;
 mod recordings;
@@ -55,7 +55,7 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     // Each course's pictures and example recordings, as `images/<file>` and `audio/<file>` in its
     // Markdown, at /courses/<id>/images and /courses/<id>/audio; the app's course (Practice) also
     // at /texts/images and /texts/audio.
-    let mut router = api::router(app.clone())
+    let mut router = http::router(app.clone())
         .merge(mcp_router)
         .merge(ai::oauth::router(app.clone()))
         .merge(ai::chatgpt::router(app.clone()));
