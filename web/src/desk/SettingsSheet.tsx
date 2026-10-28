@@ -23,15 +23,15 @@ export function SettingsSheet() {
   }, []);
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: PointerEvent) => { if (!(e.target as HTMLElement).closest(".ss, .ss-open")) setOpen(false); };
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); } };
-    window.addEventListener("pointerdown", onDown);
     window.addEventListener("keydown", onKey, true);
-    return () => { window.removeEventListener("pointerdown", onDown); window.removeEventListener("keydown", onKey, true); };
+    return () => window.removeEventListener("keydown", onKey, true);
   }, [open]);
   return (
     <>
-      <div className={`ss-scrim${open ? " on" : ""}`} aria-hidden="true" />
+      {/* A click outside only closes Settings: the scrim takes it, so it never also opens the
+          computer, a card or the radio underneath. */}
+      <div className={`ss-scrim${open ? " on" : ""}`} aria-hidden="true" onClick={() => setOpen(false)} />
       <section className={`ss${open ? " open" : ""}`} role="dialog" aria-label="Settings" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
         {open && <SettingsPage start={at} onClose={() => setOpen(false)} />}
       </section>
