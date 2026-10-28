@@ -42,8 +42,9 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   the room's **cat asleep on its blanket** in the current light, filling the whole right half edge
   to edge (the painting anchored bottom-left and scaled to cover, the three cat layers placed as in
   the room), breathing, its tail swaying and ear twitching now and then, with little "z"s floating
-  up. "Ready when you are" (40px, white), the hint, the record pill and the links sit top-left over
-  a soft dark shade, so the cat at the bottom stays uncovered.
+  up. One centred column sits above the cat, over a soft dark glow:
+  "Ready when you are" (42px, white), the hint, then the record pill as the main action (white,
+  56px, red dot, `Space`), then the links as small quiet text.
   **In use**, the instruments rise in, top to bottom: a big live **Now** readout (Geist 200, 68px, note
   under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
   graph straight on the panel (comfortable band, faint Hz guide lines labelled on the right,
