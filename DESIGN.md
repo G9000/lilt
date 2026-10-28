@@ -111,7 +111,10 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   rounded loudness bars, the live pitch line in coral with a soft glow and a dot at its tip); three
   white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a compact centred
   **record pill** (ink, red dot, "Record", `Space`) that turns red with a white square, "Stop" and
-  the timer while recording; hints under it. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
+  the timer while recording; hints under it. A take keeps the half second before you press Record (a
+  pre-roll from a delay line that runs while the mic is open) and a short tail after Stop, so a quick
+  start or a last syllable is never clipped; Practice opens the mic on arrival when it is already
+  allowed. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
   record pill and its links), and the pitch readout, graph and numbers open only while recording or
   listening; it steps away while you rate a card. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
