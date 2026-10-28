@@ -71,8 +71,8 @@ export function App() {
   const [deck, setDeck] = useState<Deck | null>(null);
 
   useEffect(() => { applyTheme(theme); }, [theme]);
-  // An old link to #/settings opens the Settings window on the desk.
-  useEffect(() => { if (seg[0] === "settings") { window.location.replace("#/desk"); openSettings(); } }, [seg[0]]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A link to #/settings or #/settings/ai (where ChatGPT sign-in returns) opens Settings over the room.
+  useEffect(() => { if (seg[0] === "settings") { window.location.replace("#/"); openSettings(seg[1] === "ai" ? "ai" : undefined); } }, [seg[0], seg[1]]); // eslint-disable-line react-hooks/exhaustive-deps
   // Settings changes the theme too.
   useEffect(() => {
     const on = (e: Event) => setTheme((e as CustomEvent<Theme>).detail);
