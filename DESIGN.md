@@ -34,7 +34,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   and **Then and now** (your first and latest take of the same text, the reference line first).
   **Every take's result leads with words**: one observation and one thing to try (comfort first,
   then an end drop, then range and movement), on an accent-soft panel, before any numbers.
-  **Recordings and Progress** open inside Practice, listed with Home above the tree.
+  **Recordings** opens inside Practice, listed with Home above the tree: takes are named by what they
+  were (Free recording, Reference line, or the chapter), and sessions that kept nothing are hidden.
+  **Progress** says "Coming soon" (with a Soon tag in the sidebar) and points at Then and now and
+  Recordings, until it can be trusted. While Practice fills the screen, the desk's widgets are hidden
+  so nothing shows through the glass.
   **Home** (`#/studio`, the dock's Chapters app) is the Practice index, read like a Notion page:
   a full-width cover (`cover:` in `content/texts/index.md`), then the owner's words and pictures
   from that file (why it exists, an honest note, how it's laid out, looking after your voice, how to
@@ -100,6 +104,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 | radii | window 22, control 12, small 8, pill 999 | |
 
 ## Type
+
+Practice uses one scale (web/src/styles/editor.css): captions 12, small 13, secondary 14, body 15,
+lead and small headings 17, section headings 21 and 24, page titles 44 (34 on phones); weights 400,
+500, 600 and 700 only (200 and 300 for the big live numbers). The reading serif keeps its own sizes.
+
 
 Window title 28–32px / 600 / -0.035em. Section 17–18px / 600. Body 15px. Small 13px. Caption 12px
 in `--ink-3`. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.

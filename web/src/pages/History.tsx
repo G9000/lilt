@@ -1,12 +1,20 @@
 import "../styles/data.css";
 import { useEffect, useState } from "react";
-import { api, AREA_LABEL, Review, Session, Take } from "../api";
+import { api, AREA_LABEL, Review, Session, Take, Texts } from "../api";
 import { AudioPlayer } from "../components/AudioPlayer";
 import { Icon, StatusBadge, TakeFlags, takeName, Toast, useToast } from "../components/bits";
 
 type Row = Session & { take_count: number };
 
-const KIND_TITLE: Record<Session["kind"], string> = { full: "Guided session", check_in: "Check-in", studio: "Chapters", deck: "Practice deck" };
+const KIND_TITLE: Record<Session["kind"], string> = { full: "Guided session", check_in: "Check-in", studio: "Practice", deck: "Today's cards" };
+
+/** What a take was, in words: a free recording, the starting voice, or the chapter a text belongs to. */
+function takeTitle(t: Take, texts: Texts | null) {
+  if (t.prompt_id === "free") return "Free recording";
+  if (t.prompt_id.startsWith("ref.")) return "Reference line";
+  const level = t.prompt_id.startsWith("text.") ? texts?.levels.find((l) => l.id === t.prompt_id.split(".")[1]) : null;
+  return level ? level.title : takeName(t);
+}
 
 const isoDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
@@ -26,6 +34,8 @@ export function HistoryPage() {
   const [open, setOpen] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [toast, setToast] = useToast();
+  const [texts, setTexts] = useState<Texts | null>(null);
+  useEffect(() => { void api.texts().then(setTexts, () => setTexts(null)); }, []);
 
   const more = async (cursor: number, reset = false) => {
     const r = await api.sessions(cursor);
@@ -37,7 +47,8 @@ export function HistoryPage() {
   useEffect(() => { void more(0, true); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const days: { day: string; sessions: Row[] }[] = [];
-  rows.forEach((s) => {
+  // Sessions that kept nothing (opened, then left) are noise here.
+  rows.filter((s) => s.take_count > 0).forEach((s) => {
     const last = days[days.length - 1];
     if (last && last.day === s.local_date) last.sessions.push(s); else days.push({ day: s.local_date, sessions: [s] });
   });
@@ -61,7 +72,7 @@ export function HistoryPage() {
                 focus || s.kind === "full" ? KIND_TITLE[s.kind] : null,
                 `${s.take_count} recording${s.take_count === 1 ? "" : "s"}`,
                 s.comfort ? `felt ${s.comfort.comfort.replace("_", " ")}` : null,
-                s.state === "in_progress" ? "unfinished and kept" : null,
+                s.state === "in_progress" && (s.kind === "full" || s.kind === "check_in") ? "unfinished and kept" : null,
               ].filter(Boolean).join(", ");
               const isOpen = open === s.id;
               return (
@@ -76,7 +87,7 @@ export function HistoryPage() {
                   </button>
                   {isOpen && (
                     <div className="rc-detail fade-in">
-                      <SessionDetail id={s.id} onDeleted={(msg) => { setToast(msg); setOpen(null); void more(0, true); }} />
+                      <SessionDetail id={s.id} texts={texts} onDeleted={(msg) => { setToast(msg); setOpen(null); void more(0, true); }} />
                     </div>
                   )}
                 </li>
@@ -98,7 +109,7 @@ export function HistoryPage() {
   );
 }
 
-function SessionDetail({ id, onDeleted }: { id: string; onDeleted: (msg: string) => void }) {
+function SessionDetail({ id, texts, onDeleted }: { id: string; texts: Texts | null; onDeleted: (msg: string) => void }) {
   const [d, setD] = useState<{ session: Session; takes: Take[]; reviews: Review[] } | null>(null);
   const load = () => api.session(id).then(setD);
   useEffect(() => { void load(); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -125,8 +136,8 @@ function SessionDetail({ id, onDeleted }: { id: string; onDeleted: (msg: string)
       <ul className="rc-takes">
         {d.takes.map((t) => (
           <li key={t.id}>
-            <AudioPlayer src={t.audio_url} label={takeName(t)} compact knownDuration={t.analysis_summary?.duration_s} />
-            <p className="rc-prompt">{t.prompt_text}</p>
+            <AudioPlayer src={t.audio_url} label={takeTitle(t, texts)} compact knownDuration={t.analysis_summary?.duration_s} />
+            {t.prompt_id !== "free" && <p className="rc-prompt">{t.prompt_text}</p>}
             <div className="rc-actions">
               <StatusBadge status={t.status} />
               <TakeFlags take={t} />

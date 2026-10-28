@@ -13,16 +13,16 @@
 .ve-page { background: var(--ve-glass-hi); }
 .ve button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; padding: 0; min-height: 0; box-shadow: none; }
 .ve button:disabled { cursor: default; opacity: 0.45; }
-.ve kbd { font: 500 11px var(--mono); border: 1px solid var(--hair); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--ink-2); background: none; }
+.ve kbd { font: 500 12px var(--mono); border: 1px solid var(--hair); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--ink-2); background: none; }
 
 /* sidebar as a file tree, like Obsidian: the window's traffic lights sit at its top. Today and the
    chapters are folders (a chevron, the name, a count or a medal); their cards and texts are files
    under an indent guide, with a tick once practised and the open one highlighted. */
-.ve-side { overflow: auto; padding: 50px 8px 12px; display: flex; flex-direction: column; scrollbar-width: thin; font-size: 13.5px; }
+.ve-side { overflow: auto; padding: 50px 8px 12px; display: flex; flex-direction: column; scrollbar-width: thin; font-size: 13px; }
 .ve-side h6 { margin: 18px 10px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 600 12px var(--font); color: var(--ink-3); }
-.ve-side h6 span { font-size: 11.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.ve-side h6 span { font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
 /* Home: a row like the folders, its icon where their chevrons sit */
-.ve .ve-home { width: 100%; height: 28px; display: flex; align-items: center; justify-content: flex-start; gap: 2px; margin: 0 0 1px; padding: 0 8px 0 0; border-radius: 7px; color: var(--ink); font-weight: 550; text-align: left; transition: background-color 0.12s ease; }
+.ve .ve-home { width: 100%; height: 28px; display: flex; align-items: center; justify-content: flex-start; gap: 2px; margin: 0 0 1px; padding: 0 8px 0 0; border-radius: 7px; color: var(--ink); font-weight: 500; text-align: left; transition: background-color 0.12s ease; }
 .ve-home-ic { flex: none; width: 22px; display: grid; place-items: center; color: var(--ink-2); }
 .ve-home-ic svg { width: 14px; height: 14px; }
 .ve .ve-home[aria-current="page"] { background: var(--fill-2); }
@@ -32,22 +32,31 @@
 .ve-doc.solo { grid-template-columns: minmax(0, 1fr); }
 .ve-doc.solo .ve-resize.split { display: none; }
 .ve-col.ve-embed { max-width: 860px; }
+/* pages shown inside Practice take its type scale */
+.ve-embed .dv-head h1, .ve-soon h1 { margin: 0 0 12px; font: 700 44px/1.05 var(--font); letter-spacing: -0.045em; color: var(--ink); }
+.ve-embed .dv-lede { font-size: 17px; line-height: 1.5; color: var(--ink-2); }
+.ve-soon { max-width: 60ch; color: var(--ink-2); font-size: 15px; line-height: 1.6; }
+.ve-soon .lede { margin: 0 0 20px; font-size: 21px; font-weight: 600; color: var(--accent-ink); letter-spacing: -0.02em; }
+.ve-soon ul { padding-left: 20px; display: grid; gap: 8px; }
+.ve-soon a { color: var(--accent-ink); }
+.ve-soon strong { color: var(--ink); font-weight: 600; }
+.ve-soon-tag { margin-left: auto; padding: 1px 7px; border-radius: 99px; background: var(--fill-2); font-size: 12px; font-weight: 500; color: var(--ink-3); }
 .ve-row { display: flex; align-items: center; border-radius: 7px; transition: background-color 0.12s ease; }
 .ve .ve-fold { flex: none; width: 22px; height: 28px; display: grid; place-items: center; color: var(--ink-3); border-radius: 6px; }
 .ve-chev { width: 12px; height: 12px; transition: transform 0.18s var(--ease); }
 .ve-chev.open { transform: rotate(90deg); }
-.ve .ve-open { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 2px; text-align: left; color: var(--ink); font-weight: 550; }
+.ve .ve-open { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 2px; text-align: left; color: var(--ink); font-weight: 500; }
 .ve-open .t, .ve-file .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ve-open .c { font-size: 11.5px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.ve-open .c { font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .ve-medal-s { width: 15px; height: 15px; flex: none; }
 .ve-row:has(.ve-open[aria-current="page"]) { background: var(--fill-2); }
 .ve-files { margin: 1px 0 4px 18px; padding-left: 7px; border-left: 1px solid var(--hair); }
 .ve .ve-file { width: 100%; height: 26px; display: flex; align-items: center; gap: 6px; padding: 0 8px; border-radius: 6px; text-align: left; color: var(--ink-2); font-size: 13px; transition: background-color 0.12s ease, color 0.12s ease; }
-.ve .ve-file[aria-current="page"] { background: var(--fill-2); color: var(--ink); font-weight: 550; }
+.ve .ve-file[aria-current="page"] { background: var(--fill-2); color: var(--ink); font-weight: 500; }
 .ve .ve-file.done { color: var(--ink-3); }
 .ve .ve-file:disabled { opacity: 1; }
 .ve-tick { width: 13px; height: 13px; flex: none; color: var(--ok); }
-.ve-note-row { padding: 4px 8px; font-size: 12.5px; color: var(--ink-3); }
+.ve-note-row { padding: 4px 8px; font-size: 12px; color: var(--ink-3); }
 
 .ve-side-foot { margin-top: auto; padding: 12px 0 0; display: grid; gap: 1px; border-top: 1px solid var(--hair); }
 .ve-side-foot a { display: flex; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--ink-2); text-decoration: none; transition: background-color 0.12s ease, color 0.12s ease; }
@@ -67,21 +76,21 @@
 .ve-mk { position: absolute; left: -40px; width: 24px; text-align: right; font: 500 13px/1 var(--font); font-variant-numeric: tabular-nums; color: var(--ve-mk); user-select: none; }
 .ve-mk svg { width: 16px; height: 16px; display: inline-block; }
 .ve-head { margin: 0 0 28px; }
-.ve-head h1 { font: 760 54px/1.02 var(--font); letter-spacing: -0.05em; margin: 0 0 12px; outline: none; text-wrap: balance; }
+.ve-head h1 { font: 700 44px/1.02 var(--font); letter-spacing: -0.05em; margin: 0 0 12px; outline: none; text-wrap: balance; }
 /* chapter complete: a medal and a line, popping in when it is earned on this visit */
 .ve-award { display: flex; align-items: center; gap: 14px; margin: 20px 0 0; padding: 14px 18px 14px 14px; border-radius: 16px; background: var(--accent-soft); color: var(--ink-2); font-size: 14px; line-height: 1.45; }
-.ve-award b { display: block; color: var(--accent-ink); font-size: 15px; font-weight: 650; letter-spacing: -0.01em; }
+.ve-award b { display: block; color: var(--accent-ink); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
 .ve-award-medal { flex: none; width: 44px; height: 44px; filter: drop-shadow(0 6px 10px rgba(224, 100, 60, 0.35)); }
 .ve-award.fresh { animation: ve-award-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .ve-award.fresh .ve-award-medal { animation: ve-medal-in 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
 @keyframes ve-award-in { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
 @keyframes ve-medal-in { from { opacity: 0; transform: scale(0.4) rotate(-40deg); } }
-.ve-subtitle { font-size: 19px; font-weight: 500; line-height: 1.4; letter-spacing: -0.012em; color: var(--ink-2); margin: 0; }
+.ve-subtitle { font-size: 17px; font-weight: 500; line-height: 1.4; letter-spacing: -0.012em; color: var(--ink-2); margin: 0; }
 .ve-meta { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; font-variant-numeric: tabular-nums; }
 .ve-how { margin: 0 0 40px; padding: 16px 20px 17px; border-radius: 14px; background: var(--fill); color: var(--ink-2); font-size: 15px; line-height: 1.55; }
 .ve-how.warn { background: var(--warn-soft); }
-.ve-how b { color: var(--ink); font-weight: 600; font-size: 13.5px; display: block; margin-bottom: 3px; }
-.ve-src { display: block; margin-top: 8px; font-size: 12.5px; color: var(--ink-3); }
+.ve-how b { color: var(--ink); font-weight: 600; font-size: 13px; display: block; margin-bottom: 3px; }
+.ve-src { display: block; margin-top: 8px; font-size: 12px; color: var(--ink-3); }
 .ve-src a { color: inherit; text-decoration-color: var(--line-strong); }
 
 .ve-items { list-style: none; margin: 0; padding: 0; }
@@ -100,7 +109,7 @@
 .ve-item.done .ve-mk.num { top: 15px; color: var(--ok); }
 .ve-item.done .readtext { font-size: 19px; color: var(--ink-3); }
 .ve-item.done .ve-hint { margin-top: 4px; }
-.ve-kind { margin: 0 0 8px; font-size: 12.5px; font-weight: 500; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
+.ve-kind { margin: 0 0 8px; font-size: 12px; font-weight: 500; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
 
 /* reading text: a serif you read from, with the read-along highlight */
 .ve .readtext { font: 400 27px/1.38 var(--read); letter-spacing: -0.01em; font-optical-sizing: auto; margin: 0; color: var(--ink); text-wrap: pretty; }
@@ -115,27 +124,27 @@
 .ve .readtext .w.annotated::after { content: attr(data-n); position: relative; top: -0.95em; margin-left: 0.08em; font: 600 0.42em var(--font); color: var(--accent-ink); }
 .ve .readtext .w.now.annotated::after { color: #fff; }
 .ve .readtext .w .wpitch { position: absolute; left: 0; right: 0; bottom: -0.36em; height: 0.36em; pointer-events: none; overflow: visible; }
-.ve .follow-status { font: 500 12.5px/1.4 var(--font); color: var(--ink-3); min-height: 0; margin: 4px 0 0; }
+.ve .follow-status { font: 500 12px/1.4 var(--font); color: var(--ink-3); min-height: 0; margin: 4px 0 0; }
 .ve .follow-status:empty { display: none; }
-.ve-hint { margin: 10px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); display: flex; gap: 8px; align-items: baseline; max-width: 60ch; }
-.ve .notes { list-style: none; padding: 14px 0 0; margin: 14px 0 0; border-top: 1px solid var(--hair); display: grid; gap: 4px; font: 400 13.5px/1.5 var(--font); color: var(--ink-2); }
+.ve-hint { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); display: flex; gap: 8px; align-items: baseline; max-width: 60ch; }
+.ve .notes { list-style: none; padding: 14px 0 0; margin: 14px 0 0; border-top: 1px solid var(--hair); display: grid; gap: 4px; font: 400 13px/1.5 var(--font); color: var(--ink-2); }
 .ve .notes li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; align-items: baseline; }
 .ve .notes b { font-size: 12px; font-weight: 600; color: var(--accent-ink); }
 .ve .notes small { color: var(--ink-3); font-size: 12px; }
-.ve-tag { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 99px; background: var(--ok-soft); color: var(--ok); }
+.ve-tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 99px; background: var(--ok-soft); color: var(--ok); }
 .ve-tag.again, .ve-tag.hard { background: var(--warn-soft); color: var(--warn); }
 .ve-tag.next { background: var(--accent-soft); color: var(--accent-ink); }
 .ve-end { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--hair); font-size: 13px; line-height: 1.55; color: var(--ink-3); max-width: 60ch; }
 .ve-small { font-size: 13px; color: var(--ink-3); margin: 8px 0 0; }
 .ve-small a { color: var(--ink-2); }
-.ve-err { color: var(--rec); font-size: 13.5px; margin: 8px 0 0; }
+.ve-err { color: var(--rec); font-size: 13px; margin: 8px 0 0; }
 
 /* an example recording of the text, when a contributor has added one */
 .ve-example { margin-top: 12px; max-width: 420px; }
 
 /* a saved take, inside the active item */
 .ve-take { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hair); display: grid; gap: 10px; cursor: default; }
-.ve-take-head { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+.ve-take-head { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .ve-take .ab { display: grid; gap: 8px; }
 .ve-take-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .ve-result { margin-top: 16px; display: grid; gap: 12px; cursor: default; }
@@ -163,7 +172,7 @@
 .ve-now-read b small { font: 500 12px var(--font); letter-spacing: 0; color: var(--ink-3); margin-left: 4px; }
 .ve-now-read > span { display: block; margin-top: 5px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
 .ve-state { display: none; align-items: center; gap: 7px; height: 28px; padding: 0 11px 0 10px; border-radius: 99px; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair);
-  font: 500 12.5px var(--font); color: var(--ink-2); white-space: nowrap; }
+  font: 500 12px var(--font); color: var(--ink-2); white-space: nowrap; }
 .ve-state i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); opacity: 0.5; }
 .ve-state.rec, .ve-state.error { color: var(--rec); }
 .ve-state.rec i { background: var(--rec); opacity: 1; animation: ve-pulse 1.4s ease-in-out infinite; }
@@ -175,15 +184,15 @@
 .ve-scope canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ve-scope-idle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 100px); color: var(--ink-3); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ve-scope .ve-pill { position: absolute; top: 8px; left: 8px; }
-.ve-pill { font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent-ink); white-space: nowrap; }
+.ve-pill { font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent-ink); white-space: nowrap; }
 .ve-pill.ok { background: var(--ok-soft); color: var(--ok); }
 
 .ve-stats { grid-area: stats; display: grid; grid-template-columns: repeat(3, minmax(72px, auto)); }
 .ve-stat { padding: 2px 14px; border-left: 1px solid var(--hair); }
-.ve-stat > span { display: block; font-size: 11.5px; font-weight: 500; color: var(--ink-3); white-space: nowrap; margin-bottom: 3px; }
-.ve-stat b { display: block; font: 500 19px/1.2 var(--font); letter-spacing: -0.025em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
-.ve-stat b small { font-size: 11.5px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; margin-left: 3px; }
-.ve-stat i { display: block; min-height: 17px; font: 400 11.5px/1.5 var(--font); color: var(--ink-3); font-style: normal; white-space: nowrap; }
+.ve-stat > span { display: block; font-size: 12px; font-weight: 500; color: var(--ink-3); white-space: nowrap; margin-bottom: 3px; }
+.ve-stat b { display: block; font: 500 17px/1.2 var(--font); letter-spacing: -0.025em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.ve-stat b small { font-size: 12px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; margin-left: 3px; }
+.ve-stat i { display: block; min-height: 17px; font: 400 12px/1.5 var(--font); color: var(--ink-3); font-style: normal; white-space: nowrap; }
 .ve-none { color: var(--ink-3); opacity: 0.5; font-weight: 300; }
 
 .ve .ve-rec { grid-area: rec; height: 44px; padding: 0 16px 0 14px; border-radius: 99px; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
@@ -213,22 +222,22 @@
 .ve-cat .body { transform-origin: 50.7% 81.9%; animation: ve-breathe 3.8s ease-in-out infinite; }
 .ve-cat .tail { transform-origin: 58.9% 74.9%; animation: ve-tail 5.2s ease-in-out infinite; }
 .ve-cat .ear { transform-origin: 83.2% 45.6%; animation: ve-ear 7s ease-in-out infinite; }
-.ve-zzz { position: absolute; left: 18.9%; top: 74.6%; display: flex; gap: 2px; color: #fff; font: 750 18px var(--font); text-shadow: 0 1px 2px rgba(60, 20, 50, 0.55), 0 2px 12px rgba(60, 20, 50, 0.45); }
+.ve-zzz { position: absolute; left: 18.9%; top: 74.6%; display: flex; gap: 2px; color: #fff; font: 700 17px var(--font); text-shadow: 0 1px 2px rgba(60, 20, 50, 0.55), 0 2px 12px rgba(60, 20, 50, 0.45); }
 .ve-zzz i { font-style: normal; opacity: 0; animation: ve-z 3.6s ease-out infinite; }
 .ve-zzz i:nth-child(2) { font-size: 1.25em; animation-delay: 1.2s; }
 .ve-zzz i:nth-child(3) { font-size: 1.55em; animation-delay: 2.4s; }
 .ve-cat::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 78% 44% at 50% 36%, rgba(18, 12, 28, 0.68), rgba(18, 12, 28, 0) 100%), linear-gradient(to bottom, rgba(18, 12, 28, 0.35), rgba(18, 12, 28, 0) 60%); }
 .ve-art-copy { grid-area: copy; margin: 0; display: grid; gap: 10px; justify-items: center; text-align: center; color: #fff; }
-.ve-art-copy b { font: 760 42px/1 var(--font); letter-spacing: -0.05em; text-shadow: 0 2px 20px rgba(18, 12, 28, 0.4); }
-.ve-art-copy span { max-width: 34ch; font-size: 15.5px; line-height: 1.45; color: rgba(255, 255, 255, 0.88); text-shadow: 0 1px 10px rgba(18, 12, 28, 0.6); }
+.ve-art-copy b { font: 700 44px/1 var(--font); letter-spacing: -0.05em; text-shadow: 0 2px 20px rgba(18, 12, 28, 0.4); }
+.ve-art-copy span { max-width: 34ch; font-size: 15px; line-height: 1.45; color: rgba(255, 255, 255, 0.88); text-shadow: 0 1px 10px rgba(18, 12, 28, 0.6); }
 @keyframes ve-breathe { 50% { transform: scale(1.003, 1.016); } }
 @keyframes ve-tail { 0%, 66%, 100% { transform: rotate(0); } 76% { transform: rotate(3.5deg); } 88% { transform: rotate(-1.5deg); } }
 @keyframes ve-ear { 0%, 88%, 100% { transform: rotate(0); } 90% { transform: rotate(7deg); } 92% { transform: rotate(0); } 94% { transform: rotate(5deg); } 96% { transform: rotate(0); } }
 @keyframes ve-z { 0% { opacity: 0; transform: translate(0, 6px) scale(0.8); } 25% { opacity: 0.95; } 100% { opacity: 0; transform: translate(14px, -26px) scale(1.1); } }
 @keyframes ve-rise { from { opacity: 0; transform: translateY(6px); } }
 
-.ve-dock-sub { grid-area: sub; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-3); min-height: 30px; }
+.ve-dock-sub { grid-area: sub; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-3); min-height: 30px; }
 .ve-dock-msg { display: inline-flex; align-items: center; gap: 5px; }
 .ve-dock-msg:empty { display: none; }
 .ve-sp { flex: 1; }
@@ -238,20 +247,20 @@
 /* a Notion-style cover across the whole page, then the note */
 .ve-cover { height: clamp(150px, 26vh, 280px); background-size: cover; background-position: center 40%; }
 .ve-col.ve-home-col { padding-top: 40px; }
-.ve-md { max-width: 66ch; color: var(--ink-2); font-size: 15.5px; line-height: 1.65; }
+.ve-md { max-width: 66ch; color: var(--ink-2); font-size: 15px; line-height: 1.65; }
 .ve-md > :first-child { margin-top: 0; }
 .ve-md p { margin: 0 0 16px; }
-.ve-md h1 { margin: 0 0 14px; font: 760 48px/1.04 var(--font); letter-spacing: -0.05em; color: var(--ink); text-wrap: balance; }
-.ve-md h1 + p { font-size: 18.5px; line-height: 1.55; color: var(--ink); }
+.ve-md h1 { margin: 0 0 14px; font: 700 44px/1.04 var(--font); letter-spacing: -0.05em; color: var(--ink); text-wrap: balance; }
+.ve-md h1 + p { font-size: 17px; line-height: 1.55; color: var(--ink); }
 .ve-md figure { margin: 8px 0 24px; }
 .ve-md figure img, .ve-md p img { display: block; width: 100%; border-radius: 22px; }
 .ve-md figure img { aspect-ratio: 2 / 1; object-fit: cover; box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12); }
-.ve-md h2 { margin: 40px 0 12px; font: 720 24px/1.2 var(--font); letter-spacing: -0.035em; color: var(--ink); }
-.ve-md h3 { margin: 28px 0 8px; font: 650 17px/1.3 var(--font); color: var(--ink); }
+.ve-md h2 { margin: 40px 0 12px; font: 700 24px/1.2 var(--font); letter-spacing: -0.035em; color: var(--ink); }
+.ve-md h3 { margin: 28px 0 8px; font: 600 17px/1.3 var(--font); color: var(--ink); }
 .ve-md ul, .ve-md ol { margin: 0 0 16px; padding-left: 20px; }
 .ve-md li { margin: 0 0 8px; padding-left: 2px; }
 .ve-md li::marker { color: var(--ink-3); }
-.ve-md strong { color: var(--ink); font-weight: 650; }
+.ve-md strong { color: var(--ink); font-weight: 600; }
 .ve-md a { color: var(--accent-ink); text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 .ve-md code { font: 500 0.88em var(--mono); padding: 1px 5px; border-radius: 5px; background: var(--fill); }
 .ve-md blockquote { margin: 0 0 16px; padding: 12px 16px; border-radius: 12px; background: var(--fill); }
@@ -259,11 +268,11 @@
 .ve-chapters { list-style: none; padding: 0 !important; margin: 0 0 40px; display: grid; gap: 2px; }
 .ve-chapters li { margin: 0; padding: 0; }
 .ve-chapters a { display: flex; align-items: center; gap: 14px; padding: 10px 12px; margin: 0 -12px; border-radius: 12px; color: inherit; text-decoration: none; transition: background-color 0.12s ease; }
-.ve-chapters .n { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--fill-2); font: 650 12px var(--font); color: var(--ink-2); }
+.ve-chapters .n { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--fill-2); font: 600 12px var(--font); color: var(--ink-2); }
 .ve-chapters .t { flex: 1; min-width: 0; display: grid; }
-.ve-chapters .t b { font-size: 15.5px; font-weight: 600; color: var(--ink); }
+.ve-chapters .t b { font-size: 15px; font-weight: 600; color: var(--ink); }
 .ve-chapters .t small { font-size: 13px; color: var(--ink-3); }
-.ve-chapters .c { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.ve-chapters .c { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 @media (hover: hover) and (pointer: fine) {
   .ve-chapters a:hover { background: var(--fill); }
   .ve .ve-home:hover:not([aria-current]) { background: var(--fill); }
@@ -273,21 +282,21 @@
 .ve-start-card, .ve-practice { margin: 0 0 40px; padding: 20px 22px; border-radius: 18px; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair), 0 14px 34px -24px rgba(10, 10, 40, 0.4); }
 .ve-start-card { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; }
 .ve-start-card > div { flex: 1 1 260px; }
-.ve-start-card b { display: block; font-size: 17px; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); }
-.ve-start-card p { margin: 4px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
-.ve .ve-start-go { flex: none; height: 42px; padding: 0 18px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 14.5px; font-weight: 600; white-space: nowrap; transition: transform 0.16s var(--ease), background-color 0.15s ease; }
+.ve-start-card b { display: block; font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+.ve-start-card p { margin: 4px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.ve .ve-start-go { flex: none; height: 42px; padding: 0 18px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform 0.16s var(--ease), background-color 0.15s ease; }
 .ve .ve-start-go:active { transform: scale(0.97); }
 .ve-practice { display: grid; gap: 18px; }
 .ve-days { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .ve-days p { margin: 0; display: grid; }
-.ve-days b { font-size: 17px; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); }
+.ve-days b { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
 .ve-days span { font-size: 13px; color: var(--ink-3); }
 .ve-days ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 5px; }
 .ve-days li { width: 12px; height: 12px; border-radius: 4px; background: var(--fill-2); }
 .ve-days li.on { background: var(--accent); }
 .ve-then { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--hair); }
 .ve-then-h { margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.ve-then-h b { font-size: 15px; font-weight: 650; color: var(--ink); }
+.ve-then-h b { font-size: 15px; font-weight: 600; color: var(--ink); }
 .ve-then-h span { font-size: 13px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ve-then .ab { display: grid; gap: 8px; }
 .ve-then-wait { margin: 0; padding-top: 14px; border-top: 1px solid var(--hair); font-size: 14px; color: var(--ink-2); }
@@ -300,23 +309,23 @@
 
 /* after a take: one observation and one thing to try, in words, before any numbers */
 .prc-insight { padding: 14px 16px; border-radius: 14px; background: var(--accent-soft); display: grid; gap: 4px; }
-.prc-insight .n { margin: 0; font-size: 15.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+.prc-insight .n { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
 .prc-insight .c { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
-.prc-insight .c b { color: var(--accent-ink); font-weight: 650; margin-right: 4px; }
+.prc-insight .c b { color: var(--accent-ink); font-weight: 600; margin-right: 4px; }
 .prc-result .prc-insight { margin-bottom: 14px; }
 
 /* a free take's summary in the text column, when the screen isn't split */
 .ve-free { margin: 0 0 36px; }
-.ve-free h2 { margin: 0 0 12px; font: 700 20px/1.2 var(--font); letter-spacing: -0.03em; }
+.ve-free h2 { margin: 0 0 12px; font: 700 21px/1.2 var(--font); letter-spacing: -0.03em; }
 
 /* rating, inside the card you just said */
 .ve-rate-box { display: grid; gap: 10px; padding-top: 4px; }
 .ve-rate { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .ve .ve-rate button { display: grid; gap: 1px; padding: 10px 12px; border-radius: 12px; background: var(--fill); text-align: left; color: var(--ink); transition: background-color 0.15s ease, transform 0.16s var(--ease); }
 .ve .ve-rate button:active:not(:disabled) { transform: scale(0.97); }
-.ve .ve-rate .l { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 14.5px; font-weight: 600; }
+.ve .ve-rate .l { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 14px; font-weight: 600; }
 .ve .ve-rate small { font-size: 12px; color: var(--ink-3); }
-.ve .ve-rate kbd { font-size: 10.5px; padding: 0 4px; }
+.ve .ve-rate kbd { font-size: 12px; padding: 0 4px; }
 .ve-rate-more { display: flex; gap: 18px; }
 .ve .ve-link { font-size: 13px; font-weight: 500; color: var(--ink-3); transition: color 0.15s ease; }
 @media (hover: hover) and (pointer: fine) {
@@ -349,6 +358,8 @@
 .ds-win.full .ds-title { display: none; }
 .ds-win.full .ds-body { display: flex; padding: 0; overflow: visible; }
 .ds.app-full .ds-dock { display: none; }
+/* the glass shows the wallpaper through it, so the desk's widgets must not linger behind */
+.ds.app-full .ds-widgets, .ds.app-full .ds-w { visibility: hidden; }
 
 /* wide screens: the text on the left half, the recorder standing on the right half */
 @media (min-width: 1101px) {
@@ -376,7 +387,7 @@
   .ve-dock.art .ve-art { display: contents; }
   .ve-dock.art .ve-cat { animation: ve-rise 0.4s var(--ease) both; }
   .ve-dock.art > :not(.ve-art), .ve-dock.art .ve-art-copy { position: relative; z-index: 3; }
-  .ve-dock.art .ve-rec { justify-self: center; margin-top: 28px; height: 56px; padding: 0 24px 0 20px; font-size: 16px; gap: 12px; background: #fff; color: #17171d;
+  .ve-dock.art .ve-rec { justify-self: center; margin-top: 28px; height: 56px; padding: 0 24px 0 20px; font-size: 17px; gap: 12px; background: #fff; color: #17171d;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 16px 36px -12px rgba(0, 0, 0, 0.65); }
   .ve-dock.art .ve-rec i { width: 14px; height: 14px; }
   .ve-dock.art .ve-rec kbd { border-color: rgba(23, 23, 29, 0.2); }
@@ -388,7 +399,7 @@
   /* after a take: its result (listen back, measured pitch, and on Today the rating) fills the half */
   .ve-dock.has-result { padding: 40px 32px 24px; grid-template-rows: minmax(0, 1fr) auto auto; grid-template-areas: "result" "rec" "sub"; row-gap: 16px; }
   .ve-result-pane { grid-area: result; min-height: 0; overflow: auto; scrollbar-width: thin; animation: ve-rise 0.35s var(--ease) both; }
-  .ve-result-pane h2 { margin: 0 0 16px; font: 760 30px/1.05 var(--font); letter-spacing: -0.045em; }
+  .ve-result-pane h2 { margin: 0 0 16px; font: 700 30px/1.05 var(--font); letter-spacing: -0.045em; }
   .ve-result-pane .ve-take, .ve-result-pane .ve-result { margin-top: 0; padding-top: 0; border-top: 0; }
   .ve-result-pane .ve-take-head b { display: none; }
   .ve-dock.has-result .ve-rec { justify-self: center; }
@@ -424,7 +435,7 @@
   .ve .ve-chips button[aria-current="page"] { background: var(--ink); color: var(--ve-paper); }
   .ve-col { padding: 24px 18px 40px; }
   .ve-mk { display: none; }
-  .ve-head h1 { font-size: 40px; }
+  .ve-head h1 { font-size: 34px; }
   .ve-md h1 { font-size: 34px; }
   .ve-md figure { margin-bottom: 24px; }
   .ve-md figure img { border-radius: 16px; }

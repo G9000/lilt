@@ -213,10 +213,9 @@ async function main() {
 
   // 10. Progress + keyboard
   await page.goto(`${BASE}/#/progress`);
-  await page.getByRole("heading", { name: /Skill notebook/ }).waitFor();
-  await page.waitForTimeout(800);
-  const prog = await page.locator("main").innerText();
-  check("Progress shows per-skill states without an overall score", /Not assessed|More evidence needed|Practice focus/i.test(prog) && !/overall score:/i.test(prog));
+  await page.getByRole("heading", { name: "Progress" }).waitFor();
+  const prog = await page.locator(".ve-soon").innerText();
+  check("Progress says it's coming soon and points at what already works", /Coming soon/.test(prog) && /Then and now/.test(prog) && !/overall score/i.test(prog));
   await snap("11-progress");
   await page.keyboard.press("Tab");
   const focused = await page.evaluate(() => document.activeElement?.textContent ?? "");

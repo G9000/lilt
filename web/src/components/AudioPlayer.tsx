@@ -209,7 +209,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
         >
           <canvas ref={canvas} />
           {segStyle && <div className="seg" style={segStyle} title={segmentLabel ?? "Evidence segment"} />}
-          {isFinite(dur) && dur > 0 && <div className="cursor" style={{ left: `${(t / dur) * 100}%` }} />}
+          {isFinite(dur) && dur > 0 && (playing || t > 0) && <div className="cursor" style={{ left: `${(t / dur) * 100}%` }} />}
         </div>
       </div>
       {pitch && isFinite(dur) && (

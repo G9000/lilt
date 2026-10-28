@@ -7,7 +7,6 @@ import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { LeaveIcon, StudioIcon, TextsIcon } from "../desk/icons";
 import { HistoryPage } from "./History";
-import { ProgressPage } from "./Progress";
 import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
@@ -148,7 +147,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
           </nav>
         )}
         {doc === "recordings" || doc === "progress"
-          ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressPage />}</div></div>
+          ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressSoon />}</div></div>
           : doc === "home"
           ? texts && profile && <HomeDoc texts={texts} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "start"
@@ -202,8 +201,24 @@ function Folder({ id, label, extra, current, open, onToggle, onOpen, locked, chi
 const PLACES = [
   { id: "home", label: "Home", to: "/studio", icon: "M2.8 7.2L8 2.8l5.2 4.4V13a.8.8 0 01-.8.8H9.6V10H6.4v3.8H3.6a.8.8 0 01-.8-.8z" },
   { id: "recordings", label: "Recordings", to: "/history", icon: "M3 6.5v3M5.5 4v8M8 2.5v11M10.5 5v6M13 7v2" },
-  { id: "progress", label: "Progress", to: "/progress", icon: "M2.5 13.5h11M4 11V8.5M7 11V5.5M10 11V7M13 11V3.5" },
+  { id: "progress", label: "Progress", to: "/progress", icon: "M2.5 13.5h11M4 11V8.5M7 11V5.5M10 11V7M13 11V3.5", soon: true },
 ];
+
+/** Progress isn't ready to trust yet, so it says so and points at what already works. */
+function ProgressSoon() {
+  return (
+    <article className="ve-soon">
+      <h1>Progress</h1>
+      <p className="lede">Coming soon.</p>
+      <p>A clearer picture of how your voice is changing over weeks is on its way. Until then, everything you need to hear your progress is already here:</p>
+      <ul>
+        <li><a href="#/studio">Home</a> plays your first take next to your latest one, under <strong>Then and now</strong>.</li>
+        <li><a href="#/history">Recordings</a> keeps every take, so you can listen back to any day.</li>
+        <li>After each take, Lilt tells you in words what it noticed and one thing to try.</li>
+      </ul>
+    </article>
+  );
+}
 
 /**
  * The sidebar as a file tree, like Obsidian: Today and each chapter are folders, their cards and
@@ -230,6 +245,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
         <button key={p.id} className="ve-home" onClick={() => go(p.to)} disabled={locked} aria-current={current === p.id ? "page" : undefined}>
           <span className="ve-home-ic"><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
           <span className="t">{p.label}</span>
+          {"soon" in p && <span className="ve-soon-tag">Soon</span>}
         </button>
       ))}
       <ul className="ve-tree">
