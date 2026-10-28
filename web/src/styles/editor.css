@@ -261,6 +261,35 @@
   .ve .ve-home:hover:not([aria-current]) { background: var(--fill); }
 }
 
+/* Home's top: "start here" for a new voice, then your practice so far */
+.ve-start-card, .ve-practice { margin: 0 0 40px; padding: 20px 22px; border-radius: 18px; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair), 0 14px 34px -24px rgba(10, 10, 40, 0.4); }
+.ve-start-card { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; }
+.ve-start-card > div { flex: 1 1 260px; }
+.ve-start-card b { display: block; font-size: 17px; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); }
+.ve-start-card p { margin: 4px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+.ve .ve-start-go { flex: none; height: 42px; padding: 0 18px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 14.5px; font-weight: 600; white-space: nowrap; transition: transform 0.16s var(--ease), background-color 0.15s ease; }
+.ve .ve-start-go:active { transform: scale(0.97); }
+.ve-practice { display: grid; gap: 18px; }
+.ve-days { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.ve-days p { margin: 0; display: grid; }
+.ve-days b { font-size: 17px; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); }
+.ve-days span { font-size: 13px; color: var(--ink-3); }
+.ve-days ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 5px; }
+.ve-days li { width: 12px; height: 12px; border-radius: 4px; background: var(--fill-2); }
+.ve-days li.on { background: var(--accent); }
+.ve-then { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--hair); }
+.ve-then-h { margin: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ve-then-h b { font-size: 15px; font-weight: 650; color: var(--ink); }
+.ve-then-h span { font-size: 13px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ve-then .ab { display: grid; gap: 8px; }
+.ve-then-wait { margin: 0; padding-top: 14px; border-top: 1px solid var(--hair); font-size: 14px; color: var(--ink-2); }
+.ve-start-done { margin-top: 14px; padding: 16px 18px; border-radius: 14px; background: var(--ok-soft); display: grid; gap: 12px; }
+.ve-start-done p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); }
+.ve-start-done div { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; }
+@media (max-width: 860px) {
+  .ve-start-card { flex-direction: column; align-items: stretch; }
+}
+
 /* after a take: one observation and one thing to try, in words, before any numbers */
 .prc-insight { padding: 14px 16px; border-radius: 14px; background: var(--accent-soft); display: grid; gap: 4px; }
 .prc-insight .n { margin: 0; font-size: 15.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }

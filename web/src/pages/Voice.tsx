@@ -92,16 +92,18 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "today" | "chapter"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "today" | "chapter"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [practised, setPractised] = useState<Set<string>>(new Set());
+  const [history, setHistory] = useState<Take[]>([]);
   const [recording, setRecording] = useState(false);
   useEffect(() => {
     void Promise.all([api.texts(), api.deck(), api.profile(), api.history({ days: 3650 })]).then(([t, d, p, h]) => {
       setTexts(t); setDeck(d); setProfile(p);
       setPractised(new Set(h.takes.map((x) => x.prompt_id)));
+      setHistory(h.takes);
     });
   }, []);
   const level = texts ? texts.levels.find((l) => l.id === levelId) ?? texts.levels[0] : null;
@@ -132,7 +134,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "toda
         title={layout.collapsed ? "Show sidebar (⌘\\)" : "Hide sidebar (⌘\\)"}><SidebarIcon /></button>
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
-      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
+      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
       <main className="ve-doc" ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
@@ -144,7 +146,9 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "toda
           </nav>
         )}
         {doc === "home"
-          ? texts && <HomeDoc texts={texts} practised={practised} band={profile?.comfort_range_hz ?? null} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          ? texts && profile && <HomeDoc texts={texts} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          : doc === "start"
+          ? profile && <StartDoc profile={profile} onProfile={setProfile} onRecording={setRecording} onTake={(t) => { setPractised((s) => new Set([...s, t.prompt_id])); setHistory((h) => [...h, t]); }} />
           : doc === "today"
           ? <TodayDoc key={first ?? ""} first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : texts && level && profile && <ChapterDoc key={level.id} texts={texts} level={level} itemId={itemId} profile={profile} onProfile={setProfile} onRecording={setRecording}
@@ -476,11 +480,11 @@ const FREE = { role: "free" as const, prompt_id: "free", prompt_text: "Free reco
 const FREE_HINT = "Talk freely, or pick a card or text to practise";
 
 /** A free take's summary: listen back, then the measured pitch line and numbers once analysis lands. */
-function FreeResult({ take, band }: { take: Take; band: [number, number] | null }) {
+function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void }) {
   return (
     <div className="prc ve-result" key={take.id}>
       <ListenBack src={take.audio_url} />
-      <Measures take={take} band={band} />
+      <Measures take={take} band={band} onMeasured={onMeasured} />
     </div>
   );
 }
@@ -492,9 +496,10 @@ function FreeResult({ take, band }: { take: Take; band: [number, number] | null 
  * content/texts/index.md, then the chapters with your progress (generated, so it never goes stale).
  * Nothing is picked, so the recorder takes free recordings.
  */
-function HomeDoc({ texts, practised, band, onRecording, onTake }: {
-  texts: Texts; practised: Set<string>; band: [number, number] | null; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
+function HomeDoc({ texts, practised, history, profile, onRecording, onTake }: {
+  texts: Texts; practised: Set<string>; history: Take[]; profile: Profile; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
 }) {
+  const band = profile.comfort_range_hz ?? null;
   const split = useSplit();
   const [studio, setStudio] = useState<string | null>(null);
   const [freeTake, setFreeTake] = useState<Take | null>(null);
@@ -506,6 +511,7 @@ function HomeDoc({ texts, practised, band, onRecording, onTake }: {
       <div className="ve-page">
         {cover && <div className="ve-cover" style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
         <article className="ve-col ve-home-col">
+          {!band ? <StartCard /> : history.length > 0 && <YourPractice history={history} band={band} />}
           {texts.home ? <Markdown src={texts.home} className="ve-md" /> : <header className="ve-head"><h1>Practice</h1></header>}
           <section className="ve-md">
             <h2>The chapters</h2>
@@ -529,6 +535,125 @@ function HomeDoc({ texts, practised, band, onRecording, onTake }: {
       </div>
       <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake
         onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} result={split ? freeView : null} />
+    </>
+  );
+}
+
+/* ---------------------------------------------------------------- first run, and your practice so far */
+
+const REF = { prompt_id: "ref.count-1-10", text: "One, two, three, four, five, six, seven, eight, nine, ten." };
+
+function StartCard() {
+  return (
+    <section className="ve-start-card">
+      <div>
+        <b>New here? Start with your starting voice</b>
+        <p>Two minutes, once. Read one line in your everyday voice and Lilt sets your comfortable range from it. It also keeps that take as your Day 1, so you can hear how far you've come.</p>
+      </div>
+      <button className="ve-start-go" onClick={() => go("/studio/start")}>Find my starting voice</button>
+    </section>
+  );
+}
+
+const dayKey = (t: Take) => t.local_date ?? t.created_utc.slice(0, 10);
+const shortDate = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+
+/** The same text on your first day and on your latest, so you can hear the change. */
+function thenAndNow(history: Take[]): [Take, Take] | null {
+  const groups = new Map<string, Take[]>();
+  for (const t of history) if (t.audio_url) groups.set(t.prompt_id, [...(groups.get(t.prompt_id) ?? []), t]);
+  const spans = [...groups.entries()].map(([id, ts]) => {
+    const sorted = [...ts].sort((a, b) => a.created_utc.localeCompare(b.created_utc));
+    return { id, first: sorted[0], last: sorted[sorted.length - 1] };
+  }).filter((g) => dayKey(g.first) !== dayKey(g.last));
+  // The reference line first: it's the same every day, so it compares best.
+  const pick = spans.find((g) => g.id === REF.prompt_id) ?? spans.sort((a, b) => dayKey(a.first).localeCompare(dayKey(b.first)))[0];
+  return pick ? [pick.first, pick.last] : null;
+}
+
+function YourPractice({ history, band }: { history: Take[]; band: [number, number] }) {
+  const days = new Set(history.map(dayKey));
+  const today = new Date(), iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const month = iso(today).slice(0, 7);
+  const thisMonth = [...days].filter((d) => d.startsWith(month)).length;
+  const last14 = Array.from({ length: 14 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - 13 + i); return iso(d); });
+  const pair = thenAndNow(history);
+  return (
+    <section className="ve-practice" aria-label="Your practice">
+      <div className="ve-days">
+        <p><b>{thisMonth === 0 ? "A fresh month" : `${thisMonth} day${thisMonth === 1 ? "" : "s"} of practice this month`}</b>{thisMonth > 0 && <span>Every day you show up counts. Missed days don't.</span>}</p>
+        <ol aria-label="The last two weeks">{last14.map((d) => <li key={d} className={days.has(d) ? "on" : ""} title={shortDate(d)} />)}</ol>
+      </div>
+      {pair ? (
+        <div className="ve-then">
+          <p className="ve-then-h"><b>Then and now</b><span>{pair[0].prompt_text}</span></p>
+          <div className="ab">
+            <AudioPlayer src={pair[0].audio_url} tag="A" label={`Day 1 · ${shortDate(dayKey(pair[0]))}`} knownDuration={pair[0].analysis_summary?.duration_s} pitchTakeId={pair[0].analysis_summary ? pair[0].id : undefined} band={band} compact />
+            <AudioPlayer src={pair[1].audio_url} tag="B" label={`latest · ${shortDate(dayKey(pair[1]))}`} knownDuration={pair[1].analysis_summary?.duration_s} pitchTakeId={pair[1].analysis_summary ? pair[1].id : undefined} band={band} compact />
+          </div>
+        </div>
+      ) : (
+        <p className="ve-then-wait">Your first takes are saved. Come back on another day and this is where you'll hear them next to your newest ones.</p>
+      )}
+    </section>
+  );
+}
+
+/** First run: read the reference line once, set the comfortable range from it, keep it as Day 1. */
+function StartDoc({ profile, onProfile, onRecording, onTake }: {
+  profile: Profile; onProfile: (p: Profile) => void; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
+}) {
+  const split = useSplit();
+  const [studio, setStudio] = useState<string | null>(null);
+  const [take, setTake] = useState<Take | null>(null);
+  const [range, setRange] = useState<[number, number] | null>(null);
+  const [saved, setSaved] = useState(false);
+  useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
+  const measured = async (m: Measured) => {
+    const a = await api.analysis(m.take.id).catch(() => null);
+    const p10 = a?.measures?.f0_p10_hz?.value, p90 = a?.measures?.f0_p90_hz?.value;
+    setRange(p10 && p90 ? [Math.round(p10), Math.round(p90)] : null);
+  };
+  const save = async () => { if (range) { onProfile(await api.saveProfile({ ...profile, comfort_range_hz: range })); setSaved(true); } };
+  const result = take && (
+    <>
+      <FreeResult take={take} band={range} onMeasured={(m) => void measured(m)} />
+      {range && (saved ? (
+        <div className="ve-start-done">
+          <p><b>You're all set.</b> Your comfortable range is {range[0]}–{range[1]} Hz, and this take is your Day 1.</p>
+          <div><button className="ve-start-go" onClick={() => go("/deck")}>Start today's cards</button><button className="ve-link" onClick={() => go("/studio")}>Back to Home</button></div>
+        </div>
+      ) : (
+        <div className="ve-start-done">
+          <p>From this take, your comfortable range looks like <b>{range[0]}–{range[1]} Hz</b>. The recorder shades it so you can see where you are while you practise.</p>
+          <div><button className="ve-start-go" onClick={() => void save()}>Use this as my range</button><span className="ve-small">You can record it again first, if you like.</span></div>
+        </div>
+      ))}
+    </>
+  );
+  return (
+    <>
+      <div className="ve-page">
+        <article className="ve-col">
+          <header className="ve-head">
+            <h1>Find your starting voice</h1>
+            <p className="ve-subtitle">Two minutes, once</p>
+          </header>
+          <blockquote className="ve-how"><b>How to do it</b>
+            Use your everyday voice, the one you have now, not the one you're aiming for. Read the line below at an easy pace, then stop. This is just a starting point, so there's nothing to get right.</blockquote>
+          <ol className="ve-items">
+            <li className="ve-item on">
+              <span className="ve-mk num" aria-hidden="true">1.</span>
+              <p className="readtext ve-read">{REF.text}</p>
+              <p className="ve-hint">An easy pace, in your everyday voice. The daily reference card uses this same line.</p>
+              {!split && result}
+            </li>
+          </ol>
+        </article>
+      </div>
+      <Dock key="start" meta={studio ? { session_id: studio, role: "reference", prompt_id: REF.prompt_id, prompt_text: REF.text } : null} band={range} allowRetake
+        onSaved={(t) => { onTake(t); setTake(t); setRange(null); setSaved(false); }} onRecording={onRecording} idleHint="Press record and count from one to ten"
+        result={split ? result : null} />
     </>
   );
 }
