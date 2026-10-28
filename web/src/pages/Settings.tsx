@@ -1,7 +1,7 @@
 import "../styles/texts.css";
 import { useEffect, useState } from "react";
 import { api, Profile } from "../api";
-import type { Theme } from "../App";
+import { applyTextSize, readTextSize, TEXT_SIZES, type TextSize, type Theme } from "../App";
 import { Callout, Toast, useToast } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
 
@@ -20,6 +20,18 @@ function ThemeChoice() {
     <div className="segmented" role="group" aria-label="Theme">
       {(["light", "dark"] as const).map((x) => (
         <button key={x} aria-pressed={t === x} onClick={() => window.dispatchEvent(new CustomEvent("lilt:theme", { detail: x }))}>{x === "light" ? "Light" : "Dark"}</button>
+      ))}
+    </div>
+  );
+}
+
+/** Text size for the reading pages: applied at once and kept in this browser. */
+function TextSizeChoice() {
+  const [t, setT] = useState<TextSize>(readTextSize);
+  return (
+    <div className="segmented" role="group" aria-label="Text size">
+      {TEXT_SIZES.map((x) => (
+        <button key={x.id} aria-pressed={t === x.id} onClick={() => { applyTextSize(x.id); setT(x.id); }}>{x.label}</button>
       ))}
     </div>
   );
@@ -49,12 +61,19 @@ export function SettingsPage() {
       <section className="st-group" aria-labelledby="st-look">
         <h2 id="st-look">Appearance</h2>
         <div className="st-box">
-          <div className="st-row">
+          <div className="st-row st-stack">
             <div>
               <span className="st-label">Theme</span>
               <p className="st-help">Also the sun or moon button in the desk's menu bar.</p>
             </div>
             <ThemeChoice />
+          </div>
+          <div className="st-row st-stack">
+            <div>
+              <span className="st-label">Text size</span>
+              <p className="st-help">For the practice texts, your recordings and these pages.</p>
+            </div>
+            <TextSizeChoice />
           </div>
         </div>
       </section>

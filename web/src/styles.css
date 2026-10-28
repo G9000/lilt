@@ -211,3 +211,11 @@ th { font-size: 0.8rem; font-weight: 600; color: var(--ink-3); }
   .celebrate { display: none; }
 }
 :root[data-theme="dark"] .segmented button[aria-pressed="true"] { background: rgba(255, 255, 255, 0.16); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
+
+/* Text size (Settings → Appearance): the reading areas grow or shrink as a whole, so layouts keep
+   their proportions; the Practice frame, sidebar and recorder controls stay put. */
+:root { --text-zoom: 1; }
+:root[data-text="smaller"] { --text-zoom: 0.92; }
+:root[data-text="larger"] { --text-zoom: 1.12; }
+:root[data-text="largest"] { --text-zoom: 1.25; }
+.ve-page > *, .ss-body > *, .ds-win:not(.full) .ds-body > * { zoom: var(--text-zoom); }

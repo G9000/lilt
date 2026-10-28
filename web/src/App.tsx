@@ -38,6 +38,21 @@ export type Theme = "light" | "dark";
 function readTheme(): Theme {
   try { return localStorage.getItem("lilt.mode") === "dark" ? "dark" : "light"; } catch { return "light"; }
 }
+/** How big text is across Lilt's pages, kept in this browser. */
+export type TextSize = "smaller" | "default" | "larger" | "largest";
+export const TEXT_SIZES: { id: TextSize; label: string }[] = [
+  { id: "smaller", label: "Smaller" }, { id: "default", label: "Default" }, { id: "larger", label: "Larger" }, { id: "largest", label: "Largest" },
+];
+export function readTextSize(): TextSize {
+  try { const v = localStorage.getItem("lilt.text"); return TEXT_SIZES.some((s) => s.id === v) ? (v as TextSize) : "default"; } catch { return "default"; }
+}
+export function applyTextSize(t: TextSize) {
+  if (t === "default") document.documentElement.removeAttribute("data-text");
+  else document.documentElement.setAttribute("data-text", t);
+  try { localStorage.setItem("lilt.text", t); } catch { /* private mode: default next time */ }
+}
+applyTextSize(readTextSize());
+
 export function applyTheme(t: Theme) {
   if (t === "light") document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme", t);

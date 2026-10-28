@@ -139,3 +139,12 @@
 .st-code b { font: 600 26px/1 var(--mono); letter-spacing: 0.12em; color: var(--ink); }
 .st-code span { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .st-field > .btn-secondary { margin-top: 10px; }
+
+/* a choice under its label, the options sharing the full width (theme, text size) */
+.st-row.st-stack { display: grid; gap: 10px; justify-content: stretch; }
+.st-stack .segmented { display: flex; width: 100%; }
+.st-stack .segmented button { flex: 1 1 0; min-width: 0; padding: 4px 6px; }
+.st { min-width: 0; }
+.st-snip pre, .st-help, .st-note { min-width: 0; overflow-wrap: anywhere; }
+.st { grid-template-columns: minmax(0, 1fr); }
+.st-row { flex-wrap: wrap; }

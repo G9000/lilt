@@ -123,7 +123,7 @@ AI that last used Lilt or "AI: not connected"). It, and a settings button in the
 open **Settings over the room**: a 560px sheet from the right edge in the window glass, like
 Notification Center (a phone gets it edge to edge), "Settings" with a close button, the same page as
 the desk's Settings window. Escape or a click outside closes it. The page starts with Appearance
-(Theme: a Light / Dark segmented control, in step with the menu bar's sun or moon) and Connect your
+(Theme: Light / Dark, in step with the menu bar's sun or moon; **Text size**: Smaller, Default, Larger, Largest, each a segmented control under its label, full width) and Connect your
 AI, then your goal, routine and reminders, comfortable range, and privacy.
 
 **Settings → Connect your AI** sits after Appearance: a lead line on what an assistant can do, then
@@ -155,6 +155,8 @@ be able to do, the code field and Connect / Don't connect.
 | radii | window 22, control 12, small 8, pill 999 | |
 
 ## Type
+
+Text size (Settings → Appearance, kept in this browser as `lilt.text`) scales the reading areas as a whole with CSS `zoom` (0.92, 1, 1.12, 1.25): the Practice page column, the windows' contents and the Settings sheet, so their proportions hold. The Practice frame, sidebar, recorder and the room stay at their size.
 
 Practice uses one scale (web/src/styles/editor.css): captions 12, small 13, secondary 14, body 15,
 lead and small headings 17, section headings 21 and 24, page titles 44 (34 on phones); weights 400,
