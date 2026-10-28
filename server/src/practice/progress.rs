@@ -3,7 +3,7 @@
 
 use crate::app::App;
 use crate::coach;
-use crate::compare;
+use crate::analysis::compare;
 use crate::model::*;
 use serde::Serialize;
 use serde_json::{Value, json};

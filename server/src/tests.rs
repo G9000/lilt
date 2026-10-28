@@ -4,7 +4,7 @@
 use crate::app::{App, Config, Shared};
 use crate::model::*;
 use crate::recordings::{self, ChunkOutcome, FinalizeReq, NewSession, NewTake, SessionUpdate, ComfortInput, TakeUpdate, UploadError};
-use crate::{coach, compare, jobs, progress, store, validate};
+use crate::{coach, analysis::compare, analysis, practice::progress, store, coach::validate};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
@@ -84,7 +84,7 @@ fn upload(app: &App, sid: &str, t: T, file: &str) -> Take {
         recordings::put_chunk(app, &id, i as u32, c, Some(&store::sha256_hex(c))).unwrap();
     }
     recordings::finalize(app, &id, FinalizeReq { chunk_count: chunks.len() as u32, interrupted: false }).unwrap();
-    jobs::run_pending(app);
+    analysis::run_pending(app);
     app.take(&id).unwrap()
 }
 
@@ -138,8 +138,8 @@ fn finalize_twice_and_missing_tail_are_labelled() {
     let t2 = recordings::finalize(&app, &id, FinalizeReq { chunk_count: chunks.len() as u32, interrupted: false }).unwrap();
     assert_eq!(t1.completeness, Some(Completeness::MissingTail));
     assert_eq!(t1.original.as_ref().unwrap().sha256, t2.original.as_ref().unwrap().sha256);
-    assert_eq!(jobs::jobs(&app).len(), 1, "duplicate finalisation must not queue a second job");
-    jobs::run_pending(&app);
+    assert_eq!(analysis::jobs(&app).len(), 1, "duplicate finalisation must not queue a second job");
+    analysis::run_pending(&app);
     let t = app.take(&id).unwrap();
     assert_eq!(t.status, TakeStatus::ReviewReady, "the confirmed prefix should still decode");
 }
@@ -178,7 +178,7 @@ fn analysis_crash_keeps_audio_and_restart_resumes() {
     let app = App::open(cfg).unwrap();
     let s = session(&app);
     let t = upload(&app, &s.id, T::default(), "harmonic_240.webm");
-    for _ in 0..3 { jobs::run_pending(&app); }
+    for _ in 0..3 { analysis::run_pending(&app); }
     let t = app.take(&t.id).unwrap();
     assert_eq!(t.status, TakeStatus::AnalysisFailed);
     assert!(t.original.is_some() && app.paths.take_dir(&s.id, &t.id).join("original.webm").exists());
@@ -187,9 +187,9 @@ fn analysis_crash_keeps_audio_and_restart_resumes() {
     j.status = "running".into();
     store::write_json(&app.paths.jobs().join(format!("analyze-{}.json", t.id)), &j).unwrap();
     let app = App::open(config(dir.path())).unwrap();
-    assert_eq!(jobs::reconcile(&app).unwrap(), 1);
-    jobs::run_pending(&app);
-    jobs::run_pending(&app);
+    assert_eq!(analysis::reconcile(&app).unwrap(), 1);
+    analysis::run_pending(&app);
+    analysis::run_pending(&app);
     let t = app.take(&t.id).unwrap();
     assert_eq!(t.status, TakeStatus::ReviewReady);
     let runs = store::list_files_with_ext(&app.paths.analyses_dir(&s.id), "json");
@@ -443,7 +443,7 @@ fn external_processing_stays_off() {
 
 // ---- Voice cards (spaced repetition) ----
 
-use crate::cards::{self, CardState, RateReq};
+use crate::practice::cards::{self, CardState, RateReq};
 
 fn rate(app: &App, card: &str, take: Option<String>, rating: &str) -> serde_json::Value {
     cards::rate(app, RateReq { card_id: card.into(), take_id: take, rating: rating.into() }).unwrap()
@@ -551,31 +551,31 @@ fn remeasure_keeps_the_earlier_run_and_points_at_the_new_one() {
     let first = t.analysis_run.clone().unwrap();
     let first_doc = app.analysis(&s.id, &first).unwrap();
     // The bundled helper reports the method version the server expects.
-    assert_eq!(first_doc["method"]["method_version"], jobs::ANALYSIS_METHOD);
-    assert_eq!(jobs::remeasure_stale(&app).unwrap(), 0, "a current measurement is not re-measured");
+    assert_eq!(first_doc["method"]["method_version"], analysis::ANALYSIS_METHOD);
+    assert_eq!(analysis::remeasure_stale(&app).unwrap(), 0, "a current measurement is not re-measured");
 
     // Pretend it came from an older method: it is now stale and gets a new run.
     let mut old = first_doc.clone();
     old["method"]["method_version"] = serde_json::json!("lilt-analysis/1");
     store::write_json(&app.paths.analyses_dir(&s.id).join(format!("{first}.json")), &old).unwrap();
-    assert_eq!(jobs::remeasure_stale(&app).unwrap(), 1);
+    assert_eq!(analysis::remeasure_stale(&app).unwrap(), 1);
     assert!(matches!(app.take(&t.id).unwrap().status, TakeStatus::AnalysisPending));
-    assert!(jobs::remeasure(&app, &t.id).is_err(), "already being measured");
-    jobs::run_pending(&app);
+    assert!(analysis::remeasure(&app, &t.id).is_err(), "already being measured");
+    analysis::run_pending(&app);
 
     let after = app.take(&t.id).unwrap();
     let second = after.analysis_run.clone().unwrap();
     assert_eq!(second, format!("run-{}-a2", t.id));
     assert!(matches!(after.status, TakeStatus::ReviewReady));
     assert!(app.analysis(&s.id, &first).is_ok(), "the earlier run stays on disk");
-    assert_eq!(app.analysis(&s.id, &second).unwrap()["method"]["method_version"], jobs::ANALYSIS_METHOD);
-    assert_eq!(jobs::remeasure_stale(&app).unwrap(), 0);
+    assert_eq!(app.analysis(&s.id, &second).unwrap()["method"]["method_version"], analysis::ANALYSIS_METHOD);
+    assert_eq!(analysis::remeasure_stale(&app).unwrap(), 0);
 }
 
 
 #[test]
 fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
-    use crate::{cards, mcp, syllabus};
+    use crate::{practice::cards, ai::mcp, courses::syllabus};
     let (dir, app) = app();
     let v = crate::courses::get(&app, "voice").unwrap();
     let call = |name: &str, args: serde_json::Value| mcp::call(&app, name, args.as_object().unwrap());
@@ -633,7 +633,7 @@ fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
 
 #[test]
 fn syllabus_changes_from_another_process_are_picked_up() {
-    use crate::{cards, syllabus};
+    use crate::{practice::cards, courses::syllabus};
     let (dir, app) = app();
     let other = App::open(config(dir.path())).unwrap();
     let v = crate::courses::get(&app, "voice").unwrap();
@@ -654,7 +654,7 @@ fn copy_dir(from: &std::path::Path, to: &std::path::Path) {
 
 #[test]
 fn updates_to_the_original_come_in_piece_by_piece() {
-    use crate::{cards, syllabus, updates};
+    use crate::{practice::cards, courses::syllabus, courses::updates};
     let dir = tempfile::tempdir().unwrap();
     let content = dir.path().join("content");
     copy_dir(&root().join("content"), &content);
@@ -725,8 +725,8 @@ async fn remote_apps_sign_in_with_a_pairing_code_and_only_reach_mcp() {
 
     // Before an address is saved: no sign-in metadata. Locally everything still works.
     assert_eq!(send(public("GET", "/.well-known/oauth-authorization-server", Body::empty())).await.0, StatusCode::NOT_FOUND);
-    crate::oauth::set_public_url(&app, "https://lilt.example.com/").unwrap();
-    assert!(crate::oauth::set_public_url(&app, "http://lilt.example.com").is_err());
+    crate::ai::oauth::set_public_url(&app, "https://lilt.example.com/").unwrap();
+    assert!(crate::ai::oauth::set_public_url(&app, "http://lilt.example.com").is_err());
 
     // Through the tunnel only MCP and sign-in are reachable, and MCP asks for sign-in.
     assert_eq!(send(public("GET", "/api/profile", Body::empty())).await.0, StatusCode::NOT_FOUND);
@@ -753,7 +753,7 @@ async fn remote_apps_sign_in_with_a_pairing_code_and_only_reach_mcp() {
     assert!(s.is_success() && html.contains("Connect ChatGPT to Lilt?"));
     let bad = send(public("GET", &format!("/oauth/authorize?{}", q.replace("x1", "evil")), Body::empty())).await.2;
     assert!(bad.contains("return address doesn&#39;t match"));
-    let code = crate::oauth::new_pairing_code(&app)["code"].as_str().unwrap().to_string();
+    let code = crate::ai::oauth::new_pairing_code(&app)["code"].as_str().unwrap().to_string();
     let (s, _, html) = send(public("POST", "/oauth/authorize", Body::from(format!("{q}&pairing_code=WRONG-CODE&decision=allow")))).await;
     assert!(s.is_success() && html.contains("isn&#39;t right"));
     let (s, h, _) = send(public("POST", "/oauth/authorize", Body::from(format!("{q}&pairing_code={}&decision=allow", code.to_lowercase())))).await;
@@ -771,7 +771,7 @@ async fn remote_apps_sign_in_with_a_pairing_code_and_only_reach_mcp() {
     assert_eq!(s, StatusCode::BAD_REQUEST, "a failed exchange uses the code up");
     assert!(body.contains("invalid_grant"));
     // Sign in again for a fresh code.
-    let code = crate::oauth::new_pairing_code(&app)["code"].as_str().unwrap().to_string();
+    let code = crate::ai::oauth::new_pairing_code(&app)["code"].as_str().unwrap().to_string();
     let to = send(public("POST", "/oauth/authorize", Body::from(format!("{q}&pairing_code={code}&decision=allow")))).await.1["location"].to_str().unwrap().to_string();
     let auth_code = to.split("code=").nth(1).unwrap().split('&').next().unwrap().to_string();
     let form = Body::from(format!("grant_type=authorization_code&code={auth_code}&client_id={client_id}&redirect_uri=https%3A%2F%2Fchatgpt.com%2Fconnector%2Foauth%2Fx1&code_verifier={verifier}"));
@@ -793,9 +793,9 @@ async fn remote_apps_sign_in_with_a_pairing_code_and_only_reach_mcp() {
     assert!(!std::fs::read_to_string(dir.path().join("oauth.json")).unwrap().contains(&new_access), "only hashes are kept");
 
     // Disconnecting in Settings ends it.
-    let conns = crate::oauth::connections(&app);
+    let conns = crate::ai::oauth::connections(&app);
     assert_eq!((conns.len(), conns[0]["client_name"].as_str()), (1, Some("ChatGPT")));
-    crate::oauth::disconnect(&app, conns[0]["id"].as_str().unwrap()).unwrap();
+    crate::ai::oauth::disconnect(&app, conns[0]["id"].as_str().unwrap()).unwrap();
     assert_eq!(send(init(&new_access)).await.0, StatusCode::UNAUTHORIZED);
 
     // From this computer: MCP answers local host names only.
@@ -838,7 +838,7 @@ fn chatgpt_private_data_is_never_in_practice_export() {
     let (_dir, a) = app();
     std::fs::create_dir(a.paths.root.join(".private")).unwrap();
     std::fs::write(a.paths.root.join(".private/chatgpt.json"), b"secret").unwrap();
-    let path = crate::export::write_zip(&a).unwrap();
+    let path = crate::store::export::write_zip(&a).unwrap();
     let zip = zip::ZipArchive::new(std::fs::File::open(&path).unwrap()).unwrap();
     assert!(!zip.file_names().any(|name| name.unwrap().contains(".private")));
     std::fs::remove_file(path).unwrap();
@@ -848,7 +848,7 @@ fn chatgpt_private_data_is_never_in_practice_export() {
 /// course; and an older `<data>/syllabus` copy moved to `<data>/courses/voice` on start.
 #[tokio::test]
 async fn courses_are_kept_apart_and_old_copies_move_over() {
-    use crate::{courses, syllabus};
+    use crate::{courses, courses::syllabus};
     use axum::body::Body;
     use axum::http::{Request, StatusCode};
     use tower::ServiceExt;
@@ -890,7 +890,7 @@ async fn courses_are_kept_apart_and_old_copies_move_over() {
     let idx = std::fs::read_to_string(zh.join("index.md")).unwrap().replace("Say each tone slowly.", "Tones don't matter.");
     assert!(syllabus::write(&app, &m, "index.md", &idx, "skip tones").unwrap_err().to_string().contains("Tones matter"));
     // The tools take the course by id; an unknown one is refused.
-    let call = |name: &str, args: serde_json::Value| crate::mcp::call(&app, name, args.as_object().unwrap());
+    let call = |name: &str, args: serde_json::Value| crate::ai::mcp::call(&app, name, args.as_object().unwrap());
     assert_eq!(call("syllabus_history", serde_json::json!({"course": "mandarin"})).unwrap().structured_content.unwrap()["changes"].as_array().unwrap().len(), 1);
     assert!(call("syllabus_list", serde_json::json!({"course": "../voice"})).is_err());
     assert!(call("courses_list", serde_json::json!({})).unwrap().structured_content.unwrap()["courses"].as_array().unwrap().len() == 2);
@@ -922,7 +922,7 @@ async fn courses_are_kept_apart_and_old_copies_move_over() {
 /// account it asks you to connect one.
 #[tokio::test]
 async fn a_remix_is_one_change_and_needs_chatgpt() {
-    use crate::{courses, syllabus};
+    use crate::{courses, courses::syllabus};
     use axum::body::Body;
     use axum::http::{Request, StatusCode};
     use http_body_util::BodyExt;
@@ -966,7 +966,7 @@ async fn a_blank_chapter_lands_in_your_mixtape() {
     let res = router.oneshot(post()).await.unwrap();
     let v: serde_json::Value = serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
     assert_eq!(v["file"].as_str(), Some("10-my-chapter-2.md"));
-    let t = crate::syllabus::texts(&app);
+    let t = crate::courses::syllabus::texts(&app);
     assert_eq!(t["levels"].as_array().unwrap().last().unwrap()["title"], "New chapter");
 }
 
@@ -976,9 +976,9 @@ fn draft_chapters_make_no_cards() {
     let (_dir, app) = app();
     let v = crate::courses::get(&app, "voice").unwrap();
     let blank = "---\nid: my-chapter-1\ntitle: New chapter\nkind: phrases\ndraft: true\n---\n\nSay what this chapter is for.\n\n## first\n\nYour first text goes here.\n\n> A hint goes here.\n";
-    crate::syllabus::write(&app, &v, "09-my-chapter-1.md", blank, "Added a blank chapter").unwrap();
-    assert!(crate::syllabus::texts(&app)["levels"].as_array().unwrap().iter().any(|l| l["id"] == "my-chapter-1"));
-    assert!(!crate::cards::all_cards(&app).iter().any(|c| c.id.contains("my-chapter-1")));
-    crate::syllabus::write(&app, &v, "09-my-chapter-1.md", &blank.replace("draft: true\n", ""), "Filled in").unwrap();
-    assert!(crate::cards::all_cards(&app).iter().any(|c| c.id == "text.my-chapter-1.first"));
+    crate::courses::syllabus::write(&app, &v, "09-my-chapter-1.md", blank, "Added a blank chapter").unwrap();
+    assert!(crate::courses::syllabus::texts(&app)["levels"].as_array().unwrap().iter().any(|l| l["id"] == "my-chapter-1"));
+    assert!(!crate::practice::cards::all_cards(&app).iter().any(|c| c.id.contains("my-chapter-1")));
+    crate::courses::syllabus::write(&app, &v, "09-my-chapter-1.md", &blank.replace("draft: true\n", ""), "Filled in").unwrap();
+    assert!(crate::practice::cards::all_cards(&app).iter().any(|c| c.id == "text.my-chapter-1.first"));
 }

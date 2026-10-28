@@ -273,7 +273,7 @@ pub fn finalize(app: &App, tid: &str, req: FinalizeReq) -> Result<Take> {
     // Chunks are redundant once the original is durable.
     let _ = fs::remove_dir_all(dir.join("chunks"));
     drop(_g);
-    crate::jobs::enqueue_analysis(app, &t)?;
+    crate::analysis::enqueue_analysis(app, &t)?;
     app.take(tid)
 }
 

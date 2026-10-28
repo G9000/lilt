@@ -4,7 +4,7 @@
 use crate::api::{self, ListQuery};
 use crate::app::Shared;
 use crate::model::*;
-use crate::{compare, progress, syllabus, util, validate};
+use crate::{analysis::compare, practice::progress, courses::syllabus, util, coach::validate};
 use base64::Engine;
 use rmcp::{
     ErrorData as McpError, RoleServer, ServerHandler,
@@ -207,9 +207,9 @@ pub fn call(app: &Shared, name: &str, a: &serde_json::Map<String, Value>) -> any
         }
         "voice_compare_sessions" => ok(serde_json::to_value(compare::compare(app, &req_str(a, "take_a")?, &req_str(a, "take_b")?)?)?),
         "voice_get_deck" => {
-            let mut v = crate::cards::today_queue(app)?;
+            let mut v = crate::practice::cards::today_queue(app)?;
             if a.get("include_log").and_then(|x| x.as_bool()).unwrap_or(false) {
-                v["review_log"] = serde_json::to_value(crate::cards::reviews(app))?;
+                v["review_log"] = serde_json::to_value(crate::practice::cards::reviews(app))?;
             }
             ok(v)
         }
@@ -301,11 +301,11 @@ pub fn call(app: &Shared, name: &str, a: &serde_json::Map<String, Value>) -> any
                 "syllabus_delete" => ok(syllabus::delete(app, &c, &req_str(a, "file")?, &req_str(a, "note")?)?),
                 "syllabus_history" => ok(syllabus::history(app, &c)),
                 "syllabus_undo" => ok(syllabus::undo(app, &c)?),
-                "syllabus_updates" => ok(crate::updates::list(app, &c)),
+                "syllabus_updates" => ok(crate::courses::updates::list(app, &c)),
                 "syllabus_apply_updates" => {
                     let choices: std::collections::BTreeMap<String, String> = a.get("choices").cloned().map(serde_json::from_value).transpose()
                         .map_err(|e| anyhow::anyhow!("choices must map update ids to \"yours\" or \"original\": {e}"))?.unwrap_or_default();
-                    ok(crate::updates::apply(app, &c, &choices, &arg_str(a, "note").unwrap_or_default())?)
+                    ok(crate::courses::updates::apply(app, &c, &choices, &arg_str(a, "note").unwrap_or_default())?)
                 }
                 "syllabus_reset" => ok(syllabus::reset(app, &c, &req_str(a, "note")?)?),
                 _ => Err(anyhow::anyhow!("unknown tool {name}")),
@@ -339,7 +339,7 @@ impl ServerHandler for LiltMcp {
         let app = self.app.clone();
         let name = req.name.to_string();
         let client = c.peer.peer_info().map(|i| i.client_info.title.clone().unwrap_or_else(|| i.client_info.name.clone())).unwrap_or_default();
-        crate::agents::record(&app, &client, &name);
+        crate::ai::agents::record(&app, &client, &name);
         let res = tokio::task::spawn_blocking(move || call(&app, &name, &args))
             .await
             .map_err(|e| McpError::internal_error(e.to_string(), None))?;

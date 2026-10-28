@@ -1,26 +1,14 @@
+mod ai;
+mod analysis;
 mod api;
 mod app;
-mod cards;
 mod coach;
-mod chatgpt;
-mod compare;
 mod courses;
-mod exercises;
-mod export;
-mod jobs;
-mod mcp;
-mod oauth;
-mod remix;
-mod agents;
 mod model;
-mod progress;
+mod practice;
 mod recordings;
 mod store;
-mod syllabus;
-mod texts;
-mod updates;
 mod util;
-mod validate;
 #[cfg(test)]
 mod tests;
 
@@ -43,7 +31,7 @@ async fn main() -> Result<()> {
     match mode.as_str() {
         "mcp-stdio" => {
             use rmcp::ServiceExt;
-            let svc = mcp::LiltMcp::new(app).serve(rmcp::transport::stdio()).await?;
+            let svc = ai::mcp::LiltMcp::new(app).serve(rmcp::transport::stdio()).await?;
             svc.waiting().await?;
             Ok(())
         }
@@ -54,8 +42,8 @@ async fn main() -> Result<()> {
 
 pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     let mcp_app = app.clone();
-    let mcp_service: StreamableHttpService<mcp::LiltMcp, LocalSessionManager> = StreamableHttpService::new(
-        move || Ok(mcp::LiltMcp::new(mcp_app.clone())),
+    let mcp_service: StreamableHttpService<ai::mcp::LiltMcp, LocalSessionManager> = StreamableHttpService::new(
+        move || Ok(ai::mcp::LiltMcp::new(mcp_app.clone())),
         Default::default(),
         // Host names are checked by `oauth::gate` instead: local ones, or the saved public address
         // with a signed-in app.
@@ -69,8 +57,8 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     // at /texts/images and /texts/audio.
     let mut router = api::router(app.clone())
         .merge(mcp_router)
-        .merge(oauth::router(app.clone()))
-        .merge(chatgpt::router(app.clone()));
+        .merge(ai::oauth::router(app.clone()))
+        .merge(ai::chatgpt::router(app.clone()));
     for c in courses::all(&app) {
         for part in ["images", "audio"] {
             router = router.nest_service(&format!("/courses/{}/{part}", c.id), ServeDir::new(c.dir.join(part)));
@@ -81,14 +69,14 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     }
     router
         .fallback_service(static_files)
-        .layer(middleware::from_fn_with_state(app, oauth::gate))
+        .layer(middleware::from_fn_with_state(app, ai::oauth::gate))
 }
 
 async fn serve(app: app::Shared, config: app::Config) -> Result<()> {
-    let requeued = jobs::reconcile(&app)?;
+    let requeued = analysis::reconcile(&app)?;
     let interrupted = recordings::reconcile_interrupted(&app)?;
     tracing::info!("startup: {requeued} job(s) requeued, {interrupted} interrupted take(s) recovered");
-    tokio::spawn(jobs::worker(app.clone()));
+    tokio::spawn(analysis::worker(app.clone()));
     let router = build_router(app.clone(), &config);
     let listener = tokio::net::TcpListener::bind(&config.bind).await?;
     tracing::info!("Lilt listening on http://{} (data: {})", config.bind, app.paths.root.display());

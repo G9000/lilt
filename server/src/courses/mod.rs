@@ -18,6 +18,11 @@
 //! sections an AI may never change in your copy. The folder is the original; your own copy of a
 //! course lives in `<data>/courses/<id>` (see `syllabus`). Voice is the course the app shows today.
 
+pub mod remix;
+pub mod syllabus;
+pub mod texts;
+pub mod updates;
+
 use crate::app::App;
 use anyhow::{Context, Result, anyhow, ensure};
 use serde_json::{Value, json};
@@ -66,7 +71,7 @@ fn root(app: &App) -> PathBuf {
 fn read(dir: PathBuf) -> Result<Course> {
     let path = dir.join("course.md");
     let src = std::fs::read_to_string(&path).with_context(|| format!("reading {}", path.display()))?;
-    let (meta, body) = crate::texts::front_matter(&src).with_context(|| format!("in {}", path.display()))?;
+    let (meta, body) = crate::courses::texts::front_matter(&src).with_context(|| format!("in {}", path.display()))?;
     let get = |k: &str| meta.get(k).and_then(Value::as_str).map(str::trim).unwrap_or("").to_string();
     let id = get("id");
     let folder = dir.file_name().and_then(|n| n.to_str()).unwrap_or_default();
@@ -108,12 +113,12 @@ pub fn pick(app: &App, id: Option<&str>) -> Result<Course> {
 /// For the course list: what each course is, and whether you're using your own copy of it.
 pub fn list(app: &App) -> Value {
     let rows: Vec<Value> = all(app).iter().map(|c| {
-        let mine = crate::syllabus::has_mine(app, c);
+        let mine = crate::courses::syllabus::has_mine(app, c);
         json!({
             "id": c.id, "title": c.title, "kind": c.kind, "version": c.version, "source": c.source, "summary": c.summary,
             "locked_sections": c.locked, "using": if mine { "mine" } else { "original" },
-            "changes": crate::syllabus::change_count(app, c),
-            "updates_waiting": if mine { crate::updates::waiting(app, c) } else { 0 },
+            "changes": crate::courses::syllabus::change_count(app, c),
+            "updates_waiting": if mine { crate::courses::updates::waiting(app, c) } else { 0 },
             "shown_in_app": c.id == DEFAULT,
         })
     }).collect();

@@ -1,5 +1,5 @@
 //! Local ChatGPT plan sign-in and the in-app coach. No tokens enter the browser.
-use crate::{app::Shared, mcp, validate};
+use crate::{app::Shared, ai::mcp, coach::validate};
 use anyhow::{Context, Result, anyhow, bail, ensure};
 use axum::{
     Json, Router,

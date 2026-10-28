@@ -16,7 +16,7 @@
 use crate::app::App;
 use crate::courses::{self, Course};
 use crate::store;
-use crate::texts;
+use crate::courses::texts;
 use anyhow::{Context, Result, anyhow, bail, ensure};
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
@@ -46,7 +46,7 @@ fn using(app: &App, c: &Course) -> &'static str {
 pub fn load_active(app: &App, c: &Course) -> Result<Value> {
     let dir = active_dir(app, c);
     let mut t = texts::load(&dir).with_context(|| format!("loading {}", dir.display()))?;
-    let updates = if has_mine(app, c) { crate::updates::waiting(app, c) } else { 0 };
+    let updates = if has_mine(app, c) { crate::courses::updates::waiting(app, c) } else { 0 };
     t["edition"] = json!({ "course": c.id, "title": c.title, "mine": has_mine(app, c), "changes": change_count(app, c), "updates": updates });
     Ok(t)
 }

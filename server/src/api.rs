@@ -2,7 +2,7 @@
 
 use crate::app::Shared;
 use crate::model::*;
-use crate::{cards, coach, compare, jobs, progress, recordings, store, util, validate};
+use crate::{practice::cards, coach, analysis::compare, analysis, practice::progress, recordings, store, util, coach::validate};
 use axum::{
     Json, Router,
     body::{Body, Bytes},
@@ -54,8 +54,8 @@ pub fn router(app: Shared) -> Router {
         .route("/api/syllabus/undo", post(syllabus_undo))
         .route("/api/syllabus/reset", post(syllabus_reset))
         .route("/api/syllabus", get(syllabus_files))
-        .route("/api/mixtape/remix", post(crate::remix::remix))
-        .route("/api/mixtape/chapter", post(crate::remix::add_chapter))
+        .route("/api/mixtape/remix", post(crate::courses::remix::remix))
+        .route("/api/mixtape/chapter", post(crate::courses::remix::add_chapter))
         .route("/api/connect", get(connect_info))
         .route("/api/connect/address", axum::routing::put(connect_address))
         .route("/api/connect/code", post(connect_code))
@@ -149,7 +149,7 @@ async fn today(State(app): State<Shared>) -> R<Json<Value>> {
         let now_hm = &local_ts[11..16];
         now_hm >= t.as_str() && !participation["practised_today"].as_bool().unwrap_or(false)
     });
-    let pending = jobs::jobs(&app).iter().filter(|j| j.status != "done").count();
+    let pending = analysis::jobs(&app).iter().filter(|j| j.status != "done").count();
     Ok(Json(json!({
         "local_date": date, "local_time": local_ts, "timezone": profile.timezone,
         "goal": profile.goal, "plan": plan, "exercise": ex, "cue": cue, "ladder_step": ladder_step,
@@ -199,7 +199,7 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
 /// A course's texts (`?course=<id>`), the app's course when left out.
 async fn texts(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
-    Ok(Json(crate::syllabus::course_texts(&app, &c)?))
+    Ok(Json(crate::courses::syllabus::course_texts(&app, &c)?))
 }
 
 async fn studio_session(State(app): State<Shared>) -> R<Json<Session>> {
@@ -469,18 +469,18 @@ async fn take_analysis(State(app): State<Shared>, Path(id): Path<String>) -> R<J
 }
 
 async fn reanalyze(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<Value>> {
-    jobs::retry_failed(&app, &id)?;
+    analysis::retry_failed(&app, &id)?;
     Ok(Json(take_view(&app, &app.take(&id)?)))
 }
 
 async fn remeasure(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<Value>> {
-    jobs::remeasure(&app, &id)?;
+    analysis::remeasure(&app, &id)?;
     Ok(Json(take_view(&app, &app.take(&id)?)))
 }
 
 /// Re-measure every take analysed with an older method; the earlier results are kept.
 async fn remeasure_stale(State(app): State<Shared>) -> R<Json<Value>> {
-    Ok(Json(json!({ "queued": jobs::remeasure_stale(&app)?, "method": jobs::ANALYSIS_METHOD })))
+    Ok(Json(json!({ "queued": analysis::remeasure_stale(&app)?, "method": analysis::ANALYSIS_METHOD })))
 }
 
 /// What Lilt's original changed since your own version was made, and how each change would be handled.
@@ -497,7 +497,7 @@ struct CourseQuery {
 
 async fn syllabus_updates(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
-    Ok(Json(crate::updates::list(&app, &c)))
+    Ok(Json(crate::courses::updates::list(&app, &c)))
 }
 
 #[derive(Deserialize)]
@@ -510,17 +510,17 @@ struct ApplyUpdates {
 
 async fn apply_syllabus_updates(State(app): State<Shared>, Query(q): Query<CourseQuery>, Json(b): Json<ApplyUpdates>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
-    Ok(Json(crate::updates::apply(&app, &c, &b.choices, &b.note)?))
+    Ok(Json(crate::courses::updates::apply(&app, &c, &b.choices, &b.note)?))
 }
 
 async fn syllabus_history(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
-    Ok(Json(crate::syllabus::history(&app, &c)))
+    Ok(Json(crate::courses::syllabus::history(&app, &c)))
 }
 
 async fn syllabus_undo(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
-    Ok(Json(crate::syllabus::undo(&app, &c)?))
+    Ok(Json(crate::courses::syllabus::undo(&app, &c)?))
 }
 
 #[derive(Deserialize)]
@@ -531,13 +531,13 @@ struct ResetBody {
 /// Go back to a course's original; kept in its history, so it can be undone.
 async fn syllabus_reset(State(app): State<Shared>, Query(q): Query<CourseQuery>, Json(b): Json<ResetBody>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
-    Ok(Json(crate::syllabus::reset(&app, &c, &b.note)?))
+    Ok(Json(crate::courses::syllabus::reset(&app, &c, &b.note)?))
 }
 
 /// A course's files (chapters with their titles and counts) and how your copy differs from the original.
 async fn syllabus_files(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
-    Ok(Json(crate::syllabus::list(&app, &c)))
+    Ok(Json(crate::courses::syllabus::list(&app, &c)))
 }
 
 /// What Settings → Connect your AI shows: how to connect each kind of app from this computer, the
@@ -552,15 +552,15 @@ async fn connect_info(State(app): State<Shared>, headers: HeaderMap) -> Json<Val
         let abs = |p: &std::path::Path| std::fs::canonicalize(p).unwrap_or_else(|_| p.to_path_buf()).display().to_string();
         json!({ "command": exe, "args": ["mcp-stdio"], "env": { "LILT_DATA_DIR": abs(&app.paths.root), "LILT_CONTENT_DIR": abs(&app.config.content_dir) } })
     };
-    let public = crate::oauth::public_url(&app);
+    let public = crate::ai::oauth::public_url(&app);
     Json(json!({
         "local_url": format!("http://{host}/mcp"),
         "stdio": stdio,
         "token_required": app.config.mcp_token.is_some(),
         "public_url": public,
         "public_mcp_url": public.as_ref().map(|u| format!("{u}/mcp")),
-        "connections": crate::oauth::connections(&app),
-        "activity": crate::agents::recent(&app),
+        "connections": crate::ai::oauth::connections(&app),
+        "activity": crate::ai::agents::recent(&app),
     }))
 }
 
@@ -568,15 +568,15 @@ async fn connect_info(State(app): State<Shared>, headers: HeaderMap) -> Json<Val
 struct Address { url: String }
 
 async fn connect_address(State(app): State<Shared>, Json(b): Json<Address>) -> R<Json<Value>> {
-    Ok(Json(json!({ "public_url": crate::oauth::set_public_url(&app, &b.url)? })))
+    Ok(Json(json!({ "public_url": crate::ai::oauth::set_public_url(&app, &b.url)? })))
 }
 
 async fn connect_code(State(app): State<Shared>) -> Json<Value> {
-    Json(crate::oauth::new_pairing_code(&app))
+    Json(crate::ai::oauth::new_pairing_code(&app))
 }
 
 async fn connect_remove(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<Value>> {
-    crate::oauth::disconnect(&app, &id)?;
+    crate::ai::oauth::disconnect(&app, &id)?;
     Ok(Json(json!({ "removed": id })))
 }
 
@@ -661,13 +661,13 @@ async fn respond(State(app): State<Shared>, Path(id): Path<String>, Json(req): J
 }
 
 async fn list_jobs(State(app): State<Shared>) -> Json<Value> {
-    Json(json!({"jobs": jobs::jobs(&app)}))
+    Json(json!({"jobs": analysis::jobs(&app)}))
 }
 
 /// Zip of the whole data directory, streamed from a temp file.
 async fn export(State(app): State<Shared>) -> R<Response> {
     let app2 = app.clone();
-    let path = tokio::task::spawn_blocking(move || crate::export::write_zip(&app2)).await.map_err(|e| anyhow::anyhow!(e.to_string()))??;
+    let path = tokio::task::spawn_blocking(move || crate::store::export::write_zip(&app2)).await.map_err(|e| anyhow::anyhow!(e.to_string()))??;
     let file = tokio::fs::File::open(&path).await?;
     let _ = std::fs::remove_file(&path); // unlinked; the open handle keeps streaming
     let stream = tokio_util::io::ReaderStream::new(file);

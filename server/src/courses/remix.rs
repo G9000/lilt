@@ -8,7 +8,7 @@
 
 use crate::app::Shared;
 use crate::courses::{self, Course};
-use crate::syllabus;
+use crate::courses::syllabus;
 use anyhow::{Context, Result, anyhow, bail, ensure};
 use axum::extract::{Json, State};
 use axum::http::StatusCode;
@@ -68,7 +68,7 @@ fn context(app: &Shared, c: &Course, chapter: Option<&str>) -> Result<(Vec<(Stri
     match chapter {
         Some(id) => {
             let (name, src) = all.iter()
-                .find(|(n, s)| n.starts_with(|ch: char| ch.is_ascii_digit()) && crate::texts::chapter(s, 0).is_ok_and(|v| v["id"] == id))
+                .find(|(n, s)| n.starts_with(|ch: char| ch.is_ascii_digit()) && crate::courses::texts::chapter(s, 0).is_ok_and(|v| v["id"] == id))
                 .ok_or_else(|| anyhow!("there is no chapter `{id}` in this course"))?;
             Ok((vec![(name.clone(), src.clone())], Some(name.clone())))
         }
@@ -107,7 +107,7 @@ async fn remix_course(app: &Shared, r: &RemixRequest) -> Result<Value> {
     input.push(json!({"role": "user", "content": format!("The learner's request: {request}")}));
     let answer = {
         let _turn = app.chatgpt.lock().await;
-        crate::chatgpt::complete(app, INSTRUCTIONS, input).await?
+        crate::ai::chatgpt::complete(app, INSTRUCTIONS, input).await?
     };
     let (note, reply, changed) = parse(&answer)?;
     if changed.is_empty() {
@@ -135,7 +135,7 @@ fn blank_chapter(app: &Shared, c: &Course) -> Result<Value> {
     let next = files.keys().filter_map(|n| n.get(..2).and_then(|d| d.parse::<u32>().ok())).max().unwrap_or(0) + 1;
     ensure!(next < 100, "this course already has 99 chapters");
     let ids: Vec<String> = files.iter().filter(|(n, _)| n.starts_with(|ch: char| ch.is_ascii_digit()))
-        .filter_map(|(_, s)| crate::texts::chapter(s, 0).ok().and_then(|v| v["id"].as_str().map(str::to_string))).collect();
+        .filter_map(|(_, s)| crate::courses::texts::chapter(s, 0).ok().and_then(|v| v["id"].as_str().map(str::to_string))).collect();
     let k = (1..).find(|k| !ids.contains(&format!("my-chapter-{k}"))).unwrap();
     let id = format!("my-chapter-{k}");
     let file = format!("{next:02}-{id}.md");

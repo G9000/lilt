@@ -1,6 +1,6 @@
 //! Shared application state and record access.
 
-use crate::exercises::Registry;
+use crate::practice::exercises::Registry;
 use crate::model::*;
 use crate::store::{self, Paths};
 use crate::util;
@@ -50,8 +50,8 @@ pub struct App {
     /// Serialises changes to `oauth.json` (signed-in remote apps).
     pub oauth: Mutex<()>,
     /// The pairing code and unused sign-in codes, never written to disk.
-    pub oauth_mem: Mutex<crate::oauth::Memory>,
-    pub chatgpt: tokio::sync::Mutex<crate::chatgpt::State>,
+    pub oauth_mem: Mutex<crate::ai::oauth::Memory>,
+    pub chatgpt: tokio::sync::Mutex<crate::ai::chatgpt::State>,
     /// take_id -> session_id
     take_index: RwLock<HashMap<String, String>>,
     /// Serialises read-modify-write of JSON records.
@@ -66,7 +66,7 @@ impl App {
         let paths = Paths::new(&config.data_dir);
         paths.ensure_layout()?;
         let registry =
-            crate::exercises::seed_and_load(&paths, &config.content_dir.join("exercises"))?;
+            crate::practice::exercises::seed_and_load(&paths, &config.content_dir.join("exercises"))?;
         let prompts: Value = store::read_json(&config.content_dir.join("prompts/prompts.json"))
             .context("loading content/prompts/prompts.json")?;
         let app = Arc::new(App {
@@ -84,7 +84,7 @@ impl App {
             job_notify: Notify::new(),
         });
         crate::courses::migrate(&app).context("moving your copy of the voice course")?;
-        crate::syllabus::reload(&app).context("loading the practice texts")?;
+        crate::courses::syllabus::reload(&app).context("loading the practice texts")?;
         app.rebuild_index();
         if !app.paths.profile().exists() {
             store::write_json(&app.paths.profile(), &Profile::default())?;

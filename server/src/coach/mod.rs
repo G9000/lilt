@@ -3,9 +3,11 @@
 //! Evidence is capture-quality measurement and the learner's own reports. Pitch
 //! measurements are descriptive only and never select a cue or change the plan.
 
+pub mod validate;
+
 use crate::app::App;
-use crate::compare;
-use crate::exercises::Exercise;
+use crate::analysis::compare;
+use crate::practice::exercises::Exercise;
 use crate::model::*;
 use crate::store;
 use crate::util;

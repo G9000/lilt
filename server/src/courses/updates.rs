@@ -15,8 +15,8 @@
 
 use crate::app::App;
 use crate::courses::Course;
-use crate::syllabus::{self, Files};
-use crate::texts;
+use crate::courses::syllabus::{self, Files};
+use crate::courses::texts;
 use anyhow::{Result, anyhow, bail, ensure};
 use serde_json::{Value, json};
 use std::collections::BTreeMap;

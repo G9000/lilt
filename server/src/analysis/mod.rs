@@ -1,6 +1,8 @@
 //! Persisted analysis jobs. Job and run IDs are derived from the take, so repeated
 //! finalisation or a restart mid-job cannot produce duplicate results.
 
+pub mod compare;
+
 use crate::app::{App, Shared};
 use crate::model::*;
 use crate::store;
