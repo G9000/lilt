@@ -312,6 +312,11 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flow.mjs /tmp/shots   # MOBILE
 
 ## Content and licensing
 
+The practice texts (the chapters and today's text cards) are Markdown files in `content/texts`,
+one per chapter, so you can edit them in any editor or as an Obsidian vault without touching code.
+[content/texts/README.md](content/texts/README.md) explains the format. Restart Lilt after editing
+(with Docker, `docker compose up -d --build`).
+
 The exercise texts in `content/exercises` are short paraphrases of NHS Fife Speech and Language Therapy
 patient-advice pages, with links to the originals. NHS Fife permits use for private study and personal
 use only, so keep this repository private and don't redistribute that content. The status of every

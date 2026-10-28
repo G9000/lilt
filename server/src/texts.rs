@@ -1,0 +1,154 @@
+//! Practice texts, written as Markdown in `content/texts` so they can be edited without code
+//! (in any editor, or as an Obsidian vault). `_about.md` holds the version and the closing note;
+//! each `NN-<id>.md` is one chapter, in file-name order:
+//!
+//! ```markdown
+//! ---
+//! id: warmup
+//! title: Warm-ups
+//! subtitle: Hums and gentle glides
+//! kind: hum
+//! source_url: https://…
+//! written_by: Instructions paraphrased from the source.
+//! ---
+//!
+//! How to do it, in a paragraph.
+//!
+//! ## hum-comfortable
+//!
+//! mmmmmmm
+//!
+//! > The hint shown under the text.
+//! ```
+//!
+//! The result has the same shape the app has always served from `/api/texts`.
+
+use anyhow::{Context, Result, anyhow, bail};
+use serde_json::{Map, Value, json};
+use std::path::Path;
+
+/// `key: value` lines between `---` fences, and the text after them.
+fn front_matter(src: &str) -> Result<(Map<String, Value>, &str)> {
+    let rest = src.strip_prefix("---\n").ok_or_else(|| anyhow!("must start with a --- front matter block"))?;
+    let end = rest.find("\n---").ok_or_else(|| anyhow!("front matter is not closed with ---"))?;
+    let mut meta = Map::new();
+    for line in rest[..end].lines().filter(|l| !l.trim().is_empty()) {
+        let (k, v) = line.split_once(':').ok_or_else(|| anyhow!("front matter line has no `key: value`: {line}"))?;
+        meta.insert(k.trim().into(), Value::String(v.trim().into()));
+    }
+    let body = rest[end + 4..].trim_start_matches(|c| c != '\n').trim_start_matches('\n');
+    Ok((meta, body))
+}
+
+/// Non-empty lines joined into one line of text.
+fn joined<'a>(lines: impl Iterator<Item = &'a str>) -> String {
+    lines.map(str::trim).filter(|l| !l.is_empty()).collect::<Vec<_>>().join(" ")
+}
+
+fn chapter(src: &str, level: usize) -> Result<Value> {
+    let (mut meta, body) = front_matter(src)?;
+    for key in ["id", "title", "kind"] {
+        if meta.get(key).and_then(Value::as_str).unwrap_or("").is_empty() {
+            bail!("front matter needs `{key}`");
+        }
+    }
+    let mut sections = body.split("\n## ");
+    let basis = sections.next().unwrap_or("");
+    let (basis, first) = match basis.strip_prefix("## ") { Some(s) => ("", Some(s)), None => (basis, None) };
+    let mut items = Vec::new();
+    for section in first.into_iter().chain(sections) {
+        let (id, rest) = section.split_once('\n').unwrap_or((section, ""));
+        let id = id.trim();
+        let text = joined(rest.lines().filter(|l| !l.trim_start().starts_with('>')));
+        let hint = joined(rest.lines().filter_map(|l| l.trim_start().strip_prefix('>')));
+        if id.is_empty() || text.is_empty() {
+            bail!("text `{id}` needs an id after ## and a line of text");
+        }
+        if items.iter().any(|i: &Value| i["id"] == id) {
+            bail!("text id `{id}` is used twice");
+        }
+        items.push(json!({ "id": id, "text": text, "hint": hint }));
+    }
+    if items.is_empty() {
+        bail!("has no texts (each starts with `## <id>`)");
+    }
+    // Optional: no source link, or no subtitle or credit line.
+    meta.entry("source_url").or_insert(Value::Null);
+    for key in ["subtitle", "written_by"] {
+        meta.entry(key).or_insert_with(|| Value::String(String::new()));
+    }
+    meta.insert("level".into(), json!(level));
+    meta.insert("basis".into(), Value::String(joined(basis.lines())));
+    meta.insert("items".into(), Value::Array(items));
+    Ok(Value::Object(meta))
+}
+
+/// Load `_about.md` and every chapter file from `dir`.
+pub fn load(dir: &Path) -> Result<Value> {
+    let read = |p: &Path| std::fs::read_to_string(p).with_context(|| format!("reading {}", p.display()));
+    let about = dir.join("_about.md");
+    let about_src = read(&about)?;
+    let (mut out, note) = front_matter(&about_src).with_context(|| format!("in {}", about.display()))?;
+    out.insert("version".into(), json!(out.get("version").and_then(Value::as_str).and_then(|v| v.parse::<u64>().ok()).unwrap_or(1)));
+    out.insert("note".into(), Value::String(joined(note.lines())));
+
+    let mut files: Vec<_> = std::fs::read_dir(dir).with_context(|| format!("reading {}", dir.display()))?
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .filter(|p| p.extension().is_some_and(|x| x == "md") && p.file_name().and_then(|n| n.to_str()).is_some_and(|n| n.starts_with(|c: char| c.is_ascii_digit())))
+        .collect();
+    files.sort();
+    let mut levels = Vec::new();
+    for (i, path) in files.iter().enumerate() {
+        let level = chapter(&read(path)?, i + 1).with_context(|| format!("in {}", path.display()))?;
+        if levels.iter().any(|l: &Value| l["id"] == level["id"]) {
+            bail!("chapter id `{}` is used twice (in {})", level["id"], path.display());
+        }
+        levels.push(level);
+    }
+    if levels.is_empty() {
+        bail!("no chapter files (NN-name.md) in {}", dir.display());
+    }
+    out.insert("levels".into(), Value::Array(levels));
+    Ok(Value::Object(out))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const WARMUP: &str = "---\nid: warmup\ntitle: Warm-ups\nsubtitle: Hums\nkind: hum\nsource_url: https://example.org/a:b\nwritten_by: Lilt.\n---\n\nHum gently,\non a comfortable pitch.\n\n## hum\n\nmmmmmmm\n\n> Notice where\n> you feel it.\n\n## glide\n\nmmm ↗ ↘\n\n> Easy.\n";
+
+    #[test]
+    fn parses_a_chapter() {
+        let c = chapter(WARMUP, 3).unwrap();
+        assert_eq!(c["id"], "warmup");
+        assert_eq!(c["level"], 3);
+        assert_eq!(c["source_url"], "https://example.org/a:b");
+        assert_eq!(c["basis"], "Hum gently, on a comfortable pitch.");
+        assert_eq!(c["items"][0], json!({ "id": "hum", "text": "mmmmmmm", "hint": "Notice where you feel it." }));
+        assert_eq!(c["items"][1]["text"], "mmm ↗ ↘");
+    }
+
+    #[test]
+    fn rejects_broken_chapters() {
+        assert!(chapter("id: x\n", 1).is_err(), "no front matter");
+        assert!(chapter("---\nid: x\ntitle: X\nkind: hum\n---\n\nNo texts.\n", 1).is_err(), "no texts");
+        assert!(chapter("---\nid: x\ntitle: X\nkind: hum\n---\n\n## a\n\none\n\n## a\n\ntwo\n", 1).is_err(), "duplicate id");
+        assert!(chapter("---\ntitle: X\nkind: hum\n---\n\n## a\n\none\n", 1).is_err(), "missing id");
+    }
+
+    #[test]
+    fn loads_the_shipped_texts() {
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../content/texts");
+        let t = load(&dir).unwrap();
+        assert_eq!(t["schema"], "lilt.texts/1");
+        let levels = t["levels"].as_array().unwrap();
+        assert_eq!(levels.len(), 7);
+        for (i, l) in levels.iter().enumerate() {
+            assert_eq!(l["level"], i + 1);
+            for it in l["items"].as_array().unwrap() {
+                assert!(!it["text"].as_str().unwrap().is_empty() && !it["hint"].as_str().unwrap().is_empty(), "{} {}", l["id"], it["id"]);
+            }
+        }
+    }
+}

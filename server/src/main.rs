@@ -11,6 +11,7 @@ mod model;
 mod progress;
 mod recordings;
 mod store;
+mod texts;
 mod util;
 mod validate;
 #[cfg(test)]

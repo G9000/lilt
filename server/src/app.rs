@@ -61,8 +61,7 @@ impl App {
             crate::exercises::seed_and_load(&paths, &config.content_dir.join("exercises"))?;
         let prompts: Value = store::read_json(&config.content_dir.join("prompts/prompts.json"))
             .context("loading content/prompts/prompts.json")?;
-        let texts: Value = store::read_json(&config.content_dir.join("texts/starter.v1.json"))
-            .context("loading content/texts/starter.v1.json")?;
+        let texts = crate::texts::load(&config.content_dir.join("texts")).context("loading content/texts")?;
         let app = Arc::new(App {
             config,
             texts,
