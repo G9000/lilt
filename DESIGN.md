@@ -117,15 +117,16 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips, sharing its row with the window's traffic lights.
 
-**Your AI**, a widget in the room on the window beside the clock (dark glass like the radio): a small
-coral spark, "Your AI", the assistant that last used Lilt and when (or "Not connected yet" with a
-line on what it's for), then **Connect** (or **Manage**) and a settings button. Both, and a settings
-button in the room's menu bar, open **Settings over the room**: a 560px sheet from the right edge in
-the window glass, like Notification Center (a phone gets it edge to edge), "Settings" with a close
-button, the same page as the desk's Settings window; Connect opens it at Connect your AI. Escape or a
-click outside closes it.
+**Settings**, a widget in the room on the window beside the clock (dark glass like the radio): a grey
+gear tile that turns a little on hover, "Settings", and what's set at a glance (the theme, and the
+AI that last used Lilt or "AI: not connected"). It, and a settings button in the room's menu bar,
+open **Settings over the room**: a 560px sheet from the right edge in the window glass, like
+Notification Center (a phone gets it edge to edge), "Settings" with a close button, the same page as
+the desk's Settings window. Escape or a click outside closes it. The page starts with Appearance
+(Theme: a Light / Dark segmented control, in step with the menu bar's sun or moon) and Connect your
+AI, then your goal, routine and reminders, comfortable range, and privacy.
 
-**Settings → Connect your AI** sits before Privacy: a lead line on what an assistant can do, then
+**Settings → Connect your AI** sits after Appearance: a lead line on what an assistant can do, then
 three quiet groups in the usual `--fill` boxes: **On this computer** (Claude Code, Claude Desktop,
 other apps, each a command on a `--page` panel in `--mono` with a Copy button), **ChatGPT, and other
 apps in the cloud** (three numbered steps: the tunnel command and the public address with "Save

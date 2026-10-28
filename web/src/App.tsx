@@ -34,7 +34,7 @@ export function useRoute(): [string, URLSearchParams] {
 
 export const go = (path: string) => { window.location.hash = path; };
 
-type Theme = "light" | "dark";
+export type Theme = "light" | "dark";
 function readTheme(): Theme {
   try { return localStorage.getItem("lilt.mode") === "dark" ? "dark" : "light"; } catch { return "light"; }
 }
@@ -57,6 +57,12 @@ export function App() {
   const [deck, setDeck] = useState<Deck | null>(null);
 
   useEffect(() => { applyTheme(theme); }, [theme]);
+  // Settings changes the theme too.
+  useEffect(() => {
+    const on = (e: Event) => setTheme((e as CustomEvent<Theme>).detail);
+    window.addEventListener("lilt:theme", on);
+    return () => window.removeEventListener("lilt:theme", on);
+  }, []);
   useEffect(() => { void recoverPending().then(setRecovered); }, []);
   useEffect(() => { if (!inside) setInstant(false); }, [inside]);
   // The room, the inbox and the lights all follow today's deck; refresh it as you move around.

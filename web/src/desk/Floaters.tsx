@@ -5,19 +5,18 @@ import { radio, useRadio } from "./lofi";
 import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
-import { Icon } from "../components/bits";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
  * radio over the speaker, a note on the wall of photos, a clock in the window, the plant (the
- * days you practised this week) by the potted plant, and your AI (which assistant last used Lilt,
- * with Connect and Settings) on the window beside the clock. Drag them anywhere; each remembers its
+ * days you practised this week) by the potted plant, and Settings (theme, AI connection and
+ * everything else, over the room) on the window beside the clock. Drag them anywhere; each remembers its
  * spot in the painting (in this browser), so it rides the room's camera. One near the edge slides
  * inward to stay on screen; one left at home that would cover today's cards steps out of the way.
  */
 
 type Spot = { x: number; y: number };
-const HOME: Record<string, Spot> = { radio: { x: 1262, y: 452 }, note: { x: 150, y: 232 }, clock: { x: 1180, y: 236 }, plant: { x: 118, y: 560 }, ai: { x: 1440, y: 236 } };
+const HOME: Record<string, Spot> = { radio: { x: 1262, y: 452 }, note: { x: 150, y: 232 }, clock: { x: 1180, y: 236 }, plant: { x: 118, y: 560 }, settings: { x: 1400, y: 236 } };
 const KEY = "lilt.room.layout";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
 let layout = load();
@@ -112,33 +111,34 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
   );
 }
 
-function ago(iso: string) {
-  const s = (Date.now() - Date.parse(iso)) / 1000;
-  return s < 60 ? "just now" : s < 3600 ? `${Math.round(s / 60)} min ago` : s < 86400 ? `${Math.round(s / 3600)} h ago` : s < 172800 ? "yesterday" : new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
-}
-
-/** Your AI: which assistant last used Lilt and when, a way to connect one, and Settings. */
-function AiWidget({ inside }: { inside: boolean }) {
-  const [last, setLast] = useState<{ client: string; last_used: string } | null | undefined>(undefined);
-  useEffect(() => { void api.connectInfo().then((c) => setLast(c.activity[0] ?? null), () => setLast(null)); }, [inside]);
-  if (last === undefined) return null;
+/** Settings, in the room: what's set at a glance (theme, the AI that last used Lilt), and a tap opens them all. */
+function SettingsWidget({ inside }: { inside: boolean }) {
+  const [ai, setAi] = useState<string | null>(null);
+  const [dark, setDark] = useState(document.documentElement.getAttribute("data-theme") === "dark");
+  useEffect(() => { void api.connectInfo().then((c) => setAi(c.activity[0]?.client ?? null), () => setAi(null)); }, [inside]);
+  useEffect(() => {
+    const m = new MutationObserver(() => setDark(document.documentElement.getAttribute("data-theme") === "dark"));
+    m.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => m.disconnect();
+  }, []);
   return (
-    <div className="fl-ai">
-      <span className="fl-ai-mark" aria-hidden="true">
-        <svg viewBox="0 0 20 20"><path d="M10 2.5l1.6 4.4 4.4 1.6-4.4 1.6L10 14.5l-1.6-4.4L4 8.5l4.4-1.6zM15.5 13l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="currentColor" /></svg>
+    <button className="fl-set ss-open" onClick={() => openSettings()} aria-label="Settings">
+      <span className="fl-set-icon" aria-hidden="true">{GEAR}</span>
+      <span className="fl-set-info">
+        <b>Settings</b>
+        <small>{dark ? "Dark" : "Light"} theme</small>
+        <small>{ai ? `AI: ${ai}` : "AI: not connected"}</small>
       </span>
-      <div className="fl-ai-info">
-        <span className="ds-r-k">Your AI</span>
-        <b>{last ? last.client : "Not connected yet"}</b>
-        <small>{last ? `Used Lilt ${ago(last.last_used)}` : "Let Claude or ChatGPT help with your practice"}</small>
-      </div>
-      <div className="fl-ai-ctl">
-        <button className="fl-ai-go ss-open" onClick={() => openSettings("ai")}>{last ? "Manage" : "Connect"}</button>
-        <button className="fl-ai-gear ss-open" onClick={() => openSettings()} aria-label="Settings">{Icon.settings}</button>
-      </div>
-    </div>
+    </button>
   );
 }
+
+const GEAR = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+  </svg>
+);
 
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();
@@ -206,8 +206,8 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
           </div>
         </div>
       </Widget>
-      <Widget id="ai" delay={-1.8} label="Your AI">
-        <AiWidget inside={inside} />
+      <Widget id="settings" delay={-1.8} label="Settings">
+        <SettingsWidget inside={inside} />
       </Widget>
       <Widget id="clock" delay={-1.1} label="Clock">
         <ClockWidget />
