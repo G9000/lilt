@@ -228,6 +228,13 @@ export interface SyllabusChange {
   id: string; file: string; title: string; part: string; kind: "added" | "removed" | "changed"; handling: "take" | "choose" | "already";
   yours: Piece | null; original: Piece | null; before: Piece | null;
 }
+/** Settings → Connect your AI: how to connect from this computer, the public address for cloud apps, signed-in apps and recent activity. */
+export interface ConnectInfo {
+  local_url: string; stdio: { command: string; args: string[]; env?: Record<string, string> }; token_required: boolean;
+  public_url: string | null; public_mcp_url: string | null;
+  connections: { id: string; client_name: string; connected: string; last_used: string }[];
+  activity: { client: string; last_tool: string; last_used: string }[];
+}
 export interface SyllabusUpdates { using: "mine" | "original"; available: boolean; to_choose?: number; changes: SyllabusChange[] }
 /** Typical speaking pitch, from content/texts/_pitch.md: averages and standard deviations in Hz, the overlap band, and the source. */
 export interface PitchReference { men_mean: number; men_sd: number; women_mean: number; women_sd: number; overlap_low: number; overlap_high: number; source: string }
@@ -304,6 +311,10 @@ export const api = {
   syllabusUpdates: () => call<SyllabusUpdates>("GET", "/api/syllabus/updates"),
   applySyllabusUpdates: (choices: Record<string, "yours" | "original">) =>
     call<{ updates_taken: number; kept_yours: number; change: number }>("POST", "/api/syllabus/updates", { choices }),
+  connectInfo: () => call<ConnectInfo>("GET", "/api/connect"),
+  setPublicAddress: (url: string) => call<{ public_url: string | null }>("PUT", "/api/connect/address", { url }),
+  pairingCode: () => call<{ code: string; expires_in: number }>("POST", "/api/connect/code"),
+  disconnectApp: (id: string) => call<{ removed: string }>("DELETE", `/api/connect/${id}`),
   undoSyllabus: () => call<{ undone: number; using: "mine" | "original" }>("POST", "/api/syllabus/undo"),
   history: (params: { prompt_id?: string; days?: number } = {}) => {
     const q = new URLSearchParams();

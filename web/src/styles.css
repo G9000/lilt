@@ -127,7 +127,7 @@ button:active:not(:disabled), .btn:active { transform: scale(0.97); }
 .rec-btn:active:not(:disabled) { transform: scale(0.94); }
 .rec-ring { display: none; }
 
-input[type="text"], input[type="time"], input[type="number"], input[type="search"], select, textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 12px; min-height: 42px; width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+input[type="text"], input[type="url"], input[type="time"], input[type="number"], input[type="search"], select, textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 12px; min-height: 42px; width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
 textarea { min-height: 84px; resize: vertical; }
 input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; }
 label { font-weight: 600; display: block; margin-bottom: 6px; }

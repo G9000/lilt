@@ -124,3 +124,18 @@
   .st-row:has(.st-wide), .st-row:has(.st-btn.btn-secondary) { align-items: stretch; flex-direction: column; }
   .st .st-wide { width: 100%; }
 }
+
+/* Connect your AI: commands to copy, the public address, the one-time sign-in code */
+.st-lead { margin: 0 2px 14px; }
+.st-sub { margin: 18px 0 8px 2px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.st-snip { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; }
+.st-snip pre { flex: 1; min-width: 0; margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--page); font: 12.5px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); }
+.st-snip .btn-secondary, .st-inline .btn-secondary { flex: none; min-height: 38px; padding: 6px 14px; }
+.st-help code { font: 12px var(--mono); }
+.st-inline { display: flex; gap: 8px; margin-top: 10px; }
+.st-inline input { flex: 1; min-width: 0; }
+.st-wait { margin-top: 8px; }
+.st-code { display: flex; align-items: baseline; gap: 14px; margin: 10px 0 0; }
+.st-code b { font: 600 26px/1 var(--mono); letter-spacing: 0.12em; color: var(--ink); }
+.st-code span { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.st-field > .btn-secondary { margin-top: 10px; }

@@ -2,6 +2,7 @@ import "../styles/texts.css";
 import { useEffect, useState } from "react";
 import { api, Profile } from "../api";
 import { Callout, Toast, useToast } from "../components/bits";
+import { ConnectAI } from "../components/ConnectAI";
 
 const ZONES = ["Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Jakarta", "Asia/Bangkok", "Asia/Tokyo", "Australia/Sydney", "Europe/London", "Europe/Berlin", "America/New_York", "America/Los_Angeles", "UTC"];
 
@@ -131,10 +132,12 @@ export function SettingsPage() {
         </div>
       </section>
 
+      <ConnectAI />
+
       <section className="st-group" aria-labelledby="st-privacy">
         <h2 id="st-privacy">Privacy and processing</h2>
         <Callout kind="ok"><p><strong>External processing is off.</strong> Recording, saving, playback, analysis and feedback all run on this computer. No cloud model is used.</p></Callout>
-        <p className="st-note">If you connect an AI agent (such as Claude) to Lilt through MCP, whatever it reads (session details, measurements, notes, and audio clips if it asks for them) goes to that agent's provider under its own terms.</p>
+        <p className="st-note">If you connect an AI app (such as Claude or ChatGPT) to Lilt, whatever it reads (session details, measurements, notes, and audio clips if it asks for them) goes to that app's provider under its own terms.</p>
       </section>
 
       <div className="st-save">

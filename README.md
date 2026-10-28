@@ -274,9 +274,29 @@ clip was saved to disk but the model did not hear it, so model-perceived feedbac
 **Privacy:** what an agent reads (session details, measurements, notes, audio clips) goes to that
 agent's model provider. Lilt itself uses no cloud model, and external processing stays off.
 
-**Cloud clients** (for example claude.ai on the web) can't reach your `localhost`. To use one, run Lilt
-behind an authenticated HTTPS tunnel or reverse proxy, and set `LILT_MCP_TOKEN` so `/mcp` requires
-`Authorization: Bearer <token>`. Keep the token out of logs and shared configs.
+**Settings → Connect your AI** (the sliders icon at the top right) has all of this ready to copy:
+the Claude Code command, the Claude Desktop configuration (through `docker exec` when Lilt runs in
+Docker), and the address for other apps. It also lists the AI apps that have used Lilt recently,
+so you can see a connection worked.
+
+**ChatGPT and other cloud apps** (claude.ai on the web too) can't reach your computer, so they connect
+through a public HTTPS tunnel and sign in with OAuth:
+
+1. Run a tunnel to Lilt, for example `cloudflared tunnel --url http://127.0.0.1:7878` (a quick
+   tunnel's address changes each time it starts; a named Cloudflare tunnel or Tailscale Funnel keeps
+   one), and save its `https://` address in Settings → Connect your AI.
+2. In ChatGPT, add a custom MCP server with `https://<your address>/mcp` and OAuth. ChatGPT
+   registers itself and opens Lilt's sign-in page.
+3. In Lilt's Settings choose **Get a code**, and type it on the sign-in page. Codes are shown only in
+   Lilt on your computer, work once, last 10 minutes, and five wrong tries end one.
+
+Through the public address only `/mcp`, `/oauth/*` and `/.well-known/oauth-*` answer, and `/mcp` needs
+a signed-in app; the app itself, its API and your recordings answer only on this computer. A request
+counts as coming through the tunnel when its host is the saved address or it carries Cloudflare's
+`Cf-Connecting-Ip`. Tokens: access for a day, refresh for 90 days and replaced on each use, PKCE (S256)
+required, stored only as hashes in `<data>/oauth.json`. **Disconnect** in Settings ends a connection.
+From this computer, MCP answers only on local host names (`localhost`, `127.0.0.1`), and still
+honours `LILT_MCP_TOKEN` if you set one.
 
 ## Access from another device
 
@@ -301,7 +321,7 @@ authentication.
 | `LILT_PYTHON` | `analysis/.venv/bin/python` | Python for the analysis helper |
 | `LILT_CONTENT_DIR` | `content` | Exercise registry and prompts to seed from |
 | `LILT_WEB_DIR` | `web/dist` | Built web UI |
-| `LILT_MCP_TOKEN` | unset | If set, `/mcp` requires `Authorization: Bearer <token>` |
+| `LILT_MCP_TOKEN` | unset | If set, `/mcp` on this computer requires `Authorization: Bearer <token>` (apps connecting through the public address sign in with OAuth instead) |
 
 The timezone (default `Asia/Kuala_Lumpur`), reminder time, session length and comparison window are
 in **Settings**. Lilt stores UTC timestamps alongside local dates.

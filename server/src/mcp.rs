@@ -315,10 +315,12 @@ impl ServerHandler for LiltMcp {
         tools().into_iter().find(|t| t.name == name)
     }
 
-    async fn call_tool(&self, req: CallToolRequestParams, _c: RequestContext<RoleServer>) -> Result<CallToolResponse, McpError> {
+    async fn call_tool(&self, req: CallToolRequestParams, c: RequestContext<RoleServer>) -> Result<CallToolResponse, McpError> {
         let args = req.arguments.unwrap_or_default();
         let app = self.app.clone();
         let name = req.name.to_string();
+        let client = c.peer.peer_info().map(|i| i.client_info.title.clone().unwrap_or_else(|| i.client_info.name.clone())).unwrap_or_default();
+        crate::agents::record(&app, &client, &name);
         let res = tokio::task::spawn_blocking(move || call(&app, &name, &args))
             .await
             .map_err(|e| McpError::internal_error(e.to_string(), None))?;

@@ -7,6 +7,8 @@ mod exercises;
 mod export;
 mod jobs;
 mod mcp;
+mod oauth;
+mod agents;
 mod model;
 mod progress;
 mod recordings;
@@ -20,17 +22,10 @@ mod validate;
 mod tests;
 
 use anyhow::Result;
-use axum::{
-    Router,
-    extract::Request,
-    http::{StatusCode, header},
-    middleware::{self, Next},
-    response::{IntoResponse, Response},
-};
+use axum::{Router, middleware};
 use rmcp::transport::streamable_http_server::{
     StreamableHttpServerConfig, StreamableHttpService, session::local::LocalSessionManager,
 };
-use std::sync::Arc;
 use tower_http::services::{ServeDir, ServeFile};
 
 #[tokio::main]
@@ -59,41 +54,24 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     let mcp_service: StreamableHttpService<mcp::LiltMcp, LocalSessionManager> = StreamableHttpService::new(
         move || Ok(mcp::LiltMcp::new(mcp_app.clone())),
         Default::default(),
-        StreamableHttpServerConfig::default().with_json_response(true),
+        // Host names are checked by `oauth::gate` instead: local ones, or the saved public address
+        // with a signed-in app.
+        StreamableHttpServerConfig::default().with_json_response(true).disable_allowed_hosts(),
     );
-    let token = Arc::new(config.mcp_token.clone());
-    let mcp_router = Router::new()
-        .nest_service("/mcp", mcp_service)
-        .layer(middleware::from_fn(move |req: Request, next: Next| {
-            let token = token.clone();
-            async move { check_token(token.as_ref().as_deref(), req, next).await }
-        }));
+    let mcp_router = Router::new().nest_service("/mcp", mcp_service);
     let index = config.web_dir.join("index.html");
     let static_files = ServeDir::new(&config.web_dir).fallback(ServeFile::new(index));
     // Pictures used by the practice texts' Markdown (content/texts/images), as `images/<file>`,
     // and example recordings for the texts (content/texts/audio), as `audio/<file>`.
     let text_images = ServeDir::new(config.content_dir.join("texts/images"));
     let text_audio = ServeDir::new(config.content_dir.join("texts/audio"));
-    api::router(app)
+    api::router(app.clone())
         .merge(mcp_router)
+        .merge(oauth::router(app.clone()))
         .nest_service("/texts/images", text_images)
         .nest_service("/texts/audio", text_audio)
         .fallback_service(static_files)
-}
-
-async fn check_token(token: Option<&str>, req: Request, next: Next) -> Response {
-    if let Some(t) = token {
-        let ok = req
-            .headers()
-            .get(header::AUTHORIZATION)
-            .and_then(|v| v.to_str().ok())
-            .map(|v| v == format!("Bearer {t}"))
-            .unwrap_or(false);
-        if !ok {
-            return (StatusCode::UNAUTHORIZED, "missing or wrong bearer token").into_response();
-        }
-    }
-    next.run(req).await
+        .layer(middleware::from_fn_with_state(app, oauth::gate))
 }
 
 async fn serve(app: app::Shared, config: app::Config) -> Result<()> {

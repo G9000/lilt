@@ -117,6 +117,16 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips, sharing its row with the window's traffic lights.
 
+**Settings → Connect your AI** sits before Privacy: a lead line on what an assistant can do, then
+three quiet groups in the usual `--fill` boxes: **On this computer** (Claude Code, Claude Desktop,
+other apps, each a command on a `--page` panel in `--mono` with a Copy button), **ChatGPT, and other
+apps in the cloud** (three numbered steps: the tunnel command and the public address with "Save
+address", the public MCP address to paste into ChatGPT, and "Get a code", which shows the one-time
+code large in `--mono` with a countdown; signed-in apps follow as rows with Disconnect), and
+**Recently used by** (app, last tool, how long ago). The sign-in page a cloud app opens is a single
+white card on a warm grey page with the coral Lilt wordmark, "Connect ChatGPT to Lilt?", what it will
+be able to do, the code field and Connect / Don't connect.
+
 ## Tokens (light; dark theme swaps the window and ink colours)
 
 | Token | Value | Use |
