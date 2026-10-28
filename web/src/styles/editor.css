@@ -644,3 +644,6 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 /* Mixtape in Practice uses the Courses look, on the page's column */
 .ve-mixtape { max-width: none; padding: 0; }
 .ve-mixtape .co-head h1 { font: 700 44px/1.02 var(--font); letter-spacing: -0.05em; }
+
+/* "Your mic hears you very quietly": a gentle amber nudge in place of the usual line */
+.ve-dock-msg.quiet-mic { color: var(--warn); font-weight: 500; }

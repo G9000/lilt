@@ -685,6 +685,9 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const sd = useHeld(sdRaw, live).v;
   const inBand = mid && band ? mid >= band[0] && mid <= band[1] : null;
   const active = recording || listening || shown.length > 0;
+  // Three seconds in, if even your loudest moment is very quiet, say so: the mic, not your voice.
+  const loudest = amps.current.length ? Math.max(...amps.current.filter((a) => a.t > amps.current[amps.current.length - 1].t - 3).map((a) => a.v)) : 1;
+  const tooQuiet = (recording ? elapsed > 3 : listening && amps.current.length > 120) && loudest < Math.sqrt(0.012) * 2.4;
 
   const startListening = async () => { const s = mic.stream ?? (await mic.request()); if (s) setListening(true); };
 
@@ -722,8 +725,9 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
         {(recording || canStart) && <kbd aria-hidden="true">Space</kbd>}
       </button>
       <div className="ve-dock-sub">
-        <span className="ve-dock-msg">
-          {recording ? "Read the highlighted text"
+        <span className={`ve-dock-msg${tooQuiet ? " quiet-mic" : ""}`}>
+          {tooQuiet ? "Your mic hears you very quietly. Come a little closer to it."
+            : recording ? "Read the highlighted text"
             : listening ? "Listening only. Nothing is saved."
             : state === "saving" ? "Saving to your computer…" : ""}
         </span>

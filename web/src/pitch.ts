@@ -96,6 +96,26 @@ export interface LiveTracker {
 }
 
 /** Run YIN on the live stream about every 25 ms. `onFrame` receives each estimate with its time. */
+/**
+ * How loud a frame must be to count as voice, learned from the room: a few times the background
+ * level (the quiet end of the last few seconds), never above the old fixed 0.008 and never below
+ * 0.0025. A quiet built-in mic in a quiet room then still hears soft syllables, and a noisy room
+ * still ignores its own hum. YIN's periodicity check rejects whatever noise gets through.
+ */
+export function noiseFloor(seconds = 3, frameS = 0.025) {
+  const keep = Math.round(seconds / frameS);
+  const recent: number[] = [];
+  return {
+    gate(rms: number): number {
+      recent.push(rms);
+      if (recent.length > keep) recent.shift();
+      if (recent.length < 12) return 0.008;
+      const quiet = [...recent].sort((a, b) => a - b)[Math.floor(recent.length * 0.1)];
+      return Math.min(0.008, Math.max(0.0025, quiet * 3));
+    },
+  };
+}
+
 export function trackLive(stream: MediaStream, onFrame: (t: number, f: PitchFrame) => void): LiveTracker {
   const Ctx = window.AudioContext || (window as any).webkitAudioContext;
   const ctx: AudioContext = new Ctx();
@@ -107,10 +127,13 @@ export function trackLive(stream: MediaStream, onFrame: (t: number, f: PitchFram
   const t0 = performance.now();
   const releaseMic = claimMic();
   let stopped = false;
+  const floor = noiseFloor();
   const id = setInterval(() => {
     if (stopped) return;
     an.getFloatTimeDomainData(buf);
-    const f = yin(buf, ctx.sampleRate);
+    let sum = 0;
+    for (const v of buf) sum += v * v;
+    const f = yin(buf, ctx.sampleRate, 0.15, floor.gate(Math.sqrt(sum / buf.length)));
     onFrame((performance.now() - t0) / 1000, f);
   }, 25);
   return {

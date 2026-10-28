@@ -1,7 +1,7 @@
 // node --test src/pitch.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { yin, noteName, steadinessSt, recentMedian } from "./pitch.ts";
+import { yin, noteName, steadinessSt, recentMedian, noiseFloor } from "./pitch.ts";
 
 const SR = 48000;
 function tone(hz: number, n = 2048, harmonics = 1, amp = 0.3): Float32Array {
@@ -44,4 +44,20 @@ test("note names and helpers", () => {
   assert.equal(steadinessSt(Array(20).fill(200)), 0);
   assert.equal(recentMedian([null, null, null]), null);
   assert.equal(recentMedian([200, 210, 190, 205, 195]), 200);
+});
+
+test("the voice gate follows the room: a quiet mic in a quiet room still hears a soft voice", () => {
+  const sr = 48000;
+  const tone = (hz: number, amp: number) => Float32Array.from({ length: 2048 }, (_, i) => amp * Math.sin((2 * Math.PI * hz * i) / sr));
+  const soft = tone(180, 0.006); // rms about 0.004, a quiet syllable on a built-in mic
+  assert.equal(yin(soft, sr).hz, null, "the old fixed gate drops it");
+  const room = noiseFloor();
+  let gate = 0.008;
+  for (let i = 0; i < 80; i++) gate = room.gate(0.0008); // a quiet room
+  assert.ok(gate < 0.004 && gate >= 0.0025, `gate ${gate}`);
+  const f = yin(soft, sr, 0.15, gate);
+  assert.ok(f.hz !== null && Math.abs(f.hz - 180) < 3, `heard ${f.hz}`);
+  const loud = noiseFloor();
+  for (let i = 0; i < 80; i++) gate = loud.gate(0.02); // a noisy room: never above the old gate
+  assert.equal(gate, 0.008);
 });
