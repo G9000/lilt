@@ -261,6 +261,13 @@
   .ve .ve-home:hover:not([aria-current]) { background: var(--fill); }
 }
 
+/* after a take: one observation and one thing to try, in words, before any numbers */
+.prc-insight { padding: 14px 16px; border-radius: 14px; background: var(--accent-soft); display: grid; gap: 4px; }
+.prc-insight .n { margin: 0; font-size: 15.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+.prc-insight .c { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.prc-insight .c b { color: var(--accent-ink); font-weight: 650; margin-right: 4px; }
+.prc-result .prc-insight { margin-bottom: 14px; }
+
 /* a free take's summary in the text column, when the screen isn't split */
 .ve-free { margin: 0 0 36px; }
 .ve-free h2 { margin: 0 0 12px; font: 700 20px/1.2 var(--font); letter-spacing: -0.03em; }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, Comparison, Take } from "../api";
+import { describeTake } from "../insight";
 import { noteName } from "../pitch";
 import { contourPoints, PitchPoint } from "./PianoRoll";
 
@@ -8,6 +9,27 @@ const LO = 75, HI = 450;
 const frac = (hz: number) => Math.max(0, Math.min(1, Math.log(hz / LO) / Math.log(HI / LO)));
 
 export interface Measured { median: number | null; take: Take }
+
+/** One observation and one thing to try, in words, above the numbers. */
+function InsightNote({ analysis, band }: { analysis: any; band: [number, number] | null }) {
+  const m = analysis?.measures ?? {};
+  const said = describeTake({ median: m.f0_median_hz?.value ?? null, spanSt: m.f0_p10_p90_span_st?.value ?? null, band, pts: contourPoints(analysis) });
+  if (!said) return null;
+  return <div className="prc-insight"><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
+}
+
+/** The note for a take that's shown elsewhere (a chapter's players): loads its analysis once ready. */
+export function TakeInsight({ take, band }: { take: Take; band: [number, number] | null }) {
+  const [analysis, setAnalysis] = useState<any>(null);
+  const ready = take.status === "review_ready";
+  useEffect(() => {
+    if (!ready) return;
+    let live = true;
+    void api.analysis(take.id).then((a) => { if (live) setAnalysis(a); }, () => undefined);
+    return () => { live = false; };
+  }, [take.id, ready]);
+  return analysis ? <InsightNote analysis={analysis} band={band} /> : null;
+}
 
 const fmtHz = (hz: number | null | undefined) => (hz ? `${Math.round(hz)} Hz` : "–");
 
@@ -71,6 +93,7 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
         <p className="prc-wait">No clear pitch in this take (it may have been very quiet, whispered or noisy). That's fine, it's still saved.</p>
       ) : (
         <>
+          <InsightNote analysis={analysis} band={band} />
           <div className="prc-stats">
             <div><span>Middle pitch</span><b>{fmtHz(median)}<small>{noteName(median)}</small></b></div>
             <div><span>Usual range</span><b>{p10 && p90 ? `${Math.round(p10)}–${Math.round(p90)} Hz` : "–"}</b></div>

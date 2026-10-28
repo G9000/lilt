@@ -10,7 +10,7 @@ import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
-import { Measured, TakeResult as Measures } from "../components/DeckPitch";
+import { Measured, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
 import { useLivePitch } from "../components/LivePitch";
 import { useMic } from "../components/Recording";
 import { ReadAlong, ReadNotes } from "../components/ReadAlong";
@@ -670,6 +670,7 @@ function ChapterTake({ take, before, band, onUseRange, onUpdate }: { take: Take;
   return (
     <section className="ve-take" aria-label="Your take" onClick={(e) => e.stopPropagation()}>
       <div className="ve-take-head"><b>Your take</b><StatusBadge status={take.status} /><TakeFlags take={take} /></div>
+      <TakeInsight take={take} band={band} />
       <div className={before ? "ab" : ""}>
         {before && <AudioPlayer src={before.audio_url} tag="A" label={`before · ${before.local_date ?? new Date(before.created_utc).toLocaleDateString()}`} knownDuration={before.analysis_summary?.duration_s} pitchTakeId={before.id} band={band} compact />}
         <AudioPlayer key={`${take.id}-${ready}`} src={take.audio_url} tag={before ? "B" : undefined} label="this take" knownDuration={take.analysis_summary?.duration_s} pitchTakeId={ready ? take.id : undefined} band={band} compact={!!before} />
