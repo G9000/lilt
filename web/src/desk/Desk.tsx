@@ -13,13 +13,13 @@ import { LeaveIcon, Mark, ProgressIcon, RecordingsIcon, StudioIcon, TextsIcon, T
  * Every route except the room itself lives here; the route's page is the window's content.
  */
 
-export const WINDOWS: Record<string, { title: string; width: number; big?: boolean }> = {
-  deck: { title: "Practice", width: 1120, big: true },
+export const WINDOWS: Record<string, { title: string; width: number; full?: boolean }> = {
+  deck: { title: "Practice", width: 1120, full: true },
   guided: { title: "Guided session", width: 700 },
   practice: { title: "Exercise", width: 760 },
   review: { title: "Feedback", width: 760 },
   compare: { title: "Compare", width: 820 },
-  studio: { title: "Studio", width: 820 },
+  studio: { title: "Practice", width: 1120, full: true },
   texts: { title: "Practice texts", width: 760 },
   library: { title: "Exercises", width: 760 },
   progress: { title: "Progress", width: 840 },
@@ -58,7 +58,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
   );
 
   return (
-    <div className={`ds${inside ? " in" : ""}${instant ? " instant" : ""}${page ? " app-open" : ""}`} aria-hidden={!inside} {...({ inert: inside ? undefined : "" } as object)}>
+    <div className={`ds${inside ? " in" : ""}${instant ? " instant" : ""}${page ? " app-open" : ""}${win?.full ? " app-full" : ""}`} aria-hidden={!inside} {...({ inert: inside ? undefined : "" } as object)}>
       <div className="ds-wall" style={{ backgroundImage: `url(room/room-${light}.webp)` }} />
 
       <header className="ds-menubar ds-boot">
@@ -87,7 +87,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
       </section>
 
       {win && (
-        <section className={`ds-win${win.big ? " big" : ""}`} aria-label={win.title} style={{ ["--w" as string]: `${win.width}px` }} key={section}>
+        <section className={`ds-win${win.full ? " full" : ""}`} aria-label={win.title} style={{ ["--w" as string]: `${win.width}px` }} key={win.full ? "full" : section}>
           <div className="ds-tb">
             <div className="ds-lights">
               <button className="ds-l1" onClick={() => go("/desk")}><span className="sr-only">Close window</span></button>
@@ -101,7 +101,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
 
       <nav className="ds-dock ds-boot" aria-label="Apps">
         {dockApp("/deck", "Practice", <TodayIcon date={now} />, !page || section === "deck" || section === "guided" || section === "practice" || section === "review")}
-        {dockApp("/studio", "Studio", <StudioIcon />, section === "studio")}
+        {dockApp("/studio", "Chapters", <StudioIcon />, section === "studio")}
         {dockApp("/texts", "Practice texts", <TextsIcon />, section === "texts" || section === "library")}
         {dockApp("/progress", "Progress", <ProgressIcon />, section === "progress" || section === "compare")}
         {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history")}

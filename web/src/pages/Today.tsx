@@ -115,7 +115,7 @@ export function TodayPage({ recovered }: { recovered: number }) {
     else if (state === "done") go("/studio");
     else void start("full");
   };
-  const pressLabel = { ready: "Start today", checked_in: "Start today", in_progress: "Continue today's session", done: "Free practice in the studio", paused: "I feel fine, resume gently" }[state];
+  const pressLabel = { ready: "Start today", checked_in: "Start today", in_progress: "Continue today's session", done: "Free practice", paused: "I feel fine, resume gently" }[state];
   const pressHint = { ready: "Start", checked_in: "Start", in_progress: "Continue", done: "Practise more", paused: "I'm ready" }[state];
 
   return (

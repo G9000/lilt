@@ -116,7 +116,7 @@ export function SettingsPage() {
             </div>
           )}
         </div>
-        <p className="st-note">Optional. A pitch range that feels comfortable and sounds like you. It's shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like in the Studio.</p>
+        <p className="st-note">Optional. A pitch range that feels comfortable and sounds like you. It's shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like in a practice chapter.</p>
       </section>
 
       <section className="st-group" aria-labelledby="st-look">

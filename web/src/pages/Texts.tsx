@@ -43,7 +43,7 @@ export function TextsPage() {
           <ul className="tx-list">
             {l.items.map((i) => (
               <li key={i.id}>
-                <button className="tx-row" onClick={() => go(`/studio/${l.id}/${i.id}`)} aria-label={`Practise “${i.text.slice(0, 40)}” in the studio`}>
+                <button className="tx-row" onClick={() => go(`/studio/${l.id}/${i.id}`)} aria-label={`Practise “${i.text.slice(0, 40)}”`}>
                   <span className="tx-say">
                     <span className={`tx-text${l.kind === "passage" ? " passage" : ""}`}>{i.text}</span>
                     <span className="tx-hint">{i.hint}</span>

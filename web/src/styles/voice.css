@@ -1,4 +1,4 @@
-/* Voice surfaces: Studio, the guided session (Today) and the practice steps. See DESIGN.md.
+/* Voice surfaces: the guided session (Today) and the practice steps. See DESIGN.md.
    This file is bundled before styles.css (main.tsx imports App first), so
    anything that overrides a base or legacy rule is scoped under one of this file's roots
    (.vpage, .vrec, .vmic, .vplan) to win on specificity, not on order. */
@@ -56,7 +56,6 @@
 .vlive .steady .steady-v { flex: none; width: 104px; font-size: 13px; color: var(--ink-3); text-align: right; }
 .vlive .steady .steady-bar { background: var(--fill-2); }
 .vlive .pianoroll { background: transparent; margin-top: 10px; border-radius: 10px; }
-.vlive-foot { margin: 6px 0 0; color: var(--ink-3); font-size: 12.5px; }
 
 /* One white button with a red dot; the dot becomes a rounded square while recording. */
 .vrecrow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
@@ -74,7 +73,7 @@
 .vkeys { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
 .vkeys > button { min-height: 38px; padding: 7px 14px; font-weight: 500; font-size: 14px; }
 .vkeys > button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-ink); }
-@media (hover: none) and (pointer: coarse) { .vkbd { visibility: hidden; } .vfoot kbd { display: none; } }
+@media (hover: none) and (pointer: coarse) { .vkbd { visibility: hidden; } }
 
 /* ---------- quiet notes under the controls ---------- */
 .vpage .notes { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 6px; font: 400 14px/1.5 var(--font); color: var(--ink-2); max-width: 66ch; }
@@ -82,21 +81,6 @@
 .vpage .notes b { font-size: 12.5px; font-weight: 600; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
 .vpage .notes b:empty::before { content: ""; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--ink-3); vertical-align: 0.2em; }
 .vpage .notes small { color: var(--ink-3); font-size: 12.5px; }
-
-/* ---------- Studio ---------- */
-.vpage .segmented.vseg { display: flex; width: 100%; }
-.vstudio .vrec { margin-top: 26px; }
-.vfoot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
-.vfoot .textlink { font-size: 14px; }
-.vfoot kbd { margin-left: 4px; }
-.vresult { border-top: 1px solid var(--hair); padding-top: 22px; }
-.vpage > .vresult { margin-top: 26px; }
-.vresult > * + * { margin-top: 12px; }
-.vresult-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.vresult-head h2 { font-size: 17px; letter-spacing: -0.015em; margin: 0 4px 0 0; }
-.vresult .vactions > button { min-height: 38px; padding: 7px 12px; font-weight: 500; font-size: 14px; }
-.vfav svg { width: 15px; height: 15px; flex: none; }
-.vfav[aria-pressed="true"] { color: var(--accent-ink); }
 
 /* ---------- practice steps ---------- */
 .vprogress { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; }
@@ -176,7 +160,6 @@
   .vrec .readtext, .vpage .readtext { font-size: 27px; }
   .vrec .readtext.hum, .vpage .readtext.hum { font-size: 32px; }
   .vrec .readtext.passage, .vpage .readtext.passage { font-size: 18px; }
-  .vstudio .vrec { margin-top: 18px; }
   .vrec > * + * { margin-top: 12px; }
   .vrec .vrecrow { margin-top: 14px; }
   .vlive { padding: 12px 14px 10px; }

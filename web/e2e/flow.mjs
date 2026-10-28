@@ -56,11 +56,12 @@ async function main() {
   check("Arrow keys flip through the stack and back", /one, two, three/i.test(first) && nTop >= 2 && (await topText()) === first, `${first.slice(0, 20)} → ${second.slice(0, 20)}`);
   await snap("00-room");
   await page.getByRole("button", { name: /^Sit down at the computer/ }).click();
-  await page.locator(".prc-phrase").waitFor();
+  await page.locator(".ve-item.on .readtext").waitFor();
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);
-  const listed = await page.locator(".prc-list li").count();
-  check("The computer opens Practice straight away, reference card first, with today's cards listed",
-    deckList.length >= 3 && listed === deckList.length && /one, two, three/i.test(await page.locator(".prc-phrase").innerText()), `${listed} cards listed`);
+  const listed = await page.locator(".ve-item").count();
+  const chapters = await page.locator(".ve-nav li").count();
+  check("The computer opens Practice full screen, reference card first, with today's cards and the chapters",
+    deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item.on .readtext").innerText()), `${listed} cards, ${chapters} chapters`);
   await snap("00-deck");
   const ratings = ["good", "again", "good", "good", "good", "good"];
   let rated = 0;
@@ -217,7 +218,7 @@ async function main() {
   const focused = await page.evaluate(() => document.activeElement?.textContent ?? "");
   check("Keyboard focus reaches controls", focused.length > 0, focused.slice(0, 40));
 
-  // 11. Texts → Studio: live pitch, takes, measured line, before/after
+  // 11. Texts → a chapter: live pitch, takes, measured line, before/after
   await page.goto(`${BASE}/#/texts`);
   await page.getByRole("heading", { name: /Start small/ }).waitFor();
   await page.getByRole("button", { name: /Everyday phrases/ }).click();
@@ -249,7 +250,7 @@ async function main() {
   await page.getByRole("button", { name: "Stop recording" }).click();
   await page.getByRole("status").filter({ hasText: /^✓?\s*Saved/ }).first().waitFor({ timeout: 15000 });
   await page.getByText("Measured pitch (Praat)").first().waitFor({ timeout: 20000 });
-  check("Studio take saved and measured pitch line drawn", true);
+  check("Chapter take saved and measured pitch line drawn", true);
   const sketches = await page.locator(".wpitch").count().catch(() => 0);
   check("Measured pitch drawn under the words", sketches > 0, `${sketches} words`);
   await record(page, 2.5);
@@ -259,6 +260,7 @@ async function main() {
   await page.getByRole("button", { name: "Use this take's range as my comfortable range" }).click();
   await page.getByText(/Your range is now \d+–\d+ Hz/).waitFor();
   check("A take's range can become the comfortable range", true);
+  check("The chapter counts the practised text", /^1\/\d+$/.test(await page.locator('.ve-nav button[aria-current="page"] .c').textContent()));
   await snap("14-studio-result");
   await page.goto(`${BASE}/#/studio/warmup`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();

@@ -17,6 +17,9 @@ importers:
       '@fontsource-variable/jetbrains-mono':
         specifier: 5.1.1
         version: 5.1.1
+      '@fontsource-variable/newsreader':
+        specifier: 5.2.8
+        version: 5.2.8
       motion:
         specifier: 13.5.1
         version: 13.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -277,6 +280,9 @@ packages:
 
   '@fontsource-variable/jetbrains-mono@5.1.1':
     resolution: {integrity: sha512-V+1aRFRvuZ66PpO30s8l/2aADKzpV9VRsO3kSZE+rTMvi4vab3cUcPHMN2z+wAvjkYJO71Yf+g3/Y6pSMmQpVQ==}
+
+  '@fontsource-variable/newsreader@5.2.8':
+    resolution: {integrity: sha512-Ivo7tZPqQZ/erBbjx3mc+PvI0w+TuUhy93zlvIu3dupq2AlSF328sbkAjYyhwE91v8qpiJ88ogQB684hdiPtmw==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -841,6 +847,8 @@ snapshots:
   '@fontsource-variable/inter@5.1.1': {}
 
   '@fontsource-variable/jetbrains-mono@5.1.1': {}
+
+  '@fontsource-variable/newsreader@5.2.8': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:

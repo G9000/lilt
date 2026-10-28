@@ -6,7 +6,7 @@ import { Icon, StatusBadge, TakeFlags, takeName, Toast, useToast } from "../comp
 
 type Row = Session & { take_count: number };
 
-const KIND_TITLE: Record<Session["kind"], string> = { full: "Guided session", check_in: "Check-in", studio: "Studio", deck: "Practice deck" };
+const KIND_TITLE: Record<Session["kind"], string> = { full: "Guided session", check_in: "Check-in", studio: "Chapters", deck: "Practice deck" };
 
 const isoDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 

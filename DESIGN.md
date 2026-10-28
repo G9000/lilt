@@ -24,15 +24,26 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   (34px) and slightly darkened. A menu bar on top (app name, now playing, date and time, Leave
   desk), a dock at the bottom, widgets in the middle, and at most one app window open on top.
   When a window is open the widgets fade back (opacity .3, blur 3px).
-- **Practice** is the window you land in: large (up to 1120px, nearly full height), today's
-  cards in a 288px list on the left (done, now, next; pick one to do it next), the card itself
-  centred on the right with a 32–46px phrase.
+- **Practice** is the window you land in, laid out like a Markdown editor and filling the screen
+  under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
+  the sidebar, like a Mac app). A 272px sidebar holds a white **Today** card with a coral progress
+  bar, then the seven **chapters** (the text levels): a mono number until started, then a progress
+  ring, then a green tick. The chapter reads as a document
+  (760px column, faint `#` and `>` markers in the margin): an H1, a mono meta line, a "How to do it"
+  quote with a coral rule, then numbered texts in **Newsreader** (serif, 26px, passages 21px) with a
+  `>` hint under each. The active text is a white card with a coral bar. The recorder is docked at
+  the bottom like a status bar: a 64px record button, an 84px scope (comfortable band, dashed Hz guide lines
+  at 110/220/330, loudness bars, the live pitch line in coral), and four numbers: Now (Hz and
+  note), Middle, Usual range, Steadiness, with a faint dash until there's data. Rating sits inside
+  the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
+  becomes a strip of chapter chips.
 
 ## Tokens (light; dark theme swaps the window and ink colours)
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--font` | Geist Variable | everything; one family |
+| `--font` | Geist Variable | everything except texts you read aloud |
+| `--read` | Newsreader Variable | the practice texts in the Practice document |
 | `--mono` | Geist Mono, else system mono | kbd and numbers that must align, never labels |
 | `--ink` | `#17171d` | text, primary buttons |
 | `--ink-2` | `#4c4c58` | secondary text |

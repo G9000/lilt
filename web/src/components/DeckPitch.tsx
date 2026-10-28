@@ -1,47 +1,11 @@
 import { useEffect, useState } from "react";
 import { api, Comparison, Take } from "../api";
-import { noteName, recentMedian } from "../pitch";
-import { useLivePitch } from "./LivePitch";
+import { noteName } from "../pitch";
 import { contourPoints, PitchPoint } from "./PianoRoll";
 
 /** Pitch scale used by the meter and the result chart: log Hz between LO and HI. */
 const LO = 75, HI = 450;
 const frac = (hz: number) => Math.max(0, Math.min(1, Math.log(hz / LO) / Math.log(HI / LO)));
-
-/**
- * Live pitch while you record: Hz and note, and the last few seconds as a line over your
- * comfortable range. Display only.
- */
-export function LivePitchMeter({ stream, active, band }: { stream: MediaStream | null; active: boolean; band: [number, number] | null }) {
-  const points = useLivePitch(stream, active);
-  const hz = recentMedian(points.map((p) => p.hz));
-
-  const inBand = hz !== null && band ? hz >= band[0] && hz <= band[1] : null;
-  const end = points.length ? points[points.length - 1].t : 0;
-  const recent = points.filter((p) => p.t >= end - 5);
-  const Wd = 600, Ht = 64;
-  let d = "", pen = false;
-  for (const p of recent) {
-    if (!p.hz) { pen = false; continue; }
-    const x = ((p.t - (end - 5)) / 5) * Wd, y = Ht - frac(p.hz) * Ht;
-    d += `${pen ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
-    pen = true;
-  }
-  return (
-    <div className="prc-live" aria-live="off">
-      <div className="prc-live-top">
-        <b>{hz ? `${Math.round(hz)} Hz` : "–"}</b>
-        <span>{hz ? noteName(hz) : active ? "listening…" : ""}</span>
-        {inBand !== null && <em className={inBand ? "in" : "out"}>{inBand ? "In your range" : "Outside your range"}</em>}
-      </div>
-      <svg viewBox={`0 0 ${Wd} ${Ht}`} preserveAspectRatio="none" aria-hidden="true">
-        {band && <rect x="0" width={Wd} y={Ht - frac(band[1]) * Ht} height={(frac(band[1]) - frac(band[0])) * Ht} className="prc-band" />}
-        <path d={d} className="prc-line" vectorEffect="non-scaling-stroke" />
-      </svg>
-      <p className="prc-cap">Live pitch. Display only, it never decides your rating.</p>
-    </div>
-  );
-}
 
 export interface Measured { median: number | null; take: Take }
 

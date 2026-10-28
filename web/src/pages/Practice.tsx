@@ -429,7 +429,7 @@ function DoneStep({ session, takes, review, onUpdate }: { session: Session; take
 
 function DoneTake({ take, onUpdate }: { take: Take; onUpdate: (t: Take) => void }) {
   useTakeStatus(take, onUpdate);
-  const role = { reference: take.phase === "post" ? "Reference (after)" : "Reference", exercise: "Exercise", retry: "Retry", follow_up: "Follow-up", spontaneous: "Spontaneous answer", free: "Studio" }[take.role];
+  const role = { reference: take.phase === "post" ? "Reference (after)" : "Reference", exercise: "Exercise", retry: "Retry", follow_up: "Follow-up", spontaneous: "Spontaneous answer", free: "Chapter" }[take.role];
   return (
     <li className="vdone-row">
       <span className="vdone-role">{role}</span>

@@ -101,8 +101,8 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
 }
 
 /** Quiet numbered notes, shown under the controls. */
-export function ReadNotes({ text, levelId, hint }: { text: string; levelId: string; hint: string }) {
-  const notes = useMemo(() => notesFor(levelId, hint, tokenize(text)), [levelId, hint, text]);
+export function ReadNotes({ text, levelId, hint, withHint = true }: { text: string; levelId: string; hint: string; withHint?: boolean }) {
+  const notes = useMemo(() => notesFor(levelId, hint, tokenize(text)).filter((x) => withHint || x.word !== null), [levelId, hint, text, withHint]);
   if (!notes.length) return null;
   let n = 0;
   return (

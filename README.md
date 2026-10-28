@@ -61,10 +61,11 @@ Then open <http://127.0.0.1:7878>.
      everything back. Widgets near an edge slide inward rather than disappear. A widget whose spot
      is cropped off a small screen steps aside; a phone shows just the stack.
    - Or click the **computer** itself (it glows and says how many cards are waiting), or press
-     <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card, in a
-     large window with today's cards listed beside it. Pick any card in the list to do it next.
+     <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,
+     full screen, laid out like a writing app: chapters in a sidebar, the chapter as a page of
+     things to read, and the recorder docked at the bottom. Click any card further down to do it next.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
-   of Lilt is an app on it: **Today** (the widgets), **Studio**, **Practice texts**, **Progress**
+   of Lilt is an app on it: **Today** (the widgets), **Practice**, **Practice texts**, **Progress**
    and **Recordings** in the dock, Settings and the light/dark switch in the menu bar. **Leave desk**
    (or the door in the dock) walks you back out to the room.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
@@ -101,8 +102,9 @@ Then open <http://127.0.0.1:7878>.
    - New stages (m-words, phrases, sentences…) open once most cards in the stage before feel
      comfortable (rated Good or Easy twice in a row).
    - **It hurt or felt strained** pauses that card and your plan until you choose to resume.
-   - **Live pitch while recording:** the note, Hz, the last five seconds as a line, and your
-     comfortable range if you've set one. Display only.
+   - **Live pitch while recording,** in the recorder docked at the bottom: the waveform with your
+     pitch line over it and your comfortable range as a band, plus the current Hz and note, middle
+     pitch, usual range and steadiness. Display only.
    - **Results after each take:** middle pitch, usual range (10th to 90th percentile) and how
      much of the take was voiced, from the Praat analysis, plus the measured contour. "Last
      time" on the same card is overlaid only when the comparison check says the two takes are
@@ -125,8 +127,10 @@ Then open <http://127.0.0.1:7878>.
    - **Compare** puts the original and the retry side by side as an A/B pair.
 6. If a pointer doesn't match what you hear or feel, say so. Your note is kept with the review and
    is taken into account next time.
-7. **Studio** is free practice. You pick a text and watch your pitch draw itself live on a
-   piano-roll, with the current note and Hz.
+7. **Chapters** are free practice, in the same Practice page. The sidebar lists the seven text
+   levels with how many texts you've practised in each. A chapter reads like a document: how to do
+   it, then each text in a reading serif with a hint under it. Pick a text (or press <kbd>↓</kbd>),
+   press record, and the docked recorder draws your pitch live.
    - **Show my pitch live** lets you watch without recording.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
@@ -143,7 +147,7 @@ Then open <http://127.0.0.1:7878>.
    Levels 1–3 come from the NHS Fife sources. The phrases, sentences, passages and questions are
    written by Lilt and labelled that way.
 9. **Comfortable range (optional):** a pitch band you choose. Set it in Settings, or with "use this
-   take's range" in the Studio. It is shown as a soft band and is never a gendered zone or a coaching
+   take's range" in a chapter. It is shown as a soft band and is never a gendered zone or a coaching
    target.
 10. **The look:** a calm macOS-style desktop inside the painting (see `DESIGN.md`): one font
    (Geist), soft glass windows, black primary buttons, one warm coral accent, and a white record
@@ -152,12 +156,12 @@ Then open <http://127.0.0.1:7878>.
      and nothing sent anywhere. It's approximate; tap a word if it loses your place. After a take, your
      measured pitch is drawn under each word.
    - **Theme:** light or dark from the sun/moon button in the menu bar. Fonts (Geist, JetBrains
-     Mono) are bundled, so nothing loads from the internet.
+     Mono, Newsreader for the texts you read) are bundled, so nothing loads from the internet.
 11. **Shortcuts:**
    - <kbd>Enter</kbd> in the room sits you down at the desk.
    - <kbd>Space</kbd> starts or stops recording.
    - <kbd>A</kbd> or <kbd>B</kbd> plays a take in an A/B pair.
-   - <kbd>N</kbd> shows another text in the Studio.
+   - <kbd>↓</kbd> and <kbd>↑</kbd> move between texts in a chapter.
 
 12. **Progress** shows each skill in the task where it was practised, never an overall score.
    **Recordings** (the old History page) has playback, favourites, notes, deletion and export.

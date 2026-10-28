@@ -62,7 +62,7 @@ export function ProgressPage() {
             <option value={7}>Last 7 days</option><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option>
           </select>
         </div>
-        {prompts.length === 0 ? <p className="dv-empty">No recordings in this window yet. Takes from the deck, Studio and guided sessions show up here.</p> : (
+        {prompts.length === 0 ? <p className="dv-empty">No recordings in this window yet. Takes from the deck, chapters and guided sessions show up here.</p> : (
           <>
             <div className="pg-task">
               <label htmlFor="prompt">Task</label>

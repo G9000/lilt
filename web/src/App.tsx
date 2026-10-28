@@ -7,7 +7,6 @@ import { NotificationCenter, useInbox } from "./desk/Inbox";
 import { MicProvider } from "./components/Recording";
 import { recoverPending } from "./recorder";
 import { TodayPage } from "./pages/Today";
-import { DeckRun } from "./pages/Deck";
 import { Room } from "./room/Room";
 import { PracticePage } from "./pages/Practice";
 import { FeedbackPage } from "./pages/Feedback";
@@ -16,7 +15,7 @@ import { ProgressPage } from "./pages/Progress";
 import { HistoryPage } from "./pages/History";
 import { LibraryPage } from "./pages/Library";
 import { SettingsPage } from "./pages/Settings";
-import { StudioPage } from "./pages/Studio";
+import { VoicePage } from "./pages/Voice";
 import { TextsPage } from "./pages/Texts";
 
 export function useRoute(): [string, URLSearchParams] {
@@ -76,12 +75,12 @@ export function App() {
 
   let page: ReactNode = null;
   switch (seg[0]) {
-    case "deck": page = <DeckRun first={params.get("card")} />; break;
+    case "deck": page = <VoicePage doc="today" first={params.get("card")} />; break;
     case "guided": page = <TodayPage recovered={0} />; break;
     case "practice": page = <PracticePage sessionId={seg[1]} />; break;
     case "review": page = <FeedbackPage reviewId={seg[1]} />; break;
     case "compare": page = <ComparePage a={params.get("a") ?? ""} b={params.get("b") ?? ""} />; break;
-    case "studio": page = <StudioPage levelId={seg[1]} itemId={seg[2]} />; break;
+    case "studio": page = <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} />; break;
     case "texts": page = <TextsPage />; break;
     case "progress": page = <ProgressPage />; break;
     case "history": page = <HistoryPage />; break;
