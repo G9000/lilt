@@ -451,15 +451,20 @@
 
 /* resizing: drag the sidebar's edge or the text/recorder divider; the sidebar folds away with the
    toggle by the traffic lights (or ⌘\), and dragging it very narrow folds it too */
-.ve-side-hidden .ve { grid-template-columns: minmax(0, 1fr); }
-.ve-side-hidden .ve-side { display: none; }
+/* folding slides the sidebar's column to nothing and fades it, rather than removing it: the layout
+   keeps its shape, and the tree keeps its width while it slides so nothing rewraps */
+.ve { transition: grid-template-columns 0.34s var(--ease); }
+.ve-side { min-width: 0; overflow-x: hidden; transition: opacity 0.22s ease, visibility 0s linear 0s; }
+.ve-side > * { min-width: calc(var(--ve-side-open, 272px) - 16px); }
+.ve-side-hidden .ve-side { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.18s ease, visibility 0s linear 0.34s; }
+.ve-dragging .ve, .ve-dragging .ve .ve-side-toggle { transition: none; }
 .ve-resize { position: absolute; top: 0; bottom: 0; z-index: 6; width: 8px; cursor: col-resize; touch-action: none; outline: none; }
 .ve-resize::after { content: ""; position: absolute; top: 0; bottom: 0; left: 3.5px; width: 1px; background: var(--accent); opacity: 0; transition: opacity 0.15s ease; }
 .ve-resize:hover::after, .ve-resize:focus-visible::after, .ve-dragging .ve-resize::after { opacity: 0.7; }
 .ve-resize.side { left: calc(var(--ve-side-w, 272px) - 4px); }
 .ve-resize.split { display: none; }
 .ve-dragging, .ve-dragging * { cursor: col-resize !important; user-select: none; }
-.ve .ve-side-toggle { position: absolute; z-index: 7; top: 9px; left: max(calc(var(--ve-side-w, 272px) - 38px), 84px); width: 28px; height: 26px; display: grid; place-items: center; border-radius: 7px; color: var(--ink-3); transition: background-color 0.12s ease, color 0.12s ease; }
+.ve .ve-side-toggle { position: absolute; z-index: 7; top: 9px; left: max(calc(var(--ve-side-w, 272px) - 38px), 84px); width: 28px; height: 26px; display: grid; place-items: center; border-radius: 7px; color: var(--ink-3); transition: left 0.34s var(--ease), background-color 0.12s ease, color 0.12s ease; }
 .ve-side-toggle svg { width: 16px; height: 16px; }
 .ve .ve-side-toggle:hover { background: var(--fill); color: var(--ink); }
 .ve-side-hidden .ve .ve-side-toggle { background: var(--ve-glass-hi); box-shadow: 0 0 0 1px var(--hair); }
@@ -477,8 +482,8 @@
 
 /* wide screens: the text on the left half, the recorder standing on the right half */
 @media (min-width: 1101px) {
-  .ve-doc { grid-template-columns: minmax(0, var(--ve-split, 50%)) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); position: relative; }
-  .ve-resize.split { display: block; left: calc(var(--ve-split, 50%) - 4px); }
+  .ve-doc { grid-template-columns: minmax(0, var(--ve-split, 50%)) minmax(340px, 1fr); grid-template-rows: minmax(0, 1fr); position: relative; }
+  .ve-resize.split { display: block; left: calc(min(var(--ve-split, 50%), 100% - 340px) - 4px); }
   .ve-page { grid-row: 1; grid-column: 1; }
   .ve-col { padding: 64px 40px 88px 72px; }
   .ve-dock { grid-row: 1; grid-column: 2; border-top: 0; border-left: 1px solid var(--hair); padding: 48px 32px 24px;
@@ -581,6 +586,7 @@
   .ve-rec i, .ve-chev { transition: none; }
   .ve-state.rec i { animation: none; }
   .ve-award.fresh, .ve-award.fresh .ve-award-medal { animation: none; }
+  .ve, .ve-side, .ve .ve-side-toggle { transition: none; }
   .ve-cat img, .ve-zzz i, .ve-dock .ve-cat, .ve-dock .ve-now, .ve-dock .ve-scope, .ve-dock .ve-stats, .ve-result-pane { animation: none !important; }
   .ve-page { scroll-behavior: auto; }
 }

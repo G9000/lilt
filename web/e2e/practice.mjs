@@ -97,10 +97,11 @@ async function main() {
   check("a card is recorded and rated", true);
 
   // Layout: hide the sidebar and bring it back.
+  // The sidebar slides closed and open (about a third of a second), so wait for it to settle.
   await page.getByRole("button", { name: "Hide sidebar" }).click();
-  check("the sidebar hides", !(await page.locator(".ve-side").isVisible()));
+  check("the sidebar hides", await page.locator(".ve-side").waitFor({ state: "hidden", timeout: 2000 }).then(() => true, () => false));
   await page.getByRole("button", { name: "Show sidebar" }).click();
-  check("and comes back", await page.locator(".ve-side").isVisible());
+  check("and comes back", await page.locator(".ve-side").waitFor({ state: "visible", timeout: 2000 }).then(() => true, () => false));
 
   // Phone: the idle recorder is one slim bar; the graph opens only while recording.
   await page.setViewportSize({ width: 390, height: 844 });

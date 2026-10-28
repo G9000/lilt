@@ -54,12 +54,13 @@ function useLayout() {
     try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); } catch { /* private window: sizes just aren't kept */ }
     const root = document.documentElement;
     root.style.setProperty("--ve-side-w", layout.collapsed ? "0px" : `${layout.side}px`);
+    root.style.setProperty("--ve-side-open", `${layout.side}px`);
     root.style.setProperty("--ve-split", `${(layout.split * 100).toFixed(2)}%`);
     root.classList.toggle("ve-side-hidden", layout.collapsed);
   }, [layout]);
   useEffect(() => () => {
     const root = document.documentElement;
-    root.style.removeProperty("--ve-side-w"); root.style.removeProperty("--ve-split"); root.classList.remove("ve-side-hidden");
+    root.style.removeProperty("--ve-side-w"); root.style.removeProperty("--ve-side-open"); root.style.removeProperty("--ve-split"); root.classList.remove("ve-side-hidden");
   }, []);
   return [layout, setLayout] as const;
 }
