@@ -68,7 +68,7 @@ export function App() {
       const el = e.target as HTMLElement;
       if (e.metaKey || e.ctrlKey || e.altKey || ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "A"].includes(el.tagName)) return;
       if (e.key === "a" || e.key === "b") window.dispatchEvent(new CustomEvent("lilt:play-tag", { detail: e.key.toUpperCase() }));
-      if (e.key === "Enter" && window.location.hash.replace(/^#/, "") in { "": 1, "/": 1 }) { e.preventDefault(); go("/desk"); }
+      if (e.key === "Enter" && window.location.hash.replace(/^#/, "") in { "": 1, "/": 1 }) { e.preventDefault(); go("/deck"); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -97,12 +97,12 @@ export function App() {
   return (
     <MicProvider>
       <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
-      <Room inside={inside} onEnter={() => go("/desk")} cards={left} done={done}>
+      <Room inside={inside} onEnter={() => go("/deck")} cards={left} done={done}>
         <RoomFloaters deck={deck} inside={inside} />
       </Room>
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>
         <RoomTop inbox={inbox} />
-        <CardStack deck={deck} onStart={(id) => go(id ? `/deck?card=${encodeURIComponent(id)}` : "/desk")} />
+        <CardStack deck={deck} onStart={(id) => go(id ? `/deck?card=${encodeURIComponent(id)}` : "/deck")} />
         <p className="ds-hint">Click the computer to start <kbd>↵</kbd></p>
       </div>
       <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}

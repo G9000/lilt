@@ -24,6 +24,9 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   (34px) and slightly darkened. A menu bar on top (app name, now playing, date and time, Leave
   desk), a dock at the bottom, widgets in the middle, and at most one app window open on top.
   When a window is open the widgets fade back (opacity .3, blur 3px).
+- **Practice** is the window you land in: large (up to 1120px, nearly full height), today's
+  cards in a 288px list on the left (done, now, next; pick one to do it next), the card itself
+  centred on the right with a 32–46px phrase.
 
 ## Tokens (light; dark theme swaps the window and ink colours)
 

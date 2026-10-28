@@ -61,7 +61,8 @@ Then open <http://127.0.0.1:7878>.
      everything back. Widgets near an edge slide inward rather than disappear. A widget whose spot
      is cropped off a small screen steps aside; a phone shows just the stack.
    - Or click the **computer** itself (it glows and says how many cards are waiting), or press
-     <kbd>Enter</kbd>, to sit down at the desk.
+     <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card, in a
+     large window with today's cards listed beside it. Pick any card in the list to do it next.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (the widgets), **Studio**, **Practice texts**, **Progress**
    and **Recordings** in the dock, Settings and the light/dark switch in the menu bar. **Leave desk**

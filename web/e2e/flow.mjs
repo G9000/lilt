@@ -56,12 +56,12 @@ async function main() {
   check("Arrow keys flip through the stack and back", /one, two, three/i.test(first) && nTop >= 2 && (await topText()) === first, `${first.slice(0, 20)} → ${second.slice(0, 20)}`);
   await snap("00-room");
   await page.getByRole("button", { name: /^Sit down at the computer/ }).click();
-  await page.getByRole("article", { name: "Today's practice" }).waitFor();
+  await page.locator(".prc-phrase").waitFor();
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);
-  const shown = await page.locator(".ds-t-list li").allInnerTexts();
-  check("The desk opens on today's widget, reference card first", deckList.length >= 3 && /one, two, three/i.test(shown[0] ?? ""), `${deckList.length} cards`);
+  const listed = await page.locator(".prc-list li").count();
+  check("The computer opens Practice straight away, reference card first, with today's cards listed",
+    deckList.length >= 3 && listed === deckList.length && /one, two, three/i.test(await page.locator(".prc-phrase").innerText()), `${listed} cards listed`);
   await snap("00-deck");
-  await page.getByRole("button", { name: /^(Start|Continue)$/ }).click();
   const ratings = ["good", "again", "good", "good", "good", "good"];
   let rated = 0;
   for (let i = 0; i < 8; i++) {

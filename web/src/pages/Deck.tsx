@@ -169,6 +169,7 @@ export function DeckRun({ first }: { first?: string | null }) {
       setDeck(d);
       setSession(s);
       setBand(p.comfort_range_hz);
+      setComfort(s.comfort?.comfort ?? null);
       const left = d.items.filter((i) => !i.done_today);
       const pick = first ? left.findIndex((i) => i.card.id === first) : -1;
       setQueue(pick > 0 ? [left[pick], ...left.slice(0, pick), ...left.slice(pick + 1)] : left);
@@ -178,6 +179,12 @@ export function DeckRun({ first }: { first?: string | null }) {
   }, []);
 
   const item = queue[idx];
+  /** Practise card j next: it moves up to the current spot; the rest keep their order. */
+  const choose = (j: number) => {
+    if (phase.k !== "say" || recOn || j <= idx) return;
+    setQueue((q) => { const n = [...q]; const [it] = n.splice(j, 1); n.splice(idx, 0, it); return n; });
+    setPhase({ k: "say", retryOf: null });
+  };
   useEffect(() => { sayRef.current?.focus({ preventScroll: true }); }, [idx, phase.k]);
 
   const rate = async (r: Rating | "ouch") => {
@@ -230,15 +237,60 @@ export function DeckRun({ first }: { first?: string | null }) {
   if (!deck || !session) return <div className="prc" aria-busy="true"><p className="prc-sub">Getting your cards…</p></div>;
 
   const backToday = <button className="btn-primary prc-done" onClick={() => go("/desk")}>Back to today</button>;
+  const ended = phase.k === "end" || phase.k === "hurt";
+  const earlier = deck.items.filter((i) => i.done_today && !results.some((r) => r.item.card.id === i.card.id));
+  const total = earlier.length + results.length + (ended ? 0 : queue.length - idx);
+  const doneCount = earlier.length + results.length;
+  const label = (r: Rating) => RATINGS.find((x) => x.r === r)?.label ?? r;
+  const shell = (main: ReactNode, centred = false) => (
+    <div className="prc-shell">
+      <aside className="prc-side" aria-label="Today's cards">
+        <div className="prc-side-h">
+          <b>Today's cards</b>
+          <span>{doneCount} of {total} done</span>
+        </div>
+        <span className="prc-side-bar" aria-hidden="true"><i style={{ width: `${total ? (doneCount / total) * 100 : 0}%` }} /></span>
+        <ol className="prc-list">
+          {earlier.map((it) => (
+            <li key={`e-${it.card.id}`} className="done"><span className="mk" aria-hidden="true" /><span className="t">{it.card.front}</span><span className="m">Done</span></li>
+          ))}
+          {results.map((r, i) => (
+            <li key={`r-${i}`} className="done"><span className="mk" aria-hidden="true" /><span className="t">{r.item.card.front}</span><span className={`m prc-pill ${r.rating}`}>{label(r.rating)}</span></li>
+          ))}
+          {!ended && queue.slice(idx).map((it, k) => {
+            const j = idx + k, now = k === 0;
+            const meta = it.kind === "again" ? "Again" : it.kind === "new" ? "New" : deckName(it);
+            return (
+              <li key={`q-${j}-${it.card.id}`} className={now ? "now" : "next"}>
+                {now ? (
+                  <><span className="mk" aria-hidden="true" /><span className="t">{it.card.front}</span><span className="m">{phase.k === "rate" ? "Listening back" : "Now"}</span></>
+                ) : (
+                  <button onClick={() => choose(j)} disabled={phase.k !== "say" || recOn} aria-label={`Practise ${it.card.front} next`}
+                    title={phase.k === "say" && !recOn ? "Practise this one now" : "Finish this card first"}>
+                    <span className="mk" aria-hidden="true" /><span className="t">{it.card.front}</span><span className="m">{meta}</span>
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+        <div className="prc-side-foot">
+          <a className="prc-link" href="#/guided">Guided session with feedback</a>
+          <a className="prc-link" href="#/studio">Free practice in Studio</a>
+        </div>
+      </aside>
+      <div className={`prc-main${centred ? " centred" : ""}`}><div className="prc-stage">{main}</div></div>
+    </div>
+  );
 
   if (phase.k === "hurt") {
-    return (
+    return shell(
       <div className="prc prc-in" key="hurt">
         <h1 className="prc-title" tabIndex={-1} ref={sayRef}>Let's stop here</h1>
         <p className="prc-sub">That card is paused and so is your plan. Rest your voice: sip water, breathe, talk normally.</p>
         <p className="prc-tip">If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</p>
         {backToday}
-      </div>
+      </div>, true,
     );
   }
 
@@ -248,7 +300,7 @@ export function DeckRun({ first }: { first?: string | null }) {
       setComfort(c);
       try { await api.patchSession(session.id, { comfort: { comfort: c }, complete: true }); } catch (e: any) { setErr(e.message); }
     };
-    return (
+    return shell(
       <div className="prc prc-in" key="end">
         <h1 className="prc-title" tabIndex={-1} ref={sayRef}>That's today's deck</h1>
         <p className="prc-sub">{done} card{done === 1 ? "" : "s"} practised{deck.next_due ? ` · next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}.</p>
@@ -283,7 +335,7 @@ export function DeckRun({ first }: { first?: string | null }) {
             <a className="prc-link" href="#/progress">Progress</a>
           </span>
         </div>
-      </div>
+      </div>, true,
     );
   }
 
@@ -305,7 +357,7 @@ export function DeckRun({ first }: { first?: string | null }) {
           {deckName(item)}
           {(item.kind === "new" || item.kind === "again") && <span className={`prc-pill ${item.kind}`}>{item.kind === "new" ? "New card" : "Again"}</span>}
         </p>
-        <Steps total={queue.length} idx={idx} />
+        <Steps total={total} idx={doneCount} />
       </div>
       <h1 className="prc-phrase" tabIndex={-1} ref={sayRef}><SayText text={item.card.front} /></h1>
       {item.card.hint && <p className="prc-tip">{item.card.hint}</p>}
@@ -313,18 +365,18 @@ export function DeckRun({ first }: { first?: string | null }) {
   );
 
   if (phase.k === "say") {
-    return (
-      <div className={`prc${recOn ? " recording" : ""}`}>
+    return shell(
+      <div className={`prc${recOn ? " recording" : ""}`} key={`say-${item.card.id}`}>
         {head}
         <CardRecorder key={`${item.card.id}-${idx}-${phase.retryOf ?? ""}`} meta={meta} onSaved={(t) => setPhase({ k: "rate", take: t })} onActive={setRecOn}
           above={recOn && <LivePitchMeter stream={mic.stream} active={recOn} band={band} />}
           aside={!recOn && <button className="prc-link ouch" onClick={() => void api.rateCard(item.card.id, null, "ouch").then(() => setPhase({ k: "hurt" }), (e) => setErr(e.message))}>Stop, my voice hurts</button>} />
-      </div>
+      </div>, true,
     );
   }
 
   const take = phase.take;
-  return (
+  return shell(
     <div className={`prc${rating ? " rating" : ""}`}>
       {head}
       <div className="prc-in" key={take.id}>
@@ -346,6 +398,6 @@ export function DeckRun({ first }: { first?: string | null }) {
         </div>
         <p className="prc-cap">Your own judgement, not a score. Pitch numbers never decide this.</p>
       </div>
-    </div>
+    </div>,
   );
 }
