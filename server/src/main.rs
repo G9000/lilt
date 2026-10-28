@@ -9,7 +9,7 @@ mod recordings;
 mod store;
 mod util;
 #[cfg(test)]
-mod tests;
+mod test_support;
 
 use anyhow::Result;
 use axum::{Router, middleware};

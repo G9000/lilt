@@ -3,6 +3,8 @@
 
 pub mod compare;
 pub mod routes;
+#[cfg(test)]
+mod tests;
 
 use crate::app::{App, Shared};
 use crate::recordings::model::*;

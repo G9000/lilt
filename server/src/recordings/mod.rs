@@ -3,6 +3,8 @@
 
 pub mod model;
 pub mod routes;
+#[cfg(test)]
+mod tests;
 
 use crate::app::App;
 use crate::coach::model::Review;

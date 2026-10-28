@@ -23,6 +23,8 @@ pub mod routes;
 pub mod syllabus;
 pub mod texts;
 pub mod updates;
+#[cfg(test)]
+mod tests;
 
 use crate::app::App;
 use anyhow::{Context, Result, anyhow, ensure};
@@ -137,32 +139,4 @@ pub fn migrate(app: &App) -> Result<()> {
         tracing::info!("moved your copy of the voice course to {}", new.display());
     }
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn ids() {
-        for ok in ["voice", "mandarin", "spanish-2"] { assert!(valid_id(ok), "{ok}"); }
-        for bad in ["", "Voice", "../voice", "a/b", "a b", "x".repeat(41).as_str()] { assert!(!valid_id(bad), "{bad}"); }
-    }
-
-    #[test]
-    fn text_ids_keep_voice_as_it_was_and_name_other_courses() {
-        assert_eq!(text_id("voice", "warmup", "hum"), "text.warmup.hum");
-        assert_eq!(text_id("mandarin", "greetings", "nihao"), "mandarin/text.greetings.nihao");
-        assert_eq!(parse_text_id("text.warmup.hum"), Some(("voice", "warmup", "hum")));
-        assert_eq!(parse_text_id("mandarin/text.greetings.nihao"), Some(("mandarin", "greetings", "nihao")));
-        assert_eq!(parse_text_id("ref.count-1-10"), None);
-    }
-
-    #[test]
-    fn the_voice_course_describes_itself() {
-        let c = read(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../content/courses/voice")).unwrap();
-        assert_eq!((c.id.as_str(), c.kind.as_str()), ("voice", "voice"));
-        assert_eq!(c.locked, ["Be gentle with your voice"]);
-        assert!(c.source.is_none());
-    }
 }

@@ -5,3 +5,5 @@ pub mod chatgpt;
 pub mod mcp;
 pub mod oauth;
 pub mod routes;
+#[cfg(test)]
+mod tests;

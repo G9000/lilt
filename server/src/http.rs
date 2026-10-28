@@ -120,3 +120,47 @@ async fn export(State(app): State<Shared>) -> R<Response> {
         .body(Body::from_stream(stream))
         .unwrap())
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::coach::validate;
+    use crate::test_support::*;
+
+    #[test]
+    fn external_processing_stays_off() {
+        let (_d, app) = app();
+        assert!(!app.profile().external_processing);
+        assert!(!validate::MODEL_PERCEIVED_ENABLED);
+    }
+
+    /// Every feature's routes are mounted on the one router, behind the cross-origin guard.
+    #[tokio::test]
+    async fn every_api_route_is_mounted() {
+        use axum::body::Body;
+        use axum::http::{Request, StatusCode};
+        use tower::ServiceExt;
+        let (dir, app) = app();
+        let router = crate::build_router(app.clone(), &config(dir.path()));
+        let send = |method: &str, uri: &str| {
+            let req = Request::builder().method(method).uri(uri).header("host", "127.0.0.1:7878").body(Body::empty()).unwrap();
+            let r = router.clone();
+            async move { r.oneshot(req).await.unwrap().status() }
+        };
+        for uri in ["/healthz", "/api/today", "/api/profile", "/api/exercises", "/api/deck/today", "/api/plan", "/api/plan/history",
+            "/api/progress", "/api/sessions", "/api/history", "/api/jobs", "/api/courses", "/api/texts", "/api/syllabus",
+            "/api/syllabus/updates", "/api/syllabus/history", "/api/connect", "/api/export"] {
+            assert_eq!(send("GET", uri).await, StatusCode::OK, "GET {uri}");
+        }
+        // Routes that need an ID or a body answer from their handler, not the static-file fallback.
+        for (method, uri) in [("GET", "/api/sessions/nope"), ("GET", "/api/takes/nope"), ("GET", "/api/takes/nope/analysis"),
+            ("GET", "/api/reviews/nope"), ("GET", "/api/exercises/nope"), ("GET", "/api/compare?a=x&b=y")] {
+            assert_eq!(send(method, uri).await, StatusCode::NOT_FOUND, "{method} {uri}");
+        }
+        for uri in ["/api/takes", "/api/deck/review", "/api/plan/choose", "/api/mixtape/remix", "/api/reviews/x/respond"] {
+            let s = send("POST", uri).await;
+            assert!(s.is_client_error() && s != StatusCode::NOT_FOUND && s != StatusCode::METHOD_NOT_ALLOWED, "POST {uri} answered {s}");
+        }
+        let cross = Request::builder().method("POST").uri("/api/studio/session").header("host", "127.0.0.1:7878").header("origin", "http://evil.example").body(Body::empty()).unwrap();
+        assert_eq!(router.clone().oneshot(cross).await.unwrap().status(), StatusCode::FORBIDDEN);
+    }
+}
