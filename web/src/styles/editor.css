@@ -307,11 +307,19 @@
   .ve-stat:first-child { border-left: 0; padding-left: 0; }
   .ve-stat b { font-size: 17px; }
   .ve-now-read b { font-size: 26px; }
+  /* idle, the docked recorder is one slim row: the record pill and the links; the instruments
+     only open while recording or listening, and it steps away while you rate a card */
+  .ve-dock.idle { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "rec sub"; padding: 10px 16px; row-gap: 6px; }
+  .ve-dock.idle .ve-now, .ve-dock.idle .ve-scope, .ve-dock.idle .ve-stats { display: none; }
+  .ve-dock.idle .ve-dock-sub { min-height: 0; }
+  .ve-dock.idle.quiet { display: none; }
+  .ve-dock:not(.idle) .ve-now, .ve-dock:not(.idle) .ve-scope, .ve-dock:not(.idle) .ve-stats { animation: ve-rise 0.3s var(--ease) both; }
 }
 @media (max-width: 860px) {
   .ve { grid-template-columns: minmax(0, 1fr); }
   .ve-side { display: none; }
-  .ve-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px; border-bottom: 1px solid var(--hair); scrollbar-width: none; background: var(--ve-glass); backdrop-filter: var(--ve-blur); -webkit-backdrop-filter: var(--ve-blur); }
+  /* the window's traffic lights share the row with the chapter chips */
+  .ve-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px 10px 80px; border-bottom: 1px solid var(--hair); scrollbar-width: none; background: var(--ve-glass); backdrop-filter: var(--ve-blur); -webkit-backdrop-filter: var(--ve-blur); }
   .ve .ve-chips button { flex: none; padding: 6px 12px; border-radius: 99px; background: var(--fill); font-size: 13px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
   .ve .ve-chips button[aria-current="page"] { background: var(--ink); color: var(--ve-paper); }
   .ve-col { padding: 24px 18px 40px; }
@@ -320,8 +328,10 @@
   .ve-item { margin: 0 -4px 4px; padding: 14px 16px; }
   .ve .readtext { font-size: 22px; }
   .ve .readtext.passage, .ve-item.passage .readtext { font-size: 18px; }
-  .ds-win.full .ds-tb { position: relative; width: auto; height: 40px; background: var(--ve-glass-hi); border-bottom: 1px solid var(--hair); }
-  .ve-dock { padding: 12px 14px 8px; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "now rec" "scope scope" "stats stats" "sub sub"; column-gap: 12px; row-gap: 10px; }
+  .ds-win.full .ds-tb { width: 80px; height: 51px; padding: 0 16px; }
+  .ve-dock:not(.idle) { padding: 12px 14px 8px; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "now rec" "scope scope" "stats stats" "sub sub"; column-gap: 12px; row-gap: 10px; }
+  .ve-dock.idle { padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); column-gap: 10px; }
+  .ve-dock.idle .ve-dock-sub { justify-content: flex-end; gap: 4px 10px; }
   .ve-scope { height: 56px; }
   .ve-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ve-stat { padding: 0 0 0 10px; }
@@ -330,7 +340,7 @@
   .ve-dock-msg, .ve .ve-rec kbd { display: none; }
   .ve-dock.quiet .ve-stats, .ve-dock.quiet .ve-dock-sub { display: none; }
   .ve-rate { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ve .toast { bottom: 190px; }
+  .ve .toast { bottom: 84px; }
   .ve-feel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ds-win.full { top: 32px; bottom: 0; left: 0; right: 0; border-radius: 0; }
 }

@@ -59,9 +59,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   rounded loudness bars, the live pitch line in coral with a soft glow and a dot at its tip); three
   white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a compact centred
   **record pill** (ink, red dot, "Record", `Space`) that turns red with a white square, "Stop" and
-  the timer while recording; hints under it. Narrower, the same parts dock at the bottom in their own panel, with the numbers on a second row. Rating sits inside
+  the timer while recording; hints under it. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
+  record pill and its links), and the pitch readout, graph and numbers open only while recording or
+  listening; it steps away while you rate a card. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
-  becomes a strip of chapter chips.
+  becomes a strip of chapter chips, sharing its row with the window's traffic lights.
 
 ## Tokens (light; dark theme swaps the window and ink colours)
 

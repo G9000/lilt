@@ -384,7 +384,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
 
 /** Nothing chosen yet: the recorder takes a free recording, saved in today's Studio session. */
 const FREE = { role: "free" as const, prompt_id: "free", prompt_text: "Free recording" };
-const FREE_HINT = "Talk freely, or pick one on the left";
+const FREE_HINT = "Talk freely, or pick a card or text to practise";
 
 /** A free take's summary: listen back, then the measured pitch line and numbers once analysis lands. */
 function FreeResult({ take, band }: { take: Take; band: [number, number] | null }) {
