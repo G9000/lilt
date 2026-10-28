@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Take } from "../api";
-import { levelMeter, openMic, RecState, TakeMeta, TakeRecorder } from "../recorder";
+import { closeDelayLine, delayedStream, levelMeter, openMic, RecState, TakeMeta, TakeRecorder, wakeDelayLines } from "../recorder";
 import { Callout, StatusBadge } from "./bits";
 import { LiveReadout, useLivePitch } from "./LivePitch";
 
@@ -25,8 +25,10 @@ export function MicProvider({ children }: { children: ReactNode }) {
 
   const request = useCallback(async (id?: string) => {
     try {
+      if (stream) closeDelayLine(stream);
       stream?.getTracks().forEach((t) => t.stop());
       const s = await openMic(id ?? deviceId);
+      delayedStream(s); // start the half-second pre-roll now, so the first take has it too
       setStream(s);
       setError(null);
       const chosen = s.getAudioTracks()[0]?.getSettings().deviceId;
@@ -46,7 +48,16 @@ export function MicProvider({ children }: { children: ReactNode }) {
     }
   }, [stream, deviceId]);
 
+  // Any click or key wakes the pre-roll, so it's already filling when you press Record.
+  useEffect(() => {
+    const wake = () => wakeDelayLines();
+    window.addEventListener("pointerdown", wake, true);
+    window.addEventListener("keydown", wake, true);
+    return () => { window.removeEventListener("pointerdown", wake, true); window.removeEventListener("keydown", wake, true); };
+  }, []);
+
   const release = useCallback(() => {
+    if (stream) closeDelayLine(stream);
     stream?.getTracks().forEach((t) => t.stop());
     setStream(null);
   }, [stream]);

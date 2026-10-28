@@ -123,6 +123,14 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
       setHistory(h.takes);
     });
   }, []);
+  // If the microphone is already allowed, open it on arrival: the first take then starts at once,
+  // with its half-second pre-roll, instead of waiting for the mic to wake.
+  const micCtx = useMic();
+  useEffect(() => {
+    if (micCtx.stream) return;
+    void navigator.permissions?.query({ name: "microphone" as PermissionName })
+      .then((p) => { if (p.state === "granted" && !micCtx.stream) void micCtx.request(); }, () => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // A remix or an undo changed the course: read it again.
   useEffect(() => {
     const on = () => void api.texts().then(setTexts);

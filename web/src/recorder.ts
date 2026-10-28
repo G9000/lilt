@@ -32,6 +32,53 @@ export async function openMic(deviceId?: string): Promise<MediaStream> {
   });
 }
 
+/**
+ * Takes are recorded from the microphone through a half-second delay line, kept running while the
+ * mic is open. Starting the recorder then captures from half a second before you pressed Record,
+ * so a word you start as you click isn't clipped; stopping waits for the delay plus a short tail,
+ * so your last syllable lands. The live pitch view still reads the mic directly, without delay.
+ */
+export const PRE_ROLL_S = 0.5;
+const TAIL_S = 0.3;
+const delayLines = new WeakMap<MediaStream, { ctx: AudioContext; out: MediaStream }>();
+const contexts = new Set<AudioContext>();
+
+/** Browsers start audio only after a click or key; call this on one so the pre-roll is filling before you press Record. */
+export function wakeDelayLines() {
+  contexts.forEach((c) => { if (c.state === "suspended") void c.resume(); });
+}
+
+/** The mic, half a second late (made once per stream; call it on a click so audio may start). */
+export function delayedStream(stream: MediaStream): MediaStream {
+  const have = delayLines.get(stream);
+  if (have) { if (have.ctx.state === "suspended") void have.ctx.resume(); return have.out; }
+  const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+  if (!Ctx) return stream;
+  try {
+    const ctx: AudioContext = new Ctx();
+    const src = ctx.createMediaStreamSource(stream);
+    const delay = ctx.createDelay(1);
+    delay.delayTime.value = PRE_ROLL_S;
+    const dest = ctx.createMediaStreamDestination();
+    dest.channelCount = 1;
+    src.connect(delay).connect(dest);
+    if (ctx.state === "suspended") void ctx.resume();
+    contexts.add(ctx);
+    // When the mic closes, so does its delay line.
+    stream.getAudioTracks()[0]?.addEventListener("ended", () => closeDelayLine(stream));
+    delayLines.set(stream, { ctx, out: dest.stream });
+    return dest.stream;
+  } catch {
+    return stream;
+  }
+}
+
+/** Close a stream's delay line (the mic is being released). */
+export function closeDelayLine(stream: MediaStream) {
+  const have = delayLines.get(stream);
+  if (have) { contexts.delete(have.ctx); void have.ctx.close(); delayLines.delete(stream); }
+}
+
 export function stopAllPlayback() {
   document.querySelectorAll("audio").forEach((a) => a.pause());
   window.dispatchEvent(new Event("lilt:stop-playback"));
@@ -128,6 +175,7 @@ export class TakeRecorder {
   private queue: Promise<void> = Promise.resolve();
   private uploadError: Error | null = null;
   private releaseMic: (() => void) | null = null;
+  private created: Promise<void> = Promise.resolve();
   startedAt = 0;
 
   constructor(private stream: MediaStream, private onChange: (r: TakeRecorder) => void) {}
@@ -147,8 +195,11 @@ export class TakeRecorder {
     const track = this.stream.getAudioTracks()[0];
     const settings = track?.getSettings?.() ?? {};
     this.takeId = crypto.randomUUID();
-    const rec = new MediaRecorder(this.stream, mime ? { mimeType: mime } : undefined);
-    await api.createTake({
+    const rec = new MediaRecorder(delayedStream(this.stream), mime ? { mimeType: mime } : undefined);
+    // Capture starts now; the take is created on the server alongside, and chunks wait for it.
+    this.seq = 0;
+    this.uploadError = null;
+    const created = api.createTake({
       take_id: this.takeId,
       ...meta,
       phase: meta.phase ?? "none",
@@ -159,11 +210,11 @@ export class TakeRecorder {
         settings,
         note: "Browser-reported settings. Requesting no processing does not prove the device applied none.",
         user_agent: navigator.userAgent,
+        pre_roll_s: PRE_ROLL_S,
       },
-    });
-    await idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: 0, stopped: false } satisfies PendingTake));
-    this.seq = 0;
-    this.uploadError = null;
+    }).then(() => idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: false } satisfies PendingTake)));
+    this.created = created.then(() => undefined);
+    this.queue = created.then(() => undefined, (e: any) => { this.uploadError = e instanceof Error ? e : new Error(String(e)); });
     rec.ondataavailable = (ev) => {
       if (!ev.data || ev.data.size === 0) return;
       const seq = this.seq++;
@@ -182,9 +233,11 @@ export class TakeRecorder {
       });
     };
     this.rec = rec;
-    rec.start(1000);
+    await new Promise<void>((resolve) => { rec.addEventListener("start", () => resolve(), { once: true }); rec.start(1000); });
     this.startedAt = performance.now();
     this.set("recording");
+    // If the server couldn't create the take, stop at once rather than record into nowhere.
+    created.catch((e: any) => { if (rec.state !== "inactive") rec.stop(); this.releaseMic?.(); this.set("error", e?.message ?? "Couldn't start the take."); });
   }
 
   /** Stop, drain uploads, finalise. Resolves with the saved take. */
@@ -192,7 +245,10 @@ export class TakeRecorder {
     const rec = this.rec;
     if (!rec) throw new Error("not recording");
     this.set("saving");
+    // Keep listening through the delay line and a short tail, so the last syllable is in.
+    await new Promise((r) => setTimeout(r, (PRE_ROLL_S + TAIL_S) * 1000));
     await new Promise<void>((resolve) => {
+      if (rec.state === "inactive") return resolve();
       rec.addEventListener("stop", () => resolve(), { once: true });
       rec.stop();
     });
@@ -200,6 +256,7 @@ export class TakeRecorder {
     // The final dataavailable fires before stop; let the queue catch up.
     await new Promise((r) => setTimeout(r, 0));
     await this.queue;
+    await this.created.catch(() => undefined);
     await idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: true } satisfies PendingTake));
     if (this.uploadError) {
       this.set("error", this.uploadError.message);
@@ -240,6 +297,7 @@ export class TakeRecorder {
 
   cancelTracks() {
     this.releaseMic?.();
+    closeDelayLine(this.stream);
     this.stream.getTracks().forEach((t) => t.stop());
   }
 }
