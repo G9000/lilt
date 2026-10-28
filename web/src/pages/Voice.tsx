@@ -505,6 +505,32 @@ function SleepingCat({ hint, title = "Ready when you are" }: { hint: string; tit
   );
 }
 
+/**
+ * A live number you can read: it eases toward new values in semitones, ignores wobbles under a
+ * quarter semitone and changes at most about seven times a second, and through a pause it keeps your last value (marked as held) instead of
+ * vanishing. Cleared when a new take or listening starts.
+ */
+function useHeld(value: number | null, run: boolean, smooth = false): { v: number | null; held: boolean } {
+  const [shown, setShown] = useState<{ v: number | null; held: boolean }>({ v: null, held: false });
+  const target = useRef<number | null>(null);
+  target.current = value;
+  useEffect(() => { if (run) setShown({ v: null, held: false }); }, [run]);
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      const t = target.current;
+      setShown((s) => {
+        if (t === null) return s.v === null || s.held ? s : { v: s.v, held: true };
+        // Ease in log space (semitones), so a jump of a fifth reads as a glide, not a flicker.
+        const v = smooth && s.v !== null && !s.held ? Math.exp(Math.log(s.v) + (Math.log(t) - Math.log(s.v)) * 0.45) : t;
+        // Small wobbles don't redraw the number; a real move does.
+        return s.v !== null && !s.held && Math.abs(12 * Math.log2(v / s.v)) < 0.25 ? s : { v, held: false };
+      });
+    }, 150);
+    return () => window.clearInterval(id);
+  }, [smooth]);
+  return shown;
+}
+
 /** The recorder at the bottom: one button, the waveform with the pitch line on it, and the numbers. */
 function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false }: {
   meta: TakeMeta | null; band: [number, number] | null; allowRetake: boolean; quiet?: boolean;
@@ -581,17 +607,33 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
     g.fillStyle = "rgba(127,127,127,.6)"; g.font = `500 ${11 * dpr}px "Geist Variable", system-ui, sans-serif`; g.textAlign = "right";
     for (const f of [110, 220, 330]) { const y = Math.round(fy(f, h)) + 0.5; g.beginPath(); g.moveTo(0, y); g.lineTo(r.height > 120 ? w - 44 * dpr : w, y); g.stroke(); if (r.height > 120) g.fillText(`${f} Hz`, w - 4 * dpr, y + 4 * dpr); }
     g.textAlign = "left";
-    const span = 8, end = shown.length ? shown[shown.length - 1].t : 0, x = (t: number) => ((t - (end - span)) / span) * w;
-    const aEnd = amps.current.length ? amps.current[amps.current.length - 1].t : 0, ax = (t: number) => ((t - (aEnd - span)) / span) * w;
-    g.fillStyle = "rgba(127,127,127,.16)";
-    for (const a of amps.current) { if (a.t < aEnd - span) continue; const hh = Math.max(2 * dpr, a.v * h * 0.7); g.beginPath(); g.roundRect(ax(a.t), h / 2 - hh / 2, 2.5 * dpr, hh, 1.25 * dpr); g.fill(); }
+    // The line fills from the left, then scrolls once it reaches the edge (8 s across), like a voice memo.
+    const span = 8;
+    const end = shown.length ? shown[shown.length - 1].t : 0, from = Math.max(shown.length ? shown[0].t : 0, end - span);
+    const x = (t: number) => ((t - from) / span) * w;
+    const aEnd = amps.current.length ? amps.current[amps.current.length - 1].t : 0, aFrom = Math.max(amps.current.length ? amps.current[0].t : 0, aEnd - span);
+    const ax = (t: number) => ((t - aFrom) / span) * w;
+    // Loudness as a voice-memo waveform: one thin bar every 4 px (the loudest moment in it), faint,
+    // so the pitch line stays what you read.
+    g.fillStyle = "rgba(127,127,127,.14)";
+    const col = 4 * dpr, bars = new Map<number, number>();
+    for (const a of amps.current) { if (a.t < aFrom) continue; const k = Math.floor(ax(a.t) / col); bars.set(k, Math.max(bars.get(k) ?? 0, a.v)); }
+    for (const [k, v] of bars) { const hh = Math.max(2 * dpr, v * h * 0.55); g.beginPath(); g.roundRect(k * col, h / 2 - hh / 2, 2 * dpr, hh, dpr); g.fill(); }
     g.strokeStyle = "#e0643c"; g.lineWidth = 3 * dpr; g.lineJoin = g.lineCap = "round";
     g.shadowColor = "rgba(224,100,60,.45)"; g.shadowBlur = 10 * dpr; g.beginPath();
     let pen = false, tip: [number, number] | null = null;
-    for (const p of shown) {
-      if (p.t < end - span) continue;
-      if (!p.hz) { pen = false; tip = null; continue; }
-      const X = x(p.t), Y = fy(Math.max(LO, Math.min(HI, p.hz)), h);
+    // Each point is the middle of its five neighbours, so a one-frame misread (often an octave
+    // off) doesn't spike the line; the shape of your voice stays.
+    const steady = shown.map((p, i) => {
+      if (!p.hz) return null;
+      const near = shown.slice(Math.max(0, i - 2), i + 3).map((q) => q.hz).filter((v): v is number => v !== null).sort((a, b) => a - b);
+      return near[near.length >> 1];
+    });
+    for (let i = 0; i < shown.length; i++) {
+      const p = shown[i], hz = steady[i];
+      if (p.t < from) continue;
+      if (!hz) { pen = false; tip = null; continue; }
+      const X = x(p.t), Y = fy(Math.max(LO, Math.min(HI, hz)), h);
       if (pen) g.lineTo(X, Y); else g.moveTo(X, Y);
       pen = true; tip = [X, Y];
     }
@@ -631,11 +673,16 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
 
   const voiced = shown.filter((p) => p.hz).map((p) => p.hz as number);
   const sorted = [...voiced].sort((a, b) => a - b);
-  const now = recording || listening ? recentMedian(shown.map((p) => p.hz)) : null;
+  const live = recording || listening;
+  const nowRaw = live ? recentMedian(shown.map((p) => p.hz)) : null;
   const mid = sorted.length > 8 ? sorted[sorted.length >> 1] : null;
   const range = sorted.length > 8 ? [sorted[Math.floor(sorted.length * 0.1)], sorted[Math.floor(sorted.length * 0.9)]] : null;
   const last2 = shown.length ? shown.filter((p) => p.t > shown[shown.length - 1].t - 2).map((p) => p.hz) : [];
-  const sd = steadinessSt(last2);
+  const sdRaw = steadinessSt(last2);
+  // Calm numbers: they hold through pauses rather than flicking to a dash.
+  const nowHeld = useHeld(nowRaw, live, true);
+  const now = nowHeld.v;
+  const sd = useHeld(sdRaw, live).v;
   const inBand = mid && band ? mid >= band[0] && mid <= band[1] : null;
   const active = recording || listening || shown.length > 0;
 
@@ -650,9 +697,9 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
     <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
       {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
       <div className="ve-now" aria-live="off">
-        <div className="ve-now-read">
+        <div className={`ve-now-read${nowHeld.held ? " held" : ""}`}>
           <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
-          <span>{now ? noteName(now) : "Your pitch now"}</span>
+          <span>{now ? (nowHeld.held ? `Last heard · ${noteName(now)}` : noteName(now)) : "Your pitch now"}</span>
         </div>
         <span className={`ve-state ${recording ? "rec" : listening ? "live" : state}`}><i aria-hidden="true" />{status}</span>
       </div>

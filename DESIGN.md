@@ -114,7 +114,13 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   the timer while recording; hints under it. A take keeps the half second before you press Record (a
   pre-roll from a delay line that runs while the mic is open) and a short tail after Stop, so a quick
   start or a last syllable is never clipped; Practice opens the mic on arrival when it is already
-  allowed. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
+  allowed. The live numbers are calm: the Now readout eases in semitones, ignores wobbles under a
+  quarter semitone and changes at most about seven times a second; through a pause it keeps your
+  last pitch at half opacity with "Last heard · E3" (and after Stop), and the tiles hold their last
+  values instead of dropping to a dash. The pitch graph fills from the left and scrolls once it
+  reaches the edge (8 s across); each point is the median of its five neighbours, so a one-frame
+  octave misread doesn't spike the line; loudness behind it is a faint voice-memo waveform, one thin
+  bar every 4 px. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
   record pill and its links), and the pitch readout, graph and numbers open only while recording or
   listening; it steps away while you rate a card. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar

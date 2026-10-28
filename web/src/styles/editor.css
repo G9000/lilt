@@ -229,7 +229,10 @@
 .ve-dock { grid-row: 3; border-top: 1px solid var(--hair);
   padding: 14px 20px 10px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "now scope stats rec" "sub sub sub sub"; column-gap: 18px; row-gap: 8px; align-items: center; }
 .ve-now { grid-area: now; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 84px; }
-.ve-now-read b { display: block; font: 300 30px/1 var(--font); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.ve-now-read b { display: block; min-width: 3.4ch; font: 300 30px/1 var(--font); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); transition: color 0.4s ease, opacity 0.4s ease; }
+/* through a pause the last pitch stays, quieter, until you're heard again */
+.ve-now-read.held b { opacity: 0.45; }
+.ve-now-read > span { transition: color 0.4s ease; }
 .ve-now-read b small { font: 500 12px var(--font); letter-spacing: 0; color: var(--ink-3); margin-left: 4px; }
 .ve-now-read > span { display: block; margin-top: 5px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
 .ve-state { display: none; align-items: center; gap: 7px; height: 28px; padding: 0 11px 0 10px; border-radius: 99px; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair);
