@@ -69,10 +69,22 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "today" | "cha
 
 /* ---------------------------------------------------------------- sidebar */
 
+/** The chapter-complete medal: a coral disc with a white star. */
+function Medal({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="8" fill="var(--accent)" />
+      <circle cx="8" cy="8" r="6.4" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth=".8" />
+      <path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill="#fff" transform="translate(3.6 3.7) scale(.55)" />
+    </svg>
+  );
+}
+const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(`text.${l.id}.${it.id}`));
+
 function Ring({ p, n }: { p: number; n: number }) {
   const r = 6.5, c = 2 * Math.PI * r;
   if (p <= 0) return <span className="ve-num" aria-hidden="true">{n}</span>;
-  if (p >= 1) return <svg className="ve-ring done" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" /><path d="M5 8.2l2 2 4-4.4" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+  if (p >= 1) return <Medal className="ve-ring done" />;
   return (
     <svg className="ve-ring" viewBox="0 0 16 16" aria-hidden="true">
       <circle cx="8" cy="8" r={r} fill="none" stroke="var(--fill-2)" strokeWidth="2" />
@@ -92,7 +104,7 @@ function Sidebar({ texts, deck, practised, current, locked }: { texts: Texts | n
         <small>{!deck ? "Getting your cards…" : deck.paused ? "Resting today" : done ? "All done. Nice work." : `${left.length} card${left.length === 1 ? "" : "s"}, about ${Math.max(1, left.length)} min`}</small>
         <span className="ve-today-bar" aria-hidden="true"><i style={{ width: `${total ? ((total - left.length) / total) * 100 : 0}%` }} /></span>
       </button>
-      <h6>Chapters</h6>
+      <h6>Chapters{texts && <span>{texts.levels.filter((l) => chapterDone(l, practised)).length} of {texts.levels.length} complete</span>}</h6>
       <ul className="ve-nav">
         {texts?.levels.map((l) => {
           const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
@@ -302,7 +314,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
 
 /* ---------------------------------------------------------------- a chapter: practice texts */
 
-function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, onTake }: {
+function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, practised, onTake }: {
   texts: Texts; level: TextLevel; itemId?: string; profile: Profile; onProfile: (p: Profile) => void;
   onRecording: (on: boolean) => void; practised: Set<string>; onTake: (t: Take) => void;
 }) {
@@ -314,6 +326,11 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, onT
   const [recording, setRec] = useState(false);
   const starts = useRef<(number | null)[] | null>(null);
   const [toast, setToast] = useToast();
+  // Finishing a chapter's last text earns its medal; it pops in if it happens on this visit.
+  const complete = chapterDone(level, practised);
+  const wasComplete = useRef(complete);
+  const fresh = complete && !wasComplete.current;
+  useEffect(() => { if (fresh) setToast(`Chapter complete: ${level.title}`); }, [fresh]); // eslint-disable-line react-hooks/exhaustive-deps
   const band = profile.comfort_range_hz ?? null;
   const item = level.items[sel];
   const promptId = `text.${level.id}.${item.id}`;
@@ -367,6 +384,12 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, onT
             <h1>{level.title}</h1>
             <p className="ve-subtitle">{level.subtitle}</p>
             <p className="ve-meta">{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
+            {complete && (
+              <div className={`ve-award${fresh ? " fresh" : ""}`} role={fresh ? "status" : undefined}>
+                <Medal className="ve-award-medal" />
+                <div><b>Chapter complete</b><span>You've practised all {n} texts in {level.title}. Come back to any of them whenever you like.</span></div>
+              </div>
+            )}
           </header>
           <blockquote className="ve-how">
             <b>How to do it</b>

@@ -24,15 +24,16 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   (34px) and slightly darkened. A menu bar on top (app name, now playing, date and time, Leave
   desk), a dock at the bottom, widgets in the middle, and at most one app window open on top.
   When a window is open the widgets fade back (opacity .3, blur 3px).
-- **Practice** is the window you land in, filling the screen under the menu bar as **frosted panels**
-  floating over the blurred room (12px inset and gaps, radius 22, white glass about 58–80% with a
-  40px backdrop blur, a hairline light edge and a soft drop shadow; the text panel is the most
-  opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
+- **Practice** is the window you land in, filling the screen under the menu bar edge to edge as **one frosted
+  sheet** over the blurred room (white glass about 58–80% with a 40px backdrop blur; the sidebar,
+  text and recorder are split by hairlines, and the text is the most opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
   the sidebar, like a Mac app). A 272px sidebar holds a white **Today** card with a coral progress
   bar, then the seven **chapters** (the text levels): a mono number until started, then a progress
-  ring, then a green tick. The chapter reads as a document
-  (720px column): a Geist H1 (40px, 650), a sans subtitle and meta line, a "How to do it" note on a
+  ring, then a coral **medal** (a white star on coral) once every text is practised; the "Chapters"
+  heading counts how many are complete. A finished chapter shows a "Chapter complete" badge under
+  its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document
+  (720px column): a bold Geist H1 (54px, 760, −0.05em), a sans subtitle and meta line, a "How to do it" note on a
   soft `--fill` panel, then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
   under each and a quiet number in the margin. The active text has no card: it is in full ink with its
   number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick.
