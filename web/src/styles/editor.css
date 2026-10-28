@@ -1,16 +1,24 @@
 @import "@fontsource-variable/newsreader";
 
-/* Practice as a writing app: chapters on the left, the chapter as a document, the recorder docked below. */
+/* Practice as frosted panels floating over the blurred room: chapters, the chapter as a document,
+   and the recorder (beside the text on wide screens, under it otherwise). */
 
-.ve { --read: "Newsreader Variable", Georgia, serif; --ve-side: #f3f1ec; --ve-paper: #fbfaf7; --ve-card: #fff; --ve-mk: #c9c5bd; --ve-today: #1c1b21;
-  flex: 1; min-width: 0; min-height: 0; display: grid; grid-template-columns: 272px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); background: var(--ve-paper); color: var(--ink); font: 15px/1.55 var(--font); }
-:root[data-theme="dark"] .ve { --ve-side: #1b1b20; --ve-paper: #222228; --ve-card: #2b2b32; --ve-mk: #55535c; --ve-today: #34343c; }
+.ve { --read: "Newsreader Variable", Georgia, serif; --ve-paper: #fff; --ve-card: rgba(255, 255, 255, 0.72); --ve-mk: rgba(23, 23, 29, 0.3);
+  --ve-glass: rgba(250, 250, 252, 0.58); --ve-glass-hi: rgba(252, 252, 253, 0.8); --ve-edge: rgba(255, 255, 255, 0.6); --ve-blur: blur(40px) saturate(1.8);
+  --ve-lift: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 30px 70px -36px rgba(10, 10, 40, 0.55);
+  flex: 1; min-width: 0; min-height: 0; display: grid; grid-template-columns: 272px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 12px; color: var(--ink); font: 15px/1.55 var(--font); }
+:root[data-theme="dark"] .ve { --ve-paper: #1c1c22; --ve-card: rgba(255, 255, 255, 0.07); --ve-mk: rgba(255, 255, 255, 0.3);
+  --ve-glass: rgba(28, 28, 34, 0.55); --ve-glass-hi: rgba(26, 26, 32, 0.74); --ve-edge: rgba(255, 255, 255, 0.08);
+  --ve-lift: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 0 0 0.5px rgba(0, 0, 0, 0.5), 0 30px 70px -36px rgba(0, 0, 0, 0.8); }
+.ve-side, .ve-page, .ve-dock { border-radius: 22px; background: var(--ve-glass); backdrop-filter: var(--ve-blur); -webkit-backdrop-filter: var(--ve-blur);
+  box-shadow: inset 0 0 0 1px var(--ve-edge), var(--ve-lift); }
+.ve-page { background: var(--ve-glass-hi); }
 .ve button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; padding: 0; min-height: 0; box-shadow: none; }
 .ve button:disabled { cursor: default; opacity: 0.45; }
 .ve kbd { font: 500 11px var(--mono); border: 1px solid var(--hair); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--ink-2); background: none; }
 
 /* sidebar: the window's traffic lights sit at its top, like a Mac app with a sidebar */
-.ve-side { background: var(--ve-side); border-right: 1px solid var(--hair); overflow: auto; padding: 50px 10px 16px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
+.ve-side { overflow: auto; padding: 50px 10px 16px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
 .ve-side h6 { margin: 20px 10px 6px; font: 600 11.5px var(--font); color: var(--ink-3); letter-spacing: 0.02em; }
 .ve .ve-today { margin: 0; padding: 12px 12px 13px; border-radius: 12px; background: var(--ve-card); display: grid; gap: 4px; justify-content: stretch; text-align: left;
   box-shadow: 0 0 0 1px var(--hair), 0 4px 14px -8px rgba(0, 0, 0, 0.2); transition: box-shadow 0.2s ease, transform 0.16s var(--ease); }
@@ -46,7 +54,7 @@
 .ve-mk { position: absolute; left: -40px; width: 24px; text-align: right; font: 500 13px/1 var(--font); font-variant-numeric: tabular-nums; color: var(--ve-mk); user-select: none; }
 .ve-mk svg { width: 16px; height: 16px; display: inline-block; }
 .ve-head { margin: 0 0 28px; }
-.ve-head h1 { font: 450 46px/1.08 var(--read); letter-spacing: -0.022em; margin: 0 0 10px; outline: none; text-wrap: balance; font-optical-sizing: auto; }
+.ve-head h1 { font: 650 40px/1.1 var(--font); letter-spacing: -0.04em; margin: 0 0 8px; outline: none; text-wrap: balance; }
 .ve-subtitle { font-size: 17px; line-height: 1.45; color: var(--ink-2); margin: 0; }
 .ve-meta { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; font-variant-numeric: tabular-nums; }
 .ve-how { margin: 0 0 40px; padding: 16px 20px 17px; border-radius: 14px; background: var(--fill); color: var(--ink-2); font-size: 15px; line-height: 1.55; }
@@ -124,7 +132,7 @@
 
 /* the recorder: a live Now readout, the pitch graph, three numbers and a pill-shaped record button.
    Docked at the bottom like a status bar; on wide screens it stands in the right half (below). */
-.ve-dock { grid-row: 3; border-top: 1px solid var(--hair); background: var(--ve-side);
+.ve-dock { grid-row: 3; margin-top: 12px;
   padding: 14px 20px 10px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "now scope stats rec" "sub sub sub sub"; column-gap: 18px; row-gap: 8px; align-items: center; }
 .ve-now { grid-area: now; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 84px; }
 .ve-now-read b { display: block; font: 300 30px/1 var(--font); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
@@ -162,7 +170,7 @@
 .ve .ve-rec.on { background: var(--rec); color: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 10px 26px -10px rgba(255, 66, 85, 0.7); }
 .ve-rec.on i { border-radius: 3px; background: #fff; box-shadow: none; width: 11px; height: 11px; }
 .ve-rec .ve-clock { font: 500 0.95em var(--font); font-variant-numeric: tabular-nums; opacity: 0.85; }
-.ve .ve-rec:disabled { opacity: 1; background: var(--fill-2); color: var(--ink-3); box-shadow: none; }
+.ve .ve-rec:disabled { opacity: 1; background: var(--ve-card); color: var(--ink-3); box-shadow: 0 0 0 1px var(--hair); }
 .ve-rec:disabled i { background: var(--ink-3); box-shadow: none; opacity: 0.5; }
 .ve .ve-rec:active:not(:disabled) { transform: scale(0.98); }
 .ve .ve-rec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -194,19 +202,20 @@
 .ve .toast { bottom: 132px; }
 
 /* the practice window fills the screen under the menu bar */
-.ds-win.full { left: 0; right: 0; top: 32px; bottom: 0; width: auto; max-height: none; transform: none; border-radius: 0; animation: ds-open-full 0.3s var(--ease); }
+.ds-win.full { left: 12px; right: 12px; top: 44px; bottom: 12px; width: auto; max-height: none; transform: none; border-radius: 0; animation: ds-open-full 0.3s var(--ease);
+  background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 @keyframes ds-open-full { from { opacity: 0; transform: translateY(10px); } }
 .ds-win.full .ds-tb { position: absolute; top: 0; left: 0; z-index: 2; width: 272px; height: 44px; padding: 0 18px; background: none; }
 .ds-win.full .ds-title { display: none; }
-.ds-win.full .ds-body { display: flex; padding: 0; overflow: hidden; }
+.ds-win.full .ds-body { display: flex; padding: 0; overflow: visible; }
 .ds.app-full .ds-dock { display: none; }
 
 /* wide screens: the text on the left half, the recorder standing on the right half */
 @media (min-width: 1101px) {
-  .ve-doc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .ve-doc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); column-gap: 12px; }
   .ve-page { grid-row: 1; grid-column: 1; }
   .ve-col { padding: 64px 40px 88px 72px; }
-  .ve-dock { grid-row: 1; grid-column: 2; border-top: 0; border-left: 1px solid var(--hair); padding: 56px 36px 24px;
+  .ve-dock { grid-row: 1; grid-column: 2; margin-top: 0; padding: 48px 32px 24px;
     grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto auto; grid-template-areas: "now" "scope" "stats" "rec" "sub"; row-gap: 20px; align-items: stretch; }
   .ve-now { align-items: flex-start; }
   .ve-now-read b { font-size: 68px; font-weight: 200; letter-spacing: -0.05em; }
@@ -217,9 +226,7 @@
   .ve-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
   .ve-stat { padding: 12px 14px; border-left: 0; border-radius: 14px; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair), 0 1px 2px rgba(0, 0, 0, 0.04); }
   .ve-stat b { font-size: 21px; }
-  .ve .ve-rec { height: 58px; width: 100%; font-size: 15.5px; gap: 12px; }
-  .ve-rec i { width: 14px; height: 14px; }
-  .ve-rec.on i { width: 13px; height: 13px; }
+  .ve .ve-rec { justify-self: center; height: 48px; padding: 0 20px 0 17px; font-size: 15px; }
   .ve-dock-sub { justify-content: center; min-height: 0; }
   .ve-sp { display: none; }
   .ve-dock > .ve-err, .ve-dock > .btn-secondary { justify-self: center; text-align: center; max-width: 44ch; }
@@ -228,14 +235,18 @@
 @media (max-width: 1100px) {
   .ve { grid-template-columns: 232px minmax(0, 1fr); }
   .ds-win.full .ds-tb { width: 232px; }
-  .ve-stat { padding: 2px 12px; }
+  .ve-dock { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "now scope rec" "stats stats stats" "sub sub sub"; }
+  .ve-stats { justify-self: start; }
+  .ve-stat { padding: 0 14px; }
+  .ve-stat:first-child { border-left: 0; padding-left: 0; }
   .ve-stat b { font-size: 17px; }
   .ve-now-read b { font-size: 26px; }
 }
 @media (max-width: 860px) {
   .ve { grid-template-columns: minmax(0, 1fr); }
   .ve-side { display: none; }
-  .ve-chips { display: flex; gap: 6px; overflow-x: auto; padding: 10px 14px; border-bottom: 1px solid var(--hair); scrollbar-width: none; }
+  .ve { gap: 8px; }
+  .ve-chips { display: flex; gap: 6px; overflow-x: auto; padding: 0 2px 8px; scrollbar-width: none; }
   .ve .ve-chips button { flex: none; padding: 6px 12px; border-radius: 99px; background: var(--fill); font-size: 13px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
   .ve .ve-chips button[aria-current="page"] { background: var(--ink); color: var(--ve-paper); }
   .ve-col { padding: 24px 18px 40px; }
@@ -244,7 +255,10 @@
   .ve-item { margin: 0 -4px 4px; padding: 14px 16px; }
   .ve .readtext { font-size: 22px; }
   .ve .readtext.passage, .ve-item.passage .readtext { font-size: 18px; }
-  .ds-win.full .ds-tb { position: relative; width: auto; height: 40px; border-bottom: 1px solid var(--hair); }
+  .ds-win.full .ds-tb { position: relative; width: auto; height: 36px; padding: 0 6px; }
+  .ve .ve-chips button:not([aria-current]) { background: var(--ve-glass); backdrop-filter: var(--ve-blur); -webkit-backdrop-filter: var(--ve-blur); }
+  .ve-dock { margin-top: 8px; border-radius: 18px; }
+  .ve-page { border-radius: 18px; }
   .ve-dock { padding: 12px 14px 8px; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "now rec" "scope scope" "stats stats" "sub sub"; column-gap: 12px; row-gap: 10px; }
   .ve-scope { height: 56px; }
   .ve-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -256,7 +270,7 @@
   .ve-rate { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ve .toast { bottom: 190px; }
   .ve-feel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ds-win.full { top: 32px; bottom: 0; left: 0; right: 0; border-radius: 0; }
+  .ds-win.full { top: 36px; bottom: 8px; left: 8px; right: 8px; border-radius: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ve-rec i, .ve-today-bar i { transition: none; }

@@ -24,12 +24,15 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   (34px) and slightly darkened. A menu bar on top (app name, now playing, date and time, Leave
   desk), a dock at the bottom, widgets in the middle, and at most one app window open on top.
   When a window is open the widgets fade back (opacity .3, blur 3px).
-- **Practice** is the window you land in, laid out like a Markdown editor and filling the screen
+- **Practice** is the window you land in, filling the screen under the menu bar as **frosted panels**
+  floating over the blurred room (12px inset and gaps, radius 22, white glass about 58–80% with a
+  40px backdrop blur, a hairline light edge and a soft drop shadow; the text panel is the most
+  opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
   the sidebar, like a Mac app). A 272px sidebar holds a white **Today** card with a coral progress
   bar, then the seven **chapters** (the text levels): a mono number until started, then a progress
   ring, then a green tick. The chapter reads as a document
-  (720px column): a Newsreader H1 (46px), a sans subtitle and meta line, a "How to do it" note on a
+  (720px column): a Geist H1 (40px, 650), a sans subtitle and meta line, a "How to do it" note on a
   soft `--fill` panel, then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
   under each and a quiet number in the margin. The active text has no card: it is in full ink with its
   number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick.
@@ -38,9 +41,9 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
   graph straight on the panel (comfortable band, faint Hz guide lines labelled on the right,
   rounded loudness bars, the live pitch line in coral with a soft glow and a dot at its tip); three
-  white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a full-width
+  white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a compact centred
   **record pill** (ink, red dot, "Record", `Space`) that turns red with a white square, "Stop" and
-  the timer while recording; hints under it. Narrower, the same parts dock at the bottom as one row. Rating sits inside
+  the timer while recording; hints under it. Narrower, the same parts dock at the bottom in their own panel, with the numbers on a second row. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips.
 
