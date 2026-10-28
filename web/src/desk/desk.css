@@ -329,15 +329,13 @@
 .fl .ds-clock::after { z-index: 1; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); border-radius: inherit; }
 
 /* Settings, in the room: the app's icon, like one on a Mac desktop */
-.fl-app { pointer-events: auto; display: grid; justify-items: center; gap: 6px; width: 92px; min-height: 0; padding: 6px 4px; border: 0; border-radius: 14px; background: none; color: #fff; cursor: pointer; }
+.fl-app { pointer-events: auto; display: grid; justify-items: center; width: auto; min-height: 0; padding: 0; border: 0; border-radius: 14px; background: none; color: #fff; cursor: pointer; }
 .fl-app-icon { width: 68px; height: 68px; display: block; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.45)); transition: translate 0.2s var(--ease); }
 .fl-app-icon svg { width: 100%; height: 100%; display: block; }
 .fl-app:hover .fl-app-icon { translate: 0 -2px; }
 
 .fl-app:active .fl-app-icon { scale: 0.96; }
-.fl-app-name { font: 600 12.5px/1.2 var(--font); padding: 1px 6px; border-radius: 5px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
-.fl-app:focus-visible { outline: none; }
-.fl-app:focus-visible .fl-app-name { background: var(--accent); text-shadow: none; }
+.fl-app:focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 18px; }
 
 /* Settings, its own window over the room or the desk */
 .ss-scrim { position: fixed; inset: 0; z-index: 69; pointer-events: none; opacity: 0; background: rgba(8, 8, 18, 0.35); transition: opacity 0.3s ease-out; }

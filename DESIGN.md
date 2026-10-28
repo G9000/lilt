@@ -119,7 +119,7 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
 
 **Settings** in the room is just the app's icon, like one on a Mac desktop, in the current macOS
 style (drawn for Lilt): a 68px light glassy tile, a dark bezel, a fine-toothed metal gear and a smaller
-one inside it and "Settings" under it in white. It, the
+one inside it, with no label. It, the
 settings button in the room's and the desk's menu bars, and old `#/settings` links open **Settings,
 its own window** over the room or the desk (up to 1080px wide, filling the height under the menu bar,
 the world dimmed behind it), laid out like System Settings: a sidebar on `--fill` with the traffic

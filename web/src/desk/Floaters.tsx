@@ -112,12 +112,11 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
   );
 }
 
-/** Settings, in the room: just the app's icon, like one on a Mac desktop. A click opens every setting. */
+/** Settings, in the room: just the app's icon, no label. A click opens every setting. */
 function SettingsWidget() {
   return (
     <button className="fl-app ss-open" onClick={() => openSettings()} aria-label="Settings">
       <span className="fl-app-icon" aria-hidden="true"><SettingsAppIcon /></span>
-      <span className="fl-app-name">Settings</span>
     </button>
   );
 }
