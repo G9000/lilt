@@ -53,7 +53,7 @@ server confirms that the finalized original is on disk.
 
 Courses, and how to add a course or a kind of practice: [courses.md](courses.md).
 
-Practice texts are Markdown in `content/courses/voice` (`_about.md` plus one `NN-<id>.md` per chapter), parsed at start-up by `server/src/texts.rs` into the JSON that `/api/texts` serves. Cards are generated from content: `ref.daily` (the reference phrase, every day and never spaced),
+Practice texts are Markdown in `content/courses/voice` (`_about.md` plus one `NN-<id>.md` per chapter), parsed at start-up by `server/src/courses/texts.rs` into the JSON that `/api/texts` serves. Cards are generated from content: `ref.daily` (the reference phrase, every day and never spaced),
 `text.<level>.<item>` for the 33 practice texts, and `ex.<id>` for four NHS Fife exercises placed
 in the stage they fit. Stages follow the text levels. A stage opens when 60% of the stage before
 is "learned", meaning two Good or Easy ratings in a row.

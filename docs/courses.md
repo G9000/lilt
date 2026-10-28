@@ -8,8 +8,8 @@ pieces fit, what is already per course, and what to add for a new course or a ne
 - **A course is content.** A folder in `content/courses/<id>` with a `course.md` (id, title, `kind`,
   version, `source`, `locked` sections) and Markdown: `index.md` (its home page), `_about.md`,
   `NN-name.md` chapters, `images/`, `audio/`. Format: `content/courses/README.md` and
-  `content/courses/voice/README.md`. Server: `server/src/courses.rs` reads them;
-  `server/src/texts.rs` parses the Markdown.
+  `content/courses/voice/README.md`. Server: `server/src/courses/mod.rs` reads them;
+  `server/src/courses/texts.rs` parses the Markdown.
 - **Your copy of a course** lives in `<data>/courses/<id>`, made by your AI, with `.history` (every
   change, undoable) and `.base` (the original it follows). Server: `syllabus.rs` (copy, checks,
   history, undo, reset) and `updates.rs` (bringing in changes to the original).
@@ -41,7 +41,7 @@ each:
 
 - **Practice** (`web/src/pages/Voice.tsx`) loads the app's course; its sidebar, home page and
   chapters are voice's.
-- **Today's cards** (`server/src/cards.rs`) are built from the app's course, plus the voice
+- **Today's cards** (`server/src/practice/cards.rs`) are built from the app's course, plus the voice
   exercises and the reference phrase.
 - **Recordings** names a take by its chapter only for the app's course.
 - **Analysis** (`analysis/`) measures pitch, which suits voice and would also suit tones.
