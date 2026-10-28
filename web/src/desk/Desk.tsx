@@ -7,7 +7,7 @@ import { radio, useRadio } from "./lofi";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
 import { SettingsButton } from "./SettingsSheet";
-import { LeaveIcon, Mark, ProgressIcon, RecordingsIcon, StudioIcon, TextsIcon, TodayIcon } from "./icons";
+import { CoursesIcon, LeaveIcon, Mark, ProgressIcon, RecordingsIcon, StudioIcon, TextsIcon, TodayIcon } from "./icons";
 
 /**
  * The small Mac inside the room's monitor: wallpaper, menu bar, widgets, one app window, a dock.
@@ -26,6 +26,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   progress: { title: "Progress", width: 840, full: true },
   history: { title: "Recordings", width: 780, full: true },
   settings: { title: "Settings", width: 640 },
+  courses: { title: "Courses", width: 860 },
 };
 
 const LIGHT_NAME: Record<Light, string> = { morning: "Morning", day: "Afternoon", sunset: "Sunset", night: "Night" };
@@ -106,6 +107,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         {dockApp("/texts", "Practice texts", <TextsIcon />, section === "texts" || section === "library")}
         {dockApp("/progress", "Progress", <ProgressIcon />, section === "progress" || section === "compare")}
         {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history")}
+        {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
         <span className="ds-sep" />
         {dockApp("/", "Back to the room", <LeaveIcon />, false)}
       </nav>

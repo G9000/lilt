@@ -147,6 +147,17 @@ code large in `--mono` with a countdown; signed-in apps follow as rows with Disc
 white card on a warm grey page with the coral Lilt wordmark, "Connect ChatGPT to Lilt?", what it will
 be able to do, the code field and Connect / Don't connect.
 
+**Courses** (`#/courses`, a dock app: three books on violet) opens in an 860px window. The list: a
+34px "Courses" title and one line on what a course is, then one card per course (a kind tile, coral
+for voice and blue for language, the title, the kind and "in Practice" for the app's course, two lines
+of summary, then pills: "Original" or "Your copy · N changes" in accent, "N updates" in green), and a
+quiet note on adding a course folder. A course's page: "All courses" back link; the tile at 64px, the
+title, summary and pills, and "Open in Practice" for the app's course; a green callout with "Review
+updates" when the original has changed; then grouped boxes: Your copy (with Go back to the original,
+confirmed inline), History (each change's note, what it did and when, with "Undo last change"),
+Chapters (numbered, yours marked), and Change it with your AI (example asks, the locked sections, a
+button to AI connections). Updates open in the same window, with "Back to the course".
+
 ## Tokens (light; dark theme swaps the window and ink colours)
 
 | Token | Value | Use |

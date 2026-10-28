@@ -861,5 +861,17 @@ async fn courses_are_kept_apart_and_old_copies_move_over() {
     let get = |uri: &str| Request::builder().uri(uri).header("host", "127.0.0.1:7878").body(Body::empty()).unwrap();
     assert_eq!(router.clone().oneshot(get("/courses/mandarin/images/tones.webp")).await.unwrap().status(), StatusCode::OK);
     assert_eq!(router.clone().oneshot(get("/texts/images/cover.webp")).await.unwrap().status(), StatusCode::OK);
-    assert_eq!(router.oneshot(get("/courses/voice/images/cover.webp")).await.unwrap().status(), StatusCode::OK);
+    assert_eq!(router.clone().oneshot(get("/courses/voice/images/cover.webp")).await.unwrap().status(), StatusCode::OK);
+
+    // The Courses app: a course's files, then going back to its original, which history can undo.
+    use http_body_util::BodyExt;
+    let json = |r: axum::response::Response| async move { serde_json::from_slice::<serde_json::Value>(&r.into_body().collect().await.unwrap().to_bytes()).unwrap() };
+    let files = json(router.clone().oneshot(get("/api/syllabus?course=mandarin")).await.unwrap()).await;
+    assert_eq!((files["using"].as_str(), files["files"].as_array().unwrap().iter().any(|f| f["status"] == "changed")), (Some("mine"), true));
+    let post = Request::builder().method("POST").uri("/api/syllabus/reset?course=mandarin").header("host", "127.0.0.1:7878").header("content-type", "application/json")
+        .body(Body::from(r#"{"note":"Went back to the original from Courses"}"#)).unwrap();
+    assert_eq!(router.clone().oneshot(post).await.unwrap().status(), StatusCode::OK);
+    assert_eq!(syllabus::list(&app, &m)["using"], "original");
+    assert_eq!(json(router.clone().oneshot(get("/api/syllabus/history?course=mandarin")).await.unwrap()).await["changes"][0]["action"], "reset");
+    assert_eq!(router.oneshot(get("/api/syllabus?course=nope")).await.unwrap().status(), StatusCode::BAD_REQUEST);
 }

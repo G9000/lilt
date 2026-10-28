@@ -130,3 +130,19 @@ export function SettingsAppIcon() {
     </svg>
   );
 }
+
+/** Courses: three books on a shelf, on violet. */
+export const CoursesIcon = () => (
+  <svg viewBox="0 0 52 52" aria-hidden="true">
+    <defs>
+      <linearGradient id="di-courses" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#a08bff" /><stop offset="1" stopColor="#5b3fd1" /></linearGradient>
+      <linearGradient id="di-courses-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" /><stop offset="1" stopColor="#e7e1ff" /></linearGradient>
+    </defs>
+    <rect width="52" height="52" rx="12" fill="url(#di-courses)" />
+    <rect x="12" y="13" width="8" height="26" rx="2" fill="url(#di-courses-a)" />
+    <rect x="21.5" y="16" width="8" height="23" rx="2" fill="#ffd2bd" />
+    <rect x="31" y="14.5" width="8" height="24.5" rx="2" fill="url(#di-courses-a)" opacity=".9" transform="rotate(10 35 27)" />
+    <path d="M14.5 18h3M14.5 21h3M24 21h3M24 24h3" stroke="#8a7ad6" strokeWidth="1.2" strokeLinecap="round" />
+    <path d="M10 41h32" stroke="#fff" strokeOpacity=".6" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);

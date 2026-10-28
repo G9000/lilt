@@ -237,24 +237,24 @@ const KIND: Record<SyllabusChange["kind"], string> = { added: "New", changed: "U
  * Updates from Lilt's original, for someone using their own version of the syllabus: what comes in
  * on its own, where you both changed something (pick yours or Lilt's), and an undo once it's done.
  */
-function UpdatesDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
+export function UpdatesDoc({ course, onTexts, back = "#/studio", backLabel = "Back to Home" }: { course?: string; onTexts?: (t: Texts) => void; back?: string; backLabel?: string }) {
   const [u, setU] = useState<SyllabusUpdates | null>(null);
   const [picks, setPicks] = useState<Record<string, "yours" | "original">>({});
   const [done, setDone] = useState<{ taken: number; kept: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const load = () => api.syllabusUpdates().then(setU, (e) => setError(String(e.message ?? e)));
-  useEffect(() => { void load(); }, []);
-  const refresh = async () => { onTexts(await api.texts()); await load(); };
+  const load = () => api.syllabusUpdates(course).then(setU, (e) => setError(String(e.message ?? e)));
+  useEffect(() => { void load(); }, [course]); // eslint-disable-line react-hooks/exhaustive-deps
+  const refresh = async () => { if (onTexts) onTexts(await api.texts()); await load(); };
   const run = async (f: () => Promise<void>) => {
     setBusy(true); setError(null);
     try { await f(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); }
   };
   const apply = () => run(async () => {
-    const r = await api.applySyllabusUpdates(picks);
+    const r = await api.applySyllabusUpdates(picks, course);
     setDone({ taken: r.updates_taken, kept: r.kept_yours }); setPicks({}); await refresh();
   });
-  const undo = () => run(async () => { await api.undoSyllabus(); setDone(null); await refresh(); });
+  const undo = () => run(async () => { await api.undoSyllabus(course); setDone(null); await refresh(); });
 
   if (!u) return <article className="ve-soon"><h1>Updates from Lilt</h1>{error && <p role="alert">{error}</p>}</article>;
   const choose = u.changes.filter((c) => c.handling === "choose");
@@ -269,12 +269,12 @@ function UpdatesDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
         <>
           <p className="lede">All up to date.</p>
           <p>{done.taken} {done.taken === 1 ? "update" : "updates"} brought in{done.kept ? `, and ${done.kept} kept as yours` : ""}. Your practice history stays with each text.</p>
-          <p className="ve-up-actions"><a className="ve-up-go" href="#/studio">Back to Home</a><button className="ve-up-quiet" onClick={undo} disabled={busy}>Undo</button></p>
+          <p className="ve-up-actions"><a className="ve-up-go" href={back}>{backLabel}</a><button className="ve-up-quiet" onClick={undo} disabled={busy}>Undo</button></p>
         </>
       ) : u.using === "original" ? (
-        <p>You're using Lilt's original chapters, so its updates already apply. <a href="#/studio">Back to Home</a></p>
+        <p>You're using Lilt's original chapters, so its updates already apply. <a href={back}>{backLabel}</a></p>
       ) : !u.available ? (
-        <p>Your version is up to date with Lilt's original. <a href="#/studio">Back to Home</a></p>
+        <p>Your version is up to date with Lilt's original. <a href={back}>{backLabel}</a></p>
       ) : (
         <>
           <p>Lilt's original chapters have changed since you made your own version. Updates to things you haven't changed come straight in.{choose.length > 0 && " Where you both changed something, choose which to keep."}</p>

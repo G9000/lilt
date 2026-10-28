@@ -239,6 +239,14 @@ note, and can be undone one at a time, or all at once by going back to the origi
 later versions of the original. Progress follows the text ids, so a reworded text keeps its history.
 (A copy made before courses, in `<data>/syllabus`, moves to `<data>/courses/voice` on start.)
 
+**The Courses app** (the books on the desk's dock, `#/courses`) shows every course: what it is, its
+kind of practice, and whether you're using the original or your own copy (with how many changes and
+updates waiting). A course's page has your copy's history with each change's note, **Undo last
+change**, **Go back to the original** (kept in the history, so Undo brings your copy back), **Review
+updates** when the original has changed, its chapters (yours marked), the sections your AI can't
+change, and what to ask your AI. The changes themselves come from your AI; the app is where you see
+and manage them.
+
 **Updates from Lilt.** When Lilt's original changes (a new release, or `git pull` and a rebuild), the
 Practice home page says so under the chapters and links to **Updates from Lilt**
 (`#/studio/updates`). Each file is compared in pieces: a chapter's details, each text by its id, each

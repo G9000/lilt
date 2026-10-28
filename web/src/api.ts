@@ -235,6 +235,20 @@ export interface ConnectInfo {
   connections: { id: string; client_name: string; connected: string; last_used: string }[];
   activity: { client: string; last_tool: string; last_used: string }[];
 }
+/** A course: a folder of Markdown in content/courses, and whether you use your own copy of it. */
+export interface Course {
+  id: string; title: string; kind: string; version: string; source: string | null; summary: string;
+  locked_sections: string[]; using: "mine" | "original"; changes: number; updates_waiting: number; shown_in_app: boolean;
+}
+/** A course's files, and how your copy of each differs from the original. */
+export interface CourseFiles {
+  course: string; title: string; using: "mine" | "original"; changes_saved: number;
+  files: { file: string; status: "same" | "changed" | "added"; chapter_id?: string; title?: string; texts?: number }[];
+  removed_from_original: string[];
+}
+export interface CourseChange { change: number; time: string; action: "write" | "delete" | "update" | "reset"; file: string | null; note: string }
+const cq = (course?: string) => (course ? `?course=${encodeURIComponent(course)}` : "");
+
 export interface SyllabusUpdates { using: "mine" | "original"; available: boolean; to_choose?: number; changes: SyllabusChange[] }
 /** Typical speaking pitch, from content/courses/voice/_pitch.md: averages and standard deviations in Hz, the overlap band, and the source. */
 export interface PitchReference { men_mean: number; men_sd: number; women_mean: number; women_sd: number; overlap_low: number; overlap_high: number; source: string }
@@ -307,15 +321,19 @@ export const api = {
   reanalyze: (id: string) => call<Take>("POST", `/api/takes/${id}/reanalyze`),
   /** Measure takes analysed with an older method again; earlier results are kept. */
   remeasureStale: () => call<{ queued: number; method: string }>("POST", "/api/remeasure"),
-  /** What Lilt's original changed since your own version of the syllabus was made. */
-  syllabusUpdates: () => call<SyllabusUpdates>("GET", "/api/syllabus/updates"),
-  applySyllabusUpdates: (choices: Record<string, "yours" | "original">) =>
-    call<{ updates_taken: number; kept_yours: number; change: number }>("POST", "/api/syllabus/updates", { choices }),
+  /** What a course's original changed since your own copy was made (voice when no course is named). */
+  syllabusUpdates: (course?: string) => call<SyllabusUpdates>("GET", `/api/syllabus/updates${cq(course)}`),
+  applySyllabusUpdates: (choices: Record<string, "yours" | "original">, course?: string) =>
+    call<{ updates_taken: number; kept_yours: number; change: number }>("POST", `/api/syllabus/updates${cq(course)}`, { choices }),
+  courses: () => call<{ courses: Course[] }>("GET", "/api/courses"),
+  courseFiles: (course: string) => call<CourseFiles>("GET", `/api/syllabus${cq(course)}`),
+  courseHistory: (course: string) => call<{ course: string; using: "mine" | "original"; changes: CourseChange[] }>("GET", `/api/syllabus/history${cq(course)}`),
+  undoSyllabus: (course?: string) => call<{ undone: number; using: "mine" | "original" }>("POST", `/api/syllabus/undo${cq(course)}`),
+  resetCourse: (course: string, note: string) => call<{ reset: boolean; change: number }>("POST", `/api/syllabus/reset${cq(course)}`, { note }),
   connectInfo: () => call<ConnectInfo>("GET", "/api/connect"),
   setPublicAddress: (url: string) => call<{ public_url: string | null }>("PUT", "/api/connect/address", { url }),
   pairingCode: () => call<{ code: string; expires_in: number }>("POST", "/api/connect/code"),
   disconnectApp: (id: string) => call<{ removed: string }>("DELETE", `/api/connect/${id}`),
-  undoSyllabus: () => call<{ undone: number; using: "mine" | "original" }>("POST", "/api/syllabus/undo"),
   history: (params: { prompt_id?: string; days?: number } = {}) => {
     const q = new URLSearchParams();
     if (params.prompt_id) q.set("prompt_id", params.prompt_id);

@@ -52,6 +52,8 @@ pub fn router(app: Shared) -> Router {
         .route("/api/syllabus/updates", get(syllabus_updates).post(apply_syllabus_updates))
         .route("/api/syllabus/history", get(syllabus_history))
         .route("/api/syllabus/undo", post(syllabus_undo))
+        .route("/api/syllabus/reset", post(syllabus_reset))
+        .route("/api/syllabus", get(syllabus_files))
         .route("/api/connect", get(connect_info))
         .route("/api/connect/address", axum::routing::put(connect_address))
         .route("/api/connect/code", post(connect_code))
@@ -515,6 +517,23 @@ async fn syllabus_history(State(app): State<Shared>, Query(q): Query<CourseQuery
 async fn syllabus_undo(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
     let c = crate::courses::pick(&app, q.course.as_deref())?;
     Ok(Json(crate::syllabus::undo(&app, &c)?))
+}
+
+#[derive(Deserialize)]
+struct ResetBody {
+    note: String,
+}
+
+/// Go back to a course's original; kept in its history, so it can be undone.
+async fn syllabus_reset(State(app): State<Shared>, Query(q): Query<CourseQuery>, Json(b): Json<ResetBody>) -> R<Json<Value>> {
+    let c = crate::courses::pick(&app, q.course.as_deref())?;
+    Ok(Json(crate::syllabus::reset(&app, &c, &b.note)?))
+}
+
+/// A course's files (chapters with their titles and counts) and how your copy differs from the original.
+async fn syllabus_files(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
+    let c = crate::courses::pick(&app, q.course.as_deref())?;
+    Ok(Json(crate::syllabus::list(&app, &c)))
 }
 
 /// What Settings → Connect your AI shows: how to connect each kind of app from this computer, the

@@ -1,3 +1,4 @@
+import { CoursesPage } from "./pages/Courses";
 import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
 import { ReactNode, useEffect, useState } from "react";
 import { api, Deck } from "./api";
@@ -58,7 +59,7 @@ export function applyTheme(t: Theme) {
   try { localStorage.setItem("lilt.mode", t); } catch { /* ignore */ }
 }
 
-const SECTIONS = new Set(["deck", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings"]);
+const SECTIONS = new Set(["deck", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses"]);
 
 export function App() {
   const [path, params] = useRoute();
@@ -106,6 +107,7 @@ export function App() {
     case "progress": page = <VoicePage doc="progress" />; break;
     case "history": page = <VoicePage doc="recordings" />; break;
     case "library": page = <LibraryPage />; break;
+    case "courses": page = <CoursesPage id={seg[1]} view={seg[2]} />; break;
     case "settings": page = null; break;
     default: page = null;
   }
