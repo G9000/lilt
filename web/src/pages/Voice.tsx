@@ -190,26 +190,30 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
     const w = cv.width, h = cv.height;
     g.clearRect(0, 0, w, h);
     if (band) { g.fillStyle = "rgba(224,100,60,.10)"; g.fillRect(0, fy(band[1], h), w, fy(band[0], h) - fy(band[1], h)); }
-    g.strokeStyle = "rgba(127,127,127,.16)"; g.lineWidth = dpr;
-    g.fillStyle = "rgba(127,127,127,.55)"; g.font = `500 ${11 * dpr}px "Geist Variable", system-ui, sans-serif`;
-    g.setLineDash([2 * dpr, 4 * dpr]);
-    for (const f of [110, 220, 330]) { const y = fy(f, h); g.beginPath(); g.moveTo(40 * dpr, y); g.lineTo(w - 14 * dpr, y); g.stroke(); g.fillText(String(f), 12 * dpr, y + 4 * dpr); }
-    g.setLineDash([]);
+    g.strokeStyle = "rgba(127,127,127,.13)"; g.lineWidth = dpr;
+    g.fillStyle = "rgba(127,127,127,.6)"; g.font = `500 ${11 * dpr}px "Geist Variable", system-ui, sans-serif`; g.textAlign = "right";
+    for (const f of [110, 220, 330]) { const y = Math.round(fy(f, h)) + 0.5; g.beginPath(); g.moveTo(0, y); g.lineTo(r.height > 120 ? w - 44 * dpr : w, y); g.stroke(); if (r.height > 120) g.fillText(`${f} Hz`, w - 4 * dpr, y + 4 * dpr); }
+    g.textAlign = "left";
     const span = 8, end = shown.length ? shown[shown.length - 1].t : 0, x = (t: number) => ((t - (end - span)) / span) * w;
     const aEnd = amps.current.length ? amps.current[amps.current.length - 1].t : 0, ax = (t: number) => ((t - (aEnd - span)) / span) * w;
-    g.fillStyle = "rgba(127,127,127,.22)";
-    for (const a of amps.current) { if (a.t < aEnd - span) continue; const hh = Math.max(dpr, a.v * h * 0.85); g.fillRect(ax(a.t), h / 2 - hh / 2, 2.5 * dpr, hh); }
-    g.strokeStyle = "#e0643c"; g.lineWidth = 2.6 * dpr; g.lineJoin = g.lineCap = "round"; g.beginPath();
-    let pen = false;
+    g.fillStyle = "rgba(127,127,127,.16)";
+    for (const a of amps.current) { if (a.t < aEnd - span) continue; const hh = Math.max(2 * dpr, a.v * h * 0.7); g.beginPath(); g.roundRect(ax(a.t), h / 2 - hh / 2, 2.5 * dpr, hh, 1.25 * dpr); g.fill(); }
+    g.strokeStyle = "#e0643c"; g.lineWidth = 3 * dpr; g.lineJoin = g.lineCap = "round";
+    g.shadowColor = "rgba(224,100,60,.45)"; g.shadowBlur = 10 * dpr; g.beginPath();
+    let pen = false, tip: [number, number] | null = null;
     for (const p of shown) {
       if (p.t < end - span) continue;
-      if (!p.hz) { pen = false; continue; }
+      if (!p.hz) { pen = false; tip = null; continue; }
       const X = x(p.t), Y = fy(Math.max(LO, Math.min(HI, p.hz)), h);
       if (pen) g.lineTo(X, Y); else g.moveTo(X, Y);
-      pen = true;
+      pen = true; tip = [X, Y];
     }
-    g.stroke();
-  }, [shown, band, size]);
+    g.stroke(); g.shadowBlur = 0;
+    if (tip && (recording || listening)) {
+      g.fillStyle = "rgba(224,100,60,.22)"; g.beginPath(); g.arc(tip[0] - 6 * dpr, tip[1], 10 * dpr, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "#e0643c"; g.beginPath(); g.arc(tip[0] - 6 * dpr, tip[1], 4.5 * dpr, 0, Math.PI * 2); g.fill();
+    }
+  }, [shown, band, size, recording, listening]);
 
   const start = async () => {
     if (!metaRef.current) return;
@@ -250,29 +254,39 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const startListening = async () => { const s = mic.stream ?? (await mic.request()); if (s) setListening(true); };
 
   const dash = <span className="ve-none">–</span>;
+  const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   return (
-    <section className={`ve-dock${recording ? " rec" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
-      <button className={`ve-rec${recording ? " on" : ""}`} onClick={() => void (recording ? stop() : start())} disabled={!recording && !canStart}
-        aria-label={recording ? "Stop recording" : "Start recording"}><i aria-hidden="true" /></button>
+    <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
+      <div className="ve-now" aria-live="off">
+        <div className="ve-now-read">
+          <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
+          <span>{now ? noteName(now) : "Your pitch now"}</span>
+        </div>
+        <span className={`ve-state ${recording ? "rec" : listening ? "live" : state}`}><i aria-hidden="true" />{status}</span>
+      </div>
       <div className="ve-scope">
         <canvas ref={canvas} aria-hidden="true" />
         {!active && <span className="ve-scope-idle">{idleHint}</span>}
-        {inBand !== null && <span className={`ve-pill${inBand ? " ok" : ""}`}>{inBand ? "in your range" : "outside your range"}</span>}
+        {inBand !== null && <span className={`ve-pill${inBand ? " ok" : ""}`}>{inBand ? "In your range" : "Outside your range"}</span>}
       </div>
       <div className="ve-stats" aria-live="off" title="Live estimate. Saved takes are measured with Praat.">
-        <div className="ve-stat"><span>Now</span><div className="readout"><b className="hz">{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b><span className="note">{now ? noteName(now) : ""}</span></div></div>
         <div className="ve-stat"><span>Middle</span><b>{mid ? <>{Math.round(mid)}<small>Hz</small></> : dash}</b><i>{mid ? noteName(mid) : ""}</i></div>
         <div className="ve-stat"><span>Usual range</span><b>{range ? <>{Math.round(range[0])}–{Math.round(range[1])}</> : dash}</b><i>{range ? "Hz" : ""}</i></div>
         <div className="ve-stat"><span>Steadiness</span><b>{sd !== null ? <>{sd.toFixed(1)}<small>st</small></> : dash}</b><i>{sd === null ? "" : sd < 0.3 ? "smooth" : sd < 0.8 ? "a little wobbly" : "moving"}</i></div>
       </div>
+      <button className={`ve-rec${recording ? " on" : ""}`} onClick={() => void (recording ? stop() : start())} disabled={!recording && !canStart}
+        aria-label={recording ? "Stop recording" : "Start recording"}>
+        <i aria-hidden="true" />
+        {recording ? <>Stop<span className="ve-clock">{clock(elapsed)}</span></>
+          : state === "saving" ? "Saving…"
+          : state === "saved" && allowRetake ? "Record again" : "Record"}
+        {(recording || canStart) && <kbd aria-hidden="true">Space</kbd>}
+      </button>
       <div className="ve-dock-sub">
-        {state !== "idle" ? <StatusBadge status={state === "error" ? "error" : state} /> : null}
-        {recording && <span className="ve-clock">{clock(elapsed)}</span>}
         <span className="ve-dock-msg">
-          {recording ? <>Read the highlighted text, then <kbd>Space</kbd> to stop</>
+          {recording ? "Read the highlighted text"
             : listening ? "Listening only. Nothing is saved."
-            : state === "saving" ? "Saving to your computer…"
-            : canStart ? <><kbd>Space</kbd> to record</> : ""}
+            : state === "saving" ? "Saving to your computer…" : ""}
         </span>
         {children}
         <span className="ve-sp" />

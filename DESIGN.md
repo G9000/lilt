@@ -34,11 +34,13 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   under each and a quiet number in the margin. The active text has no card: it is in full ink with its
   number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick.
   Wider than 1100px, the screen splits in half: the text on the left, the recorder standing on the
-  right on the sidebar's tone, top to bottom: a tall scope (comfortable band, dashed Hz guide lines
-  at 110/220/330, loudness bars, the live pitch line in coral), four numbers in a 2×2 grid split by
-  hairlines (Now with Hz and note, Middle, Usual range, Steadiness; a faint dash until there's
-  data), then a centred 76px record button and its hints. Narrower, the recorder docks at the
-  bottom like a status bar: button, scope and the four numbers in a row. Rating sits inside
+  right on the sidebar's tone, top to bottom: a big live **Now** readout (Geist 200, 68px, note
+  under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
+  graph straight on the panel (comfortable band, faint Hz guide lines labelled on the right,
+  rounded loudness bars, the live pitch line in coral with a soft glow and a dot at its tip); three
+  white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a full-width
+  **record pill** (ink, red dot, "Record", `Space`) that turns red with a white square, "Stop" and
+  the timer while recording; hints under it. Narrower, the same parts dock at the bottom as one row. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips.
 
@@ -71,7 +73,7 @@ in `--ink-3`. Big numbers are Geist 300 with tight tracking. Sentence case every
   toolbar, content padded 24–28px, scrolls inside. One window at a time.
 - **Primary button**: ink background, white text, 44px tall, radius 12. **Secondary**: `--fill`.
   **Quiet link**: `--ink-2`, no underline until hover.
-- **Record**: white 56–64px circle with a red dot; the dot becomes a rounded square while recording.
+- **Record**: an ink pill with a red dot and "Record"; while recording it turns `--rec` with a white square, "Stop" and the timer.
 - **Segmented control**: `--fill` track, the active segment white with a hairline shadow.
 - **Lists**: rows with hairline separators. No card inside a card.
 - **Stats**: small `--fill` tiles, caption above, number below.
