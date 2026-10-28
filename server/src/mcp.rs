@@ -28,7 +28,7 @@ Rules the server enforces:
 - No diagnosis, no anatomy or larynx claims, no femininity percentages, no clinical claims. Comfort reports (strain, pain, hoarseness) outrank everything.
 - If evidence is insufficient, save an abstention with a reason and a useful next action.
 
-Lilt holds courses (courses_list); voice practice is the one the app shows today. A course's chapters and home page can be rewritten for this learner with the syllabus_* tools, naming the course (voice when left out). Changes go to the learner's own copy only; the course's original is never changed. Read syllabus_list first, follow its chapter format, write one file at a time with a short note, and keep text ids when rewording. Practice texts stay gentle: nothing that pushes through strain, pain or hoarseness.";
+Lilt holds courses (courses_list); voice practice is the one the app shows today. A course's chapters and home page can be rewritten for this learner with the syllabus_* tools, naming the course (voice when left out). Changes go to the learner's own copy only, which Lilt calls their mixtape (their own remix of the course); the course's original is never changed. Read syllabus_list first, follow its chapter format, write one file at a time with a short note, and keep text ids when rewording. Practice texts stay gentle: nothing that pushes through strain, pain or hoarseness.";
 
 pub struct LiltMcp {
     app: Shared,

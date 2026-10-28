@@ -17,20 +17,20 @@ function ago(iso: string) {
   return new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
-/** Your copy at a glance: original, or yours with how many changes; updates waiting. */
+/** At a glance: the original, or your mixtape with how many changes; updates waiting. */
 function Status({ c }: { c: Course }) {
   return (
     <span className="co-status">
-      <span className={`co-pill${c.using === "mine" ? " mine" : ""}`}>{c.using === "mine" ? `Your copy · ${c.changes} ${c.changes === 1 ? "change" : "changes"}` : "Original"}</span>
+      <span className={`co-pill${c.using === "mine" ? " mine" : ""}`}>{c.using === "mine" ? `Your mixtape · ${c.changes} ${c.changes === 1 ? "change" : "changes"}` : "Original"}</span>
       {c.updates_waiting > 0 && <span className="co-pill new">{c.updates_waiting} {c.updates_waiting === 1 ? "update" : "updates"}</span>}
     </span>
   );
 }
 
 /**
- * Courses (#/courses): every course in Lilt, each a folder of Markdown, and your own copy of it.
- * A course's page shows what's in it, your copy's history with Undo, going back to the original,
- * and updates from the original; your AI makes the changes.
+ * Courses (#/courses): every course in Lilt, each a folder of Markdown, and your mixtape of it
+ * (your own remix, made by your AI). A course's page shows its chapters, your mixtape's history
+ * with Undo, going back to the original, and updates from the original.
  */
 export function CoursesPage({ id, view }: { id?: string; view?: string }) {
   if (id && view === "updates") {
@@ -47,7 +47,7 @@ function CourseList() {
     <div className="co">
       <header className="co-head">
         <h1>Courses</h1>
-        <p>Each course is a set of chapters to practise. Your AI can make your own copy of any of them, and you can always go back to the original.</p>
+        <p>Each course is a set of chapters to practise. Your AI can remix any of them into your own mixtape, and you can always go back to the original.</p>
       </header>
       {err && <p className="co-error" role="alert">{err}</p>}
       {list && (
@@ -73,35 +73,11 @@ function CourseList() {
 }
 
 function CoursePage({ id }: { id: string }) {
-  const [c, setC] = useState<Course | null>(null);
-  const [files, setFiles] = useState<CourseFiles | null>(null);
-  const [changes, setChanges] = useState<CourseChange[] | null>(null);
-  const [confirm, setConfirm] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-  const [said, setSaid] = useState<string | null>(null);
-  const load = async () => {
-    const [all, f, h] = await Promise.all([api.courses(), api.courseFiles(id), api.courseHistory(id)]);
-    setC(all.courses.find((x) => x.id === id) ?? null); setFiles(f); setChanges(h.changes);
-  };
-  useEffect(() => { void load().catch((e) => setErr(e.message)); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
-  const run = async (f: () => Promise<string>) => {
-    setBusy(true); setErr(null); setSaid(null);
-    try { setSaid(await f()); await load(); } catch (e) { setErr(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); setConfirm(false); }
-  };
-  const undo = () => run(async () => { const r = await api.undoSyllabus(id); return r.using === "original" ? "Undone. You're back on the original." : "Undone."; });
-  const reset = () => run(async () => { await api.resetCourse(id, "Went back to the original from Courses"); return "You're on the original again. Your copy is in the history, so Undo brings it back."; });
-
-  if (err && !c) return <div className="co"><p className="co-error" role="alert">{err}</p><a href="#/courses">All courses</a></div>;
-  if (!c || !files || !changes) return <div className="co"><p className="co-note">Loading…</p></div>;
-  const chapters = files.files.filter((f) => f.chapter_id);
+  const m = useMixtape(id);
+  if (m.err && !m.c) return <div className="co"><p className="co-error" role="alert">{m.err}</p><a href="#/courses">All courses</a></div>;
+  if (!m.c) return <div className="co"><p className="co-note">Loading…</p></div>;
+  const c = m.c;
   const open = kindOf(c.kind).practice(c);
-  const mine = c.using === "mine";
-  const latest = changes[0];
-  const examples = c.kind === "voice"
-    ? ["Make the warm-ups shorter and gentler.", "Add a chapter of phone-call phrases.", "What's different from the original?"]
-    : [`Make ${c.title} easier for a beginner.`, "Add a chapter for ordering food.", "What's different from the original?"];
-
   return (
     <div className="co">
       <a className="co-back" href="#/courses">
@@ -116,40 +92,96 @@ function CoursePage({ id }: { id: string }) {
         </div>
         {open && <button className="btn-primary" onClick={() => go(open)}>Practise</button>}
       </header>
+      <MixtapeSections m={m} updatesHref={`/courses/${id}/updates`} />
+    </div>
+  );
+}
 
-      {said && <p className="co-said" role="status">{said}</p>}
-      {err && <p className="co-error" role="alert">{err}</p>}
+/** A course, your mixtape of it (its files and history), and the actions on it. */
+export function useMixtape(id: string, onChange?: () => void) {
+  const [c, setC] = useState<Course | null>(null);
+  const [files, setFiles] = useState<CourseFiles | null>(null);
+  const [changes, setChanges] = useState<CourseChange[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [said, setSaid] = useState<string | null>(null);
+  const load = async () => {
+    const [all, f, h] = await Promise.all([api.courses(), api.courseFiles(id), api.courseHistory(id)]);
+    setC(all.courses.find((x) => x.id === id) ?? null); setFiles(f); setChanges(h.changes);
+  };
+  useEffect(() => { void load().catch((e) => setErr(e.message)); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const run = async (f: () => Promise<string>) => {
+    setBusy(true); setErr(null); setSaid(null);
+    try { setSaid(await f()); await load(); onChange?.(); } catch (e) { setErr(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); }
+  };
+  const undo = () => run(async () => { const r = await api.undoSyllabus(id); return r.using === "original" ? "Undone. You're back on the original." : "Undone."; });
+  const reset = () => run(async () => { await api.resetCourse(id, "Went back to the original"); return "You're on the original again. Your mixtape is in the history, so Undo brings it back."; });
+  return { id, c, files, changes, busy, err, said, undo, reset };
+}
+type Mixtape = ReturnType<typeof useMixtape>;
+
+/**
+ * Your mixtape of a course, the same in Courses and in Practice: updates from the original, whether
+ * you're playing the original or your mixtape (and going back), its history with Undo, its chapters,
+ * and how to change it with your AI.
+ */
+export function MixtapeSections({ m, updatesHref }: { m: Mixtape; updatesHref: string }) {
+  const [confirm, setConfirm] = useState(false);
+  const { c, files, changes, busy } = m;
+  if (!c || !files || !changes) return <p className="co-note">Loading…</p>;
+  const chapters = files.files.filter((f) => f.chapter_id);
+  const mine = c.using === "mine";
+  const latest = changes[0];
+  const examples = c.kind === "voice"
+    ? ["Make the warm-ups shorter and gentler.", "Add a chapter of phone-call phrases.", "What's different from the original?"]
+    : [`Make ${c.title} easier for a beginner.`, "Add a chapter for ordering food.", "What's different from the original?"];
+  const remix = (
+      <section className="co-sec">
+        <h2>Remix it with your AI</h2>
+        <div className="co-box">
+          <div className="co-row"><div><p>Ask an assistant connected to Lilt{c.kind === "voice" ? "" : `, naming ${c.title}`}, for example:</p><ul className="co-examples">{examples.map((x) => <li key={x}>“{x}”</li>)}</ul></div></div>
+          {c.locked_sections.length > 0 && <div className="co-row"><p>Your AI can't change {c.locked_sections.map((s) => `“${s}”`).join(", ")}.</p></div>}
+          <div className="co-row"><p>Not connected yet?</p><button className="btn-secondary co-small ss-open" onClick={() => openSettings("ai")}>AI connections</button></div>
+        </div>
+      </section>
+  );
+  return (
+    <>
+      {m.said && <p className="co-said" role="status">{m.said}</p>}
+      {m.err && <p className="co-error" role="alert">{m.err}</p>}
 
       {c.updates_waiting > 0 && (
         <section className="co-callout">
-          <div><b>The original has {c.updates_waiting} {c.updates_waiting === 1 ? "update" : "updates"} for your copy</b><p>Changes to things you haven't touched come straight in; where you both changed something, you choose.</p></div>
-          <button className="btn-primary" onClick={() => go(`/courses/${id}/updates`)}>Review updates</button>
+          <div><b>The original has {c.updates_waiting} {c.updates_waiting === 1 ? "update" : "updates"} for your mixtape</b><p>Changes to things you haven't touched come straight in; where you both changed something, you choose.</p></div>
+          <button className="btn-primary" onClick={() => go(updatesHref)}>Review updates</button>
         </section>
       )}
 
       <section className="co-sec">
-        <h2>Your copy</h2>
+        <h2>Now playing</h2>
         <div className="co-box">
           <div className="co-row">
             <div>
-              <b>{mine ? "You're using your own copy" : "You're using the original"}</b>
-              <p>{mine ? `${c.changes} ${c.changes === 1 ? "change" : "changes"} so far. The original stays as it is.` : "Your AI makes your own copy the first time it changes something."}</p>
+              <b>{mine ? "Your mixtape" : "The original"}</b>
+              <p>{mine ? `${c.changes} ${c.changes === 1 ? "change" : "changes"} so far. The original stays as it is.` : "Ask your AI to change anything, and it becomes your mixtape: your own remix of this course."}</p>
             </div>
             {mine && !confirm && <button className="btn-secondary" onClick={() => setConfirm(true)} disabled={busy}>Go back to the original</button>}
           </div>
           {confirm && (
             <div className="co-row co-confirm">
-              <p>Go back to the original? Your copy is kept in the history, so you can undo this.</p>
-              <span className="co-actions"><button className="btn-primary" onClick={() => void reset()} disabled={busy}>Go back</button><button className="btn-secondary" onClick={() => setConfirm(false)}>Cancel</button></span>
+              <p>Go back to the original? Your mixtape is kept in the history, so you can undo this.</p>
+              <span className="co-actions"><button className="btn-primary" onClick={() => { setConfirm(false); void m.reset(); }} disabled={busy}>Go back</button><button className="btn-secondary" onClick={() => setConfirm(false)}>Cancel</button></span>
             </div>
           )}
         </div>
       </section>
 
+      {!mine && remix}
+
       <section className="co-sec">
         <div className="co-sec-head">
           <h2>History</h2>
-          {latest && <button className="btn-secondary co-small" onClick={() => void undo()} disabled={busy} title={`Undo “${latest.note}”`}>Undo last change</button>}
+          {latest && <button className="btn-secondary co-small" onClick={() => void m.undo()} disabled={busy} title={`Undo “${latest.note}”`}>Undo last change</button>}
         </div>
         {changes.length === 0 ? (
           <div className="co-box"><div className="co-row"><p>No changes yet. Each change your AI makes shows up here with its note, and can be undone.</p></div></div>
@@ -175,23 +207,17 @@ function CoursePage({ id }: { id: string }) {
             <li key={f.file} className="co-row">
               <span className="co-n">{i + 1}</span>
               <div><b>{f.title}</b><p>{f.texts} {f.texts === 1 ? "text" : "texts"}</p></div>
-              {f.status !== "same" && <span className={`co-pill ${f.status === "added" ? "new" : "mine"}`}>{f.status === "added" ? "Yours" : "Changed"}</span>}
+              {f.status !== "same" && <span className={`co-pill ${f.status === "added" ? "new" : "mine"}`}>{f.status === "added" ? "Added" : "Remixed"}</span>}
             </li>
           ))}
         </ol>
-        {files.removed_from_original.length > 0 && <p className="co-note">Not in your copy: {files.removed_from_original.join(", ")}.</p>}
+        {files.removed_from_original.length > 0 && <p className="co-note">Left out of your mixtape: {files.removed_from_original.join(", ")}.</p>}
       </section>
 
-      <section className="co-sec">
-        <h2>Change it with your AI</h2>
-        <div className="co-box">
-          <div className="co-row"><div><p>Ask an assistant connected to Lilt, naming this course, for example:</p><ul className="co-examples">{examples.map((x) => <li key={x}>“{x}”</li>)}</ul></div></div>
-          {c.locked_sections.length > 0 && <div className="co-row"><p>Your AI can't change {c.locked_sections.map((s) => `“${s}”`).join(", ")}.</p></div>}
-          <div className="co-row"><p>Not connected yet?</p><button className="btn-secondary co-small ss-open" onClick={() => openSettings("ai")}>AI connections</button></div>
-        </div>
-      </section>
-    </div>
+      {mine && remix}
+
+    </>
   );
 }
 
-const ACTION: Record<string, string> = { write: "Changed", delete: "Removed a chapter", update: "Brought in updates", reset: "Went back to the original" };
+const ACTION: Record<string, string> = { write: "Remixed", delete: "Removed a chapter", update: "Brought in updates", reset: "Went back to the original" };

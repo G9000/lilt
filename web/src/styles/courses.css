@@ -54,3 +54,9 @@
 .co-said { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--fill); color: var(--ink-2); font-size: 13.5px; }
 .co-error { margin: 0; color: var(--warn); font-size: 13.5px; }
 @media (max-width: 640px) { .co-head h1, .co-hero h1 { font-size: 28px; } }
+/* inside Practice, its button reset (.ve button) would strip these; put them back */
+.ve .co .btn-primary, .ve .co .btn-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 6px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 13.5px; transition: background-color 0.15s, opacity 0.15s; }
+.ve .co .btn-primary { background: var(--ink); color: var(--page); }
+.ve .co .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+.ve .co .btn-secondary { background: var(--fill); color: var(--ink); }
+.ve .co .btn-secondary:hover:not(:disabled) { background: var(--fill-2); }

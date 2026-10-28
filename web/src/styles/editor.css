@@ -634,3 +634,10 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 .ve .ve-up-quiet { color: var(--ink-2); font-size: 15px; }
 .ve .ve-up-quiet:hover { color: var(--ink); }
 @media (max-width: 640px) { .ve-up-pick { grid-template-columns: 1fr; } }
+
+/* the Mixtape row in the sidebar: how many changes, or updates from the original */
+.ve-mix-tag { margin-left: auto; padding: 0 7px; border-radius: 999px; font-size: 11px; font-weight: 600; line-height: 18px; background: var(--accent-soft); color: var(--accent-ink); }
+.ve-mix-tag.new { background: rgba(22, 147, 106, 0.14); color: var(--ok); }
+/* Mixtape in Practice uses the Courses look, on the page's column */
+.ve-mixtape { max-width: none; padding: 0; }
+.ve-mixtape .co-head h1 { font: 700 44px/1.02 var(--font); letter-spacing: -0.05em; }

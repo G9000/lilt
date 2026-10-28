@@ -147,13 +147,22 @@ code large in `--mono` with a countdown; signed-in apps follow as rows with Disc
 white card on a warm grey page with the coral Lilt wordmark, "Connect ChatGPT to Lilt?", what it will
 be able to do, the code field and Connect / Don't connect.
 
+**Your mixtape** is what Lilt calls your own remix of a course (your AI's changes to it; the original
+stays as it is). In Practice it is a place in the sidebar under Recordings, with a cassette icon and
+a tag: how many changes (accent) or "N new" when the original has updates (green). Its page
+(`#/studio/mixtape`, a Mixtape chip on phones) has a 44px "Your mixtape" title and one line on what it
+is, then the same sections as a course's page in Courses: the green updates callout, **Now playing**
+(the original, or your mixtape with Go back to the original), **Remix it with your AI** (first while
+you're on the original, last once you have a mixtape), History with Undo last change, and Chapters
+(remixed and added ones marked). Home's line under the chapters links to it.
+
 **Courses** (`#/courses`, a dock app: three books on violet) opens in an 860px window. The list: a
 34px "Courses" title and one line on what a course is, then one card per course (a kind tile, coral
 for voice and blue for language, the title, the kind and "in Practice" for the app's course, two lines
 of summary, then pills: "Original" or "Your copy · N changes" in accent, "N updates" in green), and a
 quiet note on adding a course folder. A course's page: "All courses" back link; the tile at 64px, the
 title, summary and pills, and "Open in Practice" for the app's course; a green callout with "Review
-updates" when the original has changed; then grouped boxes: Your copy (with Go back to the original,
+updates" when the original has changed; then grouped boxes: Now playing (with Go back to the original,
 confirmed inline), History (each change's note, what it did and when, with "Undo last change"),
 Chapters (numbered, yours marked), and Change it with your AI (example asks, the locked sections, a
 button to AI connections). Updates open in the same window, with "Back to the course".
