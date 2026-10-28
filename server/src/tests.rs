@@ -969,3 +969,16 @@ async fn a_blank_chapter_lands_in_your_mixtape() {
     let t = crate::syllabus::texts(&app);
     assert_eq!(t["levels"].as_array().unwrap().last().unwrap()["title"], "New chapter");
 }
+
+/// A blank chapter is a draft: Practice lists it, but Today's cards skip its placeholder texts.
+#[test]
+fn draft_chapters_make_no_cards() {
+    let (_dir, app) = app();
+    let v = crate::courses::get(&app, "voice").unwrap();
+    let blank = "---\nid: my-chapter-1\ntitle: New chapter\nkind: phrases\ndraft: true\n---\n\nSay what this chapter is for.\n\n## first\n\nYour first text goes here.\n\n> A hint goes here.\n";
+    crate::syllabus::write(&app, &v, "09-my-chapter-1.md", blank, "Added a blank chapter").unwrap();
+    assert!(crate::syllabus::texts(&app)["levels"].as_array().unwrap().iter().any(|l| l["id"] == "my-chapter-1"));
+    assert!(!crate::cards::all_cards(&app).iter().any(|c| c.id.contains("my-chapter-1")));
+    crate::syllabus::write(&app, &v, "09-my-chapter-1.md", &blank.replace("draft: true\n", ""), "Filled in").unwrap();
+    assert!(crate::cards::all_cards(&app).iter().any(|c| c.id == "text.my-chapter-1.first"));
+}

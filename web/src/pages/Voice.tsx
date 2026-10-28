@@ -614,7 +614,8 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
       const el = e.target as HTMLElement;
       if (e.code !== "Space" || e.repeat || ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "A"].includes(el.tagName) || el.isContentEditable) return;
       e.preventDefault();
-      if (recording) void stop(); else if (canStart) void start();
+      // Space stops a take any time, but won't start one behind the Remix chat.
+      if (recording) void stop(); else if (canStart && !document.querySelector(".ve.remixing")) void start();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -1017,7 +1018,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                 Edit
                 <span className="ve-soon-tip" id="ve-edit-soon" role="tooltip">Coming soon: edit this chapter yourself</span>
               </button>
-              <button className="ve-remix-btn" onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
+              <button className="ve-remix-btn" disabled={recording} title={recording ? "Stop recording first" : undefined} onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               Remix
               </button>

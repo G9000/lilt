@@ -112,6 +112,8 @@ pub fn all_cards(app: &App) -> Vec<Card> {
         ("phrases", vec!["nhsfife.smile-brighten", "nhsfife.real-phrases-intonation"]),
     ]);
     let levels = crate::syllabus::texts(app)["levels"].as_array().cloned().unwrap_or_default();
+    // A draft chapter (a blank "New chapter" not filled in yet) has placeholder texts: no cards.
+    let levels: Vec<_> = levels.into_iter().filter(|l| l["draft"] != "true").collect();
     for (si, l) in levels.iter().enumerate() {
         let lid = l["id"].as_str().unwrap_or_default();
         let ltitle = l["title"].as_str().unwrap_or_default();

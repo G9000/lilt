@@ -48,6 +48,13 @@ export function RemixPanel() {
     return () => window.removeEventListener("keydown", onKey);
   }, [scope, busy]);
   useEffect(() => { list.current?.scrollTo({ top: list.current.scrollHeight, behavior: "smooth" }); }, [msgs.length, busy]);
+  // Leaving the chapter closes its chat (unless a remix is still on its way).
+  useEffect(() => {
+    if (!scope?.chapter) return;
+    const onHash = () => { if (!busy && !window.location.hash.startsWith(`#/studio/${scope.chapter}`)) setScope(null); };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, [scope, busy]);
   // The recorder half recedes behind the chat, so nothing is left half-cut at its edge.
   useEffect(() => {
     const ve = document.querySelector(".ve");

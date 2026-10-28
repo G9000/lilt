@@ -79,6 +79,8 @@
 /* in a chapter: Remix at the top right of its title */
 .ve-head-remix { position: relative; padding-right: 190px; }
 .ve-head-actions { position: absolute; top: 6px; right: 0; display: flex; gap: 8px; }
+/* Edit and Remix are a pair: same size, whatever their words */
+.ve .ve-head-actions > button { min-width: 96px; justify-content: center; }
 .ve .ve-remix-btn { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px;
   background: var(--ink); color: var(--page); font-size: 13.5px; font-weight: 600; box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.45); transition: transform 0.15s var(--ease), opacity 0.15s; }
 .ve .ve-remix-btn:hover { transform: translateY(-1px); }
@@ -86,7 +88,7 @@
 /* Edit: planned, so it shows, greyed out, and says so on hover or focus */
 .ve .ve-edit-btn { position: relative; display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px;
   background: var(--fill); color: var(--ink-3); font-size: 13.5px; font-weight: 600; cursor: not-allowed; }
-.ve .ve-edit-btn svg { width: 15px; height: 15px; opacity: 0.7; }
+.ve .ve-edit-btn svg { width: 16px; height: 16px; opacity: 0.7; }
 .ve-soon-tip { position: absolute; top: calc(100% + 8px); right: 0; z-index: 5; width: max-content; max-width: 280px; padding: 7px 10px; border-radius: 9px;
   background: var(--ink); color: var(--page); font-size: 12px; font-weight: 500; line-height: 1.35; text-align: left; box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.4);
   opacity: 0; translate: 0 -3px; pointer-events: none; transition: opacity 0.15s ease, translate 0.15s ease; }
@@ -98,7 +100,7 @@
 .ve .ve-new-chapter { display: flex; align-items: center; justify-content: flex-start; gap: 8px; width: 100%; padding: 5px 8px 5px 10px; margin-top: 4px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--ink-3); text-align: left; }
 .ve .ve-new-chapter span { width: 14px; text-align: center; font-size: 15px; line-height: 1; }
 .ve .ve-new-chapter:hover { background: var(--fill-2); color: var(--ink); }
-.co-k { font-weight: 600; color: var(--ink-2); }
+.co-row p .co-k { display: inline; font-weight: 600; color: var(--ink-2); }
 
 /* The Remix chat, floating on the right of Practice */
 .rp { position: absolute; z-index: 30; top: 14px; right: 14px; bottom: 14px; width: min(400px, calc(100% - 28px)); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; border-radius: 20px; overflow: hidden;
@@ -107,7 +109,8 @@
 @keyframes rp-in { from { opacity: 0; translate: 24px 0; filter: blur(6px); } }
 /* the recorder recedes behind it, so nothing is half-cut at its edge */
 .ve .ve-dock { transition: opacity 0.35s ease, filter 0.35s ease; }
-.ve.remixing .ve-dock { opacity: 0.5; filter: blur(8px) saturate(0.85); pointer-events: none; }
+.ve.remixing .ve-dock:not(.rec):not(.live) { opacity: 0.5; filter: blur(8px) saturate(0.85); pointer-events: none; }
+.ve .ve-remix-btn:disabled { opacity: 0.4; transform: none; cursor: not-allowed; }
 
 .rp-head { display: flex; align-items: center; gap: 11px; padding: 12px 12px 12px 14px; border-bottom: 1px solid var(--hair); }
 .rp-ic { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #fff; background: linear-gradient(180deg, #f59a6c, #e0643c); box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.45), 0 4px 10px -4px rgba(224, 100, 60, 0.6); }

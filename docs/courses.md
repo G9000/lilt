@@ -50,6 +50,8 @@ each:
 
 1. Make `content/courses/<id>/` with a `course.md` (copy voice's and change it), an `_about.md`, an
    `index.md`, and one or more `NN-name.md` chapters. Put pictures in `images/`.
+   A chapter with `draft: true` in its front matter (as "New chapter" makes) shows in Practice but
+   makes no cards in Today until the line is gone.
 2. Pick its `kind`. An existing one (`voice`, `language`) gets that kind's name and tile; a new word
    lists as a plain "Course" until the kind is registered.
 3. Restart Lilt (with Docker, `docker compose up -d --build`). It shows in Courses, and your AI can
