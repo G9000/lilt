@@ -77,12 +77,22 @@
 .ve .rx .btn-primary:disabled { opacity: 0.4; }
 .ve .rx .btn-secondary { background: var(--fill); color: var(--ink); }
 /* in a chapter: Remix at the top right of its title */
-.ve-head-remix { position: relative; padding-right: 110px; }
-.ve .ve-remix-btn { position: absolute; top: 6px; right: 0; display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px;
+.ve-head-remix { position: relative; padding-right: 190px; }
+.ve-head-actions { position: absolute; top: 6px; right: 0; display: flex; gap: 8px; }
+.ve .ve-remix-btn { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px;
   background: var(--ink); color: var(--page); font-size: 13.5px; font-weight: 600; box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.45); transition: transform 0.15s var(--ease), opacity 0.15s; }
 .ve .ve-remix-btn:hover { transform: translateY(-1px); }
 .ve .ve-remix-btn svg { width: 16px; height: 16px; }
-@media (max-width: 640px) { .ve-head-remix { padding-right: 0; } .ve .ve-remix-btn { position: static; margin-top: 12px; } }
+/* Edit: planned, so it shows, greyed out, and says so on hover or focus */
+.ve .ve-edit-btn { position: relative; display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px;
+  background: var(--fill); color: var(--ink-3); font-size: 13.5px; font-weight: 600; cursor: not-allowed; }
+.ve .ve-edit-btn svg { width: 15px; height: 15px; opacity: 0.7; }
+.ve-soon-tip { position: absolute; top: calc(100% + 8px); right: 0; z-index: 5; width: max-content; max-width: 280px; padding: 7px 10px; border-radius: 9px;
+  background: var(--ink); color: var(--page); font-size: 12px; font-weight: 500; line-height: 1.35; text-align: left; box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.4);
+  opacity: 0; translate: 0 -3px; pointer-events: none; transition: opacity 0.15s ease, translate 0.15s ease; }
+.ve-soon-tip::before { content: ""; position: absolute; top: -4px; right: 22px; width: 8px; height: 8px; background: inherit; rotate: 45deg; border-radius: 1px; }
+.ve-edit-btn:hover .ve-soon-tip, .ve-edit-btn:focus-visible .ve-soon-tip { opacity: 1; translate: 0 0; }
+@media (max-width: 640px) { .ve-head-remix { padding-right: 0; } .ve-head-actions { position: static; margin-top: 12px; } .ve-soon-tip { right: auto; left: 0; } .ve-soon-tip::before { right: auto; left: 22px; } }
 
 /* "New chapter" at the end of the chapter list */
 .ve .ve-new-chapter { display: flex; align-items: center; justify-content: flex-start; gap: 8px; width: 100%; padding: 5px 8px 5px 10px; margin-top: 4px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--ink-3); text-align: left; }

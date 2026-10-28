@@ -157,7 +157,9 @@ you're on the original, last once you have a mixtape), History with Undo last ch
 (remixed and added ones marked). Home's line under the chapters links to it.
 
 **Remix** happens where you practise. Each chapter has an ink **Remix** pill (cassette icon) at the
-top right of its title; it opens the **Remix chat**, a 400px panel floating on the right of Practice
+top right of its title, beside a greyed-out **Edit** pill (pencil) that is planned, not built: it
+does nothing, and on hover or focus a small ink tooltip says "Coming soon: edit this chapter
+yourself". Remix it opens the **Remix chat**, a 400px panel floating on the right of Practice
 (a bottom sheet on phones) in the window glass, sliding in from the right out of a slight blur. While
 it is open the recorder half recedes (half opacity, 8px blur) so nothing is left cut at its edge. The
 header is the chapter's name in bold with "Remixing into your mixtape" under it, beside a coral

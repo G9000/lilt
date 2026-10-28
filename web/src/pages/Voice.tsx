@@ -1010,10 +1010,18 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             <h1>{level.title}</h1>
             <p className="ve-subtitle">{level.subtitle}</p>
             <p className="ve-meta">{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
-            <button className="ve-remix-btn" onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
+            <div className="ve-head-actions">
+              {/* Editing the chapter's Markdown yourself: coming later, shown so you know it's planned. */}
+              <button className="ve-edit-btn" aria-disabled="true" aria-describedby="ve-edit-soon" onClick={(e) => e.preventDefault()}>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.6 2.9l2.5 2.5M3 13l.6-3.1 7.3-7.3a1 1 0 011.4 0l1.1 1.1a1 1 0 010 1.4L6.1 12.4z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                Edit
+                <span className="ve-soon-tip" id="ve-edit-soon" role="tooltip">Coming soon: edit this chapter yourself</span>
+              </button>
+              <button className="ve-remix-btn" onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               Remix
-            </button>
+              </button>
+            </div>
             {complete && (
               <div className={`ve-award${fresh ? " fresh" : ""}`} role={fresh ? "status" : undefined}>
                 <Medal className="ve-award-medal" />
