@@ -185,6 +185,7 @@
 .ve-tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 99px; background: var(--ok-soft); color: var(--ok); }
 .ve-tag.again, .ve-tag.hard { background: var(--warn-soft); color: var(--warn); }
 .ve-tag.next { background: var(--accent-soft); color: var(--accent-ink); }
+.ve-tag.start { background: var(--ink); color: var(--ve-paper); }
 .ve-end { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--hair); font-size: 13px; line-height: 1.55; color: var(--ink-3); max-width: 60ch; }
 .ve-small { font-size: 13px; color: var(--ink-3); margin: 8px 0 0; }
 .ve-small a { color: var(--ink-2); }
@@ -293,6 +294,11 @@
 .ve-dock-msg:empty { display: none; }
 .ve-sp { flex: 1; }
 .ve-dock > .ve-err, .ve-dock > .btn-secondary { grid-column: 1 / -1; justify-self: start; }
+/* the microphone can't be used: what happened, the one step, and a retry */
+.ve-mic-help { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; padding: 12px 14px; border-radius: 12px; background: var(--warn-soft); }
+.ve-mic-help p { flex: 1 1 260px; margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.ve-mic-help b { color: var(--ink); font-weight: 600; }
+.ve .ve-mic-help button { height: 34px; padding: 0 14px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 13px; font-weight: 600; }
 
 /* the Practice home: Markdown from content/texts/index.md, read like a document */
 /* a Notion-style cover across the whole page, then the note */
@@ -344,6 +350,13 @@
 .ve .ve-start-go { flex: none; height: 42px; padding: 0 18px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform 0.16s var(--ease), background-color 0.15s ease; }
 .ve .ve-start-go:active { transform: scale(0.97); }
 .ve-practice { display: grid; gap: 18px; }
+.ve-next { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; padding-bottom: 16px; border-bottom: 1px solid var(--hair); }
+.ve-next:only-child { padding-bottom: 0; border-bottom: 0; }
+.ve-next p { margin: 0; font-size: 15px; color: var(--ink-2); }
+.ve-next b { color: var(--ink); font-weight: 600; }
+.ve .ve-next-go { height: 38px; padding: 0 16px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform 0.16s var(--ease); }
+.ve .ve-next-go.quiet { background: var(--ve-card); color: var(--ink); box-shadow: 0 0 0 1px var(--hair); }
+.ve .ve-next-go:active { transform: scale(0.97); }
 .ve-days { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .ve-days p { margin: 0; display: grid; }
 .ve-days b { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
@@ -453,6 +466,9 @@
   .ve-dock.art .ve-ghost, .ve-dock.art .ve-link { background: none; padding: 4px 8px; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.72); }
   .ve-dock.art .ve-ghost:hover:not(:disabled), .ve-dock.art .ve-link:hover:not(:disabled) { background: none; color: #fff; }
   .ve-dock.art .ve-err { color: #ffd2d6; }
+  .ve-dock.art .ve-mic-help { grid-row: 5; align-self: start; justify-self: center; max-width: 440px; margin-top: 18px; background: rgba(255, 255, 255, 0.94); box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.5); }
+  .ve-dock.art .ve-mic-help p { color: #4c4c58; }
+  .ve-dock.art .ve-mic-help b { color: #17171d; }
   /* after a take: its result (listen back, measured pitch, and on Today the rating) fills the half */
   .ve-dock.has-result { padding: 40px 32px 24px; grid-template-rows: minmax(0, 1fr) auto auto; grid-template-areas: "result" "rec" "sub"; row-gap: 16px; }
   .ve-result-pane { grid-area: result; min-height: 0; overflow: auto; scrollbar-width: thin; animation: ve-rise 0.35s var(--ease) both; }

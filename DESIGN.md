@@ -31,8 +31,12 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   the sidebar, like a Mac app). **A new voice starts** at `#/studio/start`: read the reference line once in your everyday voice;
   Lilt offers that take's range as your comfortable range and keeps it as Day 1. Under Home's welcome
   and opening paragraph sits a quiet callout (a `--fill` panel, no shadow): "First time here?" with a
-  mic icon and a "Find my starting voice →" link until a range is set; after, **your practice**: days this month, the last two weeks as dots,
+  mic icon and a "Find my starting voice →" link until a range is set; after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
+  button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots,
   and **Then and now** (your first and latest take of the same text, the reference line first).
+  Today opened with nothing picked tags the next card **Start here** and offers "Start today's
+  cards" by the recorder. If the microphone can't be used, a calm help box says what happened and
+  the one step that fixes it, with **Try again**.
   **Every take's result leads with words**: one observation and one thing to try (comfort first,
   then an end drop, then range and movement), on an accent-soft panel, before any numbers.
   **Recordings** opens inside Practice, listed with Home above the tree (and as a chip on phones):

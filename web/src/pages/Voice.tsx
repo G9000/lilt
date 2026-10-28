@@ -150,7 +150,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
         {doc === "recordings" || doc === "progress"
           ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressSoon />}</div></div>
           : doc === "home"
-          ? texts && profile && <HomeDoc texts={texts} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "start"
           ? profile && <StartDoc profile={profile} onProfile={setProfile} onRecording={setRecording} onTake={(t) => { setPractised((s) => new Set([...s, t.prompt_id])); setHistory((h) => [...h, t]); }} />
           : doc === "today"
@@ -497,9 +497,21 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
           ? <button className="ve-ghost" aria-pressed="true" onClick={() => setListening(false)}>Stop listening</button>
           : <button className="ve-ghost" onClick={() => void startListening()} disabled={state === "saving"}>Show my pitch live</button>)}
       </div>
-      {(err || mic.error) && <p className="ve-err" role="alert">{err ?? mic.error}</p>}
+      {mic.error ? <MicHelp error={mic.error} onRetry={() => void mic.request()} /> : err && <p className="ve-err" role="alert">{err}</p>}
       {state === "error" && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
     </section>
+  );
+}
+
+/** When the microphone can't be used: what happened, the one step that fixes it, and a retry. */
+function MicHelp({ error, onRetry }: { error: string; onRetry: () => void }) {
+  const blocked = /blocked/i.test(error);
+  return (
+    <div className="ve-mic-help" role="alert">
+      <p><b>{blocked ? "Lilt can't use your microphone yet." : "Lilt can't hear your microphone."}</b>{" "}
+        {blocked ? "Click the icon just left of the web address, set Microphone to Allow, then try again." : error}</p>
+      <button onClick={onRetry}>Try again</button>
+    </div>
   );
 }
 
@@ -526,8 +538,8 @@ function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, num
  * content/texts/index.md, then the chapters with your progress (generated, so it never goes stale).
  * Nothing is picked, so the recorder takes free recordings.
  */
-function HomeDoc({ texts, practised, history, profile, onRecording, onTake }: {
-  texts: Texts; practised: Set<string>; history: Take[]; profile: Profile; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
+function HomeDoc({ texts, deck, practised, history, profile, onRecording, onTake }: {
+  texts: Texts; deck: Deck | null; practised: Set<string>; history: Take[]; profile: Profile; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
 }) {
   const band = profile.comfort_range_hz ?? null;
   const cut = texts.home ? texts.home.indexOf("\n## ") : -1;
@@ -545,7 +557,7 @@ function HomeDoc({ texts, practised, history, profile, onRecording, onTake }: {
         <article className="ve-col ve-home-col">
           {/* The welcome first; then, under its opening paragraph, where you are: starting, or practising. */}
           {intro ? <Markdown src={intro} className="ve-md" /> : <header className="ve-head"><h1>Practice</h1></header>}
-          {!band ? <StartCard /> : history.length > 0 && <YourPractice history={history} band={band} />}
+          {!band ? <StartCard /> : <YourPractice history={history} band={band} next={<NextStep deck={deck} texts={texts} practised={practised} />} />}
           {rest && <Markdown src={rest} className="ve-md" />}
           <section className="ve-md">
             <h2>The chapters</h2>
@@ -605,7 +617,27 @@ function thenAndNow(history: Take[]): [Take, Take] | null {
   return pick ? [pick.first, pick.last] : null;
 }
 
-function YourPractice({ history, band }: { history: Take[]; band: [number, number] }) {
+/** One clear thing to do now: today's cards, a rest day, or the next chapter once the cards are done. */
+function NextStep({ deck, texts, practised }: { deck: Deck | null; texts: Texts; practised: Set<string> }) {
+  if (!deck) return null;
+  const left = deck.items.filter((i) => !i.done_today);
+  if (deck.paused) return <div className="ve-next"><p><b>Resting today.</b> Your cards are paused until your voice feels ready.</p><button className="ve-next-go quiet" onClick={() => go("/deck")}>Open Today</button></div>;
+  if (left.length) return (
+    <div className="ve-next">
+      <p><b>Today: {left.length} card{left.length === 1 ? "" : "s"}</b>, about {Math.max(1, left.length)} min</p>
+      <button className="ve-next-go" onClick={() => go(`/deck?card=${encodeURIComponent(left[0].card.id)}`)}>Start today's cards</button>
+    </div>
+  );
+  const chapter = texts.levels.find((l) => !chapterDone(l, practised));
+  return (
+    <div className="ve-next">
+      <p><b>Today's cards are done.</b> Anything more is a bonus{chapter ? <>, like the next text in {chapter.title}</> : null}.</p>
+      {chapter && <button className="ve-next-go quiet" onClick={() => go(`/studio/${chapter.id}`)}>Open {chapter.title}</button>}
+    </div>
+  );
+}
+
+function YourPractice({ history, band, next }: { history: Take[]; band: [number, number]; next: ReactNode }) {
   const days = new Set(history.map(dayKey));
   const today = new Date(), iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const month = iso(today).slice(0, 7);
@@ -614,6 +646,8 @@ function YourPractice({ history, band }: { history: Take[]; band: [number, numbe
   const pair = thenAndNow(history);
   return (
     <section className="ve-practice" aria-label="Your practice">
+      {next}
+      {history.length > 0 && <>
       <div className="ve-days">
         <p><b>{thisMonth === 0 ? "A fresh month" : `${thisMonth} day${thisMonth === 1 ? "" : "s"} of practice this month`}</b>{thisMonth > 0 && <span>Every day you show up counts. Missed days don't.</span>}</p>
         <ol aria-label="The last two weeks">{last14.map((d) => <li key={d} className={days.has(d) ? "on" : ""} title={shortDate(d)} />)}</ol>
@@ -629,6 +663,7 @@ function YourPractice({ history, band }: { history: Take[]; band: [number, numbe
       ) : (
         <p className="ve-then-wait">Your first takes are saved. Come back on another day and this is where you'll hear them next to your newest ones.</p>
       )}
+      </>}
     </section>
   );
 }
@@ -1051,7 +1086,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
               return (
                 <li key={`q-${j}-${it.card.id}`} ref={on ? curRef : undefined} className={`ve-item${on ? " on" : ""}`} onClick={() => { if (!on) choose(j); }}>
                   <span className="ve-mk num" aria-hidden="true">{doneCount + k + 1}.</span>
-                  <p className="ve-kind">{deckName(it)}{(it.kind === "new" || it.kind === "again") && <span className="ve-tag next">{it.kind === "new" ? "New card" : "Again"}</span>}</p>
+                  <p className="ve-kind">{deckName(it)}{(it.kind === "new" || it.kind === "again") && <span className="ve-tag next">{it.kind === "new" ? "New card" : "Again"}</span>}
+                    {!chosen && k === 0 && phase.k === "say" && <span className="ve-tag start">Start here</span>}</p>
                   {on && it.card.kind !== "exercise"
                     ? <ReadAlong text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} kind={it.card.text_kind} stream={mic.stream} active={recOn} />
                     : <p className="readtext ve-read" aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
@@ -1068,7 +1104,9 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       {free ? (
         <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake
           onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
-          idleHint={FREE_HINT} result={split ? freeView : null} />
+          idleHint={FREE_HINT} result={split ? freeView : null}>
+          {phase.k === "say" && item && <button className="ve-link" onClick={() => choose(idx)}>Start today's cards</button>}
+        </Dock>
       ) : !ended && item && (
         <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k === "rate"}
           onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
