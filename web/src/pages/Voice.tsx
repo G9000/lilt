@@ -142,6 +142,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
         {texts && (
           <nav className="ve-chips" aria-label="Chapters" ref={chips}>
             <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
+            <button aria-current={doc === "recordings" ? "page" : undefined} onClick={() => go("/history")} disabled={recording}>Recordings</button>
             <button aria-current={doc === "today" ? "page" : undefined} onClick={() => go("/deck")} disabled={recording}>Today</button>
             {texts.levels.map((l) => <button key={l.id} aria-current={doc === "chapter" && l.id === level?.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={recording}>{l.title}</button>)}
           </nav>

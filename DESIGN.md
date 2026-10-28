@@ -34,8 +34,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   and **Then and now** (your first and latest take of the same text, the reference line first).
   **Every take's result leads with words**: one observation and one thing to try (comfort first,
   then an end drop, then range and movement), on an accent-soft panel, before any numbers.
-  **Recordings** opens inside Practice, listed with Home above the tree: takes are named by what they
-  were (Free recording, Reference line, or the chapter), and sessions that kept nothing are hidden.
+  **Recordings** opens inside Practice, listed with Home above the tree (and as a chip on phones):
+  every take, newest first, grouped by day, one row each like a voice memo: a round play button
+  (coral while playing), what it was (Free recording, Reference line, or the chapter) with its text
+  and length, a waveform that fills coral as it plays and seeks on click, the time, and quiet
+  favourite, note and delete icons. A status word appears only when a take needs attention.
   **Progress** says "Coming soon" (with a Soon tag in the sidebar) and points at Then and now and
   Recordings, until it can be trusted. While Practice fills the screen, the desk's widgets are hidden
   so nothing shows through the glass.
