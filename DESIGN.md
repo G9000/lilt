@@ -29,12 +29,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   the sidebar, like a Mac app). A 272px sidebar holds a white **Today** card with a coral progress
   bar, then the seven **chapters** (the text levels): a mono number until started, then a progress
   ring, then a green tick. The chapter reads as a document
-  (760px column, faint `#` and `>` markers in the margin): an H1, a mono meta line, a "How to do it"
-  quote with a coral rule, then numbered texts in **Newsreader** (serif, 26px, passages 21px) with a
-  `>` hint under each. The active text is a white card with a coral bar. The recorder is docked at
-  the bottom like a status bar: a 64px record button, an 84px scope (comfortable band, dashed Hz guide lines
-  at 110/220/330, loudness bars, the live pitch line in coral), and four numbers: Now (Hz and
-  note), Middle, Usual range, Steadiness, with a faint dash until there's data. Rating sits inside
+  (720px column): a Newsreader H1 (46px), a sans subtitle and meta line, a "How to do it" note on a
+  soft `--fill` panel, then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
+  under each and a quiet number in the margin. The active text is a white card with a soft shadow
+  and its number in coral; done texts get a drawn green tick. The recorder is docked at the bottom
+  like a status bar on the sidebar's tone: a 60px record button, a 76px scope (comfortable band,
+  dashed Hz guide lines at 110/220/330, loudness bars, the live pitch line in coral), and four
+  numbers split by hairlines: Now (Hz and note), Middle, Usual range, Steadiness, with a faint dash
+  until there's data. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips.
 

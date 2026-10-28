@@ -180,10 +180,10 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
     const w = cv.width, h = cv.height;
     g.clearRect(0, 0, w, h);
     if (band) { g.fillStyle = "rgba(224,100,60,.10)"; g.fillRect(0, fy(band[1], h), w, fy(band[0], h) - fy(band[1], h)); }
-    g.strokeStyle = "rgba(127,127,127,.18)"; g.lineWidth = dpr;
-    g.fillStyle = "rgba(127,127,127,.7)"; g.font = `${10 * dpr}px ui-monospace, Menlo, monospace`;
+    g.strokeStyle = "rgba(127,127,127,.16)"; g.lineWidth = dpr;
+    g.fillStyle = "rgba(127,127,127,.55)"; g.font = `500 ${9.5 * dpr}px "Geist Variable", system-ui, sans-serif`;
     g.setLineDash([2 * dpr, 4 * dpr]);
-    for (const f of [110, 220, 330]) { const y = fy(f, h); g.beginPath(); g.moveTo(28 * dpr, y); g.lineTo(w, y); g.stroke(); g.fillText(String(f), 6 * dpr, y + 3.5 * dpr); }
+    for (const f of [110, 220, 330]) { const y = fy(f, h); g.beginPath(); g.moveTo(34 * dpr, y); g.lineTo(w - 12 * dpr, y); g.stroke(); g.fillText(String(f), 10 * dpr, y + 3.5 * dpr); }
     g.setLineDash([]);
     const span = 8, end = shown.length ? shown[shown.length - 1].t : 0, x = (t: number) => ((t - (end - span)) / span) * w;
     const aEnd = amps.current.length ? amps.current[amps.current.length - 1].t : 0, ax = (t: number) => ((t - (aEnd - span)) / span) * w;
@@ -340,12 +340,11 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, onT
       <div className="ve-page">
         <article className="ve-col">
           <header className="ve-head">
-            <h1><span className="ve-mk" aria-hidden="true">#</span>{level.title}</h1>
+            <h1>{level.title}</h1>
             <p className="ve-subtitle">{level.subtitle}</p>
             <p className="ve-meta">{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
           </header>
           <blockquote className="ve-how">
-            
             <b>How to do it</b>
             {howTo(level.basis)} <span className="ve-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</span>
           </blockquote>
@@ -409,6 +408,7 @@ function ChapterTake({ take, before, band, onUseRange, onUpdate }: { take: Take;
 interface Result { item: DeckItem; rating: Rating; median: number | null }
 type Phase = { k: "say"; retryOf: string | null } | { k: "rate"; take: Take } | { k: "end" } | { k: "hurt" };
 
+const Tick = () => <svg viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 const PlayIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>;
 const PauseIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /><rect x="7.1" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /></svg>;
 function ListenBack({ src }: { src: string }) {
@@ -533,9 +533,9 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       <div className="ve-page">
         <article className="ve-col">
           <header className="ve-head">
-            {phase.k === "end" ? <h1 tabIndex={-1} ref={titleRef}><span className="ve-mk" aria-hidden="true">#</span>That's today's deck</h1>
-              : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}><span className="ve-mk" aria-hidden="true">#</span>Let's stop here</h1>
-              : <h1><span className="ve-mk" aria-hidden="true">#</span>Today</h1>}
+            {phase.k === "end" ? <h1 tabIndex={-1} ref={titleRef}>That's today's deck</h1>
+              : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}>Let's stop here</h1>
+              : <h1>Today</h1>}
             <p className="ve-subtitle">{date}</p>
             <p className="ve-meta">{doneCount} of {total} done{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
           </header>
@@ -563,11 +563,11 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
           )}
           <ol className="ve-items">
             {earlier.map((it) => (
-              <li key={`e-${it.card.id}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true">✓</span>
+              <li key={`e-${it.card.id}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
                 <p className="readtext ve-read">{it.card.front}</p><p className="ve-hint"><span className="ve-tag">Done</span>{deckName(it)}</p></li>
             ))}
             {results.map((r, i) => (
-              <li key={`r-${i}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true">✓</span>
+              <li key={`r-${i}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
                 <p className="readtext ve-read">{r.item.card.front}</p>
                 <p className="ve-hint"><span className={`ve-tag ${r.rating}`}>{label(r.rating)}</span>{r.median ? `${Math.round(r.median)} Hz, ${noteName(r.median)}` : deckName(r.item)}</p></li>
             ))}

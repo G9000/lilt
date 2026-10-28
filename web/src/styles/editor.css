@@ -42,38 +42,39 @@
 .ve-doc { min-width: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
 .ve-chips { display: none; }
 .ve-page { grid-row: 2; overflow: auto; scroll-behavior: smooth; scrollbar-width: thin; }
-.ve-col { max-width: 760px; margin: 0 auto; padding: 52px 40px 72px 56px; }
-.ve-mk { position: absolute; left: -34px; width: 26px; text-align: right; font: 400 14px var(--mono); color: var(--ve-mk); user-select: none; letter-spacing: 0; }
-.ve-head h1 { position: relative; font: 600 40px/1.1 var(--font); letter-spacing: -0.035em; margin: 0 0 6px; outline: none; }
-.ve-head h1 .ve-mk { top: 0.55em; transform: translateY(-50%); }
-.ve-subtitle { font-size: 17px; color: var(--ink-2); margin: 0 0 6px; }
-.ve-meta { font: 400 12.5px var(--mono); color: var(--ink-3); margin: 0 0 28px; }
-.ve-how { position: relative; margin: 0 0 32px; padding: 2px 0 2px 18px; border-left: 3px solid var(--accent); color: var(--ink-2); font-size: 15.5px; }
-.ve-how.warn { border-left-color: var(--rec); }
-.ve-how b { color: var(--ink); font-weight: 600; display: block; margin-bottom: 2px; }
-.ve-src { display: block; margin-top: 6px; font-size: 12.5px; color: var(--ink-3); }
-.ve-src a { color: inherit; }
+.ve-col { max-width: 720px; margin: 0 auto; padding: 64px 40px 88px 64px; }
+.ve-mk { position: absolute; left: -40px; width: 24px; text-align: right; font: 500 13px/1 var(--font); font-variant-numeric: tabular-nums; color: var(--ve-mk); user-select: none; }
+.ve-mk svg { width: 16px; height: 16px; display: inline-block; }
+.ve-head { margin: 0 0 28px; }
+.ve-head h1 { font: 450 46px/1.08 var(--read); letter-spacing: -0.022em; margin: 0 0 10px; outline: none; text-wrap: balance; font-optical-sizing: auto; }
+.ve-subtitle { font-size: 17px; line-height: 1.45; color: var(--ink-2); margin: 0; }
+.ve-meta { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; font-variant-numeric: tabular-nums; }
+.ve-how { margin: 0 0 40px; padding: 16px 20px 17px; border-radius: 14px; background: var(--fill); color: var(--ink-2); font-size: 15px; line-height: 1.55; }
+.ve-how.warn { background: var(--warn-soft); }
+.ve-how b { color: var(--ink); font-weight: 600; font-size: 13.5px; display: block; margin-bottom: 3px; }
+.ve-src { display: block; margin-top: 8px; font-size: 12.5px; color: var(--ink-3); }
+.ve-src a { color: inherit; text-decoration-color: var(--line-strong); }
 
 .ve-items { list-style: none; margin: 0; padding: 0; }
-.ve-item { position: relative; margin: 0 0 6px; padding: 16px 22px; border-radius: 14px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
+.ve-item { position: relative; margin: 0 -24px 4px; padding: 18px 24px 20px; border-radius: 16px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
 .ve-item:not(.on):not(.done) .readtext { color: var(--ink-2); transition: color 0.2s ease; }
 .ve-item:not(.on) .ve-hint { color: var(--ink-3); }
 @media (hover: hover) and (pointer: fine) {
   .ve-item:not(.on):not(.done):hover { background: var(--fill); }
   .ve-item:not(.on):not(.done):hover .readtext { color: var(--ink); }
 }
-.ve-item .ve-mk.num { top: 24px; left: -30px; }
-.ve-item.on { cursor: default; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair), 0 10px 30px -18px rgba(0, 0, 0, 0.35); }
-.ve-item.on::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 3px; border-radius: 3px; background: var(--accent); }
-.ve-item.done { cursor: default; padding-top: 10px; padding-bottom: 10px; }
+.ve-item .ve-mk.num { top: 31px; left: -44px; }
+.ve-item:has(.ve-kind) .ve-mk.num { top: 58px; }
+.ve-item.on { cursor: default; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair), 0 1px 2px rgba(0, 0, 0, 0.04), 0 18px 40px -24px rgba(0, 0, 0, 0.3); }
+.ve-item.on .ve-mk.num { color: var(--accent); }
+.ve-item.done { cursor: default; padding-top: 10px; padding-bottom: 12px; }
 .ve-item.done .ve-mk.num { top: 15px; color: var(--ok); }
 .ve-item.done .readtext { font-size: 19px; color: var(--ink-3); }
-.ve-item.done .ve-hint { margin-top: 2px; }
-.ve-item.done .ve-hint::before { content: none; }
-.ve-kind { margin: 0 0 6px; font-size: 12.5px; font-weight: 500; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
+.ve-item.done .ve-hint { margin-top: 4px; }
+.ve-kind { margin: 0 0 8px; font-size: 12.5px; font-weight: 500; color: var(--ink-3); display: flex; align-items: center; gap: 8px; }
 
 /* reading text: a serif you read from, with the read-along highlight */
-.ve .readtext { font: 400 26px/1.4 var(--read); letter-spacing: -0.005em; margin: 0; color: var(--ink); text-wrap: pretty; }
+.ve .readtext { font: 400 27px/1.38 var(--read); letter-spacing: -0.01em; font-optical-sizing: auto; margin: 0; color: var(--ink); text-wrap: pretty; }
 .ve .readtext.hum { font-size: 30px; }
 .ve .readtext.passage, .ve-item.passage .readtext { font-size: 21px; line-height: 1.6; }
 .ve .readtext.has-pitch { line-height: 1.75; }
@@ -87,16 +88,15 @@
 .ve .readtext .w .wpitch { position: absolute; left: 0; right: 0; bottom: -0.36em; height: 0.36em; pointer-events: none; overflow: visible; }
 .ve .follow-status { font: 500 12.5px/1.4 var(--font); color: var(--ink-3); min-height: 0; margin: 4px 0 0; }
 .ve .follow-status:empty { display: none; }
-.ve-hint { margin: 8px 0 0; font-size: 14.5px; color: var(--ink-2); display: flex; gap: 8px; align-items: baseline; }
-.ve-hint::before { content: ">"; font-family: var(--mono); color: var(--ink-3); }
-.ve .notes { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 4px; font: 400 13.5px/1.5 var(--font); color: var(--ink-2); }
+.ve-hint { margin: 10px 0 0; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); display: flex; gap: 8px; align-items: baseline; max-width: 60ch; }
+.ve .notes { list-style: none; padding: 14px 0 0; margin: 14px 0 0; border-top: 1px solid var(--hair); display: grid; gap: 4px; font: 400 13.5px/1.5 var(--font); color: var(--ink-2); }
 .ve .notes li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; align-items: baseline; }
 .ve .notes b { font-size: 12px; font-weight: 600; color: var(--accent-ink); }
 .ve .notes small { color: var(--ink-3); font-size: 12px; }
 .ve-tag { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 99px; background: var(--ok-soft); color: var(--ok); }
 .ve-tag.again, .ve-tag.hard { background: var(--warn-soft); color: var(--warn); }
 .ve-tag.next { background: var(--accent-soft); color: var(--accent-ink); }
-.ve-end { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--hair); font-size: 12.5px; color: var(--ink-3); }
+.ve-end { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--hair); font-size: 13px; line-height: 1.55; color: var(--ink-3); max-width: 60ch; }
 .ve-small { font-size: 13px; color: var(--ink-3); margin: 8px 0 0; }
 .ve-small a { color: var(--ink-2); }
 .ve-err { color: var(--rec); font-size: 13.5px; margin: 8px 0 0; }
@@ -123,31 +123,33 @@
 .ve-note { margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--ok-soft); color: var(--ok); font-weight: 600; }
 
 /* the recorder, docked like an editor's status bar: button, scope, four numbers; a quiet line under */
-.ve-dock { grid-row: 3; border-top: 1px solid var(--hair); background: color-mix(in srgb, var(--ve-paper) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  padding: 12px 24px 8px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "rec scope stats" "rec sub sub"; column-gap: 20px; row-gap: 4px; align-items: center; }
-.ve .ve-rec { grid-area: rec; align-self: start; margin-top: 4px; width: 64px; height: 64px; border-radius: 50%; background: var(--ve-card); display: grid; place-items: center;
-  box-shadow: 0 0 0 1px var(--hair), 0 8px 18px -8px rgba(0, 0, 0, 0.35); transition: transform 0.16s var(--ease), box-shadow 0.2s ease; }
+.ve-dock { grid-row: 3; border-top: 1px solid var(--hair); background: var(--ve-side);
+  padding: 14px 24px 10px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "rec scope stats" ". sub sub"; column-gap: 20px; row-gap: 6px; align-items: center; }
+.ve .ve-rec { grid-area: rec; width: 60px; height: 60px; border-radius: 50%; background: var(--ve-card); display: grid; place-items: center;
+  box-shadow: 0 0 0 1px var(--hair), 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 18px -10px rgba(0, 0, 0, 0.35); transition: transform 0.16s var(--ease), box-shadow 0.2s ease; }
+.ve .ve-rec:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .ve .ve-rec:active:not(:disabled) { transform: scale(0.95); }
 .ve .ve-rec:disabled { opacity: 1; }
-.ve-rec i { width: 26px; height: 26px; border-radius: 50%; background: var(--rec); transition: border-radius 0.25s var(--ease), transform 0.25s var(--ease), background-color 0.2s ease; }
+.ve-rec i { width: 24px; height: 24px; border-radius: 50%; background: var(--rec); transition: border-radius 0.25s var(--ease), transform 0.25s var(--ease), background-color 0.2s ease; }
 .ve-rec:disabled i { background: var(--fill-2); }
 .ve-rec.on i { border-radius: 6px; transform: scale(0.82); }
 .ve-rec.on { box-shadow: 0 0 0 1px rgba(255, 66, 85, 0.35), 0 0 0 6px rgba(255, 66, 85, 0.12); }
-.ve-scope { grid-area: scope; position: relative; height: 84px; border-radius: 12px; background: var(--ve-card); box-shadow: inset 0 0 0 1px var(--hair); overflow: hidden; }
+.ve-scope { grid-area: scope; position: relative; height: 76px; border-radius: 14px; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair); overflow: hidden; }
 .ve-scope canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ve-scope-idle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 60px); padding: 3px 12px; border-radius: 99px; background: var(--ve-card); color: var(--ink-3); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ve-scope-idle { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: calc(100% - 80px); color: var(--ink-3); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ve-scope .ve-pill { position: absolute; top: 8px; right: 8px; }
 .ve-pill { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent-ink); white-space: nowrap; }
 .ve-pill.ok { background: var(--ok-soft); color: var(--ok); }
-.ve-stats { grid-area: stats; display: grid; grid-template-columns: repeat(4, minmax(64px, auto)); gap: 0 20px; }
-.ve-stat > span { display: block; font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
-.ve-stat b { display: block; font: 600 21px/1.25 var(--font); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.ve-stats { grid-area: stats; display: grid; grid-template-columns: repeat(4, minmax(76px, auto)); align-self: stretch; align-content: center; }
+.ve-stat { padding: 2px 16px; border-left: 1px solid var(--hair); }
+.ve-stat > span { display: block; font-size: 11.5px; font-weight: 500; color: var(--ink-3); white-space: nowrap; margin-bottom: 2px; }
+.ve-stat b { display: block; font: 500 21px/1.25 var(--font); letter-spacing: -0.025em; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
 .ve-stat b small { font-size: 11.5px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; margin-left: 2px; }
 .ve-stat i, .ve-stat .readout .note { display: block; min-height: 17px; font: 400 11.5px/1.5 var(--font); letter-spacing: 0; color: var(--ink-3); font-style: normal; white-space: nowrap; }
 .ve-stat .readout { display: block; }
 .ve-stat .readout .hz { font-size: 21px; color: var(--ink); }
-.ve-none { color: var(--line-strong); font-weight: 400; }
-.ve-dock-sub { grid-area: sub; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-3); min-height: 32px; }
+.ve-none { color: var(--ink-3); opacity: 0.5; font-weight: 300; }
+.ve-dock-sub { grid-area: sub; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-3); min-height: 30px; }
 .ve-clock { font: 500 12.5px var(--mono); color: var(--rec); font-variant-numeric: tabular-nums; }
 .ve-dock-msg { display: inline-flex; align-items: center; gap: 5px; }
 .ve-sp { flex: 1; }
@@ -192,13 +194,15 @@
   .ve .ve-chips button[aria-current="page"] { background: var(--ink); color: var(--ve-paper); }
   .ve-col { padding: 24px 18px 40px; }
   .ve-mk { display: none; }
-  .ve-head h1 { font-size: 30px; }
-  .ve-item { padding: 14px 16px; }
+  .ve-head h1 { font-size: 34px; }
+  .ve-item { margin: 0 -4px 4px; padding: 14px 16px; }
   .ve .readtext { font-size: 22px; }
   .ve .readtext.passage, .ve-item.passage .readtext { font-size: 18px; }
   .ds-win.full .ds-tb { position: relative; width: auto; height: 40px; border-bottom: 1px solid var(--hair); }
   .ve-dock { padding: 10px 12px 6px; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "rec scope" "stats stats" "sub sub"; column-gap: 12px; row-gap: 8px; }
-  .ve .ve-rec { width: 56px; height: 56px; margin-top: 0; align-self: center; }
+  .ve .ve-rec { width: 56px; height: 56px; }
+  .ve-stat { padding: 0 0 0 10px; }
+  .ve-stat:first-child { border-left: 0; padding-left: 0; }
   .ve-scope { height: 56px; }
   .ve-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 10px; }
   .ve-stat > span { white-space: normal; }
