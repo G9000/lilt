@@ -599,3 +599,37 @@
   .ve-cat img, .ve-zzz i, .ve-dock .ve-cat, .ve-dock .ve-now, .ve-dock .ve-scope, .ve-dock .ve-stats, .ve-result-pane { animation: none !important; }
   .ve-page { scroll-behavior: auto; }
 }
+
+/* Updates from Lilt: what comes in, and where you both changed something, yours or Lilt's side by side */
+.ve-updates { max-width: 760px; }
+.ve-updates h2 { margin: 32px 0 10px; font: 600 17px/1.3 var(--font); letter-spacing: -0.01em; color: var(--ink); }
+.ve-up-list { list-style: none; padding: 0 !important; margin: 0; display: grid; }
+.ve-up-list > li { padding: 14px 0; border-top: 1px solid var(--hair); }
+.ve-up-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; color: var(--ink); font-size: 15px; }
+.ve-up-head small { flex-basis: 100%; font-size: 13px; color: var(--ink-3); }
+.ve-up-head b { font-weight: 600; }
+.ve-up-list details { background: none; border-radius: 0; }
+.ve-up-list details > summary.ve-up-head { min-height: 0; padding: 0; align-items: center; }
+.ve-up-list summary.ve-up-head small { padding-left: 19px; }
+details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
+.ve-up-kind { padding: 2px 8px; border-radius: 999px; background: var(--fill); font-size: 11.5px; font-weight: 600; color: var(--ink-2); }
+.ve-up-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.ve .ve-up-pick button { display: grid; grid-template-columns: minmax(0, 1fr); justify-content: stretch; align-content: start; width: 100%; gap: 8px; text-align: left; padding: 14px 16px; border-radius: 12px; background: var(--fill); box-shadow: inset 0 0 0 1px transparent; transition: box-shadow 0.15s ease, background-color 0.15s ease; }
+.ve .ve-up-pick button:hover { background: var(--fill-2); }
+.ve .ve-up-pick button.on { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.ve-up-label { font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.ve-up-pick .on .ve-up-label { color: var(--accent-ink); }
+.ve-up-text p { margin: 0; font: 400 19px/1.4 var(--read); color: var(--ink); }
+.ve-up-text small { display: block; margin-top: 6px; font-size: 13px; color: var(--ink-3); }
+.ve-up-md { font-size: 14px; color: var(--ink-2); }
+.ve-up-md > :first-child { margin-top: 0; }
+.ve-up-md h2 { margin: 0 0 6px; font-size: 15px; }
+.ve-up-gone { margin: 0; font-size: 14px; color: var(--ink-3); font-style: italic; }
+.ve-up-note { font-size: 13px; color: var(--ink-3); }
+.ve-up-error { color: var(--warn); font-size: 14px; }
+.ve-up-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 28px 0 8px; }
+.ve .ve-up-go { display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 999px; background: var(--ink); color: var(--ve-paper); font-weight: 600; font-size: 15px; text-decoration: none; }
+.ve .ve-up-go:disabled { opacity: 0.4; }
+.ve .ve-up-quiet { color: var(--ink-2); font-size: 15px; }
+.ve .ve-up-quiet:hover { color: var(--ink); }
+@media (max-width: 640px) { .ve-up-pick { grid-template-columns: 1fr; } }

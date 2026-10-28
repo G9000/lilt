@@ -211,7 +211,7 @@ whole history.
 
 ## MCP (connecting your agent)
 
-Lilt exposes 19 tools, listed below. Arguments are IDs and syllabus file names only; there is no
+Lilt exposes 21 tools, listed below. Arguments are IDs and syllabus file names only; there is no
 filesystem or shell access.
 
 - `voice_get_today_plan`, `voice_list_exercises`, `voice_list_sessions`, `voice_get_session`
@@ -221,6 +221,7 @@ filesystem or shell access.
 - `syllabus_list`, `syllabus_read`, `syllabus_compare`, `syllabus_history`: your syllabus (the
   chapters and the home page) and how it differs from Lilt's original
 - `syllabus_write`, `syllabus_delete`, `syllabus_undo`, `syllabus_reset`: change it
+- `syllabus_updates`, `syllabus_apply_updates`: bring in updates to Lilt's original
 
 **Your own syllabus.** Ask your agent to rewrite a chapter, add one, or overhaul the lot ("make the
 warm-ups shorter", "add a chapter of phone-call phrases"). The changes go to your own copy in
@@ -231,6 +232,15 @@ kept in `<data>/syllabus/.history` with the agent's note, and can be undone one 
 once by going back to the original. `<data>/syllabus/.base` keeps the original as it was when your
 copy was made, for comparing with later versions of the original. Progress follows the text ids, so a
 reworded text keeps its history.
+
+**Updates from Lilt.** When Lilt's original changes (a new release, or `git pull` and a rebuild), the
+Practice home page says so under the chapters and links to **Updates from Lilt**
+(`#/studio/updates`). Each file is compared in pieces: a chapter's details, each text by its id, each
+home page section by its heading. A piece the original changed that you hadn't touched comes straight
+in; where you both changed it, you see yours and Lilt's new version side by side and pick one; pieces
+only you changed stay yours. New chapters in the original come in too. It's one change in the history,
+so it can be undone. Agents can do the same with `syllabus_updates` and `syllabus_apply_updates`,
+asking you where you both changed something.
 
 **HTTP, while Lilt is running.** Use this with Claude Code:
 

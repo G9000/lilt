@@ -64,7 +64,15 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   from that file (why it exists, an honest note, how it's laid out, looking after your voice, how to
   contribute, sources), then the chapters with progress, generated. When an agent has rewritten the syllabus for you, one quiet
 line under the chapters says you're using your own version, with how many changes, and that your AI
-assistant can show the differences, undo, or go back to Lilt's original. The recorder takes free
+assistant can show the differences, undo, or go back to Lilt's original; when Lilt's original has changed
+since, a coral link adds "Lilt's original has N updates for you →". **Updates from Lilt**
+(`#/studio/updates`, a full-width page like Recordings) lists them: **Choose** first, where you both
+changed something, with yours and Lilt's new version side by side as two `--fill` options (the picked
+one on `--accent-soft` with a 1px accent ring, its label in `--accent-ink`), texts in the reading
+serif with their hint; then **Coming in**, one hairline row each (chapter title, a New / Updated /
+Removed pill, which part in `--ink-3`), folding open to show the new version; then the ink "Bring in N
+updates" pill, enabled once every choice is made, and "You can undo this afterwards". Done, it says
+"All up to date." with how many came in and were kept, Back to Home and Undo. The recorder takes free
   recordings beside it. You can **resize** it: drag the sidebar's
   edge (200–420px; drag it very narrow to fold it away) or the divider between the text and the
   recorder (32–72%); double-click either to reset, or use the arrow keys on it. The sidebar

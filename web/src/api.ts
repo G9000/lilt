@@ -220,7 +220,15 @@ export interface TextLevel { id: string; level: number; title: string; subtitle:
 /** `home` is the Practice home page as Markdown (content/texts/index.md); `home_cover` its banner. */
 export interface Texts { note: string; levels: TextLevel[]; home?: string; home_cover?: string; pitch_reference?: PitchReference; edition?: Edition }
 /** Whether these are the learner's own version of the syllabus (changed by an AI agent over MCP) and how many changes it has. */
-export interface Edition { mine: boolean; changes: number }
+export interface Edition { mine: boolean; changes: number; updates?: number }
+/** One piece of the syllabus as a person reads it: a chapter text (words and hint) or Markdown. */
+export interface Piece { markdown: string; text?: string; hint?: string }
+/** One change to Lilt's original since the learner's version was made: "take" comes in, "choose" needs a choice, "already" matches. */
+export interface SyllabusChange {
+  id: string; file: string; title: string; part: string; kind: "added" | "removed" | "changed"; handling: "take" | "choose" | "already";
+  yours: Piece | null; original: Piece | null; before: Piece | null;
+}
+export interface SyllabusUpdates { using: "mine" | "original"; available: boolean; to_choose?: number; changes: SyllabusChange[] }
 /** Typical speaking pitch, from content/texts/_pitch.md: averages and standard deviations in Hz, the overlap band, and the source. */
 export interface PitchReference { men_mean: number; men_sd: number; women_mean: number; women_sd: number; overlap_low: number; overlap_high: number; source: string }
 
@@ -292,6 +300,11 @@ export const api = {
   reanalyze: (id: string) => call<Take>("POST", `/api/takes/${id}/reanalyze`),
   /** Measure takes analysed with an older method again; earlier results are kept. */
   remeasureStale: () => call<{ queued: number; method: string }>("POST", "/api/remeasure"),
+  /** What Lilt's original changed since your own version of the syllabus was made. */
+  syllabusUpdates: () => call<SyllabusUpdates>("GET", "/api/syllabus/updates"),
+  applySyllabusUpdates: (choices: Record<string, "yours" | "original">) =>
+    call<{ updates_taken: number; kept_yours: number; change: number }>("POST", "/api/syllabus/updates", { choices }),
+  undoSyllabus: () => call<{ undone: number; using: "mine" | "original" }>("POST", "/api/syllabus/undo"),
   history: (params: { prompt_id?: string; days?: number } = {}) => {
     const q = new URLSearchParams();
     if (params.prompt_id) q.set("prompt_id", params.prompt_id);

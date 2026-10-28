@@ -13,6 +13,7 @@ mod recordings;
 mod store;
 mod syllabus;
 mod texts;
+mod updates;
 mod util;
 mod validate;
 #[cfg(test)]

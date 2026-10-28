@@ -2,7 +2,7 @@ import "../styles/deck.css";
 import "../styles/voice.css";
 import "../styles/editor.css";
 import { ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { api, Deck, DeckItem, Profile, Rating, Session, Take, TextLevel, Texts } from "../api";
+import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { LeaveIcon, StudioIcon, TextsIcon } from "../desk/icons";
@@ -102,7 +102,7 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "today" | "chapter" | "recordings" | "progress"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "today" | "chapter" | "recordings" | "progress"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -144,8 +144,8 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
         title={layout.collapsed ? "Show sidebar (⌘\\)" : "Hide sidebar (⌘\\)"}><SidebarIcon /></button>
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
-      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
-      <div className={`ve-doc${doc === "recordings" || doc === "progress" ? " solo" : ""}`} ref={docRef}>
+      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" || doc === "updates" ? "home" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
+      <div className={`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" ? " solo" : ""}`} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
@@ -158,6 +158,8 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
         )}
         {doc === "recordings" || doc === "progress"
           ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressSoon />}</div></div>
+          : doc === "updates"
+          ? <div className="ve-page"><div className="ve-col ve-embed"><UpdatesDoc onTexts={setTexts} /></div></div>
           : doc === "home"
           ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "start"
@@ -213,6 +215,109 @@ const PLACES = [
   { id: "recordings", label: "Recordings", to: "/history", icon: "M3 6.5v3M5.5 4v8M8 2.5v11M10.5 5v6M13 7v2" },
   { id: "progress", label: "Progress", to: "/progress", icon: "M2.5 13.5h11M4 11V8.5M7 11V5.5M10 11V7M13 11V3.5", soon: true },
 ];
+
+/** One piece of the syllabus as you'd read it: a text in the reading serif with its hint, or Markdown. */
+function PieceView({ piece }: { piece: Piece | null }) {
+  if (!piece) return <p className="ve-up-gone">Removed</p>;
+  if (piece.text) return <div className="ve-up-text"><p>{piece.text}</p>{piece.hint && <small>{piece.hint}</small>}</div>;
+  return <Markdown src={piece.markdown.replace(/^---\n[\s\S]*?\n---\n/, "")} className="ve-md ve-up-md" />;
+}
+
+const KIND: Record<SyllabusChange["kind"], string> = { added: "New", changed: "Updated", removed: "Removed" };
+
+/**
+ * Updates from Lilt's original, for someone using their own version of the syllabus: what comes in
+ * on its own, where you both changed something (pick yours or Lilt's), and an undo once it's done.
+ */
+function UpdatesDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
+  const [u, setU] = useState<SyllabusUpdates | null>(null);
+  const [picks, setPicks] = useState<Record<string, "yours" | "original">>({});
+  const [done, setDone] = useState<{ taken: number; kept: number } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const load = () => api.syllabusUpdates().then(setU, (e) => setError(String(e.message ?? e)));
+  useEffect(() => { void load(); }, []);
+  const refresh = async () => { onTexts(await api.texts()); await load(); };
+  const run = async (f: () => Promise<void>) => {
+    setBusy(true); setError(null);
+    try { await f(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); }
+  };
+  const apply = () => run(async () => {
+    const r = await api.applySyllabusUpdates(picks);
+    setDone({ taken: r.updates_taken, kept: r.kept_yours }); setPicks({}); await refresh();
+  });
+  const undo = () => run(async () => { await api.undoSyllabus(); setDone(null); await refresh(); });
+
+  if (!u) return <article className="ve-soon"><h1>Updates from Lilt</h1>{error && <p role="alert">{error}</p>}</article>;
+  const choose = u.changes.filter((c) => c.handling === "choose");
+  const coming = u.changes.filter((c) => c.handling === "take");
+  const same = u.changes.filter((c) => c.handling === "already").length;
+  const ready = choose.every((c) => picks[c.id]);
+  const n = choose.length + coming.length;
+  return (
+    <article className="ve-soon ve-updates">
+      <h1>Updates from Lilt</h1>
+      {done ? (
+        <>
+          <p className="lede">All up to date.</p>
+          <p>{done.taken} {done.taken === 1 ? "update" : "updates"} brought in{done.kept ? `, and ${done.kept} kept as yours` : ""}. Your practice history stays with each text.</p>
+          <p className="ve-up-actions"><a className="ve-up-go" href="#/studio">Back to Home</a><button className="ve-up-quiet" onClick={undo} disabled={busy}>Undo</button></p>
+        </>
+      ) : u.using === "original" ? (
+        <p>You're using Lilt's original chapters, so its updates already apply. <a href="#/studio">Back to Home</a></p>
+      ) : !u.available ? (
+        <p>Your version is up to date with Lilt's original. <a href="#/studio">Back to Home</a></p>
+      ) : (
+        <>
+          <p>Lilt's original chapters have changed since you made your own version. Updates to things you haven't changed come straight in.{choose.length > 0 && " Where you both changed something, choose which to keep."}</p>
+          {choose.length > 0 && (
+            <section>
+              <h2>Choose ({choose.length})</h2>
+              <ul className="ve-up-list">
+                {choose.map((c) => (
+                  <li key={c.id}>
+                    <div className="ve-up-head"><b>{c.title}</b><span className="ve-up-kind">{KIND[c.kind]}</span>{c.part && <small>{c.part}</small>}</div>
+                    <div className="ve-up-pick" role="radiogroup" aria-label={c.title}>
+                      {(["yours", "original"] as const).map((side) => (
+                        <button key={side} role="radio" aria-checked={picks[c.id] === side} className={picks[c.id] === side ? "on" : ""}
+                          onClick={() => setPicks((p) => ({ ...p, [c.id]: side }))}>
+                          <span className="ve-up-label">{side === "yours" ? "Keep yours" : "Take Lilt's new version"}</span>
+                          <PieceView piece={side === "yours" ? c.yours : c.original} />
+                        </button>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {coming.length > 0 && (
+            <section>
+              <h2>Coming in ({coming.length})</h2>
+              <ul className="ve-up-list">
+                {coming.map((c) => (
+                  <li key={c.id}>
+                    <details>
+                      <summary className="ve-up-head"><b>{c.title}</b><span className="ve-up-kind">{KIND[c.kind]}</span>{c.part && <small>{c.part}</small>}</summary>
+                      <PieceView piece={c.kind === "removed" ? c.before : c.original} />
+                    </details>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {same > 0 && <p className="ve-up-note">{same} more {same === 1 ? "change matches" : "changes match"} what you'd already done.</p>}
+          {error && <p className="ve-up-error" role="alert">{error}</p>}
+          <p className="ve-up-actions">
+            <button className="ve-up-go" onClick={apply} disabled={busy || !ready}>Bring in {n} {n === 1 ? "update" : "updates"}</button>
+            {!ready && <span className="ve-up-note">Choose for each one above first.</span>}
+          </p>
+          <p className="ve-up-note">You can undo this afterwards.</p>
+        </>
+      )}
+    </article>
+  );
+}
 
 /** Progress isn't ready to trust yet, so it says so and points at what already works. */
 function ProgressSoon() {
@@ -584,7 +689,12 @@ function HomeDoc({ texts, deck, practised, history, profile, onRecording, onTake
                 );
               })}
             </ol>
-            {texts.edition?.mine && <p className="ve-edition">You're using your own version of these chapters ({texts.edition.changes} {texts.edition.changes === 1 ? "change" : "changes"}). Your AI assistant can show what's different, undo a change, or go back to Lilt's original.</p>}
+            {texts.edition?.mine && (
+              <p className="ve-edition">
+                You're using your own version of these chapters ({texts.edition.changes} {texts.edition.changes === 1 ? "change" : "changes"}). Your AI assistant can show what's different, undo a change, or go back to Lilt's original.
+                {!!texts.edition.updates && <> <a href="#/studio/updates">Lilt's original has {texts.edition.updates} {texts.edition.updates === 1 ? "update" : "updates"} for you →</a></>}
+              </p>
+            )}
           </section>
           {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
         </article>

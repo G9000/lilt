@@ -32,7 +32,9 @@ fn mine(app: &App) -> PathBuf {
     app.paths.root.join("syllabus")
 }
 
-fn has_mine(app: &App) -> bool {
+pub type Files = BTreeMap<String, String>;
+
+pub fn has_mine(app: &App) -> bool {
     mine(app).join("_about.md").exists()
 }
 
@@ -44,7 +46,8 @@ pub fn active_dir(app: &App) -> PathBuf {
 pub fn load_active(app: &App) -> Result<Value> {
     let dir = active_dir(app);
     let mut t = texts::load(&dir).with_context(|| format!("loading {}", dir.display()))?;
-    t["edition"] = json!({ "mine": has_mine(app), "changes": history_ids(app).len() });
+    let updates = if has_mine(app) { crate::updates::waiting(app) } else { 0 };
+    t["edition"] = json!({ "mine": has_mine(app), "changes": history_ids(app).len(), "updates": updates });
     Ok(t)
 }
 
@@ -64,8 +67,21 @@ fn check_name(name: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn original_files(app: &App) -> Files {
+    files(&original(app))
+}
+
+pub fn mine_files(app: &App) -> Files {
+    files(&mine(app))
+}
+
+/// The original as it was when your copy was made, or last brought up to date.
+pub fn base_files(app: &App) -> Files {
+    files(&mine(app).join(".base"))
+}
+
 /// The editable Markdown files in a folder, by name.
-fn files(dir: &Path) -> BTreeMap<String, String> {
+fn files(dir: &Path) -> Files {
     std::fs::read_dir(dir).into_iter().flatten().filter_map(|e| e.ok())
         .filter_map(|e| {
             let name = e.file_name().to_str()?.to_string();
@@ -74,7 +90,7 @@ fn files(dir: &Path) -> BTreeMap<String, String> {
         .collect()
 }
 
-fn write_files(dir: &Path, files: &BTreeMap<String, String>) -> Result<()> {
+fn write_files(dir: &Path, files: &Files) -> Result<()> {
     std::fs::create_dir_all(dir)?;
     for (name, _) in self::files(dir) {
         std::fs::remove_file(dir.join(name))?;
@@ -132,7 +148,7 @@ fn diff_file(name: &str, old: Option<&String>, new: Option<&String>) -> Value {
     out
 }
 
-fn diff(old: &BTreeMap<String, String>, new: &BTreeMap<String, String>) -> Vec<Value> {
+fn diff(old: &Files, new: &Files) -> Vec<Value> {
     let names: std::collections::BTreeSet<_> = old.keys().chain(new.keys()).collect();
     names.into_iter().map(|n| diff_file(n, old.get(n), new.get(n))).collect()
 }
@@ -182,8 +198,14 @@ pub fn compare(app: &App, name: Option<&str>) -> Result<Value> {
     Ok(json!({ "using": if has_mine(app) { "mine" } else { "original" }, "differences_from_original": rows }))
 }
 
+fn commit(app: &App, next: Files, action: &str, file: &str, note: &str) -> Result<Value> {
+    commit_with_base(app, next, action, file, note, None)
+}
+
 /// Check, keep the current files in history, then write `next` as your version and reload the app.
-fn commit(app: &App, next: BTreeMap<String, String>, action: &str, file: &str, note: &str) -> Result<Value> {
+/// Bringing in updates also moves the base to the original it came from (`new_base`); the old
+/// base is kept with the history, so undo puts it back.
+pub fn commit_with_base(app: &App, next: Files, action: &str, file: &str, note: &str, new_base: Option<Files>) -> Result<Value> {
     ensure!(note.trim().len() >= 3, "say in a few words what this change is (`note`)");
     let _g = app.write_lock.lock().unwrap();
     let fresh = !has_mine(app);
@@ -201,9 +223,10 @@ fn commit(app: &App, next: BTreeMap<String, String>, action: &str, file: &str, n
         let why = format!("{e:#}").replace(&format!("{}/", staging.display()), "");
         bail!("the syllabus would not load after this change, so nothing was saved: {why}");
     }
-    let orig_home = files(&original(app)).get("index.md").and_then(|s| section(s, PROTECTED));
-    if let Some(keep) = orig_home {
-        ensure!(next.get("index.md").and_then(|s| section(s, PROTECTED)).as_ref() == Some(&keep),
+    // As in the original now, or as in the original your copy follows (until you bring its update in).
+    let allowed: Vec<String> = [files(&original(app)), base_files(app)].iter().filter_map(|f| f.get("index.md").and_then(|s| section(s, PROTECTED))).collect();
+    if !allowed.is_empty() {
+        ensure!(next.get("index.md").and_then(|s| section(s, PROTECTED)).is_some_and(|s| allowed.contains(&s)),
             "the home page's \"{PROTECTED}\" section must stay exactly as it is, so nothing was saved");
     }
 
@@ -214,6 +237,10 @@ fn commit(app: &App, next: BTreeMap<String, String>, action: &str, file: &str, n
         "time": crate::util::now_utc(), "action": action, "file": file, "note": note.trim(), "first_change": fresh }))?;
     if fresh {
         write_files(&mine(app).join(".base"), &current)?;
+    }
+    if let Some(b) = new_base {
+        write_files(&snap.join(".base"), &base_files(app))?;
+        write_files(&mine(app).join(".base"), &b)?;
     }
     write_files(&mine(app), &next)?;
     reload(app)?;
@@ -245,7 +272,7 @@ pub fn texts(app: &App) -> Value {
     app.texts.read().unwrap().clone()
 }
 
-fn current(app: &App) -> BTreeMap<String, String> {
+fn current(app: &App) -> Files {
     files(&active_dir(app))
 }
 
@@ -280,6 +307,9 @@ pub fn undo(app: &App) -> Result<Value> {
     let snap = history_dir(app).join(&id);
     let c: Value = store::read_json(&snap.join("change.json"))?;
     let before = files(&snap);
+    if snap.join(".base").exists() {
+        write_files(&mine(app).join(".base"), &files(&snap.join(".base")))?;
+    }
     // The first change made the copy: undoing it goes back to the original.
     write_files(&mine(app), &before)?;
     std::fs::remove_dir_all(&snap)?;

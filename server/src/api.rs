@@ -48,6 +48,9 @@ pub fn router(app: Shared) -> Router {
         .route("/api/profile", get(get_profile).put(put_profile))
         .route("/api/exercises", get(list_exercises))
         .route("/api/texts", get(texts))
+        .route("/api/syllabus/updates", get(syllabus_updates).post(apply_syllabus_updates))
+        .route("/api/syllabus/history", get(syllabus_history))
+        .route("/api/syllabus/undo", post(syllabus_undo))
         .route("/api/studio/session", post(studio_session))
         .route("/api/exercises/{id}", get(get_exercise))
         .route("/api/deck/today", get(deck_today))
@@ -467,6 +470,31 @@ async fn remeasure(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<
 /// Re-measure every take analysed with an older method; the earlier results are kept.
 async fn remeasure_stale(State(app): State<Shared>) -> R<Json<Value>> {
     Ok(Json(json!({ "queued": jobs::remeasure_stale(&app)?, "method": jobs::ANALYSIS_METHOD })))
+}
+
+/// What Lilt's original changed since your own version was made, and how each change would be handled.
+async fn syllabus_updates(State(app): State<Shared>) -> Json<Value> {
+    Json(crate::updates::list(&app))
+}
+
+#[derive(Deserialize)]
+struct ApplyUpdates {
+    #[serde(default)]
+    choices: std::collections::BTreeMap<String, String>,
+    #[serde(default)]
+    note: String,
+}
+
+async fn apply_syllabus_updates(State(app): State<Shared>, Json(b): Json<ApplyUpdates>) -> R<Json<Value>> {
+    Ok(Json(crate::updates::apply(&app, &b.choices, &b.note)?))
+}
+
+async fn syllabus_history(State(app): State<Shared>) -> Json<Value> {
+    Json(crate::syllabus::history(&app))
+}
+
+async fn syllabus_undo(State(app): State<Shared>) -> R<Json<Value>> {
+    Ok(Json(crate::syllabus::undo(&app)?))
 }
 
 #[derive(Deserialize)]

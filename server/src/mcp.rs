@@ -99,6 +99,8 @@ pub fn tools() -> Vec<Tool> {
         tool("syllabus_delete", "Remove one chapter file from the learner's version. Can be undone.", json!({"type": "object", "required": ["file", "note"], "properties": {"file": file_arg, "note": {"type": "string"}}}), false),
         tool("syllabus_history", "The changes made to the learner's version, newest first, with their notes.", json!({"type": "object", "properties": {}}), true),
         tool("syllabus_undo", "Undo the latest change to the learner's version (undoing the first change goes back to Lilt's original).", json!({"type": "object", "properties": {}}), false),
+        tool("syllabus_updates", "What Lilt's original syllabus changed since the learner's version was made (or last updated), piece by piece (a chapter's details, each text, each home page section), with how each would be handled: \"take\" (they hadn't changed it, so the update comes in), \"choose\" (both changed it; show them both and ask which to keep), \"already\" (same change). Includes their version, the original's new one and the one before.", json!({"type": "object", "properties": {}}), true),
+        tool("syllabus_apply_updates", "Bring the original's updates into the learner's version. Every \"choose\" change needs a choice: {\"<id>\": \"yours\" | \"original\"}; ask the learner rather than deciding for them. Checked like any change, kept in the history, and can be undone.", json!({"type": "object", "properties": {"choices": {"type": "object", "additionalProperties": {"enum": ["yours", "original"]}}, "note": {"type": "string"}}}), false),
         tool("syllabus_reset", "Go back to Lilt's original syllabus. Kept in the history, so it can be undone.", json!({"type": "object", "required": ["note"], "properties": {"note": {"type": "string"}}}), false),
     ]
 }
@@ -283,6 +285,12 @@ pub fn call(app: &Shared, name: &str, a: &serde_json::Map<String, Value>) -> any
         "syllabus_delete" => ok(syllabus::delete(app, &req_str(a, "file")?, &req_str(a, "note")?)?),
         "syllabus_history" => ok(syllabus::history(app)),
         "syllabus_undo" => ok(syllabus::undo(app)?),
+        "syllabus_updates" => ok(crate::updates::list(app)),
+        "syllabus_apply_updates" => {
+            let choices: std::collections::BTreeMap<String, String> = a.get("choices").cloned().map(serde_json::from_value).transpose()
+                .map_err(|e| anyhow::anyhow!("choices must map update ids to \"yours\" or \"original\": {e}"))?.unwrap_or_default();
+            ok(crate::updates::apply(app, &choices, &arg_str(a, "note").unwrap_or_default())?)
+        }
         "syllabus_reset" => ok(syllabus::reset(app, &req_str(a, "note")?)?),
         _ => Err(anyhow::anyhow!("unknown tool {name}")),
     }
