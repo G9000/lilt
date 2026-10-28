@@ -129,6 +129,18 @@ function Sidebar({ texts, deck, practised, current, locked }: { texts: Texts | n
 
 /* ---------------------------------------------------------------- the dock */
 
+/** True when the screen is split (text left, recorder right); results then show in the right half. */
+const SPLIT = "(min-width: 1101px)";
+function useSplit() {
+  const [split, setSplit] = useState(() => window.matchMedia(SPLIT).matches);
+  useEffect(() => {
+    const m = window.matchMedia(SPLIT), f = () => setSplit(m.matches);
+    m.addEventListener("change", f);
+    return () => m.removeEventListener("change", f);
+  }, []);
+  return split;
+}
+
 interface Pt { t: number; hz: number | null }
 const LO = 80, HI = 400;
 const fy = (hz: number, h: number) => { const pad = h * 0.1; return h - pad - (Math.log(hz / LO) / Math.log(HI / LO)) * (h - 2 * pad); };
@@ -156,9 +168,11 @@ function SleepingCat({ hint }: { hint: string }) {
 }
 
 /** The recorder at the bottom: one button, the waveform with the pitch line on it, and the numbers. */
-function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, quiet = false }: {
+function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false }: {
   meta: TakeMeta | null; band: [number, number] | null; allowRetake: boolean; quiet?: boolean;
   onSaved: (t: Take) => void; onRecording: (on: boolean) => void; children?: ReactNode; idleHint: string;
+  /** The last take's result, shown in place of the cat once recording stops (split screen only). */
+  result?: ReactNode;
 }) {
   const mic = useMic();
   const [state, setState] = useState<RecState>("idle");
@@ -291,10 +305,11 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const dash = <span className="ve-none">–</span>;
   // Until the microphone is in use, the right half is just the room's window and the record button.
   const idle = !recording && !listening && state !== "saving" && state !== "error";
+  const showResult = idle && !!result;
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   return (
-    <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
-      <SleepingCat hint={idleHint} />
+    <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}`} aria-label="Recorder">
+      {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} />}
       <div className="ve-now" aria-live="off">
         <div className="ve-now-read">
           <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
@@ -401,6 +416,8 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
     setToast(`Your range is now ${Math.round(p10)}–${Math.round(p90)} Hz`);
   };
 
+  const split = useSplit();
+  const takeView = latest && <ChapterTake take={latest} before={before} band={band} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />;
   const n = level.items.length;
   return (
     <>
@@ -435,7 +452,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                   <p className="ve-hint">{it.hint}</p>
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
-                  {on && latest && <ChapterTake take={latest} before={before} band={band} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
+                  {on && !split && takeView}
                 </li>
               );
             })}
@@ -444,7 +461,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
         </article>
       </div>
       <Dock key={promptId} meta={sessionId ? { session_id: sessionId, role: "free", prompt_id: promptId, prompt_text: item.text } : null}
-        band={band} allowRetake onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }}
+        band={band} allowRetake onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? takeView : null}
         idleHint="Press record and read the highlighted text">
         <button className="ve-link" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1}>Next text <kbd>↓</kbd></button>
       </Dock>
@@ -524,6 +541,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   const [comfort, setComfort] = useState<string | null>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const curRef = useRef<HTMLLIElement>(null);
+  const split = useSplit();
 
   useEffect(() => {
     Promise.all([api.deck(), api.deckSession()]).then(([d, s]) => {
@@ -600,6 +618,28 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
     exercise_id: item.card.exercise_id, exercise_version: item.card.exercise_version, retry_of: phase.retryOf,
   } : null;
   const date = new Date(`${deck.local_date}T12:00:00`).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+  // Listen back, the measured pitch and the rating: under the card, or in the right half when split.
+  const rateView = phase.k === "rate" && (
+    <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={phase.take.id}>
+      <ListenBack src={phase.take.audio_url} />
+      <Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
+      <div className="ve-rate-box">
+        <p className="ve-q" id="feel-q">How did that feel?</p>
+        <div className="vc-rate ve-rate" role="group" aria-labelledby="feel-q">
+          {RATINGS.map((r, i) => (
+            <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={`${r.label}, next ${item.preview[r.r]}`}>
+              <span className="l">{r.label}<kbd aria-hidden="true">{i + 1}</kbd></span>
+              <small>{item.preview[r.r] === "later today" ? "in a few minutes" : item.preview[r.r]}</small>
+            </button>
+          ))}
+        </div>
+        <div className="ve-rate-more">
+          <button className="ve-link" onClick={() => setPhase({ k: "say", retryOf: phase.take.id })} disabled={busy}>Record it again</button>
+          <button className="ve-link ouch" onClick={() => void rate("ouch")} disabled={busy}>It hurt or felt strained</button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -655,27 +695,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                     : <p className="readtext ve-read" aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
                   {it.card.hint && <p className="ve-hint">{it.card.hint}</p>}
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(j)} disabled={phase.k !== "say" || recOn}>Practise {it.card.front.slice(0, 40)} next</button>}
-                  {on && phase.k === "rate" && (
-                    <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={phase.take.id}>
-                      <ListenBack src={phase.take.audio_url} />
-                      <Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
-                      <div className="ve-rate-box">
-                        <p className="ve-q" id="feel-q">How did that feel?</p>
-                        <div className="vc-rate ve-rate" role="group" aria-labelledby="feel-q">
-                          {RATINGS.map((r, i) => (
-                            <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={`${r.label}, next ${item.preview[r.r]}`}>
-                              <span className="l">{r.label}<kbd aria-hidden="true">{i + 1}</kbd></span>
-                              <small>{item.preview[r.r] === "later today" ? "in a few minutes" : item.preview[r.r]}</small>
-                            </button>
-                          ))}
-                        </div>
-                        <div className="ve-rate-more">
-                          <button className="ve-link" onClick={() => setPhase({ k: "say", retryOf: phase.take.id })} disabled={busy}>Record it again</button>
-                          <button className="ve-link ouch" onClick={() => void rate("ouch")} disabled={busy}>It hurt or felt strained</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  {on && !split && rateView}
                 </li>
               );
             })}
@@ -686,7 +706,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       {!ended && item && (
         <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k === "rate"}
           onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
-          idleHint="Press record and say the card">
+          idleHint="Press record and say the card" result={split ? rateView : null}>
           {phase.k === "say" && !recOn && <button className="ve-link ouch" onClick={ouchNow}>Stop, my voice hurts</button>}
         </Dock>
       )}

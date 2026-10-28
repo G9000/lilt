@@ -45,14 +45,18 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   up. One centred column sits above the cat, over a soft dark glow:
   "Ready when you are" (42px, white), the hint, then the record pill as the main action (white,
   56px, red dot, `Space`), then the links as small quiet text.
+  **After a take**, the right half shows its result instead of the cat, under a bold "Your take":
+  listen back and the measured pitch (filling in once analysis finishes), before/after on a
+  chapter, and on Today the rating; the record pill stays centred below (hidden while rating).
+  Narrower than that, the result sits under the card as before.
   **In use**, the instruments rise in, top to bottom: a big live **Now** readout (Geist 200, 68px, note
   under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
   graph straight on the panel (comfortable band, faint Hz guide lines labelled on the right,
   rounded loudness bars, the live pitch line in coral with a soft glow and a dot at its tip); three
   white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a compact centred
   **record pill** (ink, red dot, "Record", `Space`) that turns red with a white square, "Stop" and
-  the timer while recording; hints under it. Narrower, the same parts dock at the bottom in their own panel, with the numbers on a second row. Rating sits inside
-  the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
+  the timer while recording; hints under it. Narrower, the same parts dock at the bottom in their own panel, with the numbers on a second row. Rating sits with the
+  result: in the right half when split, otherwise inside the card you just said, under the listen-back. On phones the sidebar
   becomes a strip of chapter chips.
 
 ## Tokens (light; dark theme swaps the window and ink colours)
