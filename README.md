@@ -211,12 +211,26 @@ whole history.
 
 ## MCP (connecting your agent)
 
-Lilt exposes 11 tools, listed below. Arguments are IDs only; there is no filesystem or shell access.
+Lilt exposes 19 tools, listed below. Arguments are IDs and syllabus file names only; there is no
+filesystem or shell access.
 
 - `voice_get_today_plan`, `voice_list_exercises`, `voice_list_sessions`, `voice_get_session`
 - `voice_get_analysis`, `voice_compare_sessions`, `voice_get_progress`, `voice_get_audio_clip`
 - `voice_get_deck`: today's card deck, scheduling state and, optionally, the review log
 - `voice_save_review`, `voice_set_next_plan`
+- `syllabus_list`, `syllabus_read`, `syllabus_compare`, `syllabus_history`: your syllabus (the
+  chapters and the home page) and how it differs from Lilt's original
+- `syllabus_write`, `syllabus_delete`, `syllabus_undo`, `syllabus_reset`: change it
+
+**Your own syllabus.** Ask your agent to rewrite a chapter, add one, or overhaul the lot ("make the
+warm-ups shorter", "add a chapter of phone-call phrases"). The changes go to your own copy in
+`<data>/syllabus`; the original in `content/texts` is never touched, and the app switches to your
+copy and says so on the Practice home page. Every change is checked before it's saved (a file Lilt
+can't read is refused, and the home page's "Be gentle with your voice" section can't be changed),
+kept in `<data>/syllabus/.history` with the agent's note, and can be undone one at a time, or all at
+once by going back to the original. `<data>/syllabus/.base` keeps the original as it was when your
+copy was made, for comparing with later versions of the original. Progress follows the text ids, so a
+reworded text keeps its history.
 
 **HTTP, while Lilt is running.** Use this with Claude Code:
 
@@ -239,6 +253,8 @@ What the server enforces on writes:
 - Prose is screened for hearing claims ("I hear…"), diagnosis, anatomy, and femininity scores.
 - Plan updates must name the current plan version.
 - A duplicate `idempotency_key` returns the existing review.
+- Syllabus changes must leave a syllabus Lilt can load, keep the "Be gentle with your voice"
+  section, come with a note, and only touch `index.md`, `_about.md`, `_pitch.md` or `NN-name.md`.
 
 This screening checks a list of prohibited phrasings. It cannot prove that arbitrary prose is true.
 

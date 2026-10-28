@@ -333,6 +333,7 @@
 .ve-start-card + .ve-md, .ve-practice + .ve-md { margin-top: 40px; }
 .ve-chapters { list-style: none; padding: 0 !important; margin: 0 0 40px; display: grid; gap: 2px; }
 .ve-chapters li { margin: 0; padding: 0; }
+.ve-md .ve-edition { margin: -12px 0 40px; font-size: 13px; line-height: 1.5; color: var(--ink-3); }
 .ve-chapters a { display: flex; align-items: center; gap: 14px; padding: 10px 12px; margin: 0 -12px; border-radius: 12px; color: inherit; text-decoration: none; transition: background-color 0.12s ease; }
 .ve-chapters .n { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--fill-2); font: 600 12px var(--font); color: var(--ink-2); }
 .ve-chapters .t { flex: 1; min-width: 0; display: grid; }

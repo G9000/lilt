@@ -43,7 +43,10 @@ pub struct App {
     pub paths: Paths,
     pub registry: RwLock<Registry>,
     pub prompts: Value,
-    pub texts: Value,
+    /// The practice texts as the app shows them: your version of the syllabus, or the original.
+    pub texts: RwLock<Value>,
+    /// When `texts` was read from disk (see `syllabus::texts`).
+    pub texts_stamp: Mutex<String>,
     /// take_id -> session_id
     take_index: RwLock<HashMap<String, String>>,
     /// Serialises read-modify-write of JSON records.
@@ -61,10 +64,10 @@ impl App {
             crate::exercises::seed_and_load(&paths, &config.content_dir.join("exercises"))?;
         let prompts: Value = store::read_json(&config.content_dir.join("prompts/prompts.json"))
             .context("loading content/prompts/prompts.json")?;
-        let texts = crate::texts::load(&config.content_dir.join("texts")).context("loading content/texts")?;
         let app = Arc::new(App {
             config,
-            texts,
+            texts: RwLock::new(Value::Null),
+            texts_stamp: Mutex::new(String::new()),
             paths,
             registry: RwLock::new(registry),
             prompts,
@@ -72,6 +75,7 @@ impl App {
             write_lock: Mutex::new(()),
             job_notify: Notify::new(),
         });
+        crate::syllabus::reload(&app).context("loading the practice texts")?;
         app.rebuild_index();
         if !app.paths.profile().exists() {
             store::write_json(&app.paths.profile(), &Profile::default())?;

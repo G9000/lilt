@@ -11,6 +11,7 @@ mod model;
 mod progress;
 mod recordings;
 mod store;
+mod syllabus;
 mod texts;
 mod util;
 mod validate;

@@ -51,7 +51,7 @@ fn joined<'a>(lines: impl Iterator<Item = &'a str>) -> String {
     lines.map(str::trim).filter(|l| !l.is_empty()).collect::<Vec<_>>().join(" ")
 }
 
-fn chapter(src: &str, level: usize) -> Result<Value> {
+pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
     let (mut meta, body) = front_matter(src)?;
     for key in ["id", "title", "kind"] {
         if meta.get(key).and_then(Value::as_str).unwrap_or("").is_empty() {

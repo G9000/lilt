@@ -584,6 +584,7 @@ function HomeDoc({ texts, deck, practised, history, profile, onRecording, onTake
                 );
               })}
             </ol>
+            {texts.edition?.mine && <p className="ve-edition">You're using your own version of these chapters ({texts.edition.changes} {texts.edition.changes === 1 ? "change" : "changes"}). Your AI assistant can show what's different, undo a change, or go back to Lilt's original.</p>}
           </section>
           {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
         </article>

@@ -572,3 +572,72 @@ fn remeasure_keeps_the_earlier_run_and_points_at_the_new_one() {
     assert_eq!(jobs::remeasure_stale(&app).unwrap(), 0);
 }
 
+
+#[test]
+fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
+    use crate::{cards, mcp, syllabus};
+    let (dir, app) = app();
+    let call = |name: &str, args: serde_json::Value| mcp::call(&app, name, args.as_object().unwrap());
+    let shipped = std::fs::read_to_string(root().join("content/texts/02-m-words.md")).unwrap();
+    let has_card = |id: &str| cards::all_cards(&app).iter().any(|c| c.id == id);
+    assert_eq!(syllabus::list(&app)["using"], "original");
+
+    // A file Lilt can't read, a non-syllabus name, or a change to the safety section is refused.
+    assert!(syllabus::write(&app, "02-m-words.md", "no front matter", "break it").is_err());
+    assert!(syllabus::write(&app, "../02-m-words.md", &shipped, "escape").is_err());
+    let home = std::fs::read_to_string(root().join("content/texts/index.md")).unwrap();
+    let pushy = home.replace("It should never hurt.", "Push through it.");
+    assert!(syllabus::write(&app, "index.md", &pushy, "be tougher").unwrap_err().to_string().contains("Be gentle"));
+    assert!(!dir.path().join("syllabus/_about.md").exists(), "refused edits leave no copy");
+
+    // Reword a text and add one: your version, with the original untouched, and new cards.
+    let edited = shipped.replacen("meet · many · maybe · Mary · magic", "me · my · may", 1) + "\n## mine-extra\n\nmorning, mum\n\n> Easy.\n";
+    let r = syllabus::write(&app, "02-m-words.md", &edited, "shorter first line, one more text").unwrap();
+    assert_eq!(r["using"], "mine");
+    assert_eq!(std::fs::read_to_string(root().join("content/texts/02-m-words.md")).unwrap(), shipped);
+    assert!(has_card("text.m-words.mine-extra"));
+    let cmp = call("syllabus_compare", serde_json::json!({})).unwrap().structured_content.unwrap();
+    let d = &cmp["differences_from_original"][0];
+    assert_eq!((d["file"].as_str(), d["texts_added"][0].as_str()), (Some("02-m-words.md"), Some("mine-extra")));
+    assert_eq!(d["texts_changed"].as_array().unwrap().len(), 1);
+
+    // A new chapter, removed again, then undo brings it back.
+    let template = std::fs::read_to_string(root().join("content/texts/_template.md")).unwrap();
+    syllabus::write(&app, "09-my-chapter.md", &template, "add my own chapter").unwrap();
+    assert!(has_card("text.my-chapter.first-text"));
+    syllabus::delete(&app, "09-my-chapter.md", "not needed").unwrap();
+    assert!(!has_card("text.my-chapter.first-text"));
+    syllabus::undo(&app).unwrap();
+    assert!(has_card("text.my-chapter.first-text"));
+    assert_eq!(syllabus::history(&app)["changes"].as_array().unwrap().len(), 2);
+
+    // Reset goes back to the original and can be undone too; undoing everything ends on the original.
+    syllabus::reset(&app, "start over").unwrap();
+    assert!(!has_card("text.m-words.mine-extra"));
+    syllabus::undo(&app).unwrap();
+    assert!(has_card("text.m-words.mine-extra"));
+    syllabus::undo(&app).unwrap();
+    syllabus::undo(&app).unwrap();
+    assert_eq!(syllabus::list(&app)["using"], "original");
+    assert!(!has_card("text.m-words.mine-extra"));
+    assert!(syllabus::undo(&app).is_err());
+
+    // Your version survives a restart.
+    syllabus::write(&app, "02-m-words.md", &edited, "again").unwrap();
+    drop(app);
+    let again = App::open(config(dir.path())).unwrap();
+    assert!(cards::all_cards(&again).iter().any(|c| c.id == "text.m-words.mine-extra"));
+    assert_eq!(again.texts.read().unwrap()["edition"]["mine"], true);
+}
+
+#[test]
+fn syllabus_changes_from_another_process_are_picked_up() {
+    use crate::{cards, syllabus};
+    let (dir, app) = app();
+    let other = App::open(config(dir.path())).unwrap();
+    let src = std::fs::read_to_string(root().join("content/texts/02-m-words.md")).unwrap() + "\n## from-elsewhere\n\nmm\n\n> Easy.\n";
+    syllabus::write(&other, "02-m-words.md", &src, "from the stdio server").unwrap();
+    assert!(cards::all_cards(&app).iter().any(|c| c.id == "text.m-words.from-elsewhere"));
+    let e = syllabus::write(&app, "02-m-words.md", "oops", "break it").unwrap_err().to_string();
+    assert!(e.contains("in 02-m-words.md:"), "{e}");
+}

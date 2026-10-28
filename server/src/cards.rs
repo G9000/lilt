@@ -111,7 +111,7 @@ pub fn all_cards(app: &App) -> Vec<Card> {
         ("automatic", vec!["nhsfife.gentle-pitch-count"]),
         ("phrases", vec!["nhsfife.smile-brighten", "nhsfife.real-phrases-intonation"]),
     ]);
-    let levels = app.texts["levels"].as_array().cloned().unwrap_or_default();
+    let levels = crate::syllabus::texts(app)["levels"].as_array().cloned().unwrap_or_default();
     for (si, l) in levels.iter().enumerate() {
         let lid = l["id"].as_str().unwrap_or_default();
         let ltitle = l["title"].as_str().unwrap_or_default();

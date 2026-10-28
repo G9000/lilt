@@ -185,7 +185,7 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
 }
 
 async fn texts(State(app): State<Shared>) -> Json<Value> {
-    Json(app.texts.clone())
+    Json(crate::syllabus::texts(&app))
 }
 
 async fn studio_session(State(app): State<Shared>) -> R<Json<Session>> {

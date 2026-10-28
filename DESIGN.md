@@ -62,7 +62,9 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   **Home** (`#/studio`, the dock's Chapters app) is the Practice index, read like a Notion page:
   a full-width cover (`cover:` in `content/texts/index.md`), then the owner's words and pictures
   from that file (why it exists, an honest note, how it's laid out, looking after your voice, how to
-  contribute, sources), then the chapters with progress, generated. The recorder takes free
+  contribute, sources), then the chapters with progress, generated. When an agent has rewritten the syllabus for you, one quiet
+line under the chapters says you're using your own version, with how many changes, and that your AI
+assistant can show the differences, undo, or go back to Lilt's original. The recorder takes free
   recordings beside it. You can **resize** it: drag the sidebar's
   edge (200–420px; drag it very narrow to fold it away) or the divider between the text and the
   recorder (32–72%); double-click either to reset, or use the arrow keys on it. The sidebar
