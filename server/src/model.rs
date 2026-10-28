@@ -17,6 +17,7 @@ pub struct Profile {
     pub appearance: String,
     pub session_minutes: u32,
     pub comparison_window_days: u32,
+    /// Reserved for external recording analysis; the optional text coach has separate consent.
     pub external_processing: bool,
     /// Optional comfortable practice range the learner chose, [low, high] Hz. Shown as a
     /// band in pitch views; never a gendered target and never used for coaching.

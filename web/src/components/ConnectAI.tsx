@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
 import { api, ConnectInfo } from "../api";
 import { Callout } from "./bits";
+import { ChatGPTAccount } from "./ChatGPTAccount";
+import { ChatGPTIcon, ClaudeIcon, OtherAppsIcon } from "./BrandIcons";
 
 /** "3 min ago", "yesterday", or the date. */
 function ago(iso: string) {
@@ -26,11 +28,11 @@ function Snippet({ text, label }: { text: string; label: string }) {
 }
 
 /**
- * Settings → AI connections: pick your app first (ChatGPT, Claude Desktop, Claude Code, others),
- * then its steps. Apps on this computer connect directly; ChatGPT and other cloud apps through a
- * public tunnel address and a one-time code.
+ * Settings → AI connections: pick your app first (ChatGPT, Claude, others), then its steps.
+ * ChatGPT: your account, and folded away, using Lilt inside the ChatGPT app through a public tunnel
+ * address and a one-time code. Claude: Claude Desktop and Claude Code, both on this computer.
  */
-type App = "chatgpt" | "claude-desktop" | "claude-code" | "other";
+type App = "chatgpt" | "claude" | "other";
 
 export function ConnectAI() {
   const [c, setC] = useState<ConnectInfo | null>(null);
@@ -55,15 +57,18 @@ export function ConnectAI() {
   const left = code ? Math.max(0, Math.round((code.until - now) / 1000)) : 0;
   const desktop = JSON.stringify({ mcpServers: { lilt: c.stdio } }, null, 2);
 
-  const apps: { id: App; name: string; where: string }[] = [
-    { id: "chatgpt", name: "ChatGPT", where: "Web, desktop and phone" },
-    { id: "claude-desktop", name: "Claude Desktop", where: "On this Mac" },
-    { id: "claude-code", name: "Claude Code", where: "In a terminal" },
-    { id: "other", name: "Other apps", where: "Cursor, Hermes, claude.ai" },
+  const apps: { id: App; name: string; where: string; icon: ReactNode }[] = [
+    { id: "chatgpt", name: "ChatGPT", where: "Your ChatGPT account", icon: <ChatGPTIcon /> },
+    { id: "claude", name: "Claude", where: "Desktop app and Claude Code", icon: <ClaudeIcon /> },
+    { id: "other", name: "Other apps", where: "Cursor, Hermes and more", icon: <OtherAppsIcon /> },
   ];
   const chatgpt = (
     <div className="st-box">
+      <div className="st-field"><ChatGPTAccount /></div>
+      <details className="st-more">
+      <summary>Use Lilt inside the ChatGPT app</summary>
       <div className="st-field">
+        <span className="st-label">Connect from the ChatGPT app</span>
         <p className="st-help st-why">ChatGPT runs on OpenAI's servers, so it can't reach this computer directly. You give Lilt a temporary public address, add it in ChatGPT, and sign in with a code only Lilt shows you. Through that address only Lilt's AI connection and sign-in page can be reached: not the app, not your recordings.</p>
       </div>
       <div className="st-field">
@@ -95,25 +100,25 @@ export function ConnectAI() {
           <button className="btn-secondary" onClick={() => void run(async () => { await api.disconnectApp(x.id); await load(); })}>Disconnect</button>
         </div>
       ))}
+      </details>
     </div>
   );
   const pane: Record<App, ReactNode> = {
     chatgpt,
-    "claude-desktop": (
+    claude: (
       <div className="st-box">
         <div className="st-field">
-          <span className="st-label">Add Lilt to Claude Desktop</span>
+          <span className="st-label">Claude Desktop</span>
           <p className="st-help">Open Claude → Settings → Developer → Edit Config, paste this into <code>claude_desktop_config.json</code>, then restart Claude. It runs on this computer; nothing goes through the internet to reach Lilt.{c.stdio.command === "docker" && " Lilt's container needs to be running."}</p>
           <Snippet label="Claude Desktop configuration" text={desktop} />
         </div>
-      </div>
-    ),
-    "claude-code": (
-      <div className="st-box">
         <div className="st-field">
-          <span className="st-label">Add Lilt to Claude Code</span>
-          <p className="st-help">Run this once in a terminal. Then ask Claude about your practice, or to change your chapters.</p>
+          <span className="st-label">Claude Code</span>
+          <p className="st-help">Run this once in a terminal.</p>
           <Snippet label="Claude Code command" text={`claude mcp add --transport http lilt ${c.local_url}${c.token_required ? " --header \"Authorization: Bearer $LILT_MCP_TOKEN\"" : ""}`} />
+        </div>
+        <div className="st-field">
+          <p className="st-help">Then ask Claude about your practice, or to change your own copy of the chapters. claude.ai on the web works like the ChatGPT app: see "Use Lilt inside the ChatGPT app" under ChatGPT, then add the address under Settings → Connectors.</p>
         </div>
       </div>
     ),
@@ -121,12 +126,8 @@ export function ConnectAI() {
       <div className="st-box">
         <div className="st-field">
           <span className="st-label">Apps on this computer</span>
-          <p className="st-help">Cursor, Hermes and other apps that speak MCP over HTTP can use this address. Apps that start Lilt themselves can use the command in Claude Desktop's setup.</p>
+          <p className="st-help">Cursor, Hermes and other apps that speak MCP over HTTP can use this address. Apps that start Lilt themselves can use the configuration under Claude.</p>
           <Snippet label="Lilt's MCP address" text={c.local_url} />
-        </div>
-        <div className="st-field">
-          <span className="st-label">claude.ai on the web</span>
-          <p className="st-help">Like ChatGPT, it runs in the cloud: follow ChatGPT's steps, then add the address under Settings → Connectors → Add custom connector.</p>
         </div>
       </div>
     ),
@@ -137,7 +138,7 @@ export function ConnectAI() {
       <div className="st-apps" role="tablist" aria-label="Choose your app">
         {apps.map((a) => (
           <button key={a.id} role="tab" aria-selected={app === a.id} className={app === a.id ? "on" : ""} onClick={() => setApp(a.id)}>
-            <b>{a.name}</b><span>{a.where}</span>
+            {a.icon}<b>{a.name}</b><span>{a.where}</span>
           </button>
         ))}
       </div>

@@ -51,6 +51,7 @@ pub struct App {
     pub oauth: Mutex<()>,
     /// The pairing code and unused sign-in codes, never written to disk.
     pub oauth_mem: Mutex<crate::oauth::Memory>,
+    pub chatgpt: tokio::sync::Mutex<crate::chatgpt::State>,
     /// take_id -> session_id
     take_index: RwLock<HashMap<String, String>>,
     /// Serialises read-modify-write of JSON records.
@@ -74,6 +75,7 @@ impl App {
             texts_stamp: Mutex::new(String::new()),
             oauth: Mutex::new(()),
             oauth_mem: Mutex::new(Default::default()),
+            chatgpt: tokio::sync::Mutex::new(Default::default()),
             paths,
             registry: RwLock::new(registry),
             prompts,

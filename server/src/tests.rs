@@ -805,6 +805,45 @@ async fn remote_apps_sign_in_with_a_pairing_code_and_only_reach_mcp() {
     assert_eq!(send(local("attacker.example")).await.0, StatusCode::FORBIDDEN);
 }
 
+#[tokio::test]
+async fn chatgpt_signin_is_local_same_origin_and_callback_is_bound_to_browser() {
+    use axum::{body::{Body, to_bytes}, http::{Request, StatusCode}};
+    use tower::ServiceExt;
+    let (_dir, a) = app();
+    let router = crate::build_router(a.clone(), &a.config);
+    for (host, origin) in [("attacker.example:7878", "http://attacker.example:7878"), ("127.0.0.1:7878", "https://attacker.example")] {
+        let res = router.clone().oneshot(Request::builder().method("POST").uri("/api/chatgpt/login").header("host", host).header("origin", origin).body(Body::empty()).unwrap()).await.unwrap();
+        assert_eq!(res.status(), StatusCode::FORBIDDEN);
+    }
+    let res = router.clone().oneshot(Request::builder().method("POST").uri("/api/chatgpt/login").header("host", "127.0.0.1:7878").header("origin", "http://127.0.0.1:7878").body(Body::empty()).unwrap()).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.headers()["cache-control"], "no-store");
+    let cookie = res.headers()["set-cookie"].to_str().unwrap().split(';').next().unwrap().to_owned();
+    let body: serde_json::Value = serde_json::from_slice(&to_bytes(res.into_body(), 16384).await.unwrap()).unwrap();
+    let url = url::Url::parse(body["url"].as_str().unwrap()).unwrap();
+    let params: std::collections::HashMap<_, _> = url.query_pairs().into_owned().collect();
+    assert_eq!(params["client_id"], "dynamic_agent_client");
+    assert_eq!(params["redirect_uri"], "http://127.0.0.1:7878/auth/callback");
+    assert!(params["scope"].contains("chatgpt.tokens.use.direct"));
+    let wrong = format!("/auth/callback?state={}&error=access_denied", params["state"]);
+    let res = router.clone().oneshot(Request::builder().uri(&wrong).header("host", "127.0.0.1:7878").body(Body::empty()).unwrap()).await.unwrap();
+    assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+    let res = router.oneshot(Request::builder().uri(&wrong).header("host", "127.0.0.1:7878").header("cookie", cookie).body(Body::empty()).unwrap()).await.unwrap();
+    assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+    assert!(!a.chatgpt.lock().await.pending_for_test());
+}
+
+#[test]
+fn chatgpt_private_data_is_never_in_practice_export() {
+    let (_dir, a) = app();
+    std::fs::create_dir(a.paths.root.join(".private")).unwrap();
+    std::fs::write(a.paths.root.join(".private/chatgpt.json"), b"secret").unwrap();
+    let path = crate::export::write_zip(&a).unwrap();
+    let zip = zip::ZipArchive::new(std::fs::File::open(&path).unwrap()).unwrap();
+    assert!(!zip.file_names().any(|name| name.unwrap().contains(".private")));
+    std::fs::remove_file(path).unwrap();
+}
+
 /// Courses: a second one beside voice, kept apart; `locked` from its course.md; pictures served per
 /// course; and an older `<data>/syllabus` copy moved to `<data>/courses/voice` on start.
 #[tokio::test]
@@ -877,4 +916,56 @@ async fn courses_are_kept_apart_and_old_copies_move_over() {
     assert_eq!((zh_texts["levels"][0]["id"].as_str(), zh_texts["edition"]["course"].as_str()), (Some("greetings"), Some("mandarin")));
     assert_eq!(json(router.clone().oneshot(get("/api/texts")).await.unwrap()).await["edition"]["course"], "voice");
     assert_eq!(router.oneshot(get("/api/syllabus?course=nope")).await.unwrap().status(), StatusCode::BAD_REQUEST);
+}
+
+/// A remix saves its files as one change (one undo), with the usual checks; without a ChatGPT
+/// account it asks you to connect one.
+#[tokio::test]
+async fn a_remix_is_one_change_and_needs_chatgpt() {
+    use crate::{courses, syllabus};
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+    let (dir, app) = app();
+    let v = courses::get(&app, "voice").unwrap();
+    let read = |n: &str| std::fs::read_to_string(root().join("content/courses/voice").join(n)).unwrap();
+    let a = read("01-warmup.md").replace("title: Warm-ups", "title: Short warm-ups");
+    let b = read("02-m-words.md").replace("title: M and N words", "title: M words");
+    syllabus::write_many(&app, &v, vec![("01-warmup.md".into(), a), ("02-m-words.md".into(), b)], "Shorter titles").unwrap();
+    let h = syllabus::history(&app, &v);
+    assert_eq!((h["changes"].as_array().unwrap().len(), h["changes"][0]["action"].as_str()), (1, Some("remix")));
+    let locked = read("index.md").replace("It should never hurt.", "Push through it.");
+    assert!(syllabus::write_many(&app, &v, vec![("index.md".into(), locked)], "tougher").is_err());
+    syllabus::undo(&app, &v).unwrap();
+    assert_eq!(syllabus::list(&app, &v)["using"], "original");
+
+    let router = crate::build_router(app.clone(), &config(dir.path()));
+    let req = Request::builder().method("POST").uri("/api/mixtape/remix").header("host", "127.0.0.1:7878").header("content-type", "application/json")
+        .body(Body::from(r#"{"request":"Make the warm-ups shorter"}"#)).unwrap();
+    let res = router.oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+    let body = String::from_utf8(res.into_body().collect().await.unwrap().to_bytes().to_vec()).unwrap();
+    assert!(body.contains("Connect ChatGPT"), "{body}");
+}
+
+/// "New chapter" adds a blank one to your mixtape that Lilt can read, numbered after the last.
+#[tokio::test]
+async fn a_blank_chapter_lands_in_your_mixtape() {
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+    let (dir, app) = app();
+    let router = crate::build_router(app.clone(), &config(dir.path()));
+    let post = || Request::builder().method("POST").uri("/api/mixtape/chapter").header("host", "127.0.0.1:7878").header("content-type", "application/json").body(Body::from("{}")).unwrap();
+    let res = router.clone().oneshot(post()).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    let v: serde_json::Value = serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!((v["chapter"].as_str(), v["file"].as_str()), (Some("my-chapter-1"), Some("09-my-chapter-1.md")));
+    let res = router.oneshot(post()).await.unwrap();
+    let v: serde_json::Value = serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(v["file"].as_str(), Some("10-my-chapter-2.md"));
+    let t = crate::syllabus::texts(&app);
+    assert_eq!(t["levels"].as_array().unwrap().last().unwrap()["title"], "New chapter");
 }

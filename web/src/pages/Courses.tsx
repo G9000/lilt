@@ -1,10 +1,10 @@
 import "../styles/courses.css";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { api, Course, CourseChange, CourseFiles } from "../api";
 import { go } from "../App";
 import { UpdatesDoc } from "./Voice";
-import { openSettings } from "../desk/SettingsSheet";
 import { KindTile, kindOf } from "../courses";
+import { RemixBox } from "../components/RemixBox";
 
 /** "3 min ago", "yesterday", or the date. */
 function ago(iso: string) {
@@ -110,13 +110,20 @@ export function useMixtape(id: string, onChange?: () => void) {
     setC(all.courses.find((x) => x.id === id) ?? null); setFiles(f); setChanges(h.changes);
   };
   useEffect(() => { void load().catch((e) => setErr(e.message)); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A remix from the Remix chat changed it: read it again.
+  useEffect(() => {
+    const on = () => void load().catch(() => {});
+    window.addEventListener("lilt:texts-changed", on);
+    return () => window.removeEventListener("lilt:texts-changed", on);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
   const run = async (f: () => Promise<string>) => {
     setBusy(true); setErr(null); setSaid(null);
     try { setSaid(await f()); await load(); onChange?.(); } catch (e) { setErr(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); }
   };
   const undo = () => run(async () => { const r = await api.undoSyllabus(id); return r.using === "original" ? "Undone. You're back on the original." : "Undone."; });
   const reset = () => run(async () => { await api.resetCourse(id, "Went back to the original"); return "You're on the original again. Your mixtape is in the history, so Undo brings it back."; });
-  return { id, c, files, changes, busy, err, said, undo, reset };
+  const reload = () => { void load().then(() => onChange?.()); };
+  return { id, c, files, changes, busy, err, said, undo, reset, reload };
 }
 type Mixtape = ReturnType<typeof useMixtape>;
 
@@ -125,24 +132,18 @@ type Mixtape = ReturnType<typeof useMixtape>;
  * you're playing the original or your mixtape (and going back), its history with Undo, its chapters,
  * and how to change it with your AI.
  */
-export function MixtapeSections({ m, updatesHref }: { m: Mixtape; updatesHref: string }) {
+export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixtape; updatesHref: string; remix?: ReactNode }) {
   const [confirm, setConfirm] = useState(false);
   const { c, files, changes, busy } = m;
   if (!c || !files || !changes) return <p className="co-note">Loading…</p>;
   const chapters = files.files.filter((f) => f.chapter_id);
   const mine = c.using === "mine";
   const latest = changes[0];
-  const examples = c.kind === "voice"
-    ? ["Make the warm-ups shorter and gentler.", "Add a chapter of phone-call phrases.", "What's different from the original?"]
-    : [`Make ${c.title} easier for a beginner.`, "Add a chapter for ordering food.", "What's different from the original?"];
-  const remix = (
+  const remix = remixSlot ?? (
       <section className="co-sec">
-        <h2>Remix it with your AI</h2>
-        <div className="co-box">
-          <div className="co-row"><div><p>Ask an assistant connected to Lilt{c.kind === "voice" ? "" : `, naming ${c.title}`}, for example:</p><ul className="co-examples">{examples.map((x) => <li key={x}>“{x}”</li>)}</ul></div></div>
-          {c.locked_sections.length > 0 && <div className="co-row"><p>Your AI can't change {c.locked_sections.map((s) => `“${s}”`).join(", ")}.</p></div>}
-          <div className="co-row"><p>Not connected yet?</p><button className="btn-secondary co-small ss-open" onClick={() => openSettings("ai")}>AI connections</button></div>
-        </div>
+        <h2>Remix it</h2>
+        <RemixBox course={c.id} onDone={m.reload} />
+        <p className="co-note">Using Claude Desktop or Claude Code instead? Ask it the same thing; it lands here too.</p>
       </section>
   );
   return (
@@ -163,7 +164,7 @@ export function MixtapeSections({ m, updatesHref }: { m: Mixtape; updatesHref: s
           <div className="co-row">
             <div>
               <b>{mine ? "Your mixtape" : "The original"}</b>
-              <p>{mine ? `${c.changes} ${c.changes === 1 ? "change" : "changes"} so far. The original stays as it is.` : "Ask your AI to change anything, and it becomes your mixtape: your own remix of this course."}</p>
+              <p>{mine ? `${c.changes} ${c.changes === 1 ? "change" : "changes"} so far. The original stays as it is.` : "Remix anything and Lilt makes your own copy first: your mixtape. The original stays as it is."}</p>
             </div>
             {mine && !confirm && <button className="btn-secondary" onClick={() => setConfirm(true)} disabled={busy}>Go back to the original</button>}
           </div>
@@ -220,4 +221,4 @@ export function MixtapeSections({ m, updatesHref }: { m: Mixtape; updatesHref: s
   );
 }
 
-const ACTION: Record<string, string> = { write: "Remixed", delete: "Removed a chapter", update: "Brought in updates", reset: "Went back to the original" };
+const ACTION: Record<string, string> = { write: "Remixed", remix: "Remixed", delete: "Removed a chapter", update: "Brought in updates", reset: "Went back to the original" };

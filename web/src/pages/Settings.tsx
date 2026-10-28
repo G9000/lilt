@@ -126,7 +126,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
     if (id === "ai") return <ConnectAI />;
     if (id === "privacy") return (
       <>
-        <Callout kind="ok"><p><strong>External processing is off.</strong> Recording, saving, playback, analysis and feedback all run on this computer. No cloud model is used.</p></Callout>
+        <Callout kind="ok"><p>Recording, saving, playback and local analysis run on this computer. Connecting ChatGPT sends nothing by itself; when Lilt's AI features arrive in Practice, they will say what goes to OpenAI before anything is sent.</p></Callout>
         <p className="sx-note">If you connect an AI app (such as Claude or ChatGPT) to Lilt, whatever it reads (session details, measurements, notes, and audio clips if it asks for them) goes to that app's provider under its own terms.</p>
       </>
     );
@@ -205,7 +205,7 @@ const HERO: Record<PaneId, string> = {
   ai: "Let an AI assistant read your practice, write reviews, and rewrite your own copy of the chapters. Lilt's original chapters stay as they are, and every change can be undone.",
   notifications: "How Lilt can get your attention while it's open.",
   time: "The time zone your practice days and reminders follow.",
-  privacy: "Everything stays on this computer unless you connect an AI app.",
+  privacy: "Practice stays on this computer unless you connect an AI app.",
 };
 
 /**

@@ -4,6 +4,7 @@ Lilt is a personal, local app for practising voice feminization. It opens on tod
 You record a short guided session in the browser, and every original recording is kept on
 your own machine. You get one grounded next step that you can hear, try again and compare.
 Your AI agent can read the same evidence through MCP.
+You can also use the AI coach in AI connection settings with an eligible ChatGPT plan.
 
 - **Goal it is built around:** a more feminine speaking voice that sounds natural, feels comfortable
   and works in everyday conversation, with emphasis on a lighter sound and forward resonance.
@@ -286,8 +287,24 @@ This screening checks a list of prohibited phrasings. It cannot prove that arbit
 `voice_get_audio_clip` returns a WAV clip as MCP audio content. Tested with Claude Code 2.1.286, the
 clip was saved to disk but the model did not hear it, so model-perceived feedback stays disabled.
 
-**Privacy:** what an agent reads (session details, measurements, notes, audio clips) goes to that
-agent's model provider. Lilt itself uses no cloud model, and external processing stays off.
+**Privacy:** what an external agent reads (session details, measurements, notes, audio clips) goes to
+that agent's model provider. The optional in-app AI coach sends the conversation, today's plan and
+deck, and the five most recent session summaries to OpenAI; it does not send audio. These messages
+are held in the current page only and clear when you leave. Local recording and analysis stay local.
+
+## AI coach in Lilt
+
+Open **Settings → AI connections → ChatGPT** at `http://127.0.0.1:7878` and choose **Continue with ChatGPT**.
+OpenAI handles sign-in and asks whether to allow Lilt to use an eligible ChatGPT plan. No API key,
+public endpoint or tunnel is needed. The coach uses a model from the account's available model list;
+its first version answers using read-only practice context and cannot save reviews or change plans.
+It does not hear recordings or establish vocal qualities. The server screens certain prohibited
+claims, but that screening cannot guarantee the accuracy or safety of arbitrary model prose.
+
+The connection stores credentials with owner-only permissions under the data directory's `.private`
+folder. That folder is excluded from Lilt's practice export. **Disconnect** attempts to revoke the
+OpenAI session and deletes local credentials; if revocation cannot be confirmed, remove Lilt in
+ChatGPT settings. A live ChatGPT sign-in and coach turn must still be verified for your account.
 
 **Settings → Connect your AI** (the sliders icon at the top right) has all of this ready to copy:
 the Claude Code command, the Claude Desktop configuration (through `docker exec` when Lilt runs in
@@ -341,8 +358,8 @@ authentication.
 The timezone (default `Asia/Kuala_Lumpur`), reminder time, session length and comparison window are
 in **Settings**. Lilt stores UTC timestamps alongside local dates.
 
-**Models:** there are no model settings. Lilt never calls a cloud model, and the "external processing"
-switch cannot be turned on in this release.
+**Models:** the optional in-app coach selects from the connected ChatGPT account's model list.
+Deterministic practice analysis does not use a cloud model.
 
 ## Development and tests
 

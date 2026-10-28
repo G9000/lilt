@@ -293,6 +293,15 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 }
 
 export const api = {
+  /** Remix a course (or one chapter) with your connected ChatGPT, into your mixtape. */
+  remix: (request: string, chapter?: string, course?: string, history: { role: "user" | "assistant"; content: string }[] = []) =>
+    call<{ course: string; reply: string; note: string }>("POST", "/api/mixtape/remix", { request, chapter, course, history }),
+  /** A blank chapter at the end of your mixtape, for your AI to fill. */
+  addChapter: (course?: string) => call<{ course: string; chapter: string; file: string }>("POST", "/api/mixtape/chapter", { course }),
+  chatgptStatus: () => call<{ connected: boolean; pending: boolean }>("GET", "/api/chatgpt/status"),
+  chatgptLogin: () => call<{ url: string }>("POST", "/api/chatgpt/login", {}),
+  chatgptDisconnect: () => call<{ connected: boolean; revoked: boolean }>("POST", "/api/chatgpt/disconnect", {}),
+  coachChat: (messages: { role: "user" | "assistant"; content: string }[]) => call<{ reply: string }>("POST", "/api/coach/chat", { messages }),
   today: () => call<Today>("GET", "/api/today"),
   /** A course's texts (the Practice course when none is named). */
   texts: (course?: string) => call<Texts>("GET", `/api/texts${course ? `?course=${encodeURIComponent(course)}` : ""}`),

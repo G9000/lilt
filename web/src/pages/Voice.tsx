@@ -9,6 +9,7 @@ import { LeaveIcon, SettingsAppIcon, StudioIcon, TextsIcon } from "../desk/icons
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
 import { MixtapeSections, useMixtape } from "./Courses";
+import { openRemix, RemixPanel } from "../components/RemixPanel";
 
 /** The course Practice shows. */
 const COURSE = DEFAULT_COURSE;
@@ -122,6 +123,18 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
       setHistory(h.takes);
     });
   }, []);
+  // A remix or an undo changed the course: read it again.
+  useEffect(() => {
+    const on = () => void api.texts().then(setTexts);
+    window.addEventListener("lilt:texts-changed", on);
+    return () => window.removeEventListener("lilt:texts-changed", on);
+  }, []);
+  const newChapter = async () => {
+    const r = await api.addChapter(COURSE);
+    setTexts(await api.texts());
+    go(`/studio/${r.chapter}`);
+    openRemix({ course: COURSE, chapter: r.chapter, title: "New chapter", starter: "What should this chapter be about? Say who it's for and what you'd like to practise." });
+  };
   const level = texts ? texts.levels.find((l) => l.id === levelId) ?? texts.levels[0] : null;
   const chips = useRef<HTMLElement>(null);
   const page = useRef<HTMLDivElement>(null);
@@ -154,7 +167,8 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
         title={layout.collapsed ? "Show sidebar (⌘\\)" : "Hide sidebar (⌘\\)"}><SidebarIcon /></button>
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
-      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
+      <RemixPanel />
+      <Sidebar onNewChapter={() => void newChapter()} texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
       <div className={`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "mixtape" || doc === "settings" ? " solo" : ""}`} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
@@ -244,9 +258,21 @@ function MixtapeDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
     <div className="co ve-mixtape">
       <header className="co-head">
         <h1>Your mixtape</h1>
-        <p>Your own remix of {m.c ? m.c.title.toLowerCase() : "this course"}: ask your AI to shorten, add or rewrite anything, and Practice plays your version. The original stays as it is, and you can go back any time.</p>
+        <p>Your own remix of {m.c ? m.c.title.toLowerCase() : "this course"}. The first change makes your own copy; Practice then plays your version. The original stays as it is, and you can go back any time.</p>
       </header>
-      <MixtapeSections m={m} updatesHref="/studio/updates" />
+      <MixtapeSections m={m} updatesHref="/studio/updates" remix={
+        <section className="co-sec">
+          <h2>How to remix</h2>
+          <div className="co-box">
+            <div className="co-row"><div><b>A chapter</b><p>Open it and press <b className="co-k">Remix</b> at the top right. Say what to change; you can keep going or undo.</p></div></div>
+            <div className="co-row"><div><b>A new chapter</b><p>Press <b className="co-k">New chapter</b> at the end of the chapter list, then say what it should be about.</p></div></div>
+            <div className="co-row">
+              <div><b>The whole course</b><p>Ask for your own version of everything: gentler, shorter, about your own days.</p></div>
+              <button className="btn-secondary" onClick={() => openRemix({ course: COURSE, title: "The whole course" })}>Remix the whole course</button>
+            </div>
+          </div>
+        </section>
+      } />
     </div>
   );
 }
@@ -374,8 +400,8 @@ function ProgressSoon() {
  * The sidebar as a file tree, like Obsidian: Today and each chapter are folders, their cards and
  * texts the files. The page you're on opens its folder; the chevrons fold the rest.
  */
-function Sidebar({ texts, deck, practised, current, itemId, locked }: {
-  texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; itemId?: string; locked: boolean;
+function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter }: {
+  texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; itemId?: string; locked: boolean; onNewChapter: () => void;
 }) {
   const [open, setOpen] = useState<Set<string>>(() => new Set([current]));
   useEffect(() => { setOpen((o) => (o.has(current) ? o : new Set([...o, current]))); }, [current]);
@@ -419,6 +445,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
             </Folder>
           );
         })}
+        {texts && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
       </ul>
       <div className="ve-side-foot">
         <a href="#/studio/settings" aria-current={current === "settings" ? "page" : undefined}><SettingsAppIcon />Practice settings</a>
@@ -896,6 +923,18 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   const [sessionId, setSessionId] = useState<string | null>(null);
   // -1 until a text is picked; the recorder takes free recordings meanwhile.
   const [sel, setSel] = useState(() => (itemId ? Math.max(0, level.items.findIndex((i) => i.id === itemId)) : -1));
+  // After a remix, the texts that changed (or arrived) glow for a moment.
+  const seen = useRef(new Map(level.items.map((it) => [it.id, `${it.text}|${it.hint}`])));
+  const [remixed, setRemixed] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const prev = seen.current;
+    seen.current = new Map(level.items.map((it) => [it.id, `${it.text}|${it.hint}`]));
+    const changed = level.items.filter((it) => prev.get(it.id) !== `${it.text}|${it.hint}`).map((it) => it.id);
+    if (!changed.length) return;
+    setRemixed(new Set(changed));
+    const t = window.setTimeout(() => setRemixed(new Set()), 2600);
+    return () => window.clearTimeout(t);
+  }, [level]);
   const [takes, setTakes] = useState<Take[]>([]);
   const [previous, setPrevious] = useState<Take | null>(null);
   const [recording, setRec] = useState(false);
@@ -967,10 +1006,14 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
     <>
       <div className="ve-page">
         <article className="ve-col">
-          <header className="ve-head">
+          <header className="ve-head ve-head-remix">
             <h1>{level.title}</h1>
             <p className="ve-subtitle">{level.subtitle}</p>
             <p className="ve-meta">{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
+            <button className="ve-remix-btn" onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              Remix
+            </button>
             {complete && (
               <div className={`ve-award${fresh ? " fresh" : ""}`} role={fresh ? "status" : undefined}>
                 <Medal className="ve-award-medal" />
@@ -987,7 +1030,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             {level.items.map((it, i) => {
               const on = i === sel;
               return (
-                <li key={it.id} ref={(el) => { itemRefs.current[i] = el; }} className={`ve-item${on ? " on" : ""}${level.kind === "passage" ? " passage" : ""}`}
+                <li key={it.id} ref={(el) => { itemRefs.current[i] = el; }} className={`ve-item${on ? " on" : ""}${level.kind === "passage" ? " passage" : ""}${remixed.has(it.id) ? " fresh" : ""}`}
                   onClick={() => { if (!on) choose(i); }}>
                   <span className="ve-mk num" aria-hidden="true">{i + 1}.</span>
                   {on && !isPrompt

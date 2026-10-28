@@ -26,7 +26,7 @@ fn add_dir(
     for e in entries {
         let p = e.path();
         let name = e.file_name().to_string_lossy().into_owned();
-        if name == ".tmp" || name.ends_with(".tmp") {
+        if (dir == root && name == ".private") || name == ".tmp" || name.ends_with(".tmp") {
             continue;
         }
         let rel = p.strip_prefix(root)?.to_string_lossy().replace('\\', "/");

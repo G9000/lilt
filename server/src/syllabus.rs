@@ -316,6 +316,23 @@ pub fn write(app: &App, c: &Course, name: &str, markdown: &str, note: &str) -> R
     commit(app, c, next, "write", name, note)
 }
 
+/// The course's files as they are now: your mixtape, or the original.
+pub fn active_files(app: &App, c: &Course) -> Files {
+    current(app, c)
+}
+
+/// Create or replace several files as one change (a remix): one entry in the history, one undo.
+pub fn write_many(app: &App, c: &Course, changed: Vec<(String, String)>, note: &str) -> Result<Value> {
+    let mut next = current(app, c);
+    for (name, markdown) in &changed {
+        check_name(name)?;
+        ensure!(markdown.len() <= MAX_FILE, "{name} is too long (over {MAX_FILE} bytes)");
+        next.insert(name.clone(), format!("{}\n", markdown.trim_end()));
+    }
+    let names: Vec<&str> = changed.iter().map(|(n, _)| n.as_str()).collect();
+    commit(app, c, next, "remix", &names.join(", "), note)
+}
+
 pub fn delete(app: &App, c: &Course, name: &str, note: &str) -> Result<Value> {
     check_name(name)?;
     ensure!(name.starts_with(|ch: char| ch.is_ascii_digit()), "only chapters can be removed, not {name}");

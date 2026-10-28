@@ -85,3 +85,25 @@
 .sx-app h2 { margin: 18px 0 0 2px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
 .sx-app .sx-note { margin: 0 2px; }
 @media (max-width: 700px) { .sx-app-head h1 { font-size: 34px; } .sx.sx-app { grid-template-columns: minmax(0, 1fr); } .sx.sx-app .sx-main, .sx.sx-app .sx-side { display: initial; } }
+
+/* app cards carry the app's mark */
+.brand-tile { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; margin-bottom: 8px; box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12); }
+.brand-tile svg { width: 20px; height: 20px; }
+.brand-tile.chatgpt { background: #0d0d0d; color: #fff; }
+.brand-tile.claude { background: #f5f0e8; color: #d97757; }
+.brand-tile.other { background: var(--fill-2); color: var(--ink-2); }
+.st-apps { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+
+/* the ChatGPT account: one row, status left, action right */
+.lc-account { display: grid; gap: 8px; }
+.lc-row { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; margin: 0; }
+.lc-row b { display: block; font-weight: 600; color: var(--ink); }
+.lc-row p { margin: 2px 0 0; font-size: 12.5px; line-height: 1.4; color: var(--ink-3); }
+.lc-row .btn-primary, .lc-row .btn-secondary { min-height: 34px; padding: 6px 14px; font-size: 13px; }
+.lc-error { margin: 0; font-size: 13px; color: var(--warn); }
+
+/* the advanced route, folded: a quiet text toggle rather than a grey box */
+.st-more { background: none; border-radius: 0; border-top: 1px solid var(--hair); }
+.st-more > summary { min-height: 0; padding: 12px 0; font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.st-more > summary:hover { color: var(--ink); }
+.st-more[open] > summary { padding-bottom: 4px; }

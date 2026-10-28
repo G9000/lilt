@@ -54,6 +54,8 @@ pub fn router(app: Shared) -> Router {
         .route("/api/syllabus/undo", post(syllabus_undo))
         .route("/api/syllabus/reset", post(syllabus_reset))
         .route("/api/syllabus", get(syllabus_files))
+        .route("/api/mixtape/remix", post(crate::remix::remix))
+        .route("/api/mixtape/chapter", post(crate::remix::add_chapter))
         .route("/api/connect", get(connect_info))
         .route("/api/connect/address", axum::routing::put(connect_address))
         .route("/api/connect/code", post(connect_code))
@@ -180,7 +182,7 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
         }
     }
     if p.external_processing {
-        return Err(anyhow::anyhow!("external processing is not implemented in this release; it stays off").into());
+        return Err(anyhow::anyhow!("external recording analysis is not implemented in this release; it stays off").into());
     }
     p.session_minutes = p.session_minutes.clamp(2, 30);
     if let Some(n) = &p.room_note {

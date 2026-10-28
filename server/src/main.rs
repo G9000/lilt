@@ -2,6 +2,7 @@ mod api;
 mod app;
 mod cards;
 mod coach;
+mod chatgpt;
 mod compare;
 mod courses;
 mod exercises;
@@ -9,6 +10,7 @@ mod export;
 mod jobs;
 mod mcp;
 mod oauth;
+mod remix;
 mod agents;
 mod model;
 mod progress;
@@ -67,7 +69,8 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     // at /texts/images and /texts/audio.
     let mut router = api::router(app.clone())
         .merge(mcp_router)
-        .merge(oauth::router(app.clone()));
+        .merge(oauth::router(app.clone()))
+        .merge(chatgpt::router(app.clone()));
     for c in courses::all(&app) {
         for part in ["images", "audio"] {
             router = router.nest_service(&format!("/courses/{}/{part}", c.id), ServeDir::new(c.dir.join(part)));

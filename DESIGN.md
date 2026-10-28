@@ -156,6 +156,24 @@ is, then the same sections as a course's page in Courses: the green updates call
 you're on the original, last once you have a mixtape), History with Undo last change, and Chapters
 (remixed and added ones marked). Home's line under the chapters links to it.
 
+**Remix** happens where you practise. Each chapter has an ink **Remix** pill (cassette icon) at the
+top right of its title; it opens the **Remix chat**, a 400px panel floating on the right of Practice
+(a bottom sheet on phones) in the window glass, sliding in from the right out of a slight blur. While
+it is open the recorder half recedes (half opacity, 8px blur) so nothing is left cut at its edge. The
+header is the chapter's name in bold with "Remixing into your mixtape" under it, beside a coral
+cassette tile. Empty, it asks "What would you like to change in …?" (18px, 600) with one line on the
+mixtape and three ideas as full-width rows with a chevron. Your asks sit right-aligned in ink; replies
+on `--panel`, each change ending in a green saved row (tick, the change's note, and **Undo** on the
+latest; "Undone" once taken back). While it works, a reply bubble of three bouncing coral dots says
+"Remixing with your ChatGPT…"; a failed reply turns amber with **Try again**. The input grows with
+what you type, with a coral send button and "Enter to remix · Shift+Enter for a new line". After a
+remix the texts that changed glow coral for a moment in the chapter. Your ChatGPT rewrites the files
+into your mixtape; the chat remembers the last turns, so "even shorter" works. **New chapter**, a
+quiet "+" row at the end of the sidebar's chapters, adds a blank chapter to your mixtape and opens
+the chat on it ("What should this chapter be about?"). The Mixtape page explains the three ways (a
+chapter, a new chapter, the whole course) and has "Remix the whole course". Without ChatGPT
+connected, the chat offers Connect ChatGPT.
+
 **Courses** (`#/courses`, a dock app: three books on violet) opens in an 860px window. The list: a
 34px "Courses" title and one line on what a course is, then one card per course (a kind tile, coral
 for voice and blue for language, the title, the kind and "in Practice" for the app's course, two lines
