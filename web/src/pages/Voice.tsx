@@ -134,18 +134,21 @@ const LO = 80, HI = 400;
 const fy = (hz: number, h: number) => { const pad = h * 0.1; return h - pad - (Math.log(hz / LO) / Math.log(HI / LO)) * (h - 2 * pad); };
 
 /**
- * The room's cat asleep on its blanket, shown while the recorder is idle: the painting's bed corner
- * (x 0–440, y 610–941) with the three cat layers placed where the room draws them (x 0–375, y 710–881).
+ * The room's cat asleep on its blanket, filling the right half while the recorder is idle: the whole
+ * painting, anchored bottom-left and scaled to cover, with the three cat layers placed where the room
+ * draws them (x 0–375, y 710–881 of 1672×941).
  */
 function SleepingCat({ hint }: { hint: string }) {
   const light = currentLight();
   return (
     <div className="ve-art">
-      <div className="ve-cat" style={{ backgroundImage: `url(room/room-${light}.webp)` }} aria-hidden="true">
-        <img className="tail" src={`room/cat-tail-${light}.webp`} alt="" />
-        <img className="body" src={`room/cat-body-${light}.webp`} alt="" />
-        <img className="ear" src={`room/cat-ear-${light}.webp`} alt="" />
-        <span className="ve-zzz"><i>z</i><i>z</i><i>z</i></span>
+      <div className="ve-cat" aria-hidden="true">
+        <div className="ve-cat-stage" style={{ backgroundImage: `url(room/room-${light}.webp)` }}>
+          <img className="tail" src={`room/cat-tail-${light}.webp`} alt="" />
+          <img className="body" src={`room/cat-body-${light}.webp`} alt="" />
+          <img className="ear" src={`room/cat-ear-${light}.webp`} alt="" />
+          <span className="ve-zzz"><i>z</i><i>z</i><i>z</i></span>
+        </div>
       </div>
       <p className="ve-art-copy"><b>Ready when you are</b><span>{hint}</span></p>
     </div>
