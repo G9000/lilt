@@ -57,7 +57,7 @@
 
 .ve-items { list-style: none; margin: 0; padding: 0; }
 .ve-item { position: relative; margin: 0 -24px 4px; padding: 18px 24px 20px; border-radius: 16px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
-.ve-item:not(.on):not(.done) .readtext { color: var(--ink-2); transition: color 0.2s ease; }
+.ve-item:not(.on):not(.done) .readtext { color: var(--ink-3); transition: color 0.2s ease; }
 .ve-item:not(.on) .ve-hint { color: var(--ink-3); }
 @media (hover: hover) and (pointer: fine) {
   .ve-item:not(.on):not(.done):hover { background: var(--fill); }
@@ -65,7 +65,7 @@
 }
 .ve-item .ve-mk.num { top: 31px; left: -44px; }
 .ve-item:has(.ve-kind) .ve-mk.num { top: 58px; }
-.ve-item.on { cursor: default; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair), 0 1px 2px rgba(0, 0, 0, 0.04), 0 18px 40px -24px rgba(0, 0, 0, 0.3); }
+.ve-item.on { cursor: default; }
 .ve-item.on .ve-mk.num { color: var(--accent); }
 .ve-item.done { cursor: default; padding-top: 10px; padding-bottom: 12px; }
 .ve-item.done .ve-mk.num { top: 15px; color: var(--ok); }
@@ -180,6 +180,25 @@
 .ds-win.full .ds-body { display: flex; padding: 0; overflow: hidden; }
 .ds.app-full .ds-dock { display: none; }
 
+/* wide screens: the text on the left half, the recorder standing on the right half */
+@media (min-width: 1101px) {
+  .ve-doc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  .ve-page { grid-row: 1; grid-column: 1; }
+  .ve-col { padding: 64px 40px 88px 72px; }
+  .ve-dock { grid-row: 1; grid-column: 2; border-top: 0; border-left: 1px solid var(--hair); padding: 64px 40px 28px;
+    grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto auto auto; grid-template-areas: "scope" "stats" "rec" "sub"; row-gap: 24px; align-items: stretch; }
+  .ve-scope { height: auto; min-height: 220px; border-radius: 18px; }
+  .ve-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); align-self: auto; }
+  .ve-stat { padding: 14px 0; border-left: 0; border-top: 1px solid var(--hair); }
+  .ve-stat:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--hair); }
+  .ve-stat b, .ve-stat .readout .hz { font-size: 30px; font-weight: 300; letter-spacing: -0.03em; }
+  .ve-stat b small { font-size: 13px; }
+  .ve .ve-rec { justify-self: center; width: 76px; height: 76px; }
+  .ve-rec i { width: 30px; height: 30px; }
+  .ve-dock-sub { justify-content: center; min-height: 0; }
+  .ve-sp { display: none; }
+  .ve-dock > .ve-err, .ve-dock > .btn-secondary { grid-column: 1; justify-self: center; }
+}
 @media (max-width: 1100px) {
   .ve { grid-template-columns: 232px minmax(0, 1fr); }
   .ds-win.full .ds-tb { width: 232px; }

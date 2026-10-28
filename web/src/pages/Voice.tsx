@@ -140,6 +140,16 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const shown = points.length ? points : kept.current;
   const amps = useRef<{ t: number; v: number }[]>([]);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const [size, setSize] = useState(0);
+
+  // Redraw when the scope changes size (the split view stretches it with the window).
+  useEffect(() => {
+    const cv = canvas.current;
+    if (!cv) return;
+    const ro = new ResizeObserver(() => setSize((n) => n + 1));
+    ro.observe(cv);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => { onRecording(recording); }, [recording]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => onRecording(false), []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -181,9 +191,9 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
     g.clearRect(0, 0, w, h);
     if (band) { g.fillStyle = "rgba(224,100,60,.10)"; g.fillRect(0, fy(band[1], h), w, fy(band[0], h) - fy(band[1], h)); }
     g.strokeStyle = "rgba(127,127,127,.16)"; g.lineWidth = dpr;
-    g.fillStyle = "rgba(127,127,127,.55)"; g.font = `500 ${9.5 * dpr}px "Geist Variable", system-ui, sans-serif`;
+    g.fillStyle = "rgba(127,127,127,.55)"; g.font = `500 ${11 * dpr}px "Geist Variable", system-ui, sans-serif`;
     g.setLineDash([2 * dpr, 4 * dpr]);
-    for (const f of [110, 220, 330]) { const y = fy(f, h); g.beginPath(); g.moveTo(34 * dpr, y); g.lineTo(w - 12 * dpr, y); g.stroke(); g.fillText(String(f), 10 * dpr, y + 3.5 * dpr); }
+    for (const f of [110, 220, 330]) { const y = fy(f, h); g.beginPath(); g.moveTo(40 * dpr, y); g.lineTo(w - 14 * dpr, y); g.stroke(); g.fillText(String(f), 12 * dpr, y + 4 * dpr); }
     g.setLineDash([]);
     const span = 8, end = shown.length ? shown[shown.length - 1].t : 0, x = (t: number) => ((t - (end - span)) / span) * w;
     const aEnd = amps.current.length ? amps.current[amps.current.length - 1].t : 0, ax = (t: number) => ((t - (aEnd - span)) / span) * w;
@@ -199,7 +209,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
       pen = true;
     }
     g.stroke();
-  }, [shown, band]);
+  }, [shown, band, size]);
 
   const start = async () => {
     if (!metaRef.current) return;

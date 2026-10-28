@@ -31,12 +31,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   ring, then a green tick. The chapter reads as a document
   (720px column): a Newsreader H1 (46px), a sans subtitle and meta line, a "How to do it" note on a
   soft `--fill` panel, then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
-  under each and a quiet number in the margin. The active text is a white card with a soft shadow
-  and its number in coral; done texts get a drawn green tick. The recorder is docked at the bottom
-  like a status bar on the sidebar's tone: a 60px record button, a 76px scope (comfortable band,
-  dashed Hz guide lines at 110/220/330, loudness bars, the live pitch line in coral), and four
-  numbers split by hairlines: Now (Hz and note), Middle, Usual range, Steadiness, with a faint dash
-  until there's data. Rating sits inside
+  under each and a quiet number in the margin. The active text has no card: it is in full ink with its
+  number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick.
+  Wider than 1100px, the screen splits in half: the text on the left, the recorder standing on the
+  right on the sidebar's tone, top to bottom: a tall scope (comfortable band, dashed Hz guide lines
+  at 110/220/330, loudness bars, the live pitch line in coral), four numbers in a 2×2 grid split by
+  hairlines (Now with Hz and note, Middle, Usual range, Steadiness; a faint dash until there's
+  data), then a centred 76px record button and its hints. Narrower, the recorder docks at the
+  bottom like a status bar: button, scope and the four numbers in a row. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips.
 
