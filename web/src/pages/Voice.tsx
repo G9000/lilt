@@ -530,6 +530,8 @@ function HomeDoc({ texts, practised, history, profile, onRecording, onTake }: {
   texts: Texts; practised: Set<string>; history: Take[]; profile: Profile; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
 }) {
   const band = profile.comfort_range_hz ?? null;
+  const cut = texts.home ? texts.home.indexOf("\n## ") : -1;
+  const intro = texts.home && cut >= 0 ? texts.home.slice(0, cut) : texts.home ?? "", rest = cut >= 0 ? texts.home!.slice(cut + 1) : "";
   const split = useSplit();
   const [studio, setStudio] = useState<string | null>(null);
   const [freeTake, setFreeTake] = useState<Take | null>(null);
@@ -541,8 +543,10 @@ function HomeDoc({ texts, practised, history, profile, onRecording, onTake }: {
       <div className="ve-page">
         {cover && <div className="ve-cover" style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
         <article className="ve-col ve-home-col">
+          {/* The welcome first; then, under its opening paragraph, where you are: starting, or practising. */}
+          {intro ? <Markdown src={intro} className="ve-md" /> : <header className="ve-head"><h1>Practice</h1></header>}
           {!band ? <StartCard /> : history.length > 0 && <YourPractice history={history} band={band} />}
-          {texts.home ? <Markdown src={texts.home} className="ve-md" /> : <header className="ve-head"><h1>Practice</h1></header>}
+          {rest && <Markdown src={rest} className="ve-md" />}
           <section className="ve-md">
             <h2>The chapters</h2>
             <ol className="ve-chapters">
@@ -576,10 +580,10 @@ const REF = { prompt_id: "ref.count-1-10", text: "One, two, three, four, five, s
 function StartCard() {
   return (
     <section className="ve-start-card">
-      <div>
-        <b>New here? Start with your starting voice</b>
-        <p>Two minutes, once. Read one line in your everyday voice and Lilt sets your comfortable range from it. It also keeps that take as your Day 1, so you can hear how far you've come.</p>
-      </div>
+      <span className="ic" aria-hidden="true">
+        <svg viewBox="0 0 16 16"><rect x="5.5" y="1.8" width="5" height="8.4" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.4" /><path d="M3.3 7.6a4.7 4.7 0 009.4 0M8 12.3v2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
+      </span>
+      <p><b>First time here?</b> Record one line in your everyday voice. It becomes your starting point, so later you can hear how far you've come.</p>
       <button className="ve-start-go" onClick={() => go("/studio/start")}>Find my starting voice</button>
     </section>
   );

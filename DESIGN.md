@@ -29,8 +29,9 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   text and recorder are split by hairlines, and the text is the most opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
   the sidebar, like a Mac app). **A new voice starts** at `#/studio/start`: read the reference line once in your everyday voice;
-  Lilt offers that take's range as your comfortable range and keeps it as Day 1. Until then Home
-  shows a "start here" card; after, **your practice**: days this month, the last two weeks as dots,
+  Lilt offers that take's range as your comfortable range and keeps it as Day 1. Under Home's welcome
+  and opening paragraph sits a quiet callout (a `--fill` panel, no shadow): "First time here?" with a
+  mic icon and a "Find my starting voice →" link until a range is set; after, **your practice**: days this month, the last two weeks as dots,
   and **Then and now** (your first and latest take of the same text, the reference line first).
   **Every take's result leads with words**: one observation and one thing to try (comfort first,
   then an end drop, then range and movement), on an accent-soft panel, before any numbers.
