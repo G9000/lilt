@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
-import { describeTake, placePitch } from "../insight";
+import { describeResonance, describeTake, placePitch } from "../insight";
 import { noteName } from "../pitch";
 import { contourPoints, PianoRoll, PitchPoint } from "./PianoRoll";
 import { useTakeAudio } from "./takeAudio";
@@ -51,6 +51,61 @@ export function PitchScale({ median, note = true }: { median: number; note?: boo
         {note && <span title={ref.source}>Pitch is one part of how a voice is heard; resonance and intonation matter as much. Averages from Leung et al. (2022).</span>}
       </figcaption>
     </figure>
+  );
+}
+
+type Resonance =
+  | { k: "start"; unmeasured: boolean }
+  | { k: "apart"; reason: string }
+  | { k: "change"; first: number; last: number | null };
+
+const shiftOf = (c: Comparison | null) => c?.measures.find((m) => m.name === "resonance_f2_f3_st")?.delta ?? null;
+
+/**
+ * Resonance against yourself: how far F2 and F3 moved since your first take of the same text (and since
+ * last time), on a darker–brighter strip, in words. Formants depend on the vowel, so only takes of the
+ * same text are compared, and only with the same microphone (the comparison says when not).
+ */
+export function ResonanceNote({ take }: { take: Take }) {
+  const [r, setR] = useState<Resonance | null>(null);
+  const measured = take.status === "review_ready" && !!take.analysis_summary?.formant_f2_median_hz;
+  useEffect(() => {
+    if (!measured) return;
+    let live = true;
+    void (async () => {
+      const h = await api.history({ prompt_id: take.prompt_id, days: 3650 }).catch(() => null);
+      if (!h || !live) return;
+      const earlier = h.takes.filter((t) => t.id !== take.id && t.created_utc < take.created_utc && t.analysis_summary).sort((a, b) => a.created_utc.localeCompare(b.created_utc));
+      const withF = earlier.filter((t) => t.analysis_summary?.formant_f2_median_hz);
+      if (!withF.length) { setR({ k: "start", unmeasured: earlier.length > 0 }); return; }
+      const first = withF[0], last = withF[withF.length - 1];
+      const [cf, cl] = await Promise.all([api.compare(first.id, take.id).catch(() => null), last !== first ? api.compare(last.id, take.id).catch(() => null) : null]);
+      if (!live) return;
+      if (!cf || cf.outcome === "not_comparable" || shiftOf(cf) === null) setR({ k: "apart", reason: cf?.reasons[0] ?? "The takes couldn't be compared." });
+      else setR({ k: "change", first: shiftOf(cf)!, last: cl && cl.outcome !== "not_comparable" ? shiftOf(cl) : null });
+    })();
+    return () => { live = false; };
+  }, [take.id, measured]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!measured || !r) return null;
+  const at = (st: number) => `${50 + (Math.max(-3, Math.min(3, st)) / 3) * 50}%`;
+  return (
+    <section className="rz" aria-label="Resonance">
+      <div className="rz-head"><b>Resonance</b><small>against your own takes of this text</small></div>
+      {r.k === "change" && (
+        <>
+          <div className="rz-track" role="img" aria-label={describeResonance(r.first, "your first take of this text")}>
+            <i className="rz-first" />
+            {r.last !== null && <i className="rz-last" title="Last time" style={{ left: at(r.first - r.last) }} />}
+            <b className="rz-you" style={{ left: at(r.first) }} />
+          </div>
+          <div className="rz-labels" aria-hidden="true"><span>Darker</span><span>First take</span><span>Brighter</span></div>
+          <p className="rz-say">{describeResonance(r.first, "your first take of this text")}{r.last !== null && <> {describeResonance(r.last, "last time")}</>}</p>
+        </>
+      )}
+      {r.k === "start" && <p className="rz-say">Measured. This take is your starting point for this text; later takes are compared with it.{r.unmeasured && " Your earlier takes were recorded before Lilt measured resonance: measure them again in Recordings to compare them too."}</p>}
+      {r.k === "apart" && <p className="rz-say">Not compared: {r.reason}</p>}
+      <p className="rz-foot">From F2 and F3, two resonances of your vowels. A rough guide; your ear decides.</p>
+    </section>
   );
 }
 
@@ -143,6 +198,7 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
             </p>
           </section>
           <TakeChart src={take.audio_url} pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
+          <ResonanceNote take={take} />
           {prev && !comparable && <p className="prc-prev">Not compared with last time: {prev.cmp?.reasons[0] ?? "the recordings aren't comparable"}.</p>}
         </>
       )}

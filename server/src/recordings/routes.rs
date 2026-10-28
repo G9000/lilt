@@ -88,6 +88,8 @@ pub fn take_view(app: &Shared, t: &Take) -> Value {
         "duration_s": a["measures"]["duration_s"]["value"],
         "voiced_duration_s": a["measures"]["voiced_duration_s"]["value"],
         "f0_median_hz": a["measures"]["f0_median_hz"]["value"],
+        "formant_f2_median_hz": a["measures"]["formant_f2_median_hz"]["value"],
+        "formant_f3_median_hz": a["measures"]["formant_f3_median_hz"]["value"],
         "quality_flags": a["quality_flags"],
         "pitch_algorithm": a["method"]["pitch_algorithm"],
     }));

@@ -37,10 +37,16 @@ TOLERANCES = {
     "codec_median_rel_err": 0.01,
     # repeat analysis of identical audio
     "repeat_identical": True,          # measures must be exactly identical (no tolerance)
+    # synthetic vowels (resonance). Set from a prototype run on vowels synthesised another way
+    # (impulse train through IIR resonators at 16 kHz), before these fixtures existed.
+    "formant_f2_f3_rel_err": 0.05,     # F2 and F3 medians within 5 % of the synthesiser's
+    "formant_f1_rel_err": 0.20,        # F1 follows harmonics at higher pitch; only kept loosely
+    "tract_shift_st": 0.5,             # a 12 % tract change (+1.96 st) is recovered within 0.5 st
 }
 
 
 FIXTURES = {f.name: f for f in M.build_fixtures()}
+VOWELS = {f.name: f for f in M.build_vowels()}
 
 
 def _sha(path):
@@ -58,7 +64,7 @@ def run_cli(path, tmp_path, tag="run", sha=None):
 @pytest.fixture(scope="module")
 def wavdir(tmp_path_factory):
     d = tmp_path_factory.mktemp("fx")
-    for f in FIXTURES.values():
+    for f in list(FIXTURES.values()) + list(VOWELS.values()):
         M.write_wav16(str(d / f"{f.name}.wav"), f.x, f.sr)
     return d
 
@@ -325,3 +331,34 @@ def test_tts_speech_runs(tmp_path):
         assert code == 0 and doc["status"] == "ok"
         assert doc["measures"]["f0_median_hz"]["value"] is not None
         assert 60 <= doc["measures"]["f0_median_hz"]["value"] <= 700
+
+
+# --------------------------------------------------------------------------- resonance (formants)
+def _formants(doc):
+    return [doc["measures"][f"formant_f{k}_median_hz"]["value"] for k in (1, 2, 3)]
+
+
+@pytest.mark.parametrize("name", sorted(VOWELS))
+def test_vowel_formants(name, wavdir, tmp_path):
+    fx = VOWELS[name]
+    f1, f2, f3 = _formants(analyse_fixture(name, wavdir, tmp_path))
+    t1, t2, t3 = fx.expect["formants"]
+    assert abs(f2 / t2 - 1) <= TOLERANCES["formant_f2_f3_rel_err"], (f2, t2)
+    assert abs(f3 / t3 - 1) <= TOLERANCES["formant_f2_f3_rel_err"], (f3, t3)
+    assert abs(f1 / t1 - 1) <= TOLERANCES["formant_f1_rel_err"], (f1, t1)
+
+
+@pytest.mark.parametrize("vowel,f0", [(v, f0) for v in M.VOWELS for f0 in (120, 220)])
+def test_tract_shift_recovered(vowel, f0, wavdir, tmp_path):
+    """The comparison Lilt makes between two takes of the same text: the mean F2/F3 change in semitones."""
+    a = _formants(analyse_fixture(f"vowel_{vowel}_{f0}_100", wavdir, tmp_path))
+    b = _formants(analyse_fixture(f"vowel_{vowel}_{f0}_112", wavdir, tmp_path))
+    shift = (12 * np.log2(b[1] / a[1]) + 12 * np.log2(b[2] / a[2])) / 2
+    assert abs(shift - 12 * np.log2(1.12)) <= TOLERANCES["tract_shift_st"], shift
+
+
+def test_formants_abstain_without_voice(wavdir, tmp_path):
+    m = analyse_fixture("white_noise", wavdir, tmp_path)["measures"]
+    for k in (1, 2, 3):
+        assert m[f"formant_f{k}_median_hz"]["value"] is None
+        assert m[f"formant_f{k}_median_hz"]["unavailable_reason"] == "insufficient_voiced_material"

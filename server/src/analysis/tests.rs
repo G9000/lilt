@@ -75,3 +75,19 @@ fn remeasure_keeps_the_earlier_run_and_points_at_the_new_one() {
     assert_eq!(app.analysis(&s.id, &second).unwrap()["method"]["method_version"], analysis::ANALYSIS_METHOD);
     assert_eq!(analysis::remeasure_stale(&app).unwrap(), 0);
 }
+
+#[test]
+fn resonance_change_is_measured_between_takes_of_the_same_text() {
+    let (_d, app) = app();
+    let s = session(&app);
+    // Synthetic /a/ at 120 Hz, then the same vowel from a 12 % shorter tract (+1.96 st).
+    let a = upload(&app, &s.id, T::default(), "vowel_a_120_100.wav");
+    let b = upload(&app, &s.id, T::default(), "vowel_a_120_112.wav");
+    let c = compare::compare(&app, &a.id, &b.id).unwrap();
+    let r = c.measures.iter().find(|m| m.name == "resonance_f2_f3_st").unwrap();
+    let d = r.delta.unwrap();
+    assert!((d - 1.96).abs() < 0.5, "brighter by about 1.96 st, got {d}");
+    let same = compare::compare(&app, &a.id, &a.id).unwrap();
+    let r = same.measures.iter().find(|m| m.name == "resonance_f2_f3_st").unwrap();
+    assert!(r.delta.unwrap().abs() < 1e-9);
+}

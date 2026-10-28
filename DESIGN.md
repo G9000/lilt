@@ -42,6 +42,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   once, the scale and its sentence, and one quiet line of facts (usual range, voice heard, last time
   with the difference); the take's pitch chart, open and ready to play (click the line to hear that
   moment; the listen-back button and the chart share one audio and move together); one small footnote.
+  **Resonance** sits under a chapter take's players (and a card's chart): a white card with a
+  darker–brighter strip, your first take of that text as a tick in the middle, last time as a hollow
+  ring and this take as the coral dot, then one sentence ("Brighter than your first take of this text,
+  by about a semitone"; under 0.5 st "About the same"; 0.5–1 st "A little"). It compares only takes of
+  the same text and microphone, says so when it can't, and ends "A rough guide; your ear decides."
   The ratings carry a face for how it felt (😣 Again, 😕 Hard, 🙂 Good, 😌 Easy), and "Record it again"
   and "It hurt or felt strained" are pill buttons with drawn icons (the latter tinted `--rec`).
   While you rate a card, the recorder half says "Nice one / Listen back, then rate how it felt"

@@ -156,6 +156,47 @@ def build_fixtures() -> list[Fixture]:
     return fx
 
 
+# ---- vowels with known formants (resonance) ----------------------------------------------------
+# Adult vowel formants (Hz) in the range of Peterson & Barney (1952). Above them, the resonances of a
+# neutral 17.5 cm tract (every ~1000 Hz): a real tract has them all the way up, and without them the
+# synthetic spectrum falls off far too steeply above F3.
+VOWELS = {"i": (280, 2250, 2900), "a": (750, 1250, 2600), "u": (320, 870, 2250)}
+HIGHER_FORMANTS = (3500, 4500, 5500, 6500)
+BANDWIDTHS = (60, 90, 120, 150, 200, 250, 300)
+
+
+def vowel(f0: float, formants, dur: float = 1.2, amp: float = 0.5, sr: int = SR) -> np.ndarray:
+    """A steady synthetic vowel built in the frequency domain, independently of Praat: harmonics of f0
+    up to 7 kHz, shaped by a glottal source (-12 dB/octave) and lip radiation (+6 dB/octave), then by
+    Klatt-style second-order resonators at `formants` (seven, up to 6.5 kHz) with fixed bandwidths."""
+    t = np.arange(int(dur * sr)) / sr
+    fk = f0 * np.arange(1, int(7000 // f0) + 1)
+    mag = (fk / 100) / (1 + (fk / 100) ** 2)
+    w = 2 * np.pi * fk / sr
+    for F, B in zip(formants, BANDWIDTHS):
+        r, th = np.exp(-np.pi * B / sr), 2 * np.pi * F / sr
+        den = np.abs(1 - 2 * r * np.cos(th) * np.exp(-1j * w) + r * r * np.exp(-2j * w))
+        mag = mag * (1 - 2 * r * np.cos(th) + r * r) / den
+    y = (mag[:, None] * np.sin(np.outer(fk, 2 * np.pi * t))).sum(axis=0)
+    return _fade(amp * y / np.max(np.abs(y)), sr)
+
+
+def build_vowels() -> list[Fixture]:
+    """Each vowel at two pitches and two vocal-tract sizes: every formant 12 % higher in the second,
+    as from a shorter tract (+1.96 semitones). Truth: the three formants given to the synthesiser."""
+    fx = []
+    for v, base in VOWELS.items():
+        for f0 in (120, 220):
+            for scale in (1.0, 1.12):
+                F = [f * scale for f in base + HIGHER_FORMANTS]
+                fx.append(Fixture(f"vowel_{v}_{f0}_{round(scale * 100)}", vowel(f0, F), SR,
+                                  truth=(lambda t, f0=f0: np.full_like(t, f0, dtype=float)),
+                                  voiced_intervals=[[0.0, 1.2]],
+                                  expect={"median": f0, "formants": F[:3], "vowel": v, "scale": scale},
+                                  description=f"1.2 s synthetic /{v}/ at {f0} Hz, formants {', '.join(f'{f:.0f}' for f in F)} Hz"))
+    return fx
+
+
 def write_wav16(path: str, x: np.ndarray, sr: int) -> None:
     pcm = np.round(np.clip(x, -1.0, 32767 / 32768) * 32768).astype("<i2")
     with wave.open(path, "wb") as w:
@@ -236,7 +277,7 @@ def make_say(outdir: str) -> dict[str, str]:
 
 def main() -> int:
     os.makedirs(FIXTURE_DIR, exist_ok=True)
-    for f in build_fixtures():
+    for f in build_fixtures() + build_vowels():
         write_wav16(os.path.join(FIXTURE_DIR, f"{f.name}.wav"), f.x, f.sr)
     enc = make_encoded(FIXTURE_DIR)
     say = make_say(FIXTURE_DIR)
@@ -247,9 +288,9 @@ def main() -> int:
             "contour exists). *.webm / *.mp4 are PyAV encodes of the wav fixtures; *_truncated.* are byte-cut\n"
             "copies (first 60 % of the file) to simulate an interrupted upload.\n\n"
         )
-        for f in build_fixtures():
+        for f in build_fixtures() + build_vowels():
             fh.write(f"{f.name}.wav: {f.description}\n")
-    print(f"wrote {len(build_fixtures())} wav, {len(enc)} encoded, {len(say)} TTS fixtures to {FIXTURE_DIR}")
+    print(f"wrote {len(build_fixtures()) + len(build_vowels())} wav, {len(enc)} encoded, {len(say)} TTS fixtures to {FIXTURE_DIR}")
     return 0
 
 

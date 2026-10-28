@@ -275,10 +275,10 @@ async fn a_blank_chapter_lands_in_your_mixtape() {
     let res = router.clone().oneshot(post()).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
     let v: serde_json::Value = serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
-    assert_eq!((v["chapter"].as_str(), v["file"].as_str()), (Some("my-chapter-1"), Some("09-my-chapter-1.md")));
+    assert_eq!((v["chapter"].as_str(), v["file"].as_str()), (Some("my-chapter-1"), Some("10-my-chapter-1.md")));
     let res = router.oneshot(post()).await.unwrap();
     let v: serde_json::Value = serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
-    assert_eq!(v["file"].as_str(), Some("10-my-chapter-2.md"));
+    assert_eq!(v["file"].as_str(), Some("11-my-chapter-2.md"));
     let t = crate::courses::syllabus::texts(&app);
     assert_eq!(t["levels"].as_array().unwrap().last().unwrap()["title"], "New chapter");
 }

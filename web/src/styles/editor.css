@@ -409,6 +409,19 @@
 .pscale-labels { position: relative; height: 34px; margin-top: 8px; }
 .pscale-labels span { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; font-size: 12px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .pscale-labels small { font-size: 12px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+/* Resonance against your own takes (DeckPitch ResonanceNote): first take in the middle, darker left, brighter right. */
+.rz { margin: 16px 0 4px; padding: 14px 16px 12px; border-radius: 14px; background: var(--ve-card, var(--panel)); box-shadow: 0 0 0 1px var(--hair); }
+.rz-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+.rz-head b { font-size: 14px; font-weight: 650; color: var(--ink); }
+.rz-head small { font-size: 12.5px; color: var(--ink-3); }
+.rz-track { position: relative; height: 10px; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 16%, transparent), var(--fill) 50%, color-mix(in srgb, var(--accent) 24%, transparent)); }
+.rz-first { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 45%, transparent); }
+.rz-last { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ink) 40%, transparent); background: var(--ve-card, var(--panel)); }
+.rz-you { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card, var(--panel)), 0 2px 6px rgba(224, 100, 60, 0.45); transition: left 400ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.rz-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.rz-say { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.rz-foot { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce) { .rz-you { transition: none; } }
 .pscale figcaption { margin-top: 12px; font-size: 14px; line-height: 1.5; color: var(--ink); }
 .pscale figcaption span { display: block; margin-top: 2px; font-size: 12px; color: var(--ink-3); }
 

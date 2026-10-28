@@ -72,3 +72,16 @@ export function placePitch(hz: number, r: PitchRef): string {
     : `about ${Math.abs(gap)} semitone${Math.abs(gap) === 1 ? "" : "s"} ${gap > 0 ? "below" : "above"} the average woman's pitch (${Math.round(r.women_mean)} Hz)`;
   return `${Math.round(hz)} Hz sits ${zone}, ${relation}.`;
 }
+
+/**
+ * A resonance change in words: `st` is how far F2/F3 moved since `than` (a take of the same text), in
+ * semitones, positive brighter. Under 0.5 st is about the same; 0.5–1 st is "a little", because
+ * synthetic vowels were misread by up to ~1 st at the extremes (analysis/EVALUATION.md). Never a score.
+ */
+export function describeResonance(st: number, than: string): string {
+  const a = Math.abs(st), way = st > 0 ? "brighter" : "darker";
+  if (a < 0.5) return `About the same as ${than}.`;
+  if (a < 1) return `A little ${way} than ${than}.`;
+  const n = a < 1.75 ? "about a semitone" : `about ${Math.round(a)} semitones`;
+  return `${way[0].toUpperCase()}${way.slice(1)} than ${than}, by ${n}.`;
+}

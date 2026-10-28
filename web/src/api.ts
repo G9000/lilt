@@ -86,6 +86,9 @@ export interface Take {
     duration_s: number | null;
     voiced_duration_s: number | null;
     f0_median_hz: number | null;
+    /** Resonance: F2 and F3 medians (absent on takes measured before lilt-analysis/3). */
+    formant_f2_median_hz?: number | null;
+    formant_f3_median_hz?: number | null;
     quality_flags: QualityFlag[];
     pitch_algorithm: string;
   } | null;

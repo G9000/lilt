@@ -1,4 +1,4 @@
-"""Descriptive pitch and level measures using Praat (via Parselmouth).
+"""Descriptive pitch, resonance (formant) and level measures using Praat (via Parselmouth).
 
 Nothing here corrects, smooths or interpolates the pitch track. Unvoiced frames stay null,
 suspected octave jumps are reported but left in place, and unavailable values are null with
@@ -64,6 +64,20 @@ _FILTERED_AC_ORDER = (
     "attenuation_at_top", "silence_threshold", "voicing_threshold", "octave_cost",
     "octave_jump_cost", "voiced_unvoiced_cost",
 )
+
+# Praat "To Formant (burg)" settings, the same for every take. The ceiling is usually chosen per
+# speaker (5000 Hz "for a male", 5500 "for a female"); Lilt never picks settings from a gender, and a
+# voice in training should be measured the same way every time. On synthetic vowels a fixed 5000 Hz
+# ceiling misread F2/F3 by up to 50 % once the vocal tract was shorter; 5500 Hz kept them within 6 %
+# from a 12 % longer tract to a 20 % shorter one (see EVALUATION.md).
+FORMANT_PARAMS = {
+    "praat_command": "To Formant (burg)",
+    "time_step": TIME_STEP,
+    "max_number_of_formants": 5.0,
+    "maximum_formant": 5500.0,
+    "window_length": 0.025,
+    "pre_emphasis_from": 50.0,
+}
 
 OCTAVE_JUMP_RATIO = 1.8  # adjacent voiced frames with ratio > 1.8 or < 1/1.8 (0.556)
 TRACKING_ERROR_FRACTION = 0.02  # flag if suspected jumps exceed 2 % of voiced frames
@@ -142,13 +156,15 @@ def method_block() -> dict:
     return {
         "name": "lilt-analysis",
         "version": "1",
-        "method_version": "lilt-analysis/2",
+        "method_version": "lilt-analysis/3",
         "praat_version": parselmouth.PRAAT_VERSION,
         "praat_version_date": parselmouth.PRAAT_VERSION_DATE,
         "parselmouth_version": parselmouth.__version__,
         "pitch_algorithm": algo["pitch_algorithm"],
         "pitch_algorithm_note": algo["selection_note"],
         "params": algo["params"],
+        "formant_params": dict(FORMANT_PARAMS),
+        "formant_frames": "pitch-voiced frames only, at the pitch frame times; Praat's undefined values skipped",
         "octave_jump_ratio": OCTAVE_JUMP_RATIO,
         "tracking_error_fraction": TRACKING_ERROR_FRACTION,
         "clip_threshold": CLIP_THRESHOLD,
@@ -197,6 +213,32 @@ def _f0_stat(value, n, reason):
             "unavailable_reason": None if value is not None else reason, "n_frames": int(n)}
 
 
+def _formants(sound: parselmouth.Sound, times: np.ndarray) -> list[np.ndarray]:
+    """F1, F2, F3 (Hz) at each of `times`; NaN where Praat has no value."""
+    p = FORMANT_PARAMS
+    fm = sound.to_formant_burg(time_step=p["time_step"], max_number_of_formants=p["max_number_of_formants"],
+                               maximum_formant=p["maximum_formant"], window_length=p["window_length"],
+                               pre_emphasis_from=p["pre_emphasis_from"])
+    return [np.array([fm.get_value_at_time(k, float(t)) for t in times], dtype=np.float64) for k in (1, 2, 3)]
+
+
+def _formant_stat(values: np.ndarray, k: int, reason: str | None) -> dict:
+    v = values[~np.isnan(values)]
+    ok = reason is None and v.size * TIME_STEP >= MIN_VOICED_S
+    notes = {
+        1: "F1 follows the harmonics when pitch is high, so it is reported but not used for comparisons.",
+        2: "With F3, the basis of resonance comparisons between takes of the same text.",
+        3: "With F2, the basis of resonance comparisons between takes of the same text.",
+    }
+    return {
+        "value": _r(float(np.median(v)), 2) if ok else None, "unit": "Hz",
+        "unavailable_reason": None if ok else (reason or "insufficient_voiced_material"),
+        "n_frames": int(v.size),
+        "definition": f"median F{k} over pitch-voiced frames (Praat Burg, fixed {FORMANT_PARAMS['maximum_formant']:g} Hz ceiling)",
+        "note": notes[k] + " Formants depend on the vowel, so only takes of the same text are compared.",
+    }
+
+
 def analyze(samples: np.ndarray, sr: int) -> dict:
     """Return measures, contour, segments, jumps and quality flags for mono samples."""
     algo = select_pitch_algorithm()
@@ -220,8 +262,9 @@ def analyze(samples: np.ndarray, sr: int) -> dict:
 
     # ---- pitch ----
     pitch_error = None
+    sound = parselmouth.Sound(samples, sr)
     try:
-        pitch = algo["fn"](parselmouth.Sound(samples, sr))
+        pitch = algo["fn"](sound)
         f0 = pitch.selected_array["frequency"].astype(np.float64)
         times = np.asarray(pitch.xs(), dtype=np.float64)
     except parselmouth.PraatError as exc:
@@ -246,6 +289,14 @@ def analyze(samples: np.ndarray, sr: int) -> dict:
         sd_st = float(np.std(12 * np.log2(vf / med), ddof=0))
     else:
         med = p10 = p90 = span = sd_st = None
+
+    # ---- resonance: formants over the voiced frames ----
+    if enough:
+        f1, f2, f3 = _formants(sound, times[voiced])
+        formant_reason = None
+    else:
+        f1 = f2 = f3 = np.zeros(0)
+        formant_reason = reason
 
     # ---- voiced segments (contour itself is never altered) ----
     segs = [[times[s] - TIME_STEP / 2, times[e - 1] + TIME_STEP / 2] for s, e in _runs(voiced)]
@@ -322,6 +373,9 @@ def analyze(samples: np.ndarray, sr: int) -> dict:
             "unavailable_reason": None if sd_st is not None else reason,
             "definition": "SD of 12*log2(f0/median) over voiced frames (population SD, ddof=0)",
         },
+        "formant_f1_median_hz": _formant_stat(f1, 1, formant_reason),
+        "formant_f2_median_hz": _formant_stat(f2, 2, formant_reason),
+        "formant_f3_median_hz": _formant_stat(f3, 3, formant_reason),
         "peak_dbfs": {"value": None if peak_db is None else _r(peak_db, 3), "unit": "dBFS",
                       "unavailable_reason": None if peak_db is not None else "digital_silence",
                       "note": level_note},

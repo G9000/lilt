@@ -24,8 +24,9 @@ with its own `course.md`.
   every chapter.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-warmup.md` … `08-real-life.md`: one chapter each. The number at the start of the file
-  name sets the order. To add a chapter, add a file like `08-reading.md`.
+- `01-warmup.md` … `09-resonance.md`: one chapter each. The number at the start of the file
+  name sets the order. To add a chapter, add a file like `10-reading.md`. `09-resonance.md` is held
+  vowels: each take's resonance (F2 and F3) is compared with your first take of the same vowel.
 
 ## A chapter file
 

@@ -10,6 +10,17 @@ use serde_json::Value;
 /// Median differences below this are reported as stable (declared before testing).
 pub const STABLE_MEDIAN_ST: f64 = 0.5;
 pub const STABLE_SPAN_ST: f64 = 1.0;
+/// The mean change of the F2 and F3 medians from a to b, in semitones: how much brighter (positive) or
+/// darker the resonance of b is. Only when both takes were measured with the same formant settings.
+/// Synthetic vowels were misread by up to ~1 st at the extremes (analysis/EVALUATION.md), so the web
+/// words under 0.5 st as "about the same" and 0.5–1 st as "a little".
+pub fn resonance_shift(a: &Value, b: &Value) -> Option<f64> {
+    if a["method"]["formant_params"].is_null() || a["method"]["formant_params"] != b["method"]["formant_params"] {
+        return None;
+    }
+    let st = |k: &str| Some(12.0 * (measure(b, k)? / measure(a, k)?).log2());
+    Some((st("formant_f2_median_hz")? + st("formant_f3_median_hz")?) / 2.0)
+}
 
 #[derive(Debug, Serialize)]
 pub struct MeasureDelta {
@@ -179,6 +190,14 @@ pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
                 delta: ca.zip(cb).map(|(p, q)| q - p),
                 unit: "fraction of analysed frames".into(),
                 definition: "Voiced frames / all analysed frames. A coverage change is not a voice change.".into(),
+            });
+            measures.push(MeasureDelta {
+                name: "resonance_f2_f3_st".into(),
+                a: measure(x, "formant_f2_median_hz"),
+                b: measure(y, "formant_f2_median_hz"),
+                delta: resonance_shift(x, y),
+                unit: "semitones (b relative to a; a and b here are the F2 medians in Hz)".into(),
+                definition: "Mean change of the F2 and F3 medians, 12*log2(b/a) averaged; positive is brighter. Formants depend on the vowel, so this only means something between takes of the same text.".into(),
             });
             if let (Some(p), Some(q)) = (ca, cb) {
                 if (p - q).abs() > 0.2 {

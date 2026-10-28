@@ -1,7 +1,7 @@
 // node --test src/insight.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { describeTake, endDropSt, placePitch } from "./insight.ts";
+import { describeResonance, describeTake, endDropSt, placePitch } from "./insight.ts";
 
 const line = (hz: (i: number) => number, n = 100) => Array.from({ length: n }, (_, i) => ({ t: i / 50, hz: hz(i) }));
 
@@ -39,4 +39,11 @@ test("a pitch is placed in words and semitones, never a percentage", () => {
   assert.match(placePitch(115, REF), /within the average man's range, about 9\.5 semitones below/);
   assert.match(placePitch(240, REF), /above the average woman's range, about 3 semitones above/);
   assert.doesNotMatch(placePitch(172, REF), /%/);
+});
+
+test("resonance in words: about the same, a little, or plainly, never a score", () => {
+  assert.equal(describeResonance(0.3, "your first take"), "About the same as your first take.");
+  assert.equal(describeResonance(-0.7, "last time"), "A little darker than last time.");
+  assert.equal(describeResonance(1.2, "your first take"), "Brighter than your first take, by about a semitone.");
+  assert.equal(describeResonance(-2.6, "your first take"), "Darker than your first take, by about 3 semitones.");
 });

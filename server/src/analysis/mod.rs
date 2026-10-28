@@ -34,7 +34,7 @@ pub const ANALYSIS_MAJOR: &str = "a1";
 const MAX_ATTEMPTS: u32 = 3;
 /// The analysis method the bundled helper reports (`method.method_version`). Takes measured with
 /// another version can be re-measured; `tests` checks this matches the helper.
-pub const ANALYSIS_METHOD: &str = "lilt-analysis/2";
+pub const ANALYSIS_METHOD: &str = "lilt-analysis/3";
 
 pub fn run_id_for(tid: &str) -> String {
     format!("run-{tid}-{ANALYSIS_MAJOR}")

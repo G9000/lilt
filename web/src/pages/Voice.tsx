@@ -18,7 +18,7 @@ import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
-import { Measured, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
+import { Measured, ResonanceNote, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
 import { useLivePitch } from "../components/LivePitch";
 import { PianoRoll, PitchPoint } from "../components/PianoRoll";
 import { useTakeAudio } from "../components/takeAudio";
@@ -1093,6 +1093,7 @@ function ChapterTake({ take, before, band, onUseRange, onUpdate }: { take: Take;
       </div>
       {!ready && take.status === "analysis_pending" && <p className="ve-small">Measuring your pitch line…</p>}
       {before && <p className="ve-small">Listen to both. Which feels more like you? Your ear decides.</p>}
+      <ResonanceNote take={take} />
       <div className="ve-take-actions">
         <button className="ve-ghost" onClick={() => void api.patchTake(take.id, { favourite: !take.favourite }).then(onUpdate)} aria-pressed={take.favourite}><Star on={take.favourite} />{take.favourite ? "Favourite" : "I like this one"}</button>
         {ready && <button className="ve-ghost" onClick={() => onUseRange(take)}>Use this take's range as my comfortable range</button>}
