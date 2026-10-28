@@ -130,6 +130,9 @@
 .ve-small a { color: var(--ink-2); }
 .ve-err { color: var(--rec); font-size: 13.5px; margin: 8px 0 0; }
 
+/* an example recording of the text, when a contributor has added one */
+.ve-example { margin-top: 12px; max-width: 420px; }
+
 /* a saved take, inside the active item */
 .ve-take { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hair); display: grid; gap: 10px; cursor: default; }
 .ve-take-head { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }

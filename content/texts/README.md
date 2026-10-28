@@ -13,7 +13,9 @@ or open this folder as an Obsidian vault. Restart Lilt afterwards (with Docker, 
   The list of chapters under it is added automatically.
 - `_about.md`: the version, the date the sources were checked, and the note shown at the end of
   every chapter.
-- `01-warmup.md` … `07-conversation.md`: one chapter each. The number at the start of the file
+- `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
+- `_template.md`: a chapter to copy (it isn't loaded itself).
+- `01-warmup.md` … `08-real-life.md`: one chapter each. The number at the start of the file
   name sets the order. To add a chapter, add a file like `08-reading.md`.
 
 ## A chapter file
@@ -43,6 +45,8 @@ mmmmmmm
   `sentences`, `passage` or `prompt` (a question you answer in your own words).
 - **Each text** starts with `## ` and a short id, unique in the chapter. The lines under it are
   the text (on one line, or wrapped; they're joined), and lines starting with `>` are its hint.
+- **An example recording** (optional): put the file in `audio/` and add `example: audio/<file>`
+  under the text. The text then shows a "Hear an example" player.
 
 ## Keep ids stable
 

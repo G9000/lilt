@@ -780,6 +780,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                         onStarts={(s) => { starts.current = s; }} alignment={latest?.read_along?.starts ?? null} pitch={latestPitch} />
                     : <p className="readtext ve-read" aria-label={on ? it.text : undefined}>{it.text}</p>}
                   <p className="ve-hint">{it.hint}</p>
+                  {on && it.example && <div className="ve-example"><AudioPlayer src={`/texts/${it.example}`} label="Hear an example" compact /></div>}
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
                   {on && latest && <ChapterTake take={latest} before={before} band={band} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}

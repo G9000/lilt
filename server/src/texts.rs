@@ -20,7 +20,11 @@
 //! mmmmmmm
 //!
 //! > The hint shown under the text.
+//!
+//! example: audio/hum-comfortable.mp3
 //! ```
+//!
+//! The `example:` line is optional: a recording of someone saying the text, from `content/texts/audio`.
 //!
 //! The result has the same shape the app has always served from `/api/texts`.
 
@@ -60,7 +64,8 @@ fn chapter(src: &str, level: usize) -> Result<Value> {
     for section in first.into_iter().chain(sections) {
         let (id, rest) = section.split_once('\n').unwrap_or((section, ""));
         let id = id.trim();
-        let text = joined(rest.lines().filter(|l| !l.trim_start().starts_with('>')));
+        let example = rest.lines().find_map(|l| l.trim().strip_prefix("example:")).map(str::trim);
+        let text = joined(rest.lines().filter(|l| !l.trim_start().starts_with('>') && !l.trim_start().starts_with("example:")));
         let hint = joined(rest.lines().filter_map(|l| l.trim_start().strip_prefix('>')));
         if id.is_empty() || text.is_empty() {
             bail!("text `{id}` needs an id after ## and a line of text");
@@ -68,7 +73,14 @@ fn chapter(src: &str, level: usize) -> Result<Value> {
         if items.iter().any(|i: &Value| i["id"] == id) {
             bail!("text id `{id}` is used twice");
         }
-        items.push(json!({ "id": id, "text": text, "hint": hint }));
+        let mut item = json!({ "id": id, "text": text, "hint": hint });
+        if let Some(src) = example.filter(|s| !s.is_empty()) {
+            if !src.starts_with("audio/") || src.contains("..") {
+                bail!("text `{id}`: an example must be a file in audio/, like `example: audio/{id}.mp3`");
+            }
+            item["example"] = Value::String(src.into());
+        }
+        items.push(item);
     }
     if items.is_empty() {
         bail!("has no texts (each starts with `## <id>`)");
@@ -126,7 +138,7 @@ pub fn load(dir: &Path) -> Result<Value> {
 mod tests {
     use super::*;
 
-    const WARMUP: &str = "---\nid: warmup\ntitle: Warm-ups\nsubtitle: Hums\nkind: hum\nsource_url: https://example.org/a:b\nwritten_by: Lilt.\n---\n\nHum gently,\non a comfortable pitch.\n\n## hum\n\nmmmmmmm\n\n> Notice where\n> you feel it.\n\n## glide\n\nmmm ↗ ↘\n\n> Easy.\n";
+    const WARMUP: &str = "---\nid: warmup\ntitle: Warm-ups\nsubtitle: Hums\nkind: hum\nsource_url: https://example.org/a:b\nwritten_by: Lilt.\n---\n\nHum gently,\non a comfortable pitch.\n\n## hum\n\nmmmmmmm\n\n> Notice where\n> you feel it.\n\nexample: audio/hum.mp3\n\n## glide\n\nmmm ↗ ↘\n\n> Easy.\n";
 
     #[test]
     fn parses_a_chapter() {
@@ -135,7 +147,8 @@ mod tests {
         assert_eq!(c["level"], 3);
         assert_eq!(c["source_url"], "https://example.org/a:b");
         assert_eq!(c["basis"], "Hum gently, on a comfortable pitch.");
-        assert_eq!(c["items"][0], json!({ "id": "hum", "text": "mmmmmmm", "hint": "Notice where you feel it." }));
+        assert_eq!(c["items"][0], json!({ "id": "hum", "text": "mmmmmmm", "hint": "Notice where you feel it.", "example": "audio/hum.mp3" }));
+        assert!(c["items"][1].get("example").is_none());
         assert_eq!(c["items"][1]["text"], "mmm ↗ ↘");
     }
 
@@ -145,6 +158,7 @@ mod tests {
         assert!(chapter("---\nid: x\ntitle: X\nkind: hum\n---\n\nNo texts.\n", 1).is_err(), "no texts");
         assert!(chapter("---\nid: x\ntitle: X\nkind: hum\n---\n\n## a\n\none\n\n## a\n\ntwo\n", 1).is_err(), "duplicate id");
         assert!(chapter("---\ntitle: X\nkind: hum\n---\n\n## a\n\none\n", 1).is_err(), "missing id");
+        assert!(chapter("---\nid: x\ntitle: X\nkind: hum\n---\n\n## a\n\none\n\nexample: ../secret\n", 1).is_err(), "example outside audio/");
     }
 
     #[test]
@@ -156,7 +170,7 @@ mod tests {
         let cover = t["home_cover"].as_str().unwrap();
         assert!(dir.join(cover).exists(), "cover {cover} is missing");
         let levels = t["levels"].as_array().unwrap();
-        assert_eq!(levels.len(), 7);
+        assert_eq!(levels.len(), 8);
         for (i, l) in levels.iter().enumerate() {
             assert_eq!(l["level"], i + 1);
             for it in l["items"].as_array().unwrap() {
