@@ -1,6 +1,6 @@
 //! Practice texts, written as Markdown in `content/texts` so they can be edited without code
 //! (in any editor, or as an Obsidian vault). `index.md` is the Practice home page, served as raw
-//! Markdown; `_about.md` holds the version and the closing note; each `NN-<id>.md` is one chapter,
+//! Markdown, with an optional `cover: images/<file>` banner in its front matter; `_about.md` holds the version and the closing note; each `NN-<id>.md` is one chapter,
 //! in file-name order:
 //!
 //! ```markdown
@@ -95,8 +95,11 @@ pub fn load(dir: &Path) -> Result<Value> {
     let index = dir.join("index.md");
     if index.exists() {
         let src = read(&index)?;
-        let (_, home) = front_matter(&src).with_context(|| format!("in {}", index.display()))?;
+        let (meta, home) = front_matter(&src).with_context(|| format!("in {}", index.display()))?;
         out.insert("home".into(), Value::String(home.trim().into()));
+        if let Some(cover) = meta.get("cover") {
+            out.insert("home_cover".into(), cover.clone());
+        }
     }
 
     let mut files: Vec<_> = std::fs::read_dir(dir).with_context(|| format!("reading {}", dir.display()))?
@@ -150,6 +153,8 @@ mod tests {
         let t = load(&dir).unwrap();
         assert_eq!(t["schema"], "lilt.texts/1");
         assert!(t["home"].as_str().unwrap().contains("## Sources"));
+        let cover = t["home_cover"].as_str().unwrap();
+        assert!(dir.join(cover).exists(), "cover {cover} is missing");
         let levels = t["levels"].as_array().unwrap();
         assert_eq!(levels.len(), 7);
         for (i, l) in levels.iter().enumerate() {

@@ -4,7 +4,9 @@ The reading material for Lilt's chapters and today's cards. Edit these files in 
 or open this folder as an Obsidian vault. Restart Lilt afterwards (with Docker, rebuild:
 `docker compose up -d --build`). If a file has a mistake, Lilt won't start and says which file.
 
-- `index.md`: the Practice home page (what it's for, why, how to use it, sources). Plain Markdown:
+- `index.md`: the Practice home page (why it exists, how it works, sources). `cover: images/<file>`
+  in its front matter sets the full-width banner at the top. The `placeholder-*` pictures in
+  `images/` are stand-ins: replace the files, or point the Markdown at your own. Plain Markdown:
   `#`/`##` headings, paragraphs, `-` lists, `> ` quotes, `**bold**`, `_italic_`, `[links](https://…)`
   and pictures: put the file in `images/` and write `![what it shows](images/name.webp)` on its own
   line (it opens the same way in Obsidian).

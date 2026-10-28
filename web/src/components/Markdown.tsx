@@ -7,7 +7,8 @@ import { ReactNode } from "react";
  * relative to content/texts, as Obsidian reads them, and served at /texts/images.
  */
 
-const picture = (src: string) => (/^https?:\/\//.test(src) ? src : /^images\/[\w.-]+$/.test(src) ? `/texts/${src}` : undefined);
+/** A picture path from the texts' Markdown (`images/x.webp` or a web address) as a URL to load. */
+export const picture = (src: string) => (/^https?:\/\//.test(src) ? src : /^images\/[\w.-]+$/.test(src) ? `/texts/${src}` : undefined);
 
 function inline(src: string): ReactNode[] {
   const out: ReactNode[] = [];

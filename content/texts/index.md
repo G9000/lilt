@@ -1,55 +1,63 @@
 ---
 title: Practice
+cover: images/cover.webp
 ---
 
-![The room at sunset, with the cat asleep on the bed](images/room-sunset.webp)
+# Welcome in
 
-# Hey girlies, welcome in
+I'm glad you're here. This is a quiet place to practise your voice a little every day: open it,
+say a few things out loud, listen back, and close it again. That's the whole idea.
 
-Hi lovely, and hello to everyone finding their voice here. This is your little practice room: a
-calm corner to try things out, hear yourself and notice how far you've come. No grades and no
-pressure. Just you, your voice, and a sleepy cat.
+## Why I made this
 
-## What this is for
+Honestly, because I don't have much discipline. There's so much good voice training out there:
+videos, guides, forum threads, NHS leaflets. But it's scattered everywhere, and whenever I sat down
+to practise I'd spend the time looking for what to do instead of doing it. So I gathered what I
+found into one place, put it in an order that builds up gently, and made it something I can just
+open and start.
 
-Lilt helps you practise a lighter, brighter speaking voice: one that sounds like _you_, feels
-comfortable, and holds up in real life, ordering a coffee, answering the phone, chatting with
-friends. A few minutes a day is plenty. You're not trying to perform a voice; you're helping the
-one you want become easy.
+![Placeholder: a picture of your own goes here](images/placeholder-desk.webp)
 
-## Why it works this way
+## A note before you start
 
-- **Little and often.** Voices change through small, regular repetitions, not marathon sessions.
-  Most days take only a few minutes.
-- **Easy before hard.** The chapters follow the NHS Fife progression: hums first, then things you
-  don't have to think about (counting, days, months), then phrases, sentences, passages and finally
-  your own words. Move on when a chapter feels comfortable and consistent, not before.
-- **Your ear decides.** You rate how each card felt, and that rating decides when it comes back.
-  Pitch is one part of a voice, not a score: resonance, rhythm and how it feels matter just as much.
-- **Comfort first.** Nothing here should hurt or strain. If it does, that's your cue to rest.
+This is a structure, not a proven method. I don't have the voice I'm working towards yet, and I
+can't promise this gets you there either. What it can give you is a routine you'll actually keep,
+and an honest record: every take is saved, so over weeks you can hear for yourself how your voice
+is changing.
 
-## How to use it
+## How it's laid out
 
-- **Today** has your cards for the day. Say each one, listen back, then rate it: _Again_ brings it
-  back in a few minutes, and _Hard_, _Good_ and _Easy_ space it further out.
-- **Chapters** are seven levels of things to read aloud. Pick a text, say it, and compare with your
-  last take. Practise every text in a chapter to earn its medal.
-- **Free recording**: with nothing picked, the recorder just listens. Talk about your day and get
-  your pitch line and numbers back.
-- **The recorder** shows your pitch live, with your comfortable range as a soft band. Once you stop,
-  your take is measured again more carefully.
+- **Today** has a few cards for the day. Say each one, listen back, and rate how it felt. Your
+  rating decides when a card comes back: _Again_ in a few minutes, _Hard_, _Good_ and _Easy_ later.
+- **Chapters** go from easy to harder, following the NHS Fife progression: hums, then things you
+  don't have to think about (counting, days, months), then phrases, sentences, passages and your
+  own words. Move on when a chapter feels comfortable and steady.
+- **Free recording**: with nothing picked, the recorder just listens. Talk about your day and see
+  your pitch line afterwards.
+- **The recorder** shows your pitch live against your comfortable range. Pitch is one part of a
+  voice, not a score; resonance, rhythm and how it feels matter just as much.
 
-## Be kind to your voice (and to yourself)
+![Placeholder: another picture of your own](images/placeholder-window.webp)
 
-Sip water, take breaks, and keep the effort low. Some days will sound better than others, and
-that's completely normal; it isn't going backwards. If speaking hurts, or hoarseness lasts more than
-a couple of days, stop practising and check in with a GP or a speech and language therapist. Many
-therapists also offer gender-affirming voice support. Lilt is a practice tool, not a clinical one:
-it doesn't diagnose, and it doesn't replace a therapist.
+## Look after your voice
+
+Keep it easy and comfortable, sip water, and take breaks. Some days will sound better than others,
+and that's normal. If speaking hurts, or hoarseness lasts more than a couple of days, stop and talk
+to a GP or a speech and language therapist; many therapists offer gender-affirming voice support.
+Lilt is a practice tool. It doesn't diagnose anything and it doesn't replace a therapist.
+
+## Help shape it
+
+If you already know your way around voice feminization, as a coach, a therapist, or someone who's
+been through it, I'd love your help. The chapters are plain Markdown files, so improving an
+exercise, adding a chapter or fixing my mistakes doesn't need any code. Contributions are welcome
+on GitHub (link coming soon).
+
+![Placeholder: one more picture](images/placeholder-cat.webp)
 
 ## Sources
 
-The exercises and the chapter instructions are short paraphrases of NHS Fife Speech and Language
+The exercises and chapter instructions are short paraphrases of NHS Fife Speech and Language
 Therapy patient advice, linked here so you can read the originals. Pages issued November 2023 unless
 noted, checked on 26 October 2026.
 
