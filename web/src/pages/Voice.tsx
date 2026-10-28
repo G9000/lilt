@@ -52,7 +52,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "today" | "cha
 
   return (
     <div className="ve">
-      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "today" ? "today" : level?.id ?? ""} locked={recording} />
+      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "today" ? "today" : level?.id ?? ""} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
       <main className="ve-doc">
         {texts && (
           <nav className="ve-chips" aria-label="Chapters" ref={chips}>
@@ -61,7 +61,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "today" | "cha
           </nav>
         )}
         {doc === "today"
-          ? <TodayDoc first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          ? <TodayDoc key={first ?? ""} first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : texts && level && profile && <ChapterDoc key={level.id} texts={texts} level={level} itemId={itemId} profile={profile} onProfile={setProfile} onRecording={setRecording}
               practised={practised} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />}
       </main>
@@ -83,49 +83,68 @@ function Medal({ className }: { className?: string }) {
 }
 const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(`text.${l.id}.${it.id}`));
 
-/** A chapter's node on the path: its number inside a progress ring, then the medal once complete. */
-function Ring({ p, n }: { p: number; n: number }) {
-  const r = 11, c = 2 * Math.PI * r;
-  if (p >= 1) return <Medal className="ve-ring done" />;
+const Chevron = ({ open }: { open: boolean }) => (
+  <svg className={`ve-chev${open ? " open" : ""}`} viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
+const Tick = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l3 3 6-6.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
+
+/** One folder in the tree: a row that opens the page, a chevron that folds it, and its files under it. */
+function Folder({ id, label, extra, current, open, onToggle, onOpen, locked, children }: {
+  id: string; label: string; extra: ReactNode; current: boolean; open: boolean; onToggle: (id: string) => void; onOpen: () => void; locked: boolean; children: ReactNode;
+}) {
   return (
-    <svg className="ve-ring" viewBox="0 0 26 26" aria-hidden="true">
-      <circle className="bg" cx="13" cy="13" r="12.5" />
-      <circle cx="13" cy="13" r={r} fill="none" stroke="var(--fill-2)" strokeWidth="2" />
-      {p > 0 && <circle cx="13" cy="13" r={r} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeDasharray={`${c * p} ${c}`} transform="rotate(-90 13 13)" />}
-      <text x="13" y="13" dy=".35em" textAnchor="middle">{n}</text>
-    </svg>
+    <li className={`ve-folder${open ? " open" : ""}`}>
+      <div className="ve-row">
+        <button className="ve-fold" onClick={() => onToggle(id)} aria-expanded={open} aria-label={`${open ? "Fold" : "Unfold"} ${label}`}><Chevron open={open} /></button>
+        <button className="ve-open" onClick={onOpen} disabled={locked} aria-current={current ? "page" : undefined}><span className="t">{label}</span>{extra}</button>
+      </div>
+      {open && <ul className="ve-files">{children}</ul>}
+    </li>
   );
 }
 
-function Sidebar({ texts, deck, practised, current, locked }: { texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; locked: boolean }) {
-  const left = deck ? deck.items.filter((i) => !i.done_today) : [];
-  const done = deck && !deck.paused && left.length === 0;
-  const day = deck ? new Date(`${deck.local_date}T12:00:00`).toLocaleDateString(undefined, { weekday: "long" }) : "";
-  return (
-    <nav className="ve-side" aria-label="Chapters">
-      <button className={`ve-today${current === "today" ? " on" : ""}`} onClick={() => go("/deck")} disabled={locked} aria-current={current === "today" ? "page" : undefined}>
-        <span className="ve-today-h"><b>Today</b><span>{day}</span></span>
-        <span className="ve-today-big">{!deck ? "Getting your cards…" : deck.paused ? "Resting today" : done ? "All done" : `${left.length} card${left.length === 1 ? "" : "s"} to go`}</span>
-        <small>{!deck || deck.paused ? "" : done ? "Nice work. Anything more is a bonus." : `About ${Math.max(1, left.length)} min`}</small>
-        {deck && !deck.paused && deck.items.length > 0 && (
-          <span className="ve-today-seg" aria-hidden="true">{deck.items.map((it) => <i key={it.card.id} className={it.done_today ? "on" : ""} />)}</span>
-        )}
+/**
+ * The sidebar as a file tree, like Obsidian: Today and each chapter are folders, their cards and
+ * texts the files. The page you're on opens its folder; the chevrons fold the rest.
+ */
+function Sidebar({ texts, deck, practised, current, itemId, locked }: {
+  texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; itemId?: string; locked: boolean;
+}) {
+  const [open, setOpen] = useState<Set<string>>(() => new Set([current]));
+  useEffect(() => { setOpen((o) => (o.has(current) ? o : new Set([...o, current]))); }, [current]);
+  const toggle = (id: string) => setOpen((o) => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const left = deck ? deck.items.filter((i) => !i.done_today).length : 0;
+  const total = deck?.items.length ?? 0;
+  const file = (key: string, label: string, done: boolean, on: boolean, to: string, disabled = false) => (
+    <li key={key}>
+      <button className={`ve-file${done ? " done" : ""}`} onClick={() => go(to)} disabled={locked || disabled} aria-current={on ? "page" : undefined} title={label}>
+        <span className="t">{label}</span>{done && <Tick className="ve-tick" />}
       </button>
+    </li>
+  );
+  return (
+    <nav className="ve-side" aria-label="Practice">
+      <ul className="ve-tree">
+        <Folder id="today" label="Today" current={current === "today"} open={open.has("today")} onToggle={toggle} onOpen={() => go("/deck")} locked={locked}
+          extra={deck && !deck.paused ? (left === 0 && total ? <Tick className="ve-tick" /> : <span className="c">{total - left}/{total}</span>) : null}>
+          {deck?.paused ? <li className="ve-note-row">Resting today</li>
+            : deck?.items.map((it) => file(it.card.id, it.card.front, it.done_today, false, `/deck?card=${encodeURIComponent(it.card.id)}`, it.done_today))}
+        </Folder>
+      </ul>
       <h6>Chapters{texts && <span>{texts.levels.filter((l) => chapterDone(l, practised)).length} of {texts.levels.length} complete</span>}</h6>
-      <ol className="ve-nav">
+      <ul className="ve-tree">
         {texts?.levels.map((l) => {
           const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
           return (
-            <li key={l.id} className={d >= n ? "done" : undefined}>
-              <button aria-current={current === l.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={locked}>
-                <Ring p={d / n} n={l.level} />
-                <span className="t"><b>{l.title}</b><small>{l.subtitle}</small></span>
-                <span className="c">{d}/{n}</span>
-              </button>
-            </li>
+            <Folder key={l.id} id={l.id} label={l.title} current={current === l.id && !itemId} open={open.has(l.id)} onToggle={toggle} onOpen={() => go(`/studio/${l.id}`)} locked={locked}
+              extra={d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}>
+              {l.items.map((it) => file(it.id, it.text, practised.has(`text.${l.id}.${it.id}`), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
+            </Folder>
           );
         })}
-      </ol>
+      </ul>
       <div className="ve-side-foot">
         <a href="#/guided"><StudioIcon />Guided session</a>
         <a href="#/texts"><TextsIcon />All practice texts</a>
@@ -409,7 +428,17 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   useEffect(() => { void api.history({ prompt_id: promptId, days: 365 }).then((h) => setPrevious(h.takes.length ? h.takes[h.takes.length - 1] : null)); }, [promptId]);
   useEffect(() => { itemRefs.current[sel]?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [sel]);
 
-  const choose = (i: number) => { if (!recording) setSel(Math.max(0, Math.min(level.items.length - 1, i))); };
+  const choose = (i: number) => {
+    if (recording) return;
+    const j = Math.max(0, Math.min(level.items.length - 1, i));
+    setSel(j);
+    window.location.replace(`#/studio/${level.id}/${level.items[j].id}`);
+  };
+  // Picking a text in the sidebar changes the URL; follow it.
+  useEffect(() => {
+    const i = itemId ? level.items.findIndex((x) => x.id === itemId) : -1;
+    if (i >= 0 && !recording) setSel(i);
+  }, [itemId]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
@@ -524,7 +553,6 @@ function ChapterTake({ take, before, band, onUseRange, onUpdate }: { take: Take;
 interface Result { item: DeckItem; rating: Rating; median: number | null }
 type Phase = { k: "say"; retryOf: string | null } | { k: "rate"; take: Take } | { k: "end" } | { k: "hurt" };
 
-const Tick = () => <svg viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 const PlayIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>;
 const PauseIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /><rect x="7.1" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /></svg>;
 function ListenBack({ src }: { src: string }) {

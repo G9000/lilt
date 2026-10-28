@@ -28,13 +28,13 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   sheet** over the blurred room (white glass about 58–80% with a 40px backdrop blur; the sidebar,
   text and recorder are split by hairlines, and the text is the most opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
-  the sidebar, like a Mac app). A 272px sidebar holds a white **Today** card (a coral "Today" and the weekday, "3 cards to go" in
-  bold, the minutes left, and a segmented bar with one segment per card that turns coral when done),
-  then the seven **chapters as a path**: each row a 26px node (the number inside a coral progress
-  ring, a coral **medal** with a white star once every text is practised) joined to the next by a
-  thin line that turns coral below a finished chapter, the title with its subtitle under it, and
-  the count; the "Chapters" heading counts how many are complete. Links at the bottom carry the
-  desk's app icons (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
+  the sidebar, like a Mac app). The 272px sidebar is a **file tree, like Obsidian**: **Today** and each
+  **chapter** are folders (a chevron that folds, the name, a count, or a small medal once a chapter
+  is complete); their cards and texts are the files, under a hairline indent guide, with a green
+  tick once practised and the open one highlighted. The page you're on opens its folder. Clicking a
+  card starts it; clicking a text opens it (`#/studio/<chapter>/<text>`), and choosing a text in
+  the document keeps the URL and the tree in step. Links at the bottom carry the desk's app icons
+  (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document
   (720px column): a bold Geist H1 (54px, 760, −0.05em), a sans subtitle and meta line, a "How to do it" note on a
   soft `--fill` panel, then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint

@@ -15,50 +15,37 @@
 .ve button:disabled { cursor: default; opacity: 0.45; }
 .ve kbd { font: 500 11px var(--mono); border: 1px solid var(--hair); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--ink-2); background: none; }
 
-/* sidebar: the window's traffic lights sit at its top, like a Mac app with a sidebar. Today's card,
-   then the chapters as a path of nodes (a progress ring with the number, a medal once complete),
-   then links with the desk's app icons. */
-.ve-side { overflow: auto; padding: 52px 12px 14px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; }
-.ve-side h6 { margin: 24px 10px 8px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 650 12px var(--font); color: var(--ink-2); letter-spacing: -0.005em; }
-.ve-side h6 span { font-size: 11.5px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+/* sidebar as a file tree, like Obsidian: the window's traffic lights sit at its top. Today and the
+   chapters are folders (a chevron, the name, a count or a medal); their cards and texts are files
+   under an indent guide, with a tick once practised and the open one highlighted. */
+.ve-side { overflow: auto; padding: 50px 8px 12px; display: flex; flex-direction: column; scrollbar-width: thin; font-size: 13.5px; }
+.ve-side h6 { margin: 18px 10px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 600 12px var(--font); color: var(--ink-3); }
+.ve-side h6 span { font-size: 11.5px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.ve-tree, .ve-files { list-style: none; margin: 0; padding: 0; }
+.ve-row { display: flex; align-items: center; border-radius: 7px; transition: background-color 0.12s ease; }
+.ve .ve-fold { flex: none; width: 22px; height: 28px; display: grid; place-items: center; color: var(--ink-3); border-radius: 6px; }
+.ve-chev { width: 12px; height: 12px; transition: transform 0.18s var(--ease); }
+.ve-chev.open { transform: rotate(90deg); }
+.ve .ve-open { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 2px; text-align: left; color: var(--ink); font-weight: 550; }
+.ve-open .t, .ve-file .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ve-open .c { font-size: 11.5px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.ve-medal-s { width: 15px; height: 15px; flex: none; }
+.ve-row:has(.ve-open[aria-current="page"]) { background: var(--fill-2); }
+.ve-files { margin: 1px 0 4px 18px; padding-left: 7px; border-left: 1px solid var(--hair); }
+.ve .ve-file { width: 100%; height: 26px; display: flex; align-items: center; gap: 6px; padding: 0 8px; border-radius: 6px; text-align: left; color: var(--ink-2); font-size: 13px; transition: background-color 0.12s ease, color 0.12s ease; }
+.ve .ve-file[aria-current="page"] { background: var(--fill-2); color: var(--ink); font-weight: 550; }
+.ve .ve-file.done { color: var(--ink-3); }
+.ve .ve-file:disabled { opacity: 1; }
+.ve-tick { width: 13px; height: 13px; flex: none; color: var(--ok); }
+.ve-note-row { padding: 4px 8px; font-size: 12.5px; color: var(--ink-3); }
 
-.ve .ve-today { margin: 0; padding: 14px 14px 15px; border-radius: 16px; background: var(--ve-card); display: grid; gap: 2px; justify-content: stretch; text-align: left;
-  box-shadow: 0 0 0 1px var(--hair), 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 24px -16px rgba(10, 10, 40, 0.35); transition: box-shadow 0.2s ease, transform 0.16s var(--ease); }
-.ve .ve-today:active:not(:disabled) { transform: scale(0.98); }
-.ve .ve-today.on { box-shadow: 0 0 0 1.5px var(--accent), 0 10px 26px -14px rgba(224, 100, 60, 0.65); }
-.ve-today-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.ve-today-h b { font-size: 13px; font-weight: 650; color: var(--accent-ink); }
-.ve-today-h span { font-size: 12px; color: var(--ink-3); }
-.ve-today-big { margin-top: 4px; font: 720 21px/1.15 var(--font); letter-spacing: -0.035em; color: var(--ink); }
-.ve-today small { color: var(--ink-3); font-size: 12.5px; }
-.ve-today small:empty { display: none; }
-.ve-today-seg { display: flex; gap: 4px; margin-top: 10px; }
-.ve-today-seg i { flex: 1; height: 5px; border-radius: 99px; background: var(--fill-2); transition: background-color 0.4s var(--ease); }
-.ve-today-seg i.on { background: var(--accent); }
-
-.ve-nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.ve-nav li { position: relative; }
-/* the path between nodes; it turns coral below a completed chapter */
-.ve-nav li:not(:last-child)::after { content: ""; position: absolute; left: 22px; top: calc(50% + 15px); height: calc(100% - 28px); width: 2px; border-radius: 2px; background: var(--fill-2); pointer-events: none; }
-.ve-nav li.done:not(:last-child)::after { background: var(--accent); opacity: 0.55; }
-.ve .ve-nav button { width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 12px; text-align: left; color: var(--ink-2); transition: background-color 0.15s ease; }
-.ve .ve-nav button[aria-current="page"] { background: var(--ve-card); color: var(--ink); box-shadow: 0 0 0 1px var(--hair), 0 4px 12px -6px rgba(10, 10, 40, 0.22); }
-.ve-nav .t { min-width: 0; display: grid; }
-.ve-nav .t b { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ve-nav .t small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ve-nav .c { font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.ve-ring { width: 26px; height: 26px; display: block; }
-.ve-ring .bg { fill: var(--ve-paper); }
-.ve-ring text { font: 650 11px var(--font); fill: var(--ink-2); }
-.ve-nav button[aria-current="page"] .ve-ring text { fill: var(--accent-ink); }
-.ve-ring.done { filter: drop-shadow(0 3px 6px rgba(224, 100, 60, 0.35)); }
-
-.ve-side-foot { margin-top: auto; padding: 14px 0 0; display: grid; gap: 1px; border-top: 1px solid var(--hair); }
-.ve-side-foot a { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--ink-2); text-decoration: none; transition: background-color 0.15s ease, color 0.15s ease; }
-.ve-side-foot svg { flex: none; width: 22px; height: 22px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }
+.ve-side-foot { margin-top: auto; padding: 12px 0 0; display: grid; gap: 1px; border-top: 1px solid var(--hair); }
+.ve-side-foot a { display: flex; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--ink-2); text-decoration: none; transition: background-color 0.12s ease, color 0.12s ease; }
+.ve-side-foot svg { flex: none; width: 20px; height: 20px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18); }
 @media (hover: hover) and (pointer: fine) {
-  .ve .ve-nav button:hover:not(:disabled):not([aria-current]) { background: var(--fill); }
-  .ve .ve-today:hover:not(:disabled):not(.on) { box-shadow: 0 0 0 1px var(--line-strong), 0 12px 26px -14px rgba(10, 10, 40, 0.4); }
+  .ve-row:hover:not(:has(.ve-open[aria-current="page"])) { background: var(--fill); }
+  .ve .ve-file:hover:not(:disabled):not([aria-current]) { background: var(--fill); color: var(--ink); }
+  .ve .ve-fold:hover { color: var(--ink); }
   .ve-side-foot a:hover { background: var(--fill); color: var(--ink); }
 }
 
@@ -348,7 +335,7 @@
   .ds-win.full { top: 32px; bottom: 0; left: 0; right: 0; border-radius: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ve-rec i, .ve-today-seg i { transition: none; }
+  .ve-rec i, .ve-chev { transition: none; }
   .ve-state.rec i { animation: none; }
   .ve-award.fresh, .ve-award.fresh .ve-award-medal { animation: none; }
   .ve-cat img, .ve-zzz i, .ve-dock .ve-cat, .ve-dock .ve-now, .ve-dock .ve-scope, .ve-dock .ve-stats, .ve-result-pane { animation: none !important; }
