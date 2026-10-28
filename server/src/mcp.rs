@@ -28,7 +28,7 @@ Rules the server enforces:
 - No diagnosis, no anatomy or larynx claims, no femininity percentages, no clinical claims. Comfort reports (strain, pain, hoarseness) outrank everything.
 - If evidence is insufficient, save an abstention with a reason and a useful next action.
 
-The syllabus (the practice chapters and the home page) can be rewritten for this learner with the syllabus_* tools. Changes go to the learner's own version only; Lilt's original is never changed. Read syllabus_list first, follow its chapter format, write one file at a time with a short note, and keep text ids when rewording. Practice texts stay gentle: nothing that pushes through strain, pain or hoarseness.";
+Lilt holds courses (courses_list); voice practice is the one the app shows today. A course's chapters and home page can be rewritten for this learner with the syllabus_* tools, naming the course (voice when left out). Changes go to the learner's own copy only; the course's original is never changed. Read syllabus_list first, follow its chapter format, write one file at a time with a short note, and keep text ids when rewording. Practice texts stay gentle: nothing that pushes through strain, pain or hoarseness.";
 
 pub struct LiltMcp {
     app: Shared,
@@ -73,7 +73,7 @@ pub fn tools() -> Vec<Tool> {
         "recheck": {"type": ["object", "null"], "required": ["prompt_id", "prompt_text", "ask"], "properties": {
             "prompt_id": {"type": "string"}, "prompt_text": {"type": "string"}, "compare_with_take": {"type": ["string", "null"]}, "ask": {"type": "string"}}}}});
     let file_arg = json!({"type": "string", "description": "index.md, _about.md, _pitch.md, or a chapter like 03-automatic.md"});
-    vec![
+    let tools = vec![
         tool("voice_get_today_plan", "Today's plan: goal, eligible exercise and cue, rationale, evidence references, plan version, participation this week.", json!({"type": "object", "properties": {"local_date": {"type": "string", "description": "Optional YYYY-MM-DD; informational."}}}), true),
         tool("voice_list_exercises", "The versioned exercise registry with sources, review status and cue IDs, plus the per-area capability matrix.", json!({"type": "object", "properties": {}}), true),
         tool("voice_list_sessions", "Sessions by local date range, newest first, paginated.", json!({"type": "object", "properties": {"from": {"type": "string"}, "to": {"type": "string"}, "cursor": {"type": "integer"}, "limit": {"type": "integer", "maximum": 100}}}), true),
@@ -92,6 +92,7 @@ pub fn tools() -> Vec<Tool> {
         tool("voice_set_next_plan", "Set the next practice plan to an eligible exercise (and optional cue / ladder step), with a rationale. Rejected if expected_plan_version is stale.", json!({"type": "object", "required": ["exercise_id", "exercise_version", "rationale", "expected_plan_version"], "properties": {
             "exercise_id": {"type": "string"}, "exercise_version": {"type": "integer"}, "cue_id": {"type": "string"}, "ladder_step": {"type": "integer"},
             "rationale": {"type": "string"}, "expected_plan_version": {"type": "integer"}, "evidence_review_ids": {"type": "array", "items": {"type": "string"}}}}), false),
+        tool("courses_list", "The courses in Lilt (voice practice is the one the app shows today): what each is for, its kind of practice, the sections an AI may never change, and whether the learner uses their own copy, with how many changes and updates waiting. The syllabus_* tools work on one course: pass its id as `course` (voice when left out).", json!({"type": "object", "properties": {}}), true),
         tool("syllabus_list", "The learner's syllabus: every Markdown file (home page, about, pitch reference, chapters in order) with how it differs from Lilt's original, the chapter format, and the editing rules. Start here before changing anything.", json!({"type": "object", "properties": {}}), true),
         tool("syllabus_read", "One syllabus file as Markdown, from the learner's version (default) or Lilt's original.", json!({"type": "object", "required": ["file"], "properties": {"file": file_arg, "from": {"enum": ["mine", "original"]}}}), true),
         tool("syllabus_compare", "What differs between the learner's version and Lilt's original: files added, removed or changed, and for chapters which texts were added, removed or reworded. Pass file for one file.", json!({"type": "object", "properties": {"file": file_arg}}), true),
@@ -102,7 +103,18 @@ pub fn tools() -> Vec<Tool> {
         tool("syllabus_updates", "What Lilt's original syllabus changed since the learner's version was made (or last updated), piece by piece (a chapter's details, each text, each home page section), with how each would be handled: \"take\" (they hadn't changed it, so the update comes in), \"choose\" (both changed it; show them both and ask which to keep), \"already\" (same change). Includes their version, the original's new one and the one before.", json!({"type": "object", "properties": {}}), true),
         tool("syllabus_apply_updates", "Bring the original's updates into the learner's version. Every \"choose\" change needs a choice: {\"<id>\": \"yours\" | \"original\"}; ask the learner rather than deciding for them. Checked like any change, kept in the history, and can be undone.", json!({"type": "object", "properties": {"choices": {"type": "object", "additionalProperties": {"enum": ["yours", "original"]}}, "note": {"type": "string"}}}), false),
         tool("syllabus_reset", "Go back to Lilt's original syllabus. Kept in the history, so it can be undone.", json!({"type": "object", "required": ["note"], "properties": {"note": {"type": "string"}}}), false),
-    ]
+    ];
+    // Every syllabus tool works on one course, the app's own when none is named.
+    tools.into_iter().map(|mut t| {
+        if t.name.starts_with("syllabus_") {
+            let mut schema = (*t.input_schema).clone();
+            if let Some(props) = schema.entry("properties").or_insert(json!({})).as_object_mut() {
+                props.insert("course".into(), json!({"type": "string", "description": "The course id from courses_list; voice when left out."}));
+            }
+            t.input_schema = Arc::new(schema);
+        }
+        t
+    }).collect()
 }
 
 fn arg_str(a: &serde_json::Map<String, Value>, k: &str) -> Option<String> {
@@ -278,20 +290,27 @@ pub fn call(app: &Shared, name: &str, a: &serde_json::Map<String, Value>) -> any
             }, Some(expected))?;
             ok(serde_json::to_value(plan)?)
         }
-        "syllabus_list" => ok(syllabus::list(app)),
-        "syllabus_read" => ok(syllabus::read(app, &req_str(a, "file")?, &arg_str(a, "from").unwrap_or_default())?),
-        "syllabus_compare" => ok(syllabus::compare(app, arg_str(a, "file").as_deref())?),
-        "syllabus_write" => ok(syllabus::write(app, &req_str(a, "file")?, &req_str(a, "markdown")?, &req_str(a, "note")?)?),
-        "syllabus_delete" => ok(syllabus::delete(app, &req_str(a, "file")?, &req_str(a, "note")?)?),
-        "syllabus_history" => ok(syllabus::history(app)),
-        "syllabus_undo" => ok(syllabus::undo(app)?),
-        "syllabus_updates" => ok(crate::updates::list(app)),
-        "syllabus_apply_updates" => {
-            let choices: std::collections::BTreeMap<String, String> = a.get("choices").cloned().map(serde_json::from_value).transpose()
-                .map_err(|e| anyhow::anyhow!("choices must map update ids to \"yours\" or \"original\": {e}"))?.unwrap_or_default();
-            ok(crate::updates::apply(app, &choices, &arg_str(a, "note").unwrap_or_default())?)
+        "courses_list" => ok(crate::courses::list(app)),
+        n if n.starts_with("syllabus_") => {
+            let c = crate::courses::pick(app, arg_str(a, "course").as_deref())?;
+            match n {
+                "syllabus_list" => ok(syllabus::list(app, &c)),
+                "syllabus_read" => ok(syllabus::read(app, &c, &req_str(a, "file")?, &arg_str(a, "from").unwrap_or_default())?),
+                "syllabus_compare" => ok(syllabus::compare(app, &c, arg_str(a, "file").as_deref())?),
+                "syllabus_write" => ok(syllabus::write(app, &c, &req_str(a, "file")?, &req_str(a, "markdown")?, &req_str(a, "note")?)?),
+                "syllabus_delete" => ok(syllabus::delete(app, &c, &req_str(a, "file")?, &req_str(a, "note")?)?),
+                "syllabus_history" => ok(syllabus::history(app, &c)),
+                "syllabus_undo" => ok(syllabus::undo(app, &c)?),
+                "syllabus_updates" => ok(crate::updates::list(app, &c)),
+                "syllabus_apply_updates" => {
+                    let choices: std::collections::BTreeMap<String, String> = a.get("choices").cloned().map(serde_json::from_value).transpose()
+                        .map_err(|e| anyhow::anyhow!("choices must map update ids to \"yours\" or \"original\": {e}"))?.unwrap_or_default();
+                    ok(crate::updates::apply(app, &c, &choices, &arg_str(a, "note").unwrap_or_default())?)
+                }
+                "syllabus_reset" => ok(syllabus::reset(app, &c, &req_str(a, "note")?)?),
+                _ => Err(anyhow::anyhow!("unknown tool {name}")),
+            }
         }
-        "syllabus_reset" => ok(syllabus::reset(app, &req_str(a, "note")?)?),
         _ => Err(anyhow::anyhow!("unknown tool {name}")),
     }
 }

@@ -577,24 +577,25 @@ fn remeasure_keeps_the_earlier_run_and_points_at_the_new_one() {
 fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
     use crate::{cards, mcp, syllabus};
     let (dir, app) = app();
+    let v = crate::courses::get(&app, "voice").unwrap();
     let call = |name: &str, args: serde_json::Value| mcp::call(&app, name, args.as_object().unwrap());
-    let shipped = std::fs::read_to_string(root().join("content/texts/02-m-words.md")).unwrap();
+    let shipped = std::fs::read_to_string(root().join("content/courses/voice/02-m-words.md")).unwrap();
     let has_card = |id: &str| cards::all_cards(&app).iter().any(|c| c.id == id);
-    assert_eq!(syllabus::list(&app)["using"], "original");
+    assert_eq!(syllabus::list(&app, &v)["using"], "original");
 
     // A file Lilt can't read, a non-syllabus name, or a change to the safety section is refused.
-    assert!(syllabus::write(&app, "02-m-words.md", "no front matter", "break it").is_err());
-    assert!(syllabus::write(&app, "../02-m-words.md", &shipped, "escape").is_err());
-    let home = std::fs::read_to_string(root().join("content/texts/index.md")).unwrap();
+    assert!(syllabus::write(&app, &v, "02-m-words.md", "no front matter", "break it").is_err());
+    assert!(syllabus::write(&app, &v, "../02-m-words.md", &shipped, "escape").is_err());
+    let home = std::fs::read_to_string(root().join("content/courses/voice/index.md")).unwrap();
     let pushy = home.replace("It should never hurt.", "Push through it.");
-    assert!(syllabus::write(&app, "index.md", &pushy, "be tougher").unwrap_err().to_string().contains("Be gentle"));
-    assert!(!dir.path().join("syllabus/_about.md").exists(), "refused edits leave no copy");
+    assert!(syllabus::write(&app, &v, "index.md", &pushy, "be tougher").unwrap_err().to_string().contains("Be gentle"));
+    assert!(!dir.path().join("courses/voice/_about.md").exists(), "refused edits leave no copy");
 
     // Reword a text and add one: your version, with the original untouched, and new cards.
     let edited = shipped.replacen("meet · many · maybe · Mary · magic", "me · my · may", 1) + "\n## mine-extra\n\nmorning, mum\n\n> Easy.\n";
-    let r = syllabus::write(&app, "02-m-words.md", &edited, "shorter first line, one more text").unwrap();
+    let r = syllabus::write(&app, &v, "02-m-words.md", &edited, "shorter first line, one more text").unwrap();
     assert_eq!(r["using"], "mine");
-    assert_eq!(std::fs::read_to_string(root().join("content/texts/02-m-words.md")).unwrap(), shipped);
+    assert_eq!(std::fs::read_to_string(root().join("content/courses/voice/02-m-words.md")).unwrap(), shipped);
     assert!(has_card("text.m-words.mine-extra"));
     let cmp = call("syllabus_compare", serde_json::json!({})).unwrap().structured_content.unwrap();
     let d = &cmp["differences_from_original"][0];
@@ -602,28 +603,28 @@ fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
     assert_eq!(d["texts_changed"].as_array().unwrap().len(), 1);
 
     // A new chapter, removed again, then undo brings it back.
-    let template = std::fs::read_to_string(root().join("content/texts/_template.md")).unwrap();
-    syllabus::write(&app, "09-my-chapter.md", &template, "add my own chapter").unwrap();
+    let template = std::fs::read_to_string(root().join("content/courses/voice/_template.md")).unwrap();
+    syllabus::write(&app, &v, "09-my-chapter.md", &template, "add my own chapter").unwrap();
     assert!(has_card("text.my-chapter.first-text"));
-    syllabus::delete(&app, "09-my-chapter.md", "not needed").unwrap();
+    syllabus::delete(&app, &v, "09-my-chapter.md", "not needed").unwrap();
     assert!(!has_card("text.my-chapter.first-text"));
-    syllabus::undo(&app).unwrap();
+    syllabus::undo(&app, &v).unwrap();
     assert!(has_card("text.my-chapter.first-text"));
-    assert_eq!(syllabus::history(&app)["changes"].as_array().unwrap().len(), 2);
+    assert_eq!(syllabus::history(&app, &v)["changes"].as_array().unwrap().len(), 2);
 
     // Reset goes back to the original and can be undone too; undoing everything ends on the original.
-    syllabus::reset(&app, "start over").unwrap();
+    syllabus::reset(&app, &v, "start over").unwrap();
     assert!(!has_card("text.m-words.mine-extra"));
-    syllabus::undo(&app).unwrap();
+    syllabus::undo(&app, &v).unwrap();
     assert!(has_card("text.m-words.mine-extra"));
-    syllabus::undo(&app).unwrap();
-    syllabus::undo(&app).unwrap();
-    assert_eq!(syllabus::list(&app)["using"], "original");
+    syllabus::undo(&app, &v).unwrap();
+    syllabus::undo(&app, &v).unwrap();
+    assert_eq!(syllabus::list(&app, &v)["using"], "original");
     assert!(!has_card("text.m-words.mine-extra"));
-    assert!(syllabus::undo(&app).is_err());
+    assert!(syllabus::undo(&app, &v).is_err());
 
     // Your version survives a restart.
-    syllabus::write(&app, "02-m-words.md", &edited, "again").unwrap();
+    syllabus::write(&app, &v, "02-m-words.md", &edited, "again").unwrap();
     drop(app);
     let again = App::open(config(dir.path())).unwrap();
     assert!(cards::all_cards(&again).iter().any(|c| c.id == "text.m-words.mine-extra"));
@@ -635,10 +636,11 @@ fn syllabus_changes_from_another_process_are_picked_up() {
     use crate::{cards, syllabus};
     let (dir, app) = app();
     let other = App::open(config(dir.path())).unwrap();
-    let src = std::fs::read_to_string(root().join("content/texts/02-m-words.md")).unwrap() + "\n## from-elsewhere\n\nmm\n\n> Easy.\n";
-    syllabus::write(&other, "02-m-words.md", &src, "from the stdio server").unwrap();
+    let v = crate::courses::get(&app, "voice").unwrap();
+    let src = std::fs::read_to_string(root().join("content/courses/voice/02-m-words.md")).unwrap() + "\n## from-elsewhere\n\nmm\n\n> Easy.\n";
+    syllabus::write(&other, &v, "02-m-words.md", &src, "from the stdio server").unwrap();
     assert!(cards::all_cards(&app).iter().any(|c| c.id == "text.m-words.from-elsewhere"));
-    let e = syllabus::write(&app, "02-m-words.md", "oops", "break it").unwrap_err().to_string();
+    let e = syllabus::write(&app, &v, "02-m-words.md", "oops", "break it").unwrap_err().to_string();
     assert!(e.contains("in 02-m-words.md:"), "{e}");
 }
 
@@ -659,21 +661,22 @@ fn updates_to_the_original_come_in_piece_by_piece() {
     let mut cfg = config(&dir.path().join("data"));
     cfg.content_dir = content.clone();
     let app = App::open(cfg).unwrap();
-    let texts = content.join("texts");
+    let v = crate::courses::get(&app, "voice").unwrap();
+    let texts = content.join("courses/voice");
     let read = |n: &str| std::fs::read_to_string(texts.join(n)).unwrap();
     let words = read("02-m-words.md");
     let first = words.lines().skip_while(|l| *l != "## m1").nth(2).unwrap().to_string();
     let second = words.lines().skip_while(|l| *l != "## m2").nth(2).unwrap().to_string();
-    assert_eq!(updates::list(&app)["using"], "original");
+    assert_eq!(updates::list(&app, &v)["using"], "original");
 
     // You reword m1; then Lilt's original rewords m1 and m2, adds a chapter and softens the safety section.
-    syllabus::write(&app, "02-m-words.md", &words.replace(&first, "my own first line"), "mine").unwrap();
+    syllabus::write(&app, &v, "02-m-words.md", &words.replace(&first, "my own first line"), "mine").unwrap();
     std::fs::write(texts.join("02-m-words.md"), words.replace(&first, "lilt's new first line").replace(&second, "lilt's new second line")).unwrap();
     std::fs::write(texts.join("09-new.md"), read("_template.md").replace("id: my-chapter", "id: brand-new")).unwrap();
     let home = read("index.md");
     std::fs::write(texts.join("index.md"), home.replace("It should never hurt.", "It should never hurt, not even a little.")).unwrap();
 
-    let l = updates::list(&app);
+    let l = updates::list(&app, &v);
     assert_eq!(l["available"], true);
     let handling = |id: &str| l["changes"].as_array().unwrap().iter().find(|c| c["id"] == id).map(|c| c["handling"].as_str().unwrap().to_string());
     assert_eq!(handling("02-m-words.md### m1").as_deref(), Some("choose"));
@@ -682,21 +685,21 @@ fn updates_to_the_original_come_in_piece_by_piece() {
     assert_eq!(handling("index.md### Be gentle with your voice").as_deref(), Some("take"));
 
     // A choice is needed for m1; keep yours.
-    assert!(updates::apply(&app, &BTreeMap::new(), "").unwrap_err().to_string().contains("choose"));
-    let r = updates::apply(&app, &BTreeMap::from([("02-m-words.md### m1".to_string(), "yours".to_string())]), "").unwrap();
+    assert!(updates::apply(&app, &v, &BTreeMap::new(), "").unwrap_err().to_string().contains("choose"));
+    let r = updates::apply(&app, &v, &BTreeMap::from([("02-m-words.md### m1".to_string(), "yours".to_string())]), "").unwrap();
     assert_eq!((r["updates_taken"].as_u64(), r["kept_yours"].as_u64()), (Some(3), Some(1)));
-    let mine = syllabus::read(&app, "02-m-words.md", "mine").unwrap()["markdown"].as_str().unwrap().to_string();
+    let mine = syllabus::read(&app, &v, "02-m-words.md", "mine").unwrap()["markdown"].as_str().unwrap().to_string();
     assert!(mine.contains("my own first line") && mine.contains("lilt's new second line"));
     assert!(cards::all_cards(&app).iter().any(|c| c.id == "text.brand-new.first-text"));
-    assert!(syllabus::read(&app, "index.md", "mine").unwrap()["markdown"].as_str().unwrap().contains("not even a little"));
-    assert_eq!(updates::list(&app)["available"], false, "nothing left to bring in");
+    assert!(syllabus::read(&app, &v, "index.md", "mine").unwrap()["markdown"].as_str().unwrap().contains("not even a little"));
+    assert_eq!(updates::list(&app, &v)["available"], false, "nothing left to bring in");
 
     // Undo puts back your version and the base it followed, so the updates show again.
-    syllabus::undo(&app).unwrap();
+    syllabus::undo(&app, &v).unwrap();
     assert!(!cards::all_cards(&app).iter().any(|c| c.id == "text.brand-new.first-text"));
-    assert_eq!(updates::list(&app)["available"], true);
+    assert_eq!(updates::list(&app, &v)["available"], true);
     // Your version still follows the old safety wording until you bring the update in, and you can keep editing.
-    syllabus::write(&app, "01-warmup.md", &read("01-warmup.md").replace("title: Warm-ups", "title: Warm-ups, my way"), "rename").unwrap();
+    syllabus::write(&app, &v, "01-warmup.md", &read("01-warmup.md").replace("title: Warm-ups", "title: Warm-ups, my way"), "rename").unwrap();
 }
 
 /// A cloud app signing in through the public address: registration, the pairing code, PKCE,
@@ -800,4 +803,63 @@ async fn remote_apps_sign_in_with_a_pairing_code_and_only_reach_mcp() {
         .body(Body::from(r#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"t","version":"1"}}}"#)).unwrap();
     assert_eq!(send(local("127.0.0.1:7878")).await.0, StatusCode::OK);
     assert_eq!(send(local("attacker.example")).await.0, StatusCode::FORBIDDEN);
+}
+
+/// Courses: a second one beside voice, kept apart; `locked` from its course.md; pictures served per
+/// course; and an older `<data>/syllabus` copy moved to `<data>/courses/voice` on start.
+#[tokio::test]
+async fn courses_are_kept_apart_and_old_copies_move_over() {
+    use crate::{courses, syllabus};
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use tower::ServiceExt;
+    let dir = tempfile::tempdir().unwrap();
+    let content = dir.path().join("content");
+    copy_dir(&root().join("content"), &content);
+    let zh = content.join("courses/mandarin");
+    std::fs::create_dir_all(zh.join("images")).unwrap();
+    std::fs::write(zh.join("course.md"), "---\nid: mandarin\ntitle: Mandarin basics\nkind: language\nversion: 1\nlocked: Tones matter\n---\n\nFirst words and tones.\n").unwrap();
+    std::fs::write(zh.join("_about.md"), "---\nversion: 1\n---\n\nA tiny sample.\n").unwrap();
+    std::fs::write(zh.join("index.md"), "---\ntitle: Mandarin\n---\n\n# Mandarin\n\n## Tones matter\n\nSay each tone slowly.\n\n## Start\n\nHello.\n").unwrap();
+    std::fs::write(zh.join("01-greetings.md"), "---\nid: greetings\ntitle: Greetings\nkind: phrases\n---\n\nSay them slowly.\n\n## nihao\n\nnǐ hǎo\n\n> Hello.\n").unwrap();
+    std::fs::write(zh.join("images/tones.webp"), b"RIFF").unwrap();
+
+    // An older copy of the voice course, from before courses.
+    let data = dir.path().join("data");
+    std::fs::create_dir_all(data.join("syllabus")).unwrap();
+    copy_dir(&content.join("courses/voice"), &data.join("syllabus"));
+    let mut cfg = config(&data);
+    cfg.content_dir = content.clone();
+    let app = App::open(cfg.clone()).unwrap();
+    assert!(!data.join("syllabus").exists() && data.join("courses/voice/_about.md").exists(), "moved to courses/voice");
+
+    let list = courses::list(&app);
+    let ids: Vec<&str> = list["courses"].as_array().unwrap().iter().map(|c| c["id"].as_str().unwrap()).collect();
+    assert_eq!(ids, ["voice", "mandarin"], "the app's course first");
+    assert_eq!(list["courses"][1]["kind"], "language");
+    assert_eq!(list["courses"][0]["using"], "mine");
+
+    // Editing Mandarin makes its own copy; voice and the app's texts are untouched.
+    let m = courses::get(&app, "mandarin").unwrap();
+    let before = syllabus::texts(&app);
+    let ch = std::fs::read_to_string(zh.join("01-greetings.md")).unwrap() + "\n## xiexie\n\nxiè xie\n\n> Thank you.\n";
+    syllabus::write(&app, &m, "01-greetings.md", &ch, "add thank you").unwrap();
+    assert!(data.join("courses/mandarin/01-greetings.md").exists());
+    assert_eq!(syllabus::texts(&app), before);
+    assert_eq!(syllabus::list(&app, &m)["using"], "mine");
+    // Its locked section, from course.md, stays.
+    let idx = std::fs::read_to_string(zh.join("index.md")).unwrap().replace("Say each tone slowly.", "Tones don't matter.");
+    assert!(syllabus::write(&app, &m, "index.md", &idx, "skip tones").unwrap_err().to_string().contains("Tones matter"));
+    // The tools take the course by id; an unknown one is refused.
+    let call = |name: &str, args: serde_json::Value| crate::mcp::call(&app, name, args.as_object().unwrap());
+    assert_eq!(call("syllabus_history", serde_json::json!({"course": "mandarin"})).unwrap().structured_content.unwrap()["changes"].as_array().unwrap().len(), 1);
+    assert!(call("syllabus_list", serde_json::json!({"course": "../voice"})).is_err());
+    assert!(call("courses_list", serde_json::json!({})).unwrap().structured_content.unwrap()["courses"].as_array().unwrap().len() == 2);
+
+    // Pictures per course, and the app's course still at /texts/images.
+    let router = crate::build_router(app.clone(), &cfg);
+    let get = |uri: &str| Request::builder().uri(uri).header("host", "127.0.0.1:7878").body(Body::empty()).unwrap();
+    assert_eq!(router.clone().oneshot(get("/courses/mandarin/images/tones.webp")).await.unwrap().status(), StatusCode::OK);
+    assert_eq!(router.clone().oneshot(get("/texts/images/cover.webp")).await.unwrap().status(), StatusCode::OK);
+    assert_eq!(router.oneshot(get("/courses/voice/images/cover.webp")).await.unwrap().status(), StatusCode::OK);
 }

@@ -211,27 +211,33 @@ whole history.
 
 ## MCP (connecting your agent)
 
-Lilt exposes 21 tools, listed below. Arguments are IDs and syllabus file names only; there is no
+Lilt exposes 22 tools, listed below. Arguments are IDs, course ids and syllabus file names only; there is no
 filesystem or shell access.
 
 - `voice_get_today_plan`, `voice_list_exercises`, `voice_list_sessions`, `voice_get_session`
 - `voice_get_analysis`, `voice_compare_sessions`, `voice_get_progress`, `voice_get_audio_clip`
 - `voice_get_deck`: today's card deck, scheduling state and, optionally, the review log
 - `voice_save_review`, `voice_set_next_plan`
-- `syllabus_list`, `syllabus_read`, `syllabus_compare`, `syllabus_history`: your syllabus (the
-  chapters and the home page) and how it differs from Lilt's original
+- `courses_list`: the courses, and whether you use your own copy of each
+- `syllabus_list`, `syllabus_read`, `syllabus_compare`, `syllabus_history`: a course's chapters and
+  home page, and how your copy differs from the original
 - `syllabus_write`, `syllabus_delete`, `syllabus_undo`, `syllabus_reset`: change it
 - `syllabus_updates`, `syllabus_apply_updates`: bring in updates to Lilt's original
 
-**Your own syllabus.** Ask your agent to rewrite a chapter, add one, or overhaul the lot ("make the
-warm-ups shorter", "add a chapter of phone-call phrases"). The changes go to your own copy in
-`<data>/syllabus`; the original in `content/texts` is never touched, and the app switches to your
-copy and says so on the Practice home page. Every change is checked before it's saved (a file Lilt
-can't read is refused, and the home page's "Be gentle with your voice" section can't be changed),
-kept in `<data>/syllabus/.history` with the agent's note, and can be undone one at a time, or all at
-once by going back to the original. `<data>/syllabus/.base` keeps the original as it was when your
-copy was made, for comparing with later versions of the original. Progress follows the text ids, so a
-reworded text keeps its history.
+**Courses, and your own copy.** Lilt holds courses: each a folder in `content/courses/<id>`
+with its Markdown (home page, chapters, pictures, audio) and a `course.md` that names it, its kind
+of practice, its version, where updates come from, and the sections an AI may never change
+(`locked:`). Voice practice (`content/courses/voice`) is the course the app shows today. Ask your
+agent to rewrite a chapter, add one, or overhaul a course ("make the warm-ups shorter", "add a
+chapter of phone-call phrases"); `courses_list` shows the courses, and every syllabus tool takes the
+course's id (voice when left out). Changes go to your own copy in `<data>/courses/<id>`; the
+original folder is never touched, and the app switches to your copy and says so on the Practice
+home page. Every change is checked before it's saved (a file Lilt can't read is refused, and the
+course's locked sections can't be changed), kept in `<data>/courses/<id>/.history` with the agent's
+note, and can be undone one at a time, or all at once by going back to the original.
+`<data>/courses/<id>/.base` keeps the original as it was when your copy was made, for comparing with
+later versions of the original. Progress follows the text ids, so a reworded text keeps its history.
+(A copy made before courses, in `<data>/syllabus`, moves to `<data>/courses/voice` on start.)
 
 **Updates from Lilt.** When Lilt's original changes (a new release, or `git pull` and a rebuild), the
 Practice home page says so under the chapters and links to **Updates from Lilt**
@@ -263,8 +269,9 @@ What the server enforces on writes:
 - Prose is screened for hearing claims ("I hear…"), diagnosis, anatomy, and femininity scores.
 - Plan updates must name the current plan version.
 - A duplicate `idempotency_key` returns the existing review.
-- Syllabus changes must leave a syllabus Lilt can load, keep the "Be gentle with your voice"
-  section, come with a note, and only touch `index.md`, `_about.md`, `_pitch.md` or `NN-name.md`.
+- Course changes must leave a course Lilt can load, keep its locked sections (for voice, "Be
+  gentle with your voice"), come with a note, and only touch `index.md`, `_about.md`, `_pitch.md`
+  or `NN-name.md`.
 
 This screening checks a list of prohibited phrasings. It cannot prove that arbitrary prose is true.
 
@@ -368,9 +375,9 @@ evidence; re-measuring never rewrites feedback you've already read.
 
 ## Content and licensing
 
-The practice texts (the chapters and today's text cards) are Markdown files in `content/texts`,
+The practice texts (the chapters and today's text cards) are Markdown files in `content/courses/voice`,
 one per chapter, so you can edit them in any editor or as an Obsidian vault without touching code.
-[content/texts/README.md](content/texts/README.md) explains the format. Restart Lilt after editing
+[content/courses/voice/README.md](content/courses/voice/README.md) explains the format. Restart Lilt after editing
 (with Docker, `docker compose up -d --build`).
 
 The exercise texts in `content/exercises` are short paraphrases of NHS Fife Speech and Language Therapy

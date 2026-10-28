@@ -81,6 +81,7 @@ impl App {
             write_lock: Mutex::new(()),
             job_notify: Notify::new(),
         });
+        crate::courses::migrate(&app).context("moving your copy of the voice course")?;
         crate::syllabus::reload(&app).context("loading the practice texts")?;
         app.rebuild_index();
         if !app.paths.profile().exists() {

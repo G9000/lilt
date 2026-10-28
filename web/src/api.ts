@@ -217,7 +217,7 @@ export interface Profile {
 /** `example` is an optional recording of someone saying the text, as `audio/<file>`. */
 export interface TextItem { id: string; text: string; hint: string; example?: string }
 export interface TextLevel { id: string; level: number; title: string; subtitle: string; kind: string; basis: string; source_url: string | null; written_by: string; items: TextItem[] }
-/** `home` is the Practice home page as Markdown (content/texts/index.md); `home_cover` its banner. */
+/** `home` is the Practice home page as Markdown (content/courses/voice/index.md); `home_cover` its banner. */
 export interface Texts { note: string; levels: TextLevel[]; home?: string; home_cover?: string; pitch_reference?: PitchReference; edition?: Edition }
 /** Whether these are the learner's own version of the syllabus (changed by an AI agent over MCP) and how many changes it has. */
 export interface Edition { mine: boolean; changes: number; updates?: number }
@@ -236,7 +236,7 @@ export interface ConnectInfo {
   activity: { client: string; last_tool: string; last_used: string }[];
 }
 export interface SyllabusUpdates { using: "mine" | "original"; available: boolean; to_choose?: number; changes: SyllabusChange[] }
-/** Typical speaking pitch, from content/texts/_pitch.md: averages and standard deviations in Hz, the overlap band, and the source. */
+/** Typical speaking pitch, from content/courses/voice/_pitch.md: averages and standard deviations in Hz, the overlap band, and the source. */
 export interface PitchReference { men_mean: number; men_sd: number; women_mean: number; women_sd: number; overlap_low: number; overlap_high: number; source: string }
 
 export type Rating = "again" | "hard" | "good" | "easy";

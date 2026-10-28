@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 
 /**
- * A small Markdown renderer for content written by the owner (content/texts/index.md): headings,
+ * A small Markdown renderer for content written by the owner (content/courses/voice/index.md): headings,
  * paragraphs, lists, quotes, **bold**, _italic_, `code`, [links](url) and ![pictures](images/x.webp).
  * It builds React elements, never HTML, so nothing in the file can inject markup. Picture paths are
- * relative to content/texts, as Obsidian reads them, and served at /texts/images.
+ * relative to content/courses/voice, as Obsidian reads them, and served at /texts/images.
  */
 
 /** A picture path from the texts' Markdown (`images/x.webp` or a web address) as a URL to load. */

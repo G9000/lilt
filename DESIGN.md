@@ -48,7 +48,7 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   heard either way (striped) and the average woman's (coral) speaking ranges, each average ± 1 SD, with a
   tick at each average and your middle pitch as a coral dot; then one sentence placing it in words
   and semitones from the average woman's pitch, and a caption that pitch is one part of how a voice is
-  heard. Never percentages, never a score. Numbers and source live in `content/texts/_pitch.md`.
+  heard. Never percentages, never a score. Numbers and source live in `content/courses/voice/_pitch.md`.
   **Every take's result leads with words**: one observation and one thing to try (comfort first,
   then an end drop, then range and movement), on an accent-soft panel, before any numbers.
   **Recordings** opens inside Practice, listed with Home above the tree (and as a chip on phones):
@@ -60,7 +60,7 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   Recordings, until it can be trusted. While Practice fills the screen, the desk's widgets are hidden
   so nothing shows through the glass.
   **Home** (`#/studio`, the dock's Chapters app) is the Practice index, read like a Notion page:
-  a full-width cover (`cover:` in `content/texts/index.md`), then the owner's words and pictures
+  a full-width cover (`cover:` in `content/courses/voice/index.md`), then the owner's words and pictures
   from that file (why it exists, an honest note, how it's laid out, looking after your voice, how to
   contribute, sources), then the chapters with progress, generated. When an agent has rewritten the syllabus for you, one quiet
 line under the chapters says you're using your own version, with how many changes, and that your AI

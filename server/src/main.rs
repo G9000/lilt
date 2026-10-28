@@ -3,6 +3,7 @@ mod app;
 mod cards;
 mod coach;
 mod compare;
+mod courses;
 mod exercises;
 mod export;
 mod jobs;
@@ -61,15 +62,21 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     let mcp_router = Router::new().nest_service("/mcp", mcp_service);
     let index = config.web_dir.join("index.html");
     let static_files = ServeDir::new(&config.web_dir).fallback(ServeFile::new(index));
-    // Pictures used by the practice texts' Markdown (content/texts/images), as `images/<file>`,
-    // and example recordings for the texts (content/texts/audio), as `audio/<file>`.
-    let text_images = ServeDir::new(config.content_dir.join("texts/images"));
-    let text_audio = ServeDir::new(config.content_dir.join("texts/audio"));
-    api::router(app.clone())
+    // Each course's pictures and example recordings, as `images/<file>` and `audio/<file>` in its
+    // Markdown, at /courses/<id>/images and /courses/<id>/audio; the app's course (Practice) also
+    // at /texts/images and /texts/audio.
+    let mut router = api::router(app.clone())
         .merge(mcp_router)
-        .merge(oauth::router(app.clone()))
-        .nest_service("/texts/images", text_images)
-        .nest_service("/texts/audio", text_audio)
+        .merge(oauth::router(app.clone()));
+    for c in courses::all(&app) {
+        for part in ["images", "audio"] {
+            router = router.nest_service(&format!("/courses/{}/{part}", c.id), ServeDir::new(c.dir.join(part)));
+            if c.id == courses::DEFAULT {
+                router = router.nest_service(&format!("/texts/{part}"), ServeDir::new(c.dir.join(part)));
+            }
+        }
+    }
+    router
         .fallback_service(static_files)
         .layer(middleware::from_fn_with_state(app, oauth::gate))
 }

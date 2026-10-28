@@ -48,6 +48,7 @@ pub fn router(app: Shared) -> Router {
         .route("/api/profile", get(get_profile).put(put_profile))
         .route("/api/exercises", get(list_exercises))
         .route("/api/texts", get(texts))
+        .route("/api/courses", get(list_courses))
         .route("/api/syllabus/updates", get(syllabus_updates).post(apply_syllabus_updates))
         .route("/api/syllabus/history", get(syllabus_history))
         .route("/api/syllabus/undo", post(syllabus_undo))
@@ -477,8 +478,20 @@ async fn remeasure_stale(State(app): State<Shared>) -> R<Json<Value>> {
 }
 
 /// What Lilt's original changed since your own version was made, and how each change would be handled.
-async fn syllabus_updates(State(app): State<Shared>) -> Json<Value> {
-    Json(crate::updates::list(&app))
+/// Every course: what it is, and whether you're using your own copy.
+async fn list_courses(State(app): State<Shared>) -> Json<Value> {
+    Json(crate::courses::list(&app))
+}
+
+/// `?course=<id>`, the app's course when left out.
+#[derive(Deserialize, Default)]
+struct CourseQuery {
+    course: Option<String>,
+}
+
+async fn syllabus_updates(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
+    let c = crate::courses::pick(&app, q.course.as_deref())?;
+    Ok(Json(crate::updates::list(&app, &c)))
 }
 
 #[derive(Deserialize)]
@@ -489,16 +502,19 @@ struct ApplyUpdates {
     note: String,
 }
 
-async fn apply_syllabus_updates(State(app): State<Shared>, Json(b): Json<ApplyUpdates>) -> R<Json<Value>> {
-    Ok(Json(crate::updates::apply(&app, &b.choices, &b.note)?))
+async fn apply_syllabus_updates(State(app): State<Shared>, Query(q): Query<CourseQuery>, Json(b): Json<ApplyUpdates>) -> R<Json<Value>> {
+    let c = crate::courses::pick(&app, q.course.as_deref())?;
+    Ok(Json(crate::updates::apply(&app, &c, &b.choices, &b.note)?))
 }
 
-async fn syllabus_history(State(app): State<Shared>) -> Json<Value> {
-    Json(crate::syllabus::history(&app))
+async fn syllabus_history(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
+    let c = crate::courses::pick(&app, q.course.as_deref())?;
+    Ok(Json(crate::syllabus::history(&app, &c)))
 }
 
-async fn syllabus_undo(State(app): State<Shared>) -> R<Json<Value>> {
-    Ok(Json(crate::syllabus::undo(&app)?))
+async fn syllabus_undo(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
+    let c = crate::courses::pick(&app, q.course.as_deref())?;
+    Ok(Json(crate::syllabus::undo(&app, &c)?))
 }
 
 /// What Settings → Connect your AI shows: how to connect each kind of app from this computer, the

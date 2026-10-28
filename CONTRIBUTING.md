@@ -9,15 +9,15 @@ You don't need to write code to contribute content.
 
 ## Improve or add a chapter
 
-The chapters are plain Markdown files in [`content/texts`](content/texts). Open the folder in any
-editor, or as an Obsidian vault. [`content/texts/README.md`](content/texts/README.md) explains the
-format, and [`content/texts/_template.md`](content/texts/_template.md) is a chapter to copy.
+The chapters are plain Markdown files in [`content/courses/voice`](content/courses/voice). Open the folder in any
+editor, or as an Obsidian vault. [`content/courses/voice/README.md`](content/courses/voice/README.md) explains the
+format, and [`content/courses/voice/_template.md`](content/courses/voice/_template.md) is a chapter to copy.
 
 - **Fix a text or a hint**: edit the line and keep its `## id` the same (recordings are linked to it).
 - **Add a text** to a chapter: add a `## new-id` section.
 - **Add a chapter**: copy `_template.md` to the next number, like `09-breathing.md`.
-- **Add a picture** to the Practice home (`index.md`): put it in `content/texts/images`.
-- **Add an example recording** of someone saying a text: put the file in `content/texts/audio`
+- **Add a picture** to the Practice home (`index.md`): put it in `content/courses/voice/images`.
+- **Add an example recording** of someone saying a text: put the file in `content/courses/voice/audio`
   and add `example: audio/<file>` under the text's hint. Only record yourself, or someone who said yes.
 
 ## What makes a good contribution

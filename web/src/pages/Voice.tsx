@@ -658,7 +658,7 @@ function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, num
 
 /**
  * The Practice home, read like a note: a full-width cover, the owner's words and pictures from
- * content/texts/index.md, then the chapters with your progress (generated, so it never goes stale).
+ * content/courses/voice/index.md, then the chapters with your progress (generated, so it never goes stale).
  * Nothing is picked, so the recorder takes free recordings.
  */
 function HomeDoc({ texts, deck, practised, history, profile, onRecording, onTake }: {

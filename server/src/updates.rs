@@ -1,7 +1,7 @@
 //! Bringing updates to Lilt's original syllabus into your own version, piece by piece.
 //!
 //! Three versions of each file are compared: the original as it was when your copy was made (or
-//! last updated; kept in `<data>/syllabus/.base`), the original now, and yours. Each file is split
+//! last updated; kept in `<data>/courses/<id>/.base`), the original now, and yours. Each file is split
 //! into pieces: everything before the first `## ` heading (a chapter's details and "How to do
 //! it"), then one piece per `## ` section (a chapter's texts, by id, or a home page section, by
 //! heading). For every piece the original changed:
@@ -14,6 +14,7 @@
 //! original comes in; a chapter you removed that the original then changed is yours to decide).
 
 use crate::app::App;
+use crate::courses::Course;
 use crate::syllabus::{self, Files};
 use crate::texts;
 use anyhow::{Result, anyhow, bail, ensure};
@@ -153,17 +154,17 @@ fn merge_file(mine: &str, orig: &str, take: &[&String]) -> String {
 }
 
 /// How many of the original's changes are waiting to come in (or to be chosen).
-pub fn waiting(app: &App) -> usize {
-    changes(&syllabus::base_files(app), &syllabus::original_files(app), &syllabus::mine_files(app)).iter().filter(|c| c.outcome != Outcome::Keep).count()
+pub fn waiting(app: &App, c: &Course) -> usize {
+    changes(&syllabus::base_files(app, c), &syllabus::original_files(c), &syllabus::mine_files(app, c)).iter().filter(|c| c.outcome != Outcome::Keep).count()
 }
 
 /// What the original changed since your copy's base, and how each change would be handled.
-pub fn list(app: &App) -> Value {
-    if !syllabus::has_mine(app) {
-        return json!({ "using": "original", "available": false, "changes": [],
+pub fn list(app: &App, course: &Course) -> Value {
+    if !syllabus::has_mine(app, course) {
+        return json!({ "course": course.id, "using": "original", "available": false, "changes": [],
             "note": "You're using Lilt's original, so its updates already apply." });
     }
-    let (base, orig, mine) = (syllabus::base_files(app), syllabus::original_files(app), syllabus::mine_files(app));
+    let (base, orig, mine) = (syllabus::base_files(app, course), syllabus::original_files(course), syllabus::mine_files(app, course));
     let titles: BTreeMap<String, String> = mine.iter().chain(orig.iter())
         .filter_map(|(n, s)| texts::chapter(s, 0).ok().map(|c| (n.clone(), c["title"].as_str().unwrap_or_default().to_string())))
         .collect();
@@ -177,6 +178,7 @@ pub fn list(app: &App) -> Value {
     })).collect();
     let version = |f: &Files| f.get("_about.md").and_then(|s| s.lines().find_map(|l| l.strip_prefix("version:"))).map(|v| v.trim().to_string());
     json!({
+        "course": course.id,
         "using": "mine",
         "available": rows.iter().any(|r| r["handling"] != "already"),
         "to_choose": rows.iter().filter(|r| r["handling"] == "choose").count(),
@@ -187,9 +189,9 @@ pub fn list(app: &App) -> Value {
 }
 
 /// Bring the original's updates in. Every "choose" change needs a choice: "yours" or "original".
-pub fn apply(app: &App, choices: &BTreeMap<String, String>, note: &str) -> Result<Value> {
-    ensure!(syllabus::has_mine(app), "you're using Lilt's original, so its updates already apply");
-    let (base, orig, mine) = (syllabus::base_files(app), syllabus::original_files(app), syllabus::mine_files(app));
+pub fn apply(app: &App, course: &Course, choices: &BTreeMap<String, String>, note: &str) -> Result<Value> {
+    ensure!(syllabus::has_mine(app, course), "you're using Lilt's original, so its updates already apply");
+    let (base, orig, mine) = (syllabus::base_files(app, course), syllabus::original_files(course), syllabus::mine_files(app, course));
     let all = changes(&base, &orig, &mine);
     for id in choices.keys() {
         ensure!(all.iter().any(|c| &c.id == id), "`{id}` isn't one of the updates");
@@ -231,7 +233,7 @@ pub fn apply(app: &App, choices: &BTreeMap<String, String>, note: &str) -> Resul
         };
     }
     let note = if note.trim().is_empty() { "Brought in updates from Lilt's original" } else { note };
-    let mut r = syllabus::commit_with_base(app, next, "update", "", note, Some(orig))?;
+    let mut r = syllabus::commit_with_base(app, course, next, "update", "", note, Some(orig))?;
     r["updates_taken"] = json!(taken);
     r["kept_yours"] = json!(kept);
     Ok(r)

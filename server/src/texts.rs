@@ -1,4 +1,4 @@
-//! Practice texts, written as Markdown in `content/texts` so they can be edited without code
+//! A course's texts, written as Markdown in `content/courses/<id>` so they can be edited without code
 //! (in any editor, or as an Obsidian vault). `index.md` is the Practice home page, served as raw
 //! Markdown, with an optional `cover: images/<file>` banner in its front matter; `_pitch.md`
 //! holds the typical speaking pitch references (numbers in front matter, the source as its body); `_about.md` holds the version and the closing note; each `NN-<id>.md` is one chapter,
@@ -25,7 +25,7 @@
 //! example: audio/hum-comfortable.mp3
 //! ```
 //!
-//! The `example:` line is optional: a recording of someone saying the text, from `content/texts/audio`.
+//! The `example:` line is optional: a recording of someone saying the text, from the course's `audio` folder.
 //!
 //! The result has the same shape the app has always served from `/api/texts`.
 
@@ -34,7 +34,7 @@ use serde_json::{Map, Value, json};
 use std::path::Path;
 
 /// `key: value` lines between `---` fences, and the text after them.
-fn front_matter(src: &str) -> Result<(Map<String, Value>, &str)> {
+pub(crate) fn front_matter(src: &str) -> Result<(Map<String, Value>, &str)> {
     let rest = src.strip_prefix("---\n").ok_or_else(|| anyhow!("must start with a --- front matter block"))?;
     let end = rest.find("\n---").ok_or_else(|| anyhow!("front matter is not closed with ---"))?;
     let mut meta = Map::new();
@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn loads_the_shipped_texts() {
-        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../content/texts");
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../content/courses/voice");
         let t = load(&dir).unwrap();
         assert_eq!(t["schema"], "lilt.texts/1");
         assert!(t["home"].as_str().unwrap().contains("## Sources"));

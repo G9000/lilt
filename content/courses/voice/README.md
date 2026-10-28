@@ -1,12 +1,14 @@
-# Practice texts
+# Voice practice (a course)
 
-The reading material for Lilt's chapters and today's cards. Edit these files in any text editor,
+This folder is Lilt's voice course: the reading material for its chapters and today's cards, and
+`course.md`, which names the course, its kind of practice and the sections an AI may never change. Edit these files in any text editor,
 or open this folder as an Obsidian vault. Restart Lilt afterwards (with Docker, rebuild:
 `docker compose up -d --build`). If a file has a mistake, Lilt won't start and says which file.
 
 These are the original texts, shared by everyone. To change them just for yourself, ask your AI
-agent over MCP (see "Your own syllabus" in the main README): your version is kept in your data
-folder, and these files stay as they are.
+agent over MCP (see "Courses, and your own copy" in the main README): your version is kept in your
+data folder, and these files stay as they are. Another course is another folder beside this one,
+with its own `course.md`.
 
 - `index.md`: the Practice home page (why it exists, how it works, sources). `cover: images/<file>`
   in its front matter sets the full-width banner at the top. The `placeholder-*` pictures in

@@ -309,7 +309,7 @@
 .ve-mic-help b { color: var(--ink); font-weight: 600; }
 .ve .ve-mic-help button { height: 34px; padding: 0 14px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 13px; font-weight: 600; }
 
-/* the Practice home: Markdown from content/texts/index.md, read like a document */
+/* the Practice home: Markdown from content/courses/voice/index.md, read like a document */
 /* a Notion-style cover across the whole page, then the note */
 .ve-cover { height: clamp(150px, 26vh, 280px); background-size: cover; background-position: center 40%; }
 .ve-col.ve-home-col { padding-top: 40px; }

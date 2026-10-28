@@ -24,7 +24,7 @@ const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_refe
 /**
  * Where your middle pitch sits against the average man's and woman's speaking voices, on a scale, with one
  * sentence in semitones. Descriptive only: no percentages, no score. The numbers come from
- * content/texts/_pitch.md.
+ * content/courses/voice/_pitch.md.
  */
 export function PitchScale({ median, note = true }: { median: number; note?: boolean }) {
   const [ref, setRef] = useState<PitchReference | null>(null);
