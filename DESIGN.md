@@ -32,7 +32,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   a full-width cover (`cover:` in `content/texts/index.md`), then the owner's words and pictures
   from that file (why it exists, an honest note, how it's laid out, looking after your voice, how to
   contribute, sources), then the chapters with progress, generated. The recorder takes free
-  recordings beside it. The 272px sidebar is a **file tree, like Obsidian**, with a Home
+  recordings beside it. You can **resize** it: drag the sidebar's
+  edge (200–420px; drag it very narrow to fold it away) or the divider between the text and the
+  recorder (32–72%); double-click either to reset, or use the arrow keys on it. The sidebar
+  **folds away** with the toggle beside the traffic lights or ⌘\ / Ctrl+\. These sizes are kept in
+  this browser. The sidebar (272px by default) is a **file tree, like Obsidian**, with a Home
   row at the top, aligned like the folders (its icon where their chevrons sit): **Today** and each
   **chapter** are folders (a chevron that folds, the name, a count, or a small medal once a chapter
   is complete); their cards and texts are the files, under a hairline indent guide, with a green

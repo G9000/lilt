@@ -35,6 +35,63 @@ const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60))
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const howTo = (basis: string) => cap(basis.replace(/^(NHS Fife( progression)?|Lilt's choice):\s*/i, ""));
 
+/* ---------------------------------------------------------------- layout: sidebar and split sizes */
+
+/** Your sidebar width, whether it's hidden, and where the text/recorder split sits, kept in this browser. */
+interface Layout { side: number; collapsed: boolean; split: number }
+const LAYOUT_KEY = "lilt.practice.layout";
+const LAYOUT: Layout = { side: 272, collapsed: false, split: 0.5 };
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+function useLayout() {
+  const [layout, setLayout] = useState<Layout>(() => {
+    try { return { ...LAYOUT, ...JSON.parse(localStorage.getItem(LAYOUT_KEY) ?? "{}") }; } catch { return LAYOUT; }
+  });
+  // The window's toolbar (with the traffic lights) sits outside this page, so the sizes live on the root.
+  useEffect(() => {
+    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); } catch { /* private window: sizes just aren't kept */ }
+    const root = document.documentElement;
+    root.style.setProperty("--ve-side-w", layout.collapsed ? "0px" : `${layout.side}px`);
+    root.style.setProperty("--ve-split", `${(layout.split * 100).toFixed(2)}%`);
+    root.classList.toggle("ve-side-hidden", layout.collapsed);
+  }, [layout]);
+  useEffect(() => () => {
+    const root = document.documentElement;
+    root.style.removeProperty("--ve-side-w"); root.style.removeProperty("--ve-split"); root.classList.remove("ve-side-hidden");
+  }, []);
+  return [layout, setLayout] as const;
+}
+
+/** A draggable divider: pointer drag, arrow keys to nudge, double-click to reset. */
+function Resizer({ className, label, onDrag, onNudge, onReset }: {
+  className: string; label: string; onDrag: (x: number) => void; onNudge: (dir: -1 | 1) => void; onReset: () => void;
+}) {
+  const down = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const el = e.currentTarget;
+    el.setPointerCapture(e.pointerId);
+    document.documentElement.classList.add("ve-dragging");
+    const move = (ev: PointerEvent) => onDrag(ev.clientX);
+    const up = () => {
+      el.removeEventListener("pointermove", move);
+      document.documentElement.classList.remove("ve-dragging");
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up, { once: true });
+    el.addEventListener("pointercancel", up, { once: true });
+  };
+  return (
+    <div className={`ve-resize ${className}`} role="separator" aria-orientation="vertical" aria-label={label} tabIndex={0}
+      onPointerDown={down} onDoubleClick={onReset}
+      onKeyDown={(e) => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); onNudge(e.key === "ArrowLeft" ? -1 : 1); } }} />
+  );
+}
+
+const SidebarIcon = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
+);
+
 export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "today" | "chapter"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
@@ -49,12 +106,36 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "toda
   }, []);
   const level = texts ? texts.levels.find((l) => l.id === levelId) ?? texts.levels[0] : null;
   const chips = useRef<HTMLElement>(null);
+  const page = useRef<HTMLDivElement>(null);
+  const docRef = useRef<HTMLElement>(null);
+  const [layout, setLayout] = useLayout();
+  const toggleSide = () => setLayout((l) => ({ ...l, collapsed: !l.collapsed }));
+  // ⌘\ or Ctrl+\ hides and shows the sidebar, as in most editors.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key === "\\") { e.preventDefault(); toggleSide(); } };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const dragSide = (x: number) => {
+    const left = page.current?.getBoundingClientRect().left ?? 0, w = x - left;
+    setLayout((l) => (w < 150 ? { ...l, collapsed: true } : { ...l, collapsed: false, side: clamp(Math.round(w), 200, 420) }));
+  };
+  const dragSplit = (x: number) => {
+    const r = docRef.current?.getBoundingClientRect();
+    if (r) setLayout((l) => ({ ...l, split: clamp((x - r.left) / r.width, 0.32, 0.72) }));
+  };
   useEffect(() => { chips.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ inline: "center", block: "nearest" }); }, [texts, doc, level?.id]);
 
   return (
-    <div className="ve">
+    <div className="ve" ref={page}>
+      <button className="ve-side-toggle" onClick={toggleSide} aria-label={layout.collapsed ? "Show sidebar" : "Hide sidebar"} aria-keyshortcuts="Meta+Backslash Control+Backslash"
+        title={layout.collapsed ? "Show sidebar (⌘\\)" : "Hide sidebar (⌘\\)"}><SidebarIcon /></button>
+      {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
+        onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
-      <main className="ve-doc">
+      <main className="ve-doc" ref={docRef}>
+        <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
+          onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
           <nav className="ve-chips" aria-label="Chapters" ref={chips}>
             <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
