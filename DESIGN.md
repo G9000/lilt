@@ -26,7 +26,8 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   When a window is open the widgets fade back (opacity .3, blur 3px).
 - **Practice** is the window you land in, filling the screen under the menu bar edge to edge as **one frosted
   sheet** over the blurred room (white glass about 58–80% with a 40px backdrop blur; the sidebar,
-  text and recorder are split by hairlines, and the text is the most opaque so it reads easily). It is laid out like a Markdown editor and fills the screen
+  text and recorder are split by hairlines; the sidebar is the most solid layer (about 90 % light
+  neutral, less colour saturation) so the tree reads clearly in any light, even the night painting). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
   the sidebar, like a Mac app). **A new voice starts** at `#/studio/start`: read the reference line once in your everyday voice;
   Lilt offers that take's range as your comfortable range and keeps it as Day 1. Under Home's welcome
