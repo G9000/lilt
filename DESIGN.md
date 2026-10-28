@@ -66,7 +66,9 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   recordings beside it. You can **resize** it: drag the sidebar's
   edge (200–420px; drag it very narrow to fold it away) or the divider between the text and the
   recorder (32–72%); double-click either to reset, or use the arrow keys on it. The sidebar
-  **folds away** with the toggle beside the traffic lights or ⌘\ / Ctrl+\. These sizes are kept in
+  **folds away**, sliding and fading over about a third of a second (the toggle glides with it), with
+  the toggle beside the traffic lights or ⌘\ / Ctrl+\; the recorder half never gets narrower than
+  340px, whatever the split. These sizes are kept in
   this browser. The sidebar (272px by default) is a **file tree, like Obsidian**, with a Home
   row at the top, aligned like the folders (its icon where their chevrons sit): **Today** and each
   **chapter** are folders (a chevron that folds, the name, a count, or a small medal once a chapter
