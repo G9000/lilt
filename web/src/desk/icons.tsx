@@ -86,3 +86,47 @@ export const LeaveIcon = () => (
 export const Mark = () => (
   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="M3 12c2-6 4-6 5.5 0s3.5 6 5.5 0 2.5-4 3-4" /></svg>
 );
+
+/** A gear outline with `n` teeth between radii `r1` (root) and `r2` (tip), centred on 50,50. */
+function gear(n: number, r1: number, r2: number) {
+  const pts: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2, w = (Math.PI * 2) / n;
+    // root, rise, flat tip, fall: a trapezoid tooth
+    for (const [da, r] of [[0, r1], [w * 0.18, r2], [w * 0.5, r2], [w * 0.68, r1]] as const) {
+      pts.push(`${(50 + r * Math.cos(a + da)).toFixed(2)},${(50 + r * Math.sin(a + da)).toFixed(2)}`);
+    }
+  }
+  return `M${pts.join("L")}Z`;
+}
+const OUTER = gear(32, 33.2, 36);
+const INNER = gear(10, 18.5, 22.5);
+
+/**
+ * The Settings app icon in the current macOS style: a light, glassy rounded tile, a dark bezel,
+ * a fine-toothed metal gear and a smaller one inside it. Drawn for Lilt, not Apple's artwork.
+ */
+export function SettingsAppIcon() {
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <linearGradient id="sai-tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fbfbfd" /><stop offset="1" stopColor="#c7c8ce" /></linearGradient>
+        <radialGradient id="sai-well" cx="0.5" cy="0.42" r="0.6"><stop offset="0" stopColor="#4a4b52" /><stop offset="1" stopColor="#17181b" /></radialGradient>
+        <linearGradient id="sai-metal" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0" stopColor="#f4f4f6" /><stop offset="0.45" stopColor="#b9bac1" /><stop offset="0.55" stopColor="#d6d7dc" /><stop offset="1" stopColor="#7c7d85" /></linearGradient>
+        <linearGradient id="sai-shine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0.85" /><stop offset="0.5" stopColor="#fff" stopOpacity="0" /></linearGradient>
+      </defs>
+      <rect x="2" y="2" width="96" height="96" rx="23" fill="url(#sai-tile)" />
+      <rect x="2.5" y="2.5" width="95" height="95" rx="22.5" fill="none" stroke="#fff" strokeOpacity="0.9" />
+      <circle cx="50" cy="50" r="40" fill="url(#sai-well)" />
+      <circle cx="50" cy="50" r="40" fill="none" stroke="#000" strokeOpacity="0.35" />
+      <path d={OUTER} fill="url(#sai-metal)" />
+      <circle cx="50" cy="50" r="29.5" fill="#26272c" />
+      <circle cx="50" cy="50" r="29.5" fill="none" stroke="#000" strokeOpacity="0.4" strokeWidth="1.2" />
+      <path d={INNER} fill="url(#sai-metal)" />
+      <circle cx="50" cy="50" r="12" fill="#2d2e33" />
+      <circle cx="50" cy="50" r="6.5" fill="url(#sai-metal)" />
+      <circle cx="50" cy="50" r="2.4" fill="#2d2e33" />
+      <path d="M8 26 Q8 8 26 8 H74 Q92 8 92 26 V40 Q50 30 8 40 Z" fill="url(#sai-shine)" opacity="0.35" />
+    </svg>
+  );
+}

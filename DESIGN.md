@@ -117,8 +117,9 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips, sharing its row with the window's traffic lights.
 
-**Settings** in the room is just the app's icon, like one on a Mac desktop: a 64px light-grey
-squircle with a dark gear (it turns a little on hover) and "Settings" under it in white. It, the
+**Settings** in the room is just the app's icon, like one on a Mac desktop, in the current macOS
+style (drawn for Lilt): a 68px light glassy tile, a dark bezel, a fine-toothed metal gear and a smaller
+one inside it and "Settings" under it in white. It, the
 settings button in the room's and the desk's menu bars, and old `#/settings` links open **Settings,
 its own window** over the room or the desk (up to 1080px wide, filling the height under the menu bar,
 the world dimmed behind it), laid out like System Settings: a sidebar on `--fill` with the traffic
@@ -131,7 +132,9 @@ size full width under their label). Changes save as you make them; there is no S
 phone the categories are a list, and a pane opens over it with a back arrow. Escape or a click
 outside closes it.
 
-**Settings → AI connections**: three quiet groups in the usual `--fill` boxes: **On this computer** (Claude Code, Claude Desktop,
+**Settings → AI connections** starts with a choice of app, four cards in a row (ChatGPT first, then
+Claude Desktop, Claude Code, Other apps; the chosen one on `--accent-soft` with an accent ring), and
+shows that app's steps only. Previously: three quiet groups in the usual `--fill` boxes: **On this computer** (Claude Code, Claude Desktop,
 other apps, each a command on a `--page` panel in `--mono` with a Copy button), **ChatGPT, and other
 apps in the cloud** (three numbered steps: the tunnel command and the public address with "Save
 address", the public MCP address to paste into ChatGPT, and "Get a code", which shows the one-time

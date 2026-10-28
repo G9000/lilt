@@ -5,6 +5,7 @@ import { radio, useRadio } from "./lofi";
 import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
+import { SettingsAppIcon } from "./icons";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
@@ -115,18 +116,12 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
 function SettingsWidget() {
   return (
     <button className="fl-app ss-open" onClick={() => openSettings()} aria-label="Settings">
-      <span className="fl-app-icon" aria-hidden="true">{GEAR}</span>
+      <span className="fl-app-icon" aria-hidden="true"><SettingsAppIcon /></span>
       <span className="fl-app-name">Settings</span>
     </button>
   );
 }
 
-const GEAR = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="3" />
-    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
-  </svg>
-);
 
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();

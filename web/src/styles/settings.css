@@ -66,3 +66,13 @@
   .sx-head { padding: 0 12px; }
   .sx-body { padding: 20px 16px 32px; }
 }
+
+/* AI connections: choose your app first, then its steps */
+.st-apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 14px; }
+.sx .st-apps button { min-height: 0; display: grid; justify-content: start; align-content: start; justify-items: start; gap: 2px; padding: 12px 14px; border-radius: 12px; text-align: left; background: var(--panel); box-shadow: 0 0 0 1px var(--hair); color: var(--ink); transition: box-shadow 0.15s ease, background-color 0.15s ease; }
+.sx .st-apps button:hover { box-shadow: 0 0 0 1px var(--line-strong); }
+.sx .st-apps button.on { background: var(--accent-soft); box-shadow: 0 0 0 1.5px var(--accent); }
+.st-apps b { font-size: 14px; font-weight: 600; }
+.st-apps span { font-size: 12px; color: var(--ink-3); }
+.st-why { margin-top: 0; color: var(--ink-2); }
+.sx #st-ai .st-sub { margin-top: 18px; }
