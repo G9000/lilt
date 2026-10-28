@@ -384,7 +384,7 @@
 .prc-insight .c b { color: var(--accent-ink); font-weight: 600; margin-right: 4px; }
 .prc-result .prc-insight { margin-bottom: 14px; }
 
-/* where your middle pitch sits against typical men's and women's voices: bands, averages, you */
+/* where your middle pitch sits against the average man's and woman's voices: bands, averages, you */
 .pscale { margin: 0 0 16px; }
 .pscale-track { position: relative; height: 14px; border-radius: 99px; background: var(--fill); }
 .pscale-track > span { position: absolute; top: 0; bottom: 0; border-radius: 99px; }

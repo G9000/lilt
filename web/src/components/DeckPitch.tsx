@@ -22,7 +22,7 @@ let reference: Promise<PitchReference | null> | null = null;
 const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_reference ?? null, () => null));
 
 /**
- * Where your middle pitch sits against typical men's and women's speaking voices, on a scale, with one
+ * Where your middle pitch sits against the average man's and woman's speaking voices, on a scale, with one
  * sentence in semitones. Descriptive only: no percentages, no score. The numbers come from
  * content/texts/_pitch.md.
  */
@@ -44,13 +44,13 @@ export function PitchScale({ median }: { median: number }) {
         <b className="you" style={{ left: `${at(median)}%` }} />
       </div>
       <div className="pscale-labels" aria-hidden="true">
-        <span style={{ left: `${at(ref.men_mean)}%` }}>Typical men<small>{Math.round(men[0])}–{Math.round(men[1])} Hz</small></span>
+        <span style={{ left: `${at(ref.men_mean)}%` }}>Average man<small>{Math.round(men[0])}–{Math.round(men[1])} Hz</small></span>
         <span style={{ left: `${at((ref.overlap_low + ref.overlap_high) / 2)}%` }}>Either<small>{ref.overlap_low}–{ref.overlap_high}</small></span>
-        <span style={{ left: `${at(ref.women_mean)}%` }}>Typical women<small>{Math.round(women[0])}–{Math.round(women[1])} Hz</small></span>
+        <span style={{ left: `${at(ref.women_mean)}%` }}>Average woman<small>{Math.round(women[0])}–{Math.round(women[1])} Hz</small></span>
       </div>
       <figcaption>
         {placePitch(median, ref)}{" "}
-        <span title={ref.source}>Pitch is one part of how a voice is heard; resonance and intonation matter as much. Typical ranges from Leung et al. (2022).</span>
+        <span title={ref.source}>Pitch is one part of how a voice is heard; resonance and intonation matter as much. Averages from Leung et al. (2022).</span>
       </figcaption>
     </figure>
   );

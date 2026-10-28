@@ -11,7 +11,7 @@ or open this folder as an Obsidian vault. Restart Lilt afterwards (with Docker, 
   and pictures: put the file in `images/` and write `![what it shows](images/name.webp)` on its own
   line (it opens the same way in Obsidian).
   The list of chapters under it is added automatically.
-- `_pitch.md`: typical speaking pitch for men and women (averages and standard deviations in Hz,
+- `_pitch.md`: the average speaking pitch for men and women (averages and standard deviations in Hz,
   the overlap band) and where those numbers come from. After each take, Lilt shows your middle
   pitch on that scale in words and semitones, never as a percentage or a score.
 - `_about.md`: the version, the date the sources were checked, and the note shown at the end of
