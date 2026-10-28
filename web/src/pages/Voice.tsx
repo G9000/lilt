@@ -1,7 +1,7 @@
 import "../styles/deck.css";
 import "../styles/voice.css";
 import "../styles/editor.css";
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Profile, Rating, Session, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
@@ -50,7 +50,8 @@ function useLayout() {
     try { return { ...LAYOUT, ...JSON.parse(localStorage.getItem(LAYOUT_KEY) ?? "{}") }; } catch { return LAYOUT; }
   });
   // The window's toolbar (with the traffic lights) sits outside this page, so the sizes live on the root.
-  useEffect(() => {
+  // They're set before the first paint, so the page never draws the default sizes first.
+  useLayoutEffect(() => {
     try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); } catch { /* private window: sizes just aren't kept */ }
     const root = document.documentElement;
     root.style.setProperty("--ve-side-w", layout.collapsed ? "0px" : `${layout.side}px`);
@@ -58,9 +59,15 @@ function useLayout() {
     root.style.setProperty("--ve-split", `${(layout.split * 100).toFixed(2)}%`);
     root.classList.toggle("ve-side-hidden", layout.collapsed);
   }, [layout]);
-  useEffect(() => () => {
+  // The sidebar slides only once the page has settled, so a reload never animates it into place.
+  useEffect(() => {
     const root = document.documentElement;
-    root.style.removeProperty("--ve-side-w"); root.style.removeProperty("--ve-side-open"); root.style.removeProperty("--ve-split"); root.classList.remove("ve-side-hidden");
+    let id = requestAnimationFrame(() => { id = requestAnimationFrame(() => root.classList.add("ve-motion")); });
+    return () => {
+      cancelAnimationFrame(id);
+      root.style.removeProperty("--ve-side-w"); root.style.removeProperty("--ve-side-open"); root.style.removeProperty("--ve-split");
+      root.classList.remove("ve-side-hidden", "ve-motion");
+    };
   }, []);
   return [layout, setLayout] as const;
 }
