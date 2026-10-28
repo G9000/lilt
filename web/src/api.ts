@@ -216,7 +216,8 @@ export interface Profile {
 
 export interface TextItem { id: string; text: string; hint: string }
 export interface TextLevel { id: string; level: number; title: string; subtitle: string; kind: string; basis: string; source_url: string | null; written_by: string; items: TextItem[] }
-export interface Texts { note: string; levels: TextLevel[] }
+/** `home` is the Practice home page as Markdown (content/texts/index.md). */
+export interface Texts { note: string; levels: TextLevel[]; home?: string }
 
 export type Rating = "again" | "hard" | "good" | "easy";
 export interface DeckCard {

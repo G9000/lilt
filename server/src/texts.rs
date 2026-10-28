@@ -1,6 +1,7 @@
 //! Practice texts, written as Markdown in `content/texts` so they can be edited without code
-//! (in any editor, or as an Obsidian vault). `_about.md` holds the version and the closing note;
-//! each `NN-<id>.md` is one chapter, in file-name order:
+//! (in any editor, or as an Obsidian vault). `index.md` is the Practice home page, served as raw
+//! Markdown; `_about.md` holds the version and the closing note; each `NN-<id>.md` is one chapter,
+//! in file-name order:
 //!
 //! ```markdown
 //! ---
@@ -91,6 +92,12 @@ pub fn load(dir: &Path) -> Result<Value> {
     let (mut out, note) = front_matter(&about_src).with_context(|| format!("in {}", about.display()))?;
     out.insert("version".into(), json!(out.get("version").and_then(Value::as_str).and_then(|v| v.parse::<u64>().ok()).unwrap_or(1)));
     out.insert("note".into(), Value::String(joined(note.lines())));
+    let index = dir.join("index.md");
+    if index.exists() {
+        let src = read(&index)?;
+        let (_, home) = front_matter(&src).with_context(|| format!("in {}", index.display()))?;
+        out.insert("home".into(), Value::String(home.trim().into()));
+    }
 
     let mut files: Vec<_> = std::fs::read_dir(dir).with_context(|| format!("reading {}", dir.display()))?
         .filter_map(|e| e.ok().map(|e| e.path()))
@@ -142,6 +149,7 @@ mod tests {
         let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../content/texts");
         let t = load(&dir).unwrap();
         assert_eq!(t["schema"], "lilt.texts/1");
+        assert!(t["home"].as_str().unwrap().contains("## Sources"));
         let levels = t["levels"].as_array().unwrap();
         assert_eq!(levels.len(), 7);
         for (i, l) in levels.iter().enumerate() {

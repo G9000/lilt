@@ -4,6 +4,7 @@ import "../styles/editor.css";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Profile, Rating, Session, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
+import { Markdown } from "../components/Markdown";
 import { LeaveIcon, StudioIcon, TextsIcon } from "../desk/icons";
 import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
@@ -34,7 +35,7 @@ const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60))
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const howTo = (basis: string) => cap(basis.replace(/^(NHS Fife( progression)?|Lilt's choice):\s*/i, ""));
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "today" | "chapter"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "today" | "chapter"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -52,15 +53,18 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "today" | "cha
 
   return (
     <div className="ve">
-      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "today" ? "today" : level?.id ?? ""} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
+      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
       <main className="ve-doc">
         {texts && (
           <nav className="ve-chips" aria-label="Chapters" ref={chips}>
+            <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
             <button aria-current={doc === "today" ? "page" : undefined} onClick={() => go("/deck")} disabled={recording}>Today</button>
             {texts.levels.map((l) => <button key={l.id} aria-current={doc === "chapter" && l.id === level?.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={recording}>{l.title}</button>)}
           </nav>
         )}
-        {doc === "today"
+        {doc === "home"
+          ? texts && <HomeDoc texts={texts} practised={practised} band={profile?.comfort_range_hz ?? null} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          : doc === "today"
           ? <TodayDoc key={first ?? ""} first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : texts && level && profile && <ChapterDoc key={level.id} texts={texts} level={level} itemId={itemId} profile={profile} onProfile={setProfile} onRecording={setRecording}
               practised={practised} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />}
@@ -126,6 +130,10 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
   );
   return (
     <nav className="ve-side" aria-label="Practice">
+      <button className="ve-home" onClick={() => go("/studio")} disabled={locked} aria-current={current === "home" ? "page" : undefined}>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.8 7.2L8 2.8l5.2 4.4V13a.8.8 0 01-.8.8H9.6V10H6.4v3.8H3.6a.8.8 0 01-.8-.8z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>
+        Home
+      </button>
       <ul className="ve-tree">
         <Folder id="today" label="Today" current={current === "today"} open={open.has("today")} onToggle={toggle} onOpen={() => go("/deck")} locked={locked}
           extra={deck && !deck.paused ? (left === 0 && total ? <Tick className="ve-tick" /> : <span className="c">{total - left}/{total}</span>) : null}>
@@ -393,6 +401,52 @@ function FreeResult({ take, band }: { take: Take; band: [number, number] | null 
       <ListenBack src={take.audio_url} />
       <Measures take={take} band={band} />
     </div>
+  );
+}
+
+/* ---------------------------------------------------------------- home: what Practice is for */
+
+/**
+ * The Practice home: the owner's words from content/texts/index.md, then the chapters with your
+ * progress (generated, so it never goes stale). Nothing is picked, so the recorder takes free takes.
+ */
+function HomeDoc({ texts, practised, band, onRecording, onTake }: {
+  texts: Texts; practised: Set<string>; band: [number, number] | null; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
+}) {
+  const split = useSplit();
+  const [studio, setStudio] = useState<string | null>(null);
+  const [freeTake, setFreeTake] = useState<Take | null>(null);
+  useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
+  const freeView = freeTake && <FreeResult take={freeTake} band={band} />;
+  return (
+    <>
+      <div className="ve-page">
+        <article className="ve-col">
+          <header className="ve-head"><h1>Practice</h1></header>
+          {texts.home && <Markdown src={texts.home} className="ve-md" />}
+          <section className="ve-md">
+            <h2>The chapters</h2>
+            <ol className="ve-chapters">
+              {texts.levels.map((l) => {
+                const n = l.items.length, d = l.items.filter((it) => practised.has(`text.${l.id}.${it.id}`)).length;
+                return (
+                  <li key={l.id}>
+                    <a href={`#/studio/${l.id}`}>
+                      <span className="n">{l.level}</span>
+                      <span className="t"><b>{l.title}</b><small>{l.subtitle}</small></span>
+                      {d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}
+                    </a>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+          {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
+        </article>
+      </div>
+      <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake
+        onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} result={split ? freeView : null} />
+    </>
   );
 }
 

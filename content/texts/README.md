@@ -4,6 +4,9 @@ The reading material for Lilt's chapters and today's cards. Edit these files in 
 or open this folder as an Obsidian vault. Restart Lilt afterwards (with Docker, rebuild:
 `docker compose up -d --build`). If a file has a mistake, Lilt won't start and says which file.
 
+- `index.md`: the Practice home page (what it's for, why, how to use it, sources). Plain Markdown:
+  `##` headings, paragraphs, `-` lists, `> ` quotes, `**bold**`, `_italic_` and `[links](https://…)`.
+  The list of chapters under it is added automatically.
 - `_about.md`: the version, the date the sources were checked, and the note shown at the end of
   every chapter.
 - `01-warmup.md` … `07-conversation.md`: one chapter each. The number at the start of the file
