@@ -225,65 +225,105 @@ export interface ContourPoint { t: number; hz: number | null; c?: number; v?: nu
 export const UNSURE = 0.92;
 
 /**
- * A pitch contour made readable, before it's drawn:
- * 1. local octave fix: a reading about twice (or half) the pitch of its neighbours on both sides
- *    is moved back into their octave, so one bad frame can't drag the line;
- * 2. wild readings out: one more than 3 semitones (and 3 spreads) from its neighbours' middle is
- *    dropped when it's unsure (clarity under `UNSURE`) or right beside a pause, where misreads
- *    gather. A clear jump in the middle of speech stays;
- * 3. background hum out: a stretch of quiet, dead-steady pitch, under a fifth of the loudness of
- *    your speech around it (a fan, a fridge, a monitor's whine), is dropped. A note you hold is as loud as
- *    your speech, so it stays;
- * 4. a 5-point median, so single-frame misreads disappear;
- * 5. bursts shorter than `minRun` frames are dropped (clicks and breaths, not speech);
- * 6. `line`: the pitch eased in semitones (about 50 ms), restarting after a pause, to draw as a
- *    smooth line over the dots.
- * Frame times may be uneven; gaps over 150 ms break the line.
+ * Display cleanup only. Clear readings and sustained register changes are protected; uncertain
+ * glitches need agreeing context, and quiet steady tones need weak pitch evidence as well as
+ * energy contrast. Each pass uses a snapshot, and context stops at pauses/time gaps.
+ * The original contour and saved Praat measurements are never modified.
  */
 export function cleanContour(pts: ContourPoint[], minRun = 6): CleanPoint[] {
   const n = pts.length, hz = pts.map((p) => p.hz);
+  const rawSt = hz.map((v) => v === null ? null : hzToMidi(v));
   const fixed = hz.slice();
-  for (let i = 0; i < n; i++) {
-    const v = hz[i];
-    if (v === null) continue;
-    const near: number[] = [];
-    for (let j = Math.max(0, i - 12); j <= Math.min(n - 1, i + 12); j++) if (j !== i && hz[j] !== null) near.push(hz[j] as number);
-    if (near.length < 6) continue;
-    const r = v / med(near);
-    if (r > 1.8 && r < 2.25) fixed[i] = v / 2;
-    else if (r > 0.44 && r < 0.56) fixed[i] = v * 2;
+  const uncertain = (i: number) => pts[i].c === undefined || pts[i].c! < UNSURE;
+  const starts = new Array<number>(n), ends = new Array<number>(n);
+  for (let i = 0; i < n;) {
+    if (hz[i] === null) { starts[i] = i; ends[i] = i + 1; i++; continue; }
+    let end = i + 1;
+    while (end < n && hz[end] !== null && pts[end].t - pts[end - 1].t < 0.15) end++;
+    for (let j = i; j < end; j++) { starts[j] = i; ends[j] = end; }
+    i = end;
   }
-  const st = fixed.map((v) => (v === null ? null : 12 * Math.log2(v / 440)));
-  const drop = new Array<boolean>(n).fill(false);
+  const context = (values: (number | null)[], i: number, radius: number) => {
+    const left: number[] = [], right: number[] = [];
+    for (let j = i - 1; j >= starts[i] && pts[i].t - pts[j].t <= radius; j--) if (values[j] !== null) left.push(values[j]!);
+    for (let j = i + 1; j < ends[i] && pts[j].t - pts[i].t <= radius; j++) if (values[j] !== null) right.push(values[j]!);
+    return { left, right };
+  };
+  const sustained = (i: number) => {
+    let first = i, last = i;
+    while (first > starts[i] && Math.abs(rawSt[first - 1]! - rawSt[i]!) < 1.5) first--;
+    while (last + 1 < ends[i] && Math.abs(rawSt[last + 1]! - rawSt[i]!) < 1.5) last++;
+    return pts[last].t - pts[first].t > 0.06;
+  };
+  // Only short candidate runs are changed. A long coherent change is not a glitch, even if
+  // the tracker is uncertain. The duration limit works at both 10 ms and 25 ms tracker rates.
+  const applyBrief = (candidates: boolean[], apply: (i: number) => void) => {
+    for (let i = 0; i < n;) {
+      if (!candidates[i]) { i++; continue; }
+      let end = i + 1;
+      while (end < ends[i] && candidates[end]) end++;
+      const step = end - i > 1 ? (pts[end - 1].t - pts[i].t) / (end - i - 1) : 0.01;
+      if (pts[end - 1].t - pts[i].t + step <= 0.06 + 1e-9) for (let j = i; j < end; j++) if (!sustained(j)) apply(j);
+      i = end;
+    }
+  };
+
+  const octave = new Array<number | null>(n).fill(null);
+  for (let i = 0; i < n; i++) {
+    const x = rawSt[i];
+    if (x === null || !uncertain(i)) continue;
+    const { left, right } = context(rawSt, i, 0.12);
+    if (left.length < 3 || right.length < 3 || Math.abs(med(left) - med(right)) > 3) continue;
+    const centre = med([...left, ...right]);
+    const shift = Math.round((centre - x) / 12);
+    if (Math.abs(shift) < 1 || Math.abs(shift) > 2) continue;
+    const candidate = x + 12 * shift;
+    if (Math.abs(candidate - centre) <= 2 && Math.abs(x - centre) - Math.abs(candidate - centre) >= 5) octave[i] = shift;
+  }
+  applyBrief(octave.map((v) => v !== null), (i) => { fixed[i] = hz[i]! * 2 ** octave[i]!; });
+
+  const st = fixed.map((v) => v === null ? null : hzToMidi(v));
+  const candidates = new Array<boolean>(n).fill(false);
+  const voiced = st.filter((v): v is number => v !== null);
+  const centre = voiced.length ? med(voiced) : 0;
+  const globalSpread = voiced.length ? med(voiced.map((v) => Math.abs(v - centre))) : 0;
   for (let i = 0; i < n; i++) {
     const x = st[i];
-    if (x === null) continue;
-    const near: number[] = [];
-    for (let j = Math.max(0, i - 15); j <= Math.min(n - 1, i + 15); j++) if (j !== i && st[j] !== null) near.push(st[j] as number);
-    if (near.length < 8) continue;
-    const m = med(near), spread = med(near.map((y) => Math.abs(y - m)));
-    if (Math.abs(x - m) <= Math.max(3, 3 * spread)) continue;
-    const unsure = pts[i].c !== undefined && pts[i].c! < UNSURE;
-    let byPause = false;
-    for (let d = -3; d <= 3 && !byPause; d++) {
-      const j = i + d;
-      if (d === 0 || j < 0 || j >= n) continue;
-      if (hz[j] === null || Math.abs(pts[j].t - pts[i].t) > 0.15) byPause = true;
+    if (x === null || !uncertain(i)) continue;
+    const { left, right } = context(st, i, 0.15);
+    if (left.length >= 3 && right.length >= 3 && Math.abs(med(left) - med(right)) <= 3.5) {
+      const near = [...left, ...right], m = med(near);
+      const spread = med(near.map((y) => Math.abs(y - m)));
+      candidates[i] = Math.abs(x - m) > Math.max(3, 3 * 1.4826 * spread);
     }
-    if (unsure || byPause) drop[i] = true;
   }
-  const loud = pts.filter((p, i) => st[i] !== null && p.v !== undefined).map((p) => p.v as number).sort((a, b) => a - b);
+  const drop = new Array<boolean>(n).fill(false);
+  applyBrief(candidates, (i) => { drop[i] = true; });
+  // With context on only one side, measure the entire extreme run before considering its
+  // edges. Otherwise the first few frames of a sustained phrase could look like a short glitch.
+  const extreme = st.map((x) => x !== null && voiced.length >= 12 && Math.abs(x - centre) > Math.max(6, 4 * 1.4826 * globalSpread));
+  applyBrief(extreme, (i) => {
+    const byPause = i - starts[i] < 3 || ends[i] - i <= 3;
+    if (byPause && uncertain(i)) drop[i] = true;
+  });
+
+  const loud = pts.filter((p, i) => st[i] !== null && Number.isFinite(p.v)).map((p) => p.v!).sort((a, b) => a - b);
   if (loud.length >= 50) {
     const speech = loud[Math.floor(loud.length * 0.8)];
     for (let i = 0; i < n; i++) {
-      if (st[i] === null || pts[i].v === undefined) continue;
-      // Its neighbours at the same pitch (within a semitone), so the edge of a hum next to speech counts too.
-      const ys: number[] = [], vs: number[] = [];
-      for (let j = Math.max(0, i - 25); j <= Math.min(n - 1, i + 25); j++) {
-        const y = st[j];
-        if (y !== null && pts[j].v !== undefined && Math.abs(y - (st[i] as number)) < 1) { ys.push(y); vs.push(pts[j].v as number); }
+      // Quietness alone cannot distinguish a fan from a softly held practice note.
+      if (st[i] === null || !Number.isFinite(pts[i].v) || pts[i].v! >= 0.2 * speech || pts[i].c === undefined || !uncertain(i)) continue;
+      const ys: number[] = [], vs: number[] = [], times: number[] = [];
+      let nearVoice = false;
+      for (let j = i; j >= starts[i] && pts[i].t - pts[j].t <= 0.25; j--) collect(j);
+      for (let j = i + 1; j < ends[i] && pts[j].t - pts[i].t <= 0.25; j++) collect(j);
+      function collect(j: number) {
+        if (st[j] === null || !Number.isFinite(pts[j].v)) return;
+        const distance = Math.abs(st[j]! - st[i]!);
+        if (Math.abs(pts[j].t - pts[i].t) <= 0.12 && distance < 3 && pts[j].v! >= speech * 0.65 && !uncertain(j)) nearVoice = true;
+        if (distance < 1) { ys.push(st[j]!); vs.push(pts[j].v!); times.push(pts[j].t); }
       }
-      if (ys.length < 20) continue;
+      if (nearVoice || ys.length < 8 || Math.max(...times) - Math.min(...times) < 0.18) continue;
       ys.sort((a, b) => a - b);
       const steady = ys[Math.floor(ys.length * 0.8)] - ys[Math.floor(ys.length * 0.2)] < 0.4;
       if (steady && med(vs) < 0.2 * speech) drop[i] = true;
@@ -292,16 +332,23 @@ export function cleanContour(pts: ContourPoint[], minRun = 6): CleanPoint[] {
   for (let i = 0; i < n; i++) if (drop[i]) fixed[i] = null;
   const smooth: (number | null)[] = fixed.map((v, i) => {
     if (v === null) return null;
-    const near: number[] = [];
-    for (let j = Math.max(0, i - 2); j <= Math.min(n - 1, i + 2); j++) if (fixed[j] !== null) near.push(fixed[j] as number);
+    const near: number[] = [v];
+    for (const direction of [-1, 1]) {
+      for (let offset = 1; offset <= 2; offset++) {
+        const j = i + direction * offset;
+        if (j < starts[i] || j >= ends[i] || fixed[j] === null) break;
+        near.push(fixed[j]!);
+      }
+    }
     return med(near);
   });
-  // Drop short bursts.
+  // Drop bursts shorter than minRun * 10 ms, including on the slower fallback tracker.
   for (let i = 0; i < n; ) {
     if (smooth[i] === null) { i++; continue; }
     let j = i;
     while (j < n && smooth[j] !== null && (j === i || pts[j].t - pts[j - 1].t < 0.15)) j++;
-    if (j - i < minRun) for (let k = i; k < j; k++) smooth[k] = null;
+    const step = j - i > 1 ? (pts[j - 1].t - pts[i].t) / (j - i - 1) : 0.01;
+    if (pts[j - 1].t - pts[i].t + step < minRun * 0.01 - 1e-9) for (let k = i; k < j; k++) smooth[k] = null;
     i = j;
   }
   const out: CleanPoint[] = [];

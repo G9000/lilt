@@ -54,8 +54,10 @@ server confirms that the finalized original is on disk.
 Courses, and how to add a course or a kind of practice: [courses.md](courses.md).
 
 Practice texts are Markdown in `content/courses/voice` (`_about.md` plus one `NN-<id>.md` per chapter), parsed at start-up by `server/src/courses/texts.rs` into the JSON that `/api/texts` serves. Cards are generated from content: `ref.daily` (the reference phrase, every day and never spaced),
-`text.<level>.<item>` for the 33 practice texts, and `ex.<id>` for four NHS Fife exercises placed
-in the stage they fit. Stages follow the text levels. A stage opens when 60% of the stage before
+`text.<level>.<item>` for the course texts that participate in Today (61 of the current 65; the four
+setup texts are excluded), and `ex.<id>` for four NHS Fife exercises placed in the stage they fit.
+The first two new warm-up cards are a hum and a greeting, so carryover starts on day one.
+Stages follow the chapters. A stage opens when 60% of the stage before
 is "learned", meaning two Good or Easy ratings in a row.
 
 Scheduling is SM-2-like:

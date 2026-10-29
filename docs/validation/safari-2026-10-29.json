@@ -1,0 +1,182 @@
+{
+  "capabilities": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+    "webLocks": true,
+    "audioWorklet": true,
+    "mime": "audio/webm;codecs=opus"
+  },
+  "results": [
+    {
+      "name": "YIN tracks a 90 Hz harmonic tone within 1%",
+      "pass": true
+    },
+    {
+      "name": "YIN tracks a 140 Hz harmonic tone within 1%",
+      "pass": true
+    },
+    {
+      "name": "YIN tracks a 200 Hz harmonic tone within 1%",
+      "pass": true
+    },
+    {
+      "name": "YIN tracks a 240 Hz harmonic tone within 1%",
+      "pass": true
+    },
+    {
+      "name": "YIN tracks a 330 Hz harmonic tone within 1%",
+      "pass": true
+    },
+    {
+      "name": "YIN tracks a 500 Hz harmonic tone within 1%",
+      "pass": true
+    },
+    {
+      "name": "silence and quiet noise give no pitch",
+      "pass": true
+    },
+    {
+      "name": "white noise at speaking level is mostly unvoiced",
+      "pass": true
+    },
+    {
+      "name": "note names and helpers",
+      "pass": true
+    },
+    {
+      "name": "the voice gate follows the room: a quiet mic in a quiet room still hears a soft voice",
+      "pass": true
+    },
+    {
+      "name": "cleaning: a one-frame octave slip goes back to its neighbours' octave, then the median smooths",
+      "pass": true
+    },
+    {
+      "name": "cleaning: a real, sustained change is kept",
+      "pass": true
+    },
+    {
+      "name": "cleaning: bursts shorter than 60 ms (clicks, breaths) are dropped; speech isn't",
+      "pass": true
+    },
+    {
+      "name": "cleaning: the smooth line eases in semitones and restarts after a pause",
+      "pass": true
+    },
+    {
+      "name": "cleaning: an unsure brief spike goes; clear pitch movement stays",
+      "pass": true
+    },
+    {
+      "name": "cleaning: quiet steady hum goes; a note held as loud as speech stays",
+      "pass": true
+    },
+    {
+      "name": "cleaning: a clear quiet held note survives beside louder speech",
+      "pass": true
+    },
+    {
+      "name": "cleaning: quiet expressive speech and repeated phrase endings survive gain changes",
+      "pass": true
+    },
+    {
+      "name": "cleaning: loud voice at the background pitch is kept",
+      "pass": true
+    },
+    {
+      "name": "cleaning: an isolated clear phrase beside pauses survives",
+      "pass": true
+    },
+    {
+      "name": "cleaning: a coherent lower register is kept even with uncertain readings",
+      "pass": true
+    },
+    {
+      "name": "cleaning: octave mistakes use unchanged, agreeing context on both sides",
+      "pass": true
+    },
+    {
+      "name": "cleaning: a clear short octave phrase is not folded into its neighbours",
+      "pass": true
+    },
+    {
+      "name": "cleaning: context and median smoothing do not cross a time gap",
+      "pass": true
+    },
+    {
+      "name": "cleaning: a long uncertain register change is not trimmed as an outlier",
+      "pass": true
+    },
+    {
+      "name": "cleaning: a sustained uncertain phrase beside pauses keeps its edges",
+      "pass": true
+    },
+    {
+      "name": "cleaning: duration safeguards also protect the slower live tracker",
+      "pass": true
+    },
+    {
+      "name": "Live AudioWorklet pitch tracks generated 220 Hz",
+      "pass": true,
+      "detail": {
+        "frames": 730,
+        "median": 220.02140467920123
+      }
+    },
+    {
+      "name": "Competing Safari windows refuse capture before creating a take",
+      "pass": true
+    },
+    {
+      "name": "Audio tail stays locked; peer can record after stop",
+      "pass": true
+    },
+    {
+      "name": "Double starts in one Safari page are refused",
+      "pass": true
+    },
+    {
+      "name": "Safari constructor failure releases lock and radio claim",
+      "pass": true
+    },
+    {
+      "name": "Safari start failure releases lock and radio claim",
+      "pass": true
+    },
+    {
+      "name": "Refused take creation releases Safari capture",
+      "pass": true
+    },
+    {
+      "name": "Safari cancellation releases the lock",
+      "pass": true
+    },
+    {
+      "name": "Safari recorder error releases lock and radio claim",
+      "pass": true
+    },
+    {
+      "name": "Native MP4 recording saves, plays back and gets a Praat contour",
+      "pass": true,
+      "detail": {
+        "take": "70df29ac-086c-454e-84bc-66af1b13bf59",
+        "mime": "audio/mp4",
+        "duration": 2.622403628117914,
+        "median": 220.0005
+      }
+    },
+    {
+      "name": "Closing the recording peer releases Safari's lock",
+      "pass": true
+    }
+  ],
+  "complete": true,
+  "tested_date": "2026-10-29",
+  "browser_version": "Safari 26.6.2 (21624.5.1.11.3)",
+  "environment": "Installed macOS Safari, generated audio, disposable data, real local API and Praat. Remote Automation disabled.",
+  "not_run": [
+    "physical microphone and permission flow",
+    "full Safari practice UI",
+    "iOS/iPadOS",
+    "Safari without Web Locks"
+  ]
+}

@@ -133,25 +133,24 @@ Then open <http://127.0.0.1:7878>.
    - **Compare** puts the original and the retry side by side as an A/B pair.
 6. If a pointer doesn't match what you hear or feel, say so. Your note is kept with the review and
    is taken into account next time.
-7. **Chapters** are free practice, in the same Practice page. The sidebar lists the seven text
-   levels with how many texts you've practised in each. A chapter reads like a document: how to do
+7. **Chapters** are free practice, in the same Practice page. The sidebar lists the eleven
+   chapters with how many texts you've practised in each. A chapter reads like a document: how to do
    it, then each text in a reading serif with a hint under it. Pick a text (or press <kbd>↓</kbd>),
    press record, and the docked recorder draws your pitch live.
    - **Show my pitch live** lets you watch without recording.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
-8. **Texts** has 33 starter practice texts in 7 levels:
-   1. hums and glides
-   2. m/n words
-   3. counting, days and months
-   4. everyday phrases
-   5. smooth sentences
-   6. short passages
-   7. conversation prompts
+8. **Texts** has 65 texts across 11 chapters: setup, warm-ups, pitch, resonance, vocal weight,
+   intonation, automatic speech, everyday phrases, reading, your own words and real life.
+   Each chapter follows a small loop: listen to an example or personal reference, try one cue,
+   record, listen back, then use it in a real phrase. The second warm-up card is a greeting,
+   available in a fresh Today deck on day one. The four setup texts stay outside Today's cards.
 
-   Levels 1–3 come from the NHS Fife sources. The phrases, sentences, passages and questions are
-   written by Lilt and labelled that way.
+   Instructions draw on the linked NHS Fife and NHS Lothian sources; the listening questions,
+   bridge phrases and suggested daily loop are Lilt's teaching choices. Existing video links
+   provide demonstrations. Dedicated A/B audio clips are still missing, and no clinician has
+   reviewed the course or its pacing. All 61 earlier exercise IDs and spoken texts are preserved.
 9. **Comfortable range (optional):** a pitch band you choose. Set it in Settings, or with "use this
    take's range" in a chapter. It is shown as a soft band and is never a gendered zone or a coaching
    target.
@@ -184,8 +183,16 @@ it persists or keeps coming back, see a voice professional.
 - **Capture settings:** Lilt asks the browser to turn off echo cancellation, noise suppression and
   automatic gain, and records what the browser reports. A browser accepting that request doesn't prove
   your device applied no processing.
-- **Formats:** Chrome and Firefox record WebM/Opus. Safari records MP4/AAC. The original bytes are kept
-  as they were. `analysis.wav` is a derived copy for analysis only.
+- **Formats:** the browser's supported format is selected automatically. Chrome and Firefox use
+  WebM/Opus; tested Safari 26.6.2 selects it too, and its MP4/AAC path is also verified. Older Safari
+  versions can fall back to MP4. Original bytes are kept as they were; `analysis.wav` is derived only.
+- **One take at a time:** a second take is refused while another is recording in this page, or in
+  another tab at the same site address when the browser supports Web Locks. The lock lasts through
+  the final audio tail and ends when capture stops. Leaving a recorder finishes its take. Microphone
+  checks and live pitch can still run; browsers without Web Locks only get protection within one page.
+- **Pitch display:** cleanup protects clear quiet notes and sustained register changes. Brief uncertain
+  glitches need consistent neighbouring pitch; quiet steady tones also need weak pitch evidence before
+  they are hidden. Cleanup stops at pauses and time gaps and never rewrites saved measurements.
 
 ### Data layout
 
@@ -373,6 +380,8 @@ cd server && cargo test                     # 15 acceptance-scenario tests (uses
 cd analysis && .venv/bin/python -m pytest   # 27 analysis tests on fixed fixtures
 cd analysis && .venv/bin/python scripts/evaluate.py   # regenerates EVALUATION.md
 cd web && node --test src/pitch.test.ts     # live pitch tracker (YIN) on synthetic tones
+cd web && LILT_URL=http://127.0.0.1:5173 node --test e2e/recording-lock.mjs  # Vite running: real browser locks/recorder, fake mic and stubbed API
+cd web && LILT_URL=http://127.0.0.1:7979 node e2e/safari.mjs  # disposable test server on :7979; open :5175 in Safari and click each tab's audio button
 cd web && node --test src/insight.test.ts   # the note in words after each take
 cd web && node --test src/room/scene.test.ts  # room: monitor warp, light blending, zoom box
 cd web && pnpm dev                          # UI on :5173, proxies to a server on :7878

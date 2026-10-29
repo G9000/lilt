@@ -5,6 +5,7 @@
 
 import { claimMic } from "./micuse";
 import { api, Take } from "./api";
+import { acquireRecordingLock } from "./recordingLock";
 
 const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "audio/ogg;codecs=opus"];
 
@@ -175,6 +176,8 @@ export class TakeRecorder {
   private queue: Promise<void> = Promise.resolve();
   private uploadError: Error | null = null;
   private releaseMic: (() => void) | null = null;
+  private releaseRecording: (() => void) | null = null;
+  private starting = false;
   private created: Promise<void> = Promise.resolve();
   startedAt = 0;
 
@@ -187,6 +190,21 @@ export class TakeRecorder {
   }
 
   async start(meta: TakeMeta): Promise<void> {
+    if (this.starting || this.state === "recording" || this.state === "saving") throw new Error("This take is already recording or saving.");
+    this.starting = true;
+    try {
+      this.releaseRecording = await acquireRecordingLock();
+      await this.begin(meta);
+    } catch (error) {
+      this.releaseMic?.();
+      this.releaseRecording?.();
+      throw error;
+    } finally {
+      this.starting = false;
+    }
+  }
+
+  private async begin(meta: TakeMeta): Promise<void> {
     stopAllPlayback();
     this.releaseMic?.();
     this.releaseMic = claimMic();
@@ -196,6 +214,14 @@ export class TakeRecorder {
     const settings = track?.getSettings?.() ?? {};
     this.takeId = crypto.randomUUID();
     const rec = new MediaRecorder(delayedStream(this.stream), mime ? { mimeType: mime } : undefined);
+    const releaseRecording = this.releaseRecording!;
+    rec.addEventListener("stop", releaseRecording, { once: true });
+    rec.addEventListener("error", () => {
+      // A native recorder error ends capture too. Hold the lock until its stop event.
+      if (rec.state !== "inactive") rec.stop();
+      this.releaseMic?.();
+      this.set("error", "Recording stopped unexpectedly. Your uploaded audio can be recovered when Lilt reopens.");
+    }, { once: true });
     // Capture starts now; the take is created on the server alongside, and chunks wait for it.
     this.seq = 0;
     this.uploadError = null;
@@ -214,6 +240,7 @@ export class TakeRecorder {
       },
     }).then(() => idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: false } satisfies PendingTake)));
     this.created = created.then(() => undefined);
+    void this.created.catch(() => undefined); // The start failure is surfaced below; stop may never be called.
     this.queue = created.then(() => undefined, (e: any) => { this.uploadError = e instanceof Error ? e : new Error(String(e)); });
     rec.ondataavailable = (ev) => {
       if (!ev.data || ev.data.size === 0) return;
@@ -233,7 +260,13 @@ export class TakeRecorder {
       });
     };
     this.rec = rec;
-    await new Promise<void>((resolve) => { rec.addEventListener("start", () => resolve(), { once: true }); rec.start(1000); });
+    await new Promise<void>((resolve, reject) => {
+      const started = () => { rec.removeEventListener("error", failed); resolve(); };
+      const failed = () => { rec.removeEventListener("start", started); reject(new Error("Couldn't start recording.")); };
+      rec.addEventListener("start", started, { once: true });
+      rec.addEventListener("error", failed, { once: true });
+      rec.start(1000);
+    });
     this.startedAt = performance.now();
     this.set("recording");
     // If the server couldn't create the take, stop at once rather than record into nowhere.
@@ -297,6 +330,9 @@ export class TakeRecorder {
 
   cancelTracks() {
     this.releaseMic?.();
+    // Stop capture before releasing its lock. Track.stop() alone needn't stop a delayed stream.
+    if (this.rec && this.rec.state !== "inactive") this.rec.stop();
+    else this.releaseRecording?.();
     closeDelayLine(this.stream);
     this.stream.getTracks().forEach((t) => t.stop());
   }

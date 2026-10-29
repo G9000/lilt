@@ -180,6 +180,15 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
   const [err, setErr] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const rec = useRef<TakeRecorder | null>(null);
+  const starting = useRef(false);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      if (rec.current?.state === "recording") void rec.current.stop().catch(() => {});
+    };
+  }, []);
   const root = useRef<HTMLDivElement>(null);
   const lastMeta = useRef(meta);
   lastMeta.current = meta;
@@ -204,18 +213,22 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const start = async () => {
-    setErr(null);
-    const stream = mic.stream ?? (await mic.request());
-    if (!stream) return;
-    const r = new TakeRecorder(stream, (x) => { setState(x.state); onStateChange?.(x.state); if (x.error) setErr(x.error); });
-    rec.current = r;
+    if (starting.current) return;
+    starting.current = true;
     try {
+      setErr(null);
+      const stream = mic.stream ?? (await mic.request());
+      if (!stream || !mounted.current) return;
+      const r = new TakeRecorder(stream, (x) => { setState(x.state); onStateChange?.(x.state); if (x.error) setErr(x.error); });
+      rec.current = r;
       await r.start(lastMeta.current);
+      if (!mounted.current) { if (r.state === "recording") await r.stop(); return; }
       setElapsed(0);
     } catch (e: any) {
-      setState("error");
+      // A refused start has no take to save. Keep Record available after the other tab stops.
+      setState("idle");
       setErr(e.message);
-    }
+    } finally { starting.current = false; }
   };
 
   const stop = async () => {
