@@ -280,6 +280,7 @@ function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
 function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }) {
   // Decided once per visit (the parent keys this by chapter), so it never folds up under you.
   const [open, setOpen] = useState(!started);
+  const [sources, setSources] = useState(false);
   const [lede, ...paras] = howTo(level.basis).split("\n\n");
   const tips = paras.map((p) => {
     const m = p.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/);
@@ -290,8 +291,8 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
   return (
     <section className="ci" aria-label="About this chapter">
       <Markdown src={lede} className="ci-lede" />
-      {tips.length > 0 && (open ? (
-        <ul className="ci-tips">
+      {tips.length > 0 && open && (
+        <ul className="ci-tips" id={`tips-${level.id}`}>
           {tips.map((t, i) => (
             <li key={i} className={/gentle|care/i.test(t.label) ? "care" : undefined}>
               <span className="ci-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={tipIcon(t.label)} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
@@ -299,12 +300,19 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
             </li>
           ))}
         </ul>
-      ) : <button type="button" className="ci-more" onClick={() => setOpen(true)}>Show tips ({tips.length}) <span aria-hidden="true">↓</span></button>)}
+      )}
+      <div className="ci-foot">
+        {tips.length > 0 && (
+          <button type="button" className="ci-link" aria-expanded={open} aria-controls={`tips-${level.id}`} onClick={() => setOpen((o) => !o)}>
+            {open ? "Hide tips" : `Show tips (${tips.length})`}<span aria-hidden="true">{open ? "↑" : "↓"}</span>
+          </button>
+        )}
+        <button type="button" className="ci-link quiet" aria-expanded={sources} onClick={() => setSources((v) => !v)}>
+          Sources<span aria-hidden="true">{sources ? "↑" : "↓"}</span>
+        </button>
+      </div>
+      {sources && <p className="ci-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>}
       {level.video && <ChapterVideo video={level.video} />}
-      <details className="ci-src">
-        <summary>Where this comes from</summary>
-        <p>{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>
-      </details>
     </section>
   );
 }

@@ -152,20 +152,25 @@
 .ve-how { margin: 0 0 40px; padding: 16px 20px 17px; border-radius: 14px; background: var(--fill); color: var(--ink-2); font-size: 15px; line-height: 1.55; }
 .ve-how.warn { background: var(--warn-soft); }
 .ve-how b { color: var(--ink); font-weight: 600; font-size: 13px; display: block; margin-bottom: 3px; }
-/* A chapter's intro (Voice.tsx ChapterIntro): an opening line, then a quiet list of one-line tips. */
-.ci { margin: 0 0 44px; }
+/* A chapter's intro (Voice.tsx ChapterIntro): an opening line, then a quiet list of one-line tips.
+   Spacing follows the page's 4-px steps: 8 within a row, 16 between parts, 24 before the video,
+   32 to the texts below (whose own padding adds the rest). */
+.ci { margin: 0 0 32px; }
 .ci-lede p { margin: 0; max-width: 34em; font-size: 19px; line-height: 1.45; color: var(--ink); text-wrap: pretty; }
-.ci-tips { list-style: none; margin: 20px 0 0; padding: 0; }
-.ci-tips li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; padding: 11px 0; border-top: 1px solid var(--hair); }
+.ci-tips { list-style: none; margin: 16px 0 0; padding: 0; }
+.ci-tips li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--hair); }
 .ci-tips li:last-child { border-bottom: 1px solid var(--hair); }
 .ci-ic { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: var(--fill); color: var(--ink-2); }
 .ci-ic svg { width: 15px; height: 15px; }
-.ci-tips b { display: block; margin: 1px 0 1px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.ci-tips b { display: block; margin: 4px 0 2px; font-size: 14px; line-height: 1.3; font-weight: 600; color: var(--ink); }
 .ci-tips p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
 .ci-tips li.care .ci-ic { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
 .ci-tips li.care b { color: color-mix(in srgb, var(--accent) 75%, var(--ink)); }
-.ci-more { display: inline-flex; gap: 4px; margin-top: 12px; padding: 0; background: none; border: 0; color: var(--ink); font: 600 13.5px var(--font); cursor: pointer; }
-.ci-more span { color: var(--ink-3); }
+.ci-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 16px; }
+.ve .ci-link { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; padding: 0; background: none; border: 0; color: var(--ink); font: 600 13px var(--font); cursor: pointer; }
+.ve .ci-link.quiet { color: var(--ink-3); font-weight: 500; }
+.ci-link span { color: var(--ink-3); font-weight: 500; }
+.ve .ci-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 .ve .ci-poster { position: relative; width: 100%; aspect-ratio: 16 / 9; display: block; padding: 0; border: 0; border-radius: 14px; overflow: hidden; background: #111; cursor: pointer; isolation: isolate; }
 .ve .ci-poster.plain { background: linear-gradient(135deg, #2b2233, #4a2a2a); }
 .ci-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -178,15 +183,12 @@
 .ci-vtext b { font-size: 15px; font-weight: 650; line-height: 1.3; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); }
 .ci-vtext small { font-size: 12.5px; color: rgba(255, 255, 255, 0.78); }
 @media (prefers-reduced-motion: reduce) { .ci-poster img, .ci-play { transition: none; } }
-.ci-video { margin-top: 16px; }
+.ci-video { margin-top: 24px; }
 .ci-frame { position: relative; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; }
 .ci-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.ci-vmeta { margin: 6px 2px 0; font-size: 12px; color: var(--ink-3); }
+.ci-vmeta { margin: 8px 0 0; font-size: 12px; color: var(--ink-3); }
 .ci-vmeta a { color: inherit; }
-.ve details.ci-src { margin-top: 12px; background: none; border-radius: 0; }
-.ve details.ci-src > summary { display: inline-block; min-height: 0; padding: 0; font-size: 12px; font-weight: 500; color: var(--ink-3); cursor: pointer; }
-.ve details.ci-src > summary::before { content: none; }
-.ci-src p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
+.ci-src { margin: 8px 0 0; max-width: 60ch; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
 .ci-src a { color: inherit; }
 /* A page's how-to note (Today, the first take): the same quiet voice as a chapter's opening line. */
 .ve .ve-how { margin: 0 0 40px; padding: 0; border-radius: 0; background: none; color: var(--ink-2); font-size: 16.5px; line-height: 1.5; max-width: 34em; }
@@ -639,7 +641,7 @@
   .ve-md h1 { font-size: 34px; }
   .ve-md figure { margin-bottom: 24px; }
   .ve-md figure img { border-radius: 16px; }
-  .ve-item { margin: 0 -4px 4px; padding: 14px 16px; }
+  .ve-item { margin: 0 -16px 4px; padding: 14px 16px; }
   .ve .readtext { font-size: 22px; }
   .ve .readtext.passage, .ve-item.passage .readtext { font-size: 18px; }
   .ds-win.full .ds-tb { width: 80px; height: 51px; padding: 0 16px; }
