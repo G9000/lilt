@@ -10,9 +10,13 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-Now everything together: comfy pitch, bright resonance, light weight, a bit of melody. On words so automatic your brain can go full autopilot, so all your attention goes on the voice.
+Everything together, on words so easy your brain goes full autopilot.
 
-**On track when** you sound the same from the first word to the last. If something slips, hum for a second and try again. Move on when it feels easy; come back whenever you like. Not a speedrun.
+**Same voice throughout.** First word to last.
+
+**Slipping?** Hum for a second, then go again.
+
+**Not a speedrun.** Move on when it's easy; come back whenever.
 
 ## week-days
 

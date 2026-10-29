@@ -9,11 +9,15 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shaping your voice: pitch and resonance" (Activity 2), and NHS Lothian's "Where to start" (2026).
 ---
 
-Pitch is how high or low your voice sits. It matters, but the goal is not "as high as possible". A comfy pitch with bright resonance on top sounds natural; a strained squeak with dark resonance sounds like a cartoon mouse with a mortgage.
+How high or low your voice sits. Comfy beats high: a strained squeak sounds like a cartoon mouse with a mortgage.
 
-**How it feels.** Easy, like you could chat for an hour. Hum at your normal speaking pitch, glide up to a higher note that still feels comfy, glide back. A little above where you started is a good target.
+**Find your note.** Hum, glide up to a higher note that still feels comfy, glide back.
 
-**On track when** you can hold it on a hum, then on counting, and it still feels relaxed. Found your range? Save it in [Practice settings](#/studio/settings) so Lilt shades it behind your line.
+**Your target.** A little above where you started. Never a squeeze.
+
+**Pair it with resonance.** High pitch with a dark sound reads as cartoon. Grow them together.
+
+**Signs it's working.** You can count on it and still feel relaxed. Save your range in [Practice settings](#/studio/settings).
 
 ## count-5
 

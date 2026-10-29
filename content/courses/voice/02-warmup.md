@@ -10,13 +10,15 @@ source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voic
 written_by: Written for Lilt, from NHS Lothian's "Where to start" (2026) and NHS Fife's tuning-in activities.
 ---
 
-Stretch before the run. Your voice is muscles and breath, and nobody likes being woken up with a foghorn.
+Stretch before the run. Nobody likes being woken up with a foghorn.
 
-**Breath.** One hand on your chest, one on your belly; breathe in slowly so the belly hand moves more. Three to five breaths. Dizzy? Stop. Binding? Be extra gentle.
+**Breath.** Hand on your belly; slow breaths in through the nose, three to five.
 
-**Release.** Mouth open like you're about to bite a big apple. Silent warm breath, like misting a mirror. Eyebrows up, pleasantly surprised. Then the hums below, easy and clear, not breathy.
+**Release.** Big-apple mouth, silent misty-mirror breath, eyebrows up.
 
-**On track when** it all feels smooth and effortless. Anything strains? Smaller and quieter.
+**Hum easy.** Clear and smooth, never breathy or pushed.
+
+**Signs it's working.** Smooth and effortless. Anything strains? Smaller and quieter.
 
 ## hum
 

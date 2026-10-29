@@ -9,11 +9,15 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's resonance and articulation tuning-in activities and "Shaping your voice" (Activity 1, and articulation). The measurement and its limits are in analysis/EVALUATION.md.
 ---
 
-Resonance is how the space above your voice box shapes the sound. Smaller and brighter sounds lighter; bigger and darker sounds heavier. It matters as much as pitch, and it's the part you can change without any strain. Lowkey the main character of this whole course.
+How the space above your voice box shapes the sound. Lowkey the main character of this course.
 
-**How it feels.** Hum and touch your chest, neck, cheeks, forehead: where's the buzz? You want it forward, on your lips and the front of your face. Smile, keep your tongue forward, and add the tiny lift of a stifled giggle.
+**Find the buzz.** Hum and touch your chest, then your face. You want it forward, on your lips.
 
-**On track when** your hum tingles on your lips and "ee" sounds bright, not hollow. On the held vowels Lilt compares each take with your first. Same pitch, same mic, same distance, so only the space changes. Rough guide; your ear decides.
+**Make it bright.** Smile, tongue forward, the tiny lift of a stifled giggle.
+
+**Same everything.** Same pitch, mic and distance on the held vowels, so only the space changes.
+
+**Signs it's working.** Your lips tingle and "ee" sounds bright. Lilt compares each vowel with your first.
 
 ## ee
 

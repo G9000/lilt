@@ -9,9 +9,13 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-No script now: answer each prompt in your own words, for up to a minute. Thinking about what to say is exactly when the old voice sneaks back in. Totally normal; it's not a fail, it's the boss level.
+No script. This is where the old voice sneaks back in, and that's normal: it's the boss level.
 
-**On track when** most of your minute sounds like your practised voice. If it slips, pause, hum, carry on. Chase a little better each week, not perfect.
+**Easy topics.** Keep half your attention on your voice.
+
+**Slipping?** Pause, hum, carry on.
+
+**Signs it's working.** Most of your minute sounds practised. Better, not perfect.
 
 ## day
 

@@ -9,9 +9,13 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-Longer sentences, then short passages. You don't have to think of what to say, but you do have to keep the voice going, through breaths and full stops.
+Longer lines: no thinking about what to say, just keep the voice going.
 
-**On track when** the end sounds like the start. Voices love to nosedive at the end of a sentence, so catch the last few words and lift them gently. Tired? Water, break, come back. Record the check-in passage each visit and enjoy the glow-up over the weeks.
+**Watch the ends.** Voices nosedive at full stops. Lift the last words gently.
+
+**Breathe at commas.** Tired? Water, break, come back.
+
+**Signs it's working.** The end sounds like the start.
 
 ## market
 

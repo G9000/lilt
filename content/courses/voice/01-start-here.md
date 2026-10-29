@@ -10,15 +10,21 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's "Supporting you to find your authentic voice" and "How to take care of your voice", NHS Lothian's voice and communication therapy guides (2026) and NIDCD's voice care advice.
 ---
 
-Hi bestie. Five minutes of setup now saves you from yelling at a jumpy pitch line later.
+Hi bestie. Five minutes of setup, then you're ready.
 
-**Your mic.** Sit 20–30 cm away, in your quietest room (the fan is not your duet partner). On a Mac: System Settings → Sound → Input, volume about three quarters. If Control Center shows **Mic Mode**, pick **Standard**: Voice Isolation eats the soft sounds, and soft sounds are literally the whole assignment. A cheap headset mic is the best glow-up you can buy. Same setup every time, so your takes stay comparable.
+**Your mic.** 20–30 cm away, in a quiet room. The fan is not your duet partner.
 
-**Getting ready.** Water nearby, shoulders down, jaw loose. A few minutes, a few times a day beats one heroic hour. Record, listen back; your ear is the judge.
+**Input volume.** About three quarters: System Settings → Sound → Input.
 
-**Be gentle.** It should never hurt. Tight or scratchy? Stop and rest; that's self-care, not a fail. If speaking hurts, or hoarseness or any voice change lasts more than six weeks, see a GP or a speech and language therapist. Lilt is a practice tool, not a doctor.
+**Mic Mode.** If Control Center shows it, pick Standard. Voice Isolation eats soft sounds.
 
-**Your baseline.** Record the texts below in your everyday voice. Future you will want the "before" pic.
+**Same setup, every time.** So your takes stay comparable. A headset mic is the best glow-up.
+
+**Short and often.** A few minutes, a few times a day beats one heroic hour.
+
+**Be gentle.** It should never hurt. Hoarse or sore for over six weeks? See a GP or speech therapist.
+
+**Your baseline.** Record the texts below in your everyday voice. Future you wants the "before" pic.
 
 ## today
 

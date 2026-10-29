@@ -10,9 +10,13 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's progression activities and "Shaping your voice: intonation".
 ---
 
-Short things you actually say: greetings, thanks, ordering, a quick question. Short enough to keep it all in place, real enough to feel like you.
+Short things you actually say, in a voice that feels like you.
 
-**On track when** they sound friendly and natural, not like a customer-service bot. Swap in the things you really say, and do your own name too: it's the sneakiest one.
+**Make them yours.** Swap in the phrases you really use.
+
+**Your name.** The sneakiest one. Practise it too.
+
+**Signs it's working.** Friendly and natural, not customer-service bot.
 
 ## coffee
 

@@ -225,36 +225,58 @@ function Medal({ className }: { className?: string }) {
     </svg>
   );
 }
+// A small line icon for each kind of tip, picked from its label.
+const TIP_ICONS: [RegExp, string][] = [
+  [/gentle|care/i, "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z"],
+  [/signs|working/i, "M3.5 8.5l3 3 6-7"],
+  [/volume|mode/i, "M3 5h10M3 11h10M6 3.5v3M10 9.5v3"],
+  [/mic\b|your mic/i, "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2"],
+  [/same|setup/i, "M3.5 6.5a4.5 4.5 0 018-2l1 1M12.5 9.5a4.5 4.5 0 01-8 2l-1-1M11.5 2.5v3h-3M4.5 13.5v-3h3"],
+  [/short|often|speedrun/i, "M8 2.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM8 5v3l2 1.5"],
+  [/baseline|record|come back/i, "M8 4.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"],
+  [/breath|breathe/i, "M2.5 6h7a2 2 0 10-2-2M2.5 10h9a2 2 0 11-2 2"],
+  [/slipping|not breathy/i, "M8 3l5.5 9.5h-11zM8 7v2.5M8 11v.01"],
+  [/target|middle/i, "M8 2.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM8 5.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"],
+  [/find|note|hum|buzz/i, "M6 11.5V3.5l6-1.5v8M6 11.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"],
+  [/pair|together/i, "M6.5 9.5l3-3M7 4.5l1-1a2.5 2.5 0 013.5 3.5l-1 1M9 11.5l-1 1A2.5 2.5 0 014.5 9l1-1"],
+  [/lift|three|act|melody|ends|watch/i, "M2 9c1.5-3 3-3 4 0s2.5 3 4 0 2.5-3 4 0"],
+  [/name|yours|rehearse|topics/i, "M3 4.5h10v6H7l-3 2.5v-2.5H3z"],
+];
+// A small sparkle for anything else.
+const tipIcon = (label: string) => TIP_ICONS.find(([re]) => re.test(label))?.[1] ?? "M8 3v3M8 10v3M3 8h3M10 8h3";
+
 /**
- * A chapter's intro: its opening line, then each **Bold lead.** paragraph as a small labelled card
- * (the voice-care one tinted), in two columns where there's room. All of it the first time; once
- * you've practised there, the opening line and "Read more".
+ * A chapter's intro: its opening line, then each **Label.** paragraph as one row of a tip list
+ * (icon, label, one line), voice care tinted. All of it the first time; once you've practised
+ * there, the opening line and "Show tips". The sources fold away under the list.
  */
 function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }) {
   // Decided once per visit (the parent keys this by chapter), so it never folds up under you.
   const [open, setOpen] = useState(!started);
   const [lede, ...paras] = howTo(level.basis).split("\n\n");
-  const cards = paras.map((p) => {
+  const tips = paras.map((p) => {
     const m = p.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/);
     if (!m) return { label: "", body: p };
-    // "**On track when** it all feels easy" reads as a card titled "Signs it's working".
     if (/^on track when$/i.test(m[1].trim())) return { label: "Signs it's working", body: m[2].charAt(0).toUpperCase() + m[2].slice(1) };
     return { label: m[1].replace(/[.:]$/, ""), body: m[2] };
   });
   return (
     <section className="ci" aria-label="About this chapter">
       <Markdown src={lede} className="ci-lede" />
-      {cards.length > 0 && (open ? (
-        <div className="ci-grid">
-          {cards.map((c, i) => (
-            <section key={i} className={`ci-card${/gentle|care/i.test(c.label) ? " care" : ""}`}>
-              {c.label && <h3>{c.label}</h3>}
-              <Markdown src={c.body} />
-            </section>
+      {tips.length > 0 && (open ? (
+        <ul className="ci-tips">
+          {tips.map((t, i) => (
+            <li key={i} className={/gentle|care/i.test(t.label) ? "care" : undefined}>
+              <span className="ci-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={tipIcon(t.label)} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+              <div>{t.label && <b>{t.label}</b>}<Markdown src={t.body} /></div>
+            </li>
           ))}
-        </div>
-      ) : <button type="button" className="ci-more" onClick={() => setOpen(true)}>Read more <span aria-hidden="true">↓</span></button>)}
-      <p className="ci-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>
+        </ul>
+      ) : <button type="button" className="ci-more" onClick={() => setOpen(true)}>Show tips ({tips.length}) <span aria-hidden="true">↓</span></button>)}
+      <details className="ci-src">
+        <summary>Where this comes from</summary>
+        <p>{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>
+      </details>
     </section>
   );
 }

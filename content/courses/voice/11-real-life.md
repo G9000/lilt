@@ -9,11 +9,13 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lothian's voice and communication therapy guides (2026).
 ---
 
-Where it all pays off: the phone, the counter, the stranger, the receptionist. The phone is the final boss, because they only have your voice to go on.
+Phone, counter, strangers. The phone is the final boss: they only have your voice.
 
-**How it goes.** Rehearse a line here, then try it for real when you feel ready, somewhere small and safe: a call to a friend who knows, ordering a coffee. Then come back and record it while it's fresh.
+**Rehearse here.** Then try it for real somewhere small and safe.
 
-**On track when** these come out without thinking, and the first word sounds as practised as the rest. Every real-life try counts, however it goes. That's literally the point.
+**Come back after.** Record the line again while it's fresh.
+
+**Signs it's working.** The first word sounds as practised as the rest. Every try counts.
 
 ## answer-phone
 

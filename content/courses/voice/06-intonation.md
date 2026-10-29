@@ -10,11 +10,15 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's intonation tuning-in activity and "Shaping your voice: intonation", and NHS Lothian's "Where to start" (2026).
 ---
 
-Intonation is the melody: how your voice rises and falls. More movement often sounds warmer and lighter. Monotone, even at a higher pitch, gives NPC reading the terms and conditions.
+The melody of your voice. Monotone gives NPC reading the terms and conditions.
 
-**How it feels.** Read the same line plainly, then like a storyteller at kids' story time, then gently, like breaking small bad news. Feel how much your voice can move. Lift on the words that matter and at the end of questions.
+**Three ways.** Read a line plainly, as a storyteller, then gently.
 
-**On track when** your pitch line waves instead of flatlining. Over-act while practising; real life tones it down for you.
+**Lift what matters.** The important words, and the end of questions.
+
+**Over-act.** Real life tones it down for you.
+
+**Signs it's working.** Your pitch line waves instead of flatlining.
 
 ## melody
 
