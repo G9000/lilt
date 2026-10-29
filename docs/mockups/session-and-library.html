@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lilt redesign: session and library</title>
+<style>
+/* A clickable mockup of directions A (a focused session) and B (text and recorder together), in Lilt's
+   own look. Nothing here is wired to the app; recording is simulated. */
+:root {
+  --ink: #f4f1ee; --ink-2: #c9c3bf; --ink-3: #8f8a90; --hair: rgba(255,255,255,.09);
+  --fill: rgba(255,255,255,.06); --fill-2: rgba(255,255,255,.11); --glass: rgba(20,18,26,.62);
+  --accent: #e0643c; --accent-soft: rgba(224,100,60,.16); --good: #4fb98a;
+  --font: "Geist Variable", -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #0b0d13; color: var(--ink); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+
+/* The mockup's own controls (not part of the design). */
+.bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 16px; background: #15131b; border-bottom: 1px solid var(--hair); font-size: 13px; }
+.bar b { margin-right: 6px; }
+.bar button { padding: 5px 11px; border-radius: 99px; background: var(--fill); color: var(--ink-2); }
+.bar button.on { background: var(--ink); color: #15131b; font-weight: 600; }
+.bar .sp { flex: 1; }
+.stage { display: grid; place-items: center; padding: 20px 16px 40px; }
+.device { position: relative; width: 1280px; max-width: 100%; height: 800px; border-radius: 18px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.5); background: #000; }
+.phone .device { width: 390px; height: 844px; border-radius: 40px; }
+.note { max-width: 1280px; margin: 0 auto 8px; padding: 0 16px; color: var(--ink-3); font-size: 13px; }
+
+.screen { position: absolute; inset: 0; display: none; }
+.screen.on { display: block; }
+.wall { position: absolute; inset: 0; background: url("http://127.0.0.1:7878/room/room-sunset.webp") center / cover, url("../../web/public/room/room-sunset.webp") center / cover, #2a2230; }
+.wall::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,8,16,.15), rgba(10,8,16,.55)); }
+
+/* ---------- Room: home is two things ---------- */
+.room-ui { position: absolute; inset: 0; display: grid; place-items: end center; padding: 0 24px 56px; }
+.start { width: min(440px, 100%); padding: 22px; border-radius: 26px; background: var(--glass); backdrop-filter: blur(22px) saturate(1.3); box-shadow: 0 20px 60px rgba(0,0,0,.4), inset 0 0 0 1px var(--hair); }
+.start .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--accent); }
+.start h2 { margin: 4px 0 2px; font-size: 26px; letter-spacing: -.03em; }
+.start p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.steps { display: flex; gap: 6px; margin: 16px 0 18px; }
+.steps span { flex: 1; padding: 8px 0; border-radius: 10px; background: var(--fill); text-align: center; font-size: 12px; color: var(--ink-2); }
+.go { width: 100%; height: 52px; border-radius: 16px; background: var(--ink); color: #17141c; font-weight: 650; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform .15s; }
+.go:active { transform: scale(.98); }
+.plant { position: absolute; left: 24px; top: 24px; display: flex; gap: 12px; align-items: center; padding: 10px 16px 10px 10px; border-radius: 18px; background: var(--glass); backdrop-filter: blur(18px); box-shadow: inset 0 0 0 1px var(--hair); }
+.plant i { width: 40px; height: 40px; border-radius: 12px; background: #f3efe7; display: grid; place-items: center; font-style: normal; font-size: 22px; }
+.plant b { display: block; font-size: 14px; } .plant small { color: var(--ink-3); font-size: 12px; }
+.corner { position: absolute; right: 20px; top: 20px; display: flex; gap: 8px; }
+.corner button { padding: 9px 14px; border-radius: 99px; background: var(--glass); backdrop-filter: blur(18px); box-shadow: inset 0 0 0 1px var(--hair); font-size: 13px; font-weight: 550; }
+.phone .plant { left: 16px; top: 16px; } .phone .corner { top: 16px; right: 16px; }
+.phone .corner button span { display: none; }
+
+/* ---------- A: the session ---------- */
+.session { position: absolute; inset: 0; display: grid; grid-template-rows: auto 1fr auto; background: rgba(12,10,18,.78); backdrop-filter: blur(30px) saturate(1.2); }
+.s-top { display: flex; align-items: center; gap: 16px; padding: 18px 24px; }
+.s-top .x { width: 34px; height: 34px; border-radius: 50%; background: var(--fill); display: grid; place-items: center; color: var(--ink-2); }
+.dots { flex: 1; display: flex; gap: 6px; }
+.dots i { flex: 1; height: 4px; border-radius: 4px; background: var(--fill-2); }
+.dots i.done { background: var(--ink-2); } .dots i.now { background: var(--accent); }
+.s-top .count { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.s-mid { display: grid; place-items: center; padding: 0 28px; text-align: center; }
+.s-mid .kind { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 14px; }
+.s-mid .line { font: 400 54px/1.12 var(--serif); letter-spacing: -.01em; max-width: 14em; }
+.phone .s-mid .line { font-size: 36px; }
+.s-mid .hint { margin: 18px auto 0; max-width: 32em; color: var(--ink-2); font-size: 15px; }
+.s-mid .why { margin-top: 10px; font-size: 13px; color: var(--ink-3); }
+.s-mid .why button { color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+.s-bot { display: grid; justify-items: center; gap: 10px; padding: 0 24px 34px; }
+.live { width: min(560px, 100%); height: 70px; }
+.live canvas { width: 100%; height: 100%; display: block; }
+.rec { width: 76px; height: 76px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.4); transition: transform .15s; }
+.rec i { width: 26px; height: 26px; border-radius: 50%; background: #ef3b3b; transition: all .2s; }
+.rec.on i { width: 22px; height: 22px; border-radius: 6px; }
+.rec:active { transform: scale(.95); }
+.s-bot small { color: var(--ink-3); font-size: 12.5px; }
+
+/* the result, sliding up over the bottom */
+.result { position: absolute; left: 50%; bottom: 0; width: min(640px, 100%); transform: translate(-50%, 100%); padding: 22px 24px 26px; border-radius: 26px 26px 0 0; background: #1b1822; box-shadow: 0 -20px 60px rgba(0,0,0,.45), inset 0 1px 0 var(--hair); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.result.on { transform: translate(-50%, 0); }
+.result h3 { margin: 0 0 4px; font-size: 19px; letter-spacing: -.02em; }
+.result .say { margin: 0; color: var(--ink-2); font-size: 14.5px; }
+.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0; }
+.facts div { padding: 10px 12px; border-radius: 14px; background: var(--fill); }
+.facts small { display: block; color: var(--ink-3); font-size: 12px; }
+.facts b { font-size: 18px; font-variant-numeric: tabular-nums; } .facts span { color: var(--ink-3); font-size: 12px; margin-left: 3px; }
+.strip { margin: 4px 0 16px; }
+.strip .track { position: relative; height: 8px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,.15), var(--fill) 50%, rgba(224,100,60,.35)); }
+.strip .mid { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; background: var(--ink-3); }
+.strip .you { position: absolute; top: 50%; left: 63%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px #1b1822; }
+.strip .lbl { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11.5px; color: var(--ink-3); }
+.feel { display: flex; gap: 6px; margin-bottom: 14px; }
+.feel button { flex: 1; padding: 9px 0; border-radius: 12px; background: var(--fill); font-size: 13px; color: var(--ink-2); }
+.feel button.on { background: var(--ink); color: #17141c; font-weight: 600; }
+.r-act { display: flex; gap: 8px; }
+.r-act .ghost { height: 48px; padding: 0 18px; border-radius: 14px; background: var(--fill); font-weight: 550; }
+.r-act .go { flex: 1; height: 48px; }
+
+/* end of session */
+.done { position: absolute; inset: 0; display: none; place-items: center; text-align: center; padding: 24px; }
+.done.on { display: grid; }
+.done .big { font-size: 64px; }
+.done h2 { margin: 6px 0; font-size: 34px; letter-spacing: -.035em; }
+.done p { color: var(--ink-2); margin: 0 auto 18px; max-width: 26em; }
+.thennow { display: flex; gap: 10px; justify-content: center; margin: 0 0 22px; }
+.thennow button { display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 10px; border-radius: 16px; background: var(--fill); }
+.thennow i { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #17141c; display: grid; place-items: center; font-style: normal; font-size: 12px; }
+.thennow small { display: block; color: var(--ink-3); font-size: 11.5px; text-align: left; }
+
+/* ---------- B: the library ---------- */
+.lib { position: absolute; inset: 0; display: grid; grid-template-columns: 232px 1fr; background: #f6f3f0; color: #1c1a20;
+  --ink: #1c1a20; --ink-2: #55505a; --ink-3: #8a858c; --hair: rgba(0,0,0,.08); --fill: rgba(0,0,0,.045); --fill-2: rgba(0,0,0,.08); }
+.side { padding: 22px 12px; border-right: 1px solid var(--hair); background: rgba(255,255,255,.5); display: flex; flex-direction: column; gap: 2px; }
+.side .brand { padding: 0 10px 16px; font-weight: 700; letter-spacing: -.02em; }
+.side button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 10px; text-align: left; font-weight: 550; color: var(--ink-2); }
+.side button.on { background: var(--fill-2); color: var(--ink); }
+.side .grp { margin: 18px 10px 6px; font-size: 12px; font-weight: 600; color: var(--ink-3); }
+.side .ch { font-weight: 500; font-size: 14px; justify-content: space-between; }
+.side .ch em { font-style: normal; font-size: 12px; color: var(--ink-3); }
+.side .room { margin-top: auto; }
+.doc { overflow: auto; padding: 44px 56px 120px; }
+.doc .col { max-width: 680px; margin: 0 auto; }
+.doc h1 { margin: 0; font-size: 46px; letter-spacing: -.05em; }
+.doc .sub { margin: 4px 0 20px; color: var(--ink-2); font-size: 17px; }
+.doc .lede { margin: 0; font-size: 19px; color: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 34px; }
+.chips button { padding: 6px 12px; border-radius: 99px; background: var(--fill); font-size: 13px; font-weight: 550; color: var(--ink-2); }
+.texts { list-style: none; margin: 0; padding: 0; }
+.texts li { padding: 20px 22px; margin: 0 -22px 6px; border-radius: 18px; cursor: pointer; transition: background-color .2s; }
+.texts li:hover { background: var(--fill); }
+.texts li.on { background: #fff; box-shadow: 0 8px 30px rgba(0,0,0,.07), 0 0 0 1px var(--hair); cursor: default; }
+.texts .t { font: 400 26px/1.25 var(--serif); color: var(--ink-3); }
+.texts li.on .t { color: var(--ink); font-size: 30px; }
+.texts .pill { display: inline-block; margin-bottom: 8px; padding: 2px 9px; border-radius: 99px; background: var(--accent-soft); color: #b5482a; font-size: 12px; font-weight: 600; }
+.texts .h { margin: 8px 0 0; color: var(--ink-2); font-size: 14px; }
+.inline { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--hair); }
+.texts li.on .inline { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
+.inline .rec { width: 56px; height: 56px; background: #1c1a20; box-shadow: none; }
+.inline .rec i { width: 18px; height: 18px; }
+.inline .live { height: 56px; width: 100%; }
+.inline .res { grid-column: 1 / -1; display: none; padding: 14px 16px; border-radius: 14px; background: var(--fill); }
+.inline .res.on { display: block; }
+.inline .res b { display: block; margin-bottom: 2px; }
+.inline .res p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.inline .res .act { display: flex; gap: 14px; margin-top: 10px; font-size: 13px; font-weight: 600; }
+.inline .res .act button { color: var(--ink); padding: 0; }
+.phone .lib { grid-template-columns: 1fr; }
+.phone .side { display: none; }
+.phone .doc { padding: 24px 18px 120px; }
+.phone .doc h1 { font-size: 36px; }
+.phone .texts li { margin: 0 -10px 6px; padding: 16px 14px; }
+.tabbar { display: none; }
+.phone .tabbar { display: flex; position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px 22px; background: rgba(246,243,240,.9); backdrop-filter: blur(16px); border-top: 1px solid var(--hair); }
+.tabbar button { flex: 1; display: grid; justify-items: center; gap: 2px; font-size: 11px; font-weight: 600; color: var(--ink-3); }
+.tabbar button.on { color: var(--ink); }
+.tabbar svg { width: 22px; height: 22px; }
+.lib-home .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-top: 22px; }
+.lib-home .card { padding: 16px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px var(--hair); text-align: left; }
+.lib-home .card small { color: var(--accent); font-weight: 600; font-size: 12px; }
+.lib-home .card b { display: block; margin: 2px 0; font-size: 16px; letter-spacing: -.01em; }
+.lib-home .card span { color: var(--ink-3); font-size: 13px; }
+.lib-home .bar2 { height: 4px; border-radius: 4px; background: var(--fill-2); margin-top: 12px; overflow: hidden; }
+.lib-home .bar2 i { display: block; height: 100%; background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>Lilt redesign</b>
+  <button data-go="room" class="on">1 · Home (the room)</button>
+  <button data-go="session">2 · A: Today's session</button>
+  <button data-go="library">3 · B: Library</button>
+  <button data-go="chapter">4 · B: A chapter</button>
+  <span class="sp"></span>
+  <button data-size="desk" class="on">Desktop</button>
+  <button data-size="phone">Phone</button>
+</div>
+<p class="note" id="note"></p>
+<div class="stage" id="stage"><div class="device">
+
+  <!-- 1. Home: the room, with only what you need -->
+  <section class="screen on" id="room">
+    <div class="wall"></div>
+    <div class="plant"><i>🌱</i><div><b>3 days this week</b><small>Your plant grows when you practise</small></div></div>
+    <div class="corner"><button data-go="library">📚 <span>Library</span></button><button>⚙︎ <span>Settings</span></button></div>
+    <div class="room-ui">
+      <div class="start">
+        <div class="eyebrow">Today · about 5 minutes</div>
+        <h2>Ready when you are</h2>
+        <p>A warm-up, three cards, and your check-in.</p>
+        <div class="steps"><span>Warm-up</span><span>Resonance</span><span>Pitch</span><span>Phrases</span><span>Check-in</span></div>
+        <button class="go" data-go="session">Start today <span>→</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. A: the focused session -->
+  <section class="screen" id="session">
+    <div class="wall"></div>
+    <div class="session">
+      <div class="s-top">
+        <button class="x" data-go="room" aria-label="Leave">✕</button>
+        <div class="dots" id="dots"></div>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="s-mid"><div>
+        <div class="kind" id="kind"></div>
+        <div class="line" id="line"></div>
+        <p class="hint" id="hint"></p>
+        <div class="why"><button>How to do it</button> · <button>Watch the video</button></div>
+      </div></div>
+      <div class="s-bot">
+        <div class="live"><canvas id="live" width="1120" height="140"></canvas></div>
+        <button class="rec" id="rec" aria-label="Record"><i></i></button>
+        <small id="recHint">Press to record · Space</small>
+      </div>
+      <div class="result" id="result">
+        <h3>Steady, and right in your comfy range.</h3>
+        <p class="say">Keep it just like this. Notice how it feels, so you can find it again.</p>
+        <div class="facts"><div><small>Middle</small><b>176</b><span>Hz · F3</span></div><div><small>Range</small><b>158–201</b><span>Hz</span></div><div><small>Last time</small><b>+4</b><span>Hz</span></div></div>
+        <div class="strip"><div class="track"><i class="mid"></i><i class="you"></i></div><div class="lbl"><span>Darker</span><span>A little brighter than your first take</span><span>Brighter</span></div></div>
+        <div class="feel"><button>😣 Again</button><button>😕 Hard</button><button class="on">🙂 Good</button><button>😌 Easy</button></div>
+        <div class="r-act"><button class="ghost" id="again">▶ Listen</button><button class="ghost" id="redo">Record again</button><button class="go" id="next">Next →</button></div>
+      </div>
+      <div class="done" id="done"><div>
+        <div class="big">🌿</div>
+        <h2>That's today. Nice one.</h2>
+        <p>Your plant grew a leaf. Come back tomorrow, or keep going in the Library if you're in the mood.</p>
+        <div class="thennow"><button><i>▶</i><span>First check-in<small>Oct 26</small></span></button><button><i>▶</i><span>Today's<small>just now</small></span></button></div>
+        <button class="go" style="max-width:320px;margin:0 auto" data-go="room">Back to the room</button>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- 3. B: the library home -->
+  <section class="screen" id="library">
+    <div class="lib">
+      <nav class="side">
+        <div class="brand">∿ Lilt</div>
+        <button data-go="session">▶ Today</button>
+        <button class="on" data-go="library">📚 Library</button>
+        <button>🎧 Recordings</button>
+        <button>⚙︎ Settings</button>
+        <button class="room" data-go="room">← The room</button>
+      </nav>
+      <main class="doc lib-home"><div class="col">
+        <h1>Library</h1>
+        <p class="sub">One skill at a time, then all of it together. Today's session picks from here for you.</p>
+        <div class="grid" id="chapters"></div>
+      </div></main>
+      <div class="tabbar"><button data-go="room"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 11l8-6 8 6v8H4z"/></svg>Home</button><button data-go="session"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 5l11 7-11 7z"/></svg>Today</button><button class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15 5l4 1-3 14-4-1z"/></svg>Library</button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h2M8 8v8M12 5v14M16 9v6M20 12h0"/></svg>Takes</button></div>
+    </div>
+  </section>
+
+  <!-- 4. B: a chapter, recorder inline under the text -->
+  <section class="screen" id="chapter">
+    <div class="lib">
+      <nav class="side">
+        <div class="brand">∿ Lilt</div>
+        <button data-go="session">▶ Today</button>
+        <button data-go="library">📚 Library</button>
+        <button>🎧 Recordings</button>
+        <button>⚙︎ Settings</button>
+        <div class="grp">Chapters</div>
+        <button class="ch">Warm-ups <em>2/6</em></button>
+        <button class="ch">Pitch <em>1/7</em></button>
+        <button class="ch on">Resonance <em>3/8</em></button>
+        <button class="ch">Vocal weight <em>0/4</em></button>
+        <button class="ch">Intonation <em>0/7</em></button>
+        <button class="room" data-go="room">← The room</button>
+      </nav>
+      <main class="doc"><div class="col">
+        <h1>Resonance</h1>
+        <p class="sub">Bright and forward · 8 texts · chapter 4 of 11</p>
+        <p class="lede">How the space above your voice box shapes the sound. Lowkey the main character of this course.</p>
+        <div class="chips"><button>💡 4 tips</button><button>▶ Video · 13 min</button><button>Sources</button></div>
+        <ol class="texts" id="texts"></ol>
+      </div></main>
+      <div class="tabbar"><button data-go="room"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 11l8-6 8 6v8H4z"/></svg>Home</button><button data-go="session"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 5l11 7-11 7z"/></svg>Today</button><button class="on" data-go="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15 5l4 1-3 14-4-1z"/></svg>Library</button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h2M8 8v8M12 5v14M16 9v6M20 12h0"/></svg>Takes</button></div>
+    </div>
+  </section>
+
+</div></div>
+
+<script>
+const NOTES = {
+  room: "Home is the room with two things on it: Start today, and your plant. Library and Settings sit quietly in the corner. No fake desktop, no window to open.",
+  session: "A: one line at a time, full screen. Press record (or Space), stop, and the result slides up under the line you just said: what Lilt heard, your resonance against your first take, and how it felt. Next moves on.",
+  library: "B: the Library is where you browse. Four places only: Today, Library, Recordings, Settings.",
+  chapter: "B: no separate recorder pane. Click a text: the record button and live pitch line open right under it, and the result appears in place. Tips and the video fold into chips.",
+};
+const SESSION = [
+  { kind: "Warm-up", line: "mmmmmmm", hint: "Hum on a comfortable note. Notice where you feel the buzz." },
+  { kind: "Resonance", line: "eeeeee", hint: "Hold a bright, easy “ee” for about four seconds." },
+  { kind: "Pitch", line: "One, two, three, four, five.", hint: "Count on your target pitch, easy and steady." },
+  { kind: "Everyday phrases", line: "Hi, could I get a coffee, please?", hint: "Friendly and unhurried. Not like the barista owes you money." },
+  { kind: "Check-in", line: "Hello, this is my voice today.", hint: "The same words every time, so you can hear the change." },
+];
+const CHAPTERS = [["Start here", "Mic, setup, baseline", 1], ["Warm-ups", "Breath and hums", .33], ["Pitch", "A range that feels like you", .14], ["Resonance", "Bright and forward", .38], ["Vocal weight", "Light, not breathy", 0], ["Intonation", "The melody", 0], ["Automatic speech", "Easy words", 0], ["Everyday phrases", "Things you really say", 0], ["Sentences and reading", "Longer lines", 0], ["Your own words", "No script", 0], ["Real life", "Phone, counters, people", 0]];
+const TEXTS = [["eeeeee", "Hold a comfortable “ee” for about four seconds.", true], ["mmmmmmm", "Hum and aim the sound forward until your lips tingle."], ["mmmee · mmmaa · mmmoo", "Let the hum open into each vowel."], ["many · maybe · mellow · morning", "Hold the m a little longer, then let the word follow."], ["eye · air · ear", "Start each word with a tiny stifled giggle."]];
+
+const $ = (s, r = document) => r.querySelector(s);
+const show = (id) => {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("on", s.id === id));
+  document.querySelectorAll(".bar [data-go]").forEach((b) => b.classList.toggle("on", b.dataset.go === id));
+  $("#note").textContent = NOTES[id];
+  if (id === "session") startSession();
+};
+document.addEventListener("click", (e) => { const g = e.target.closest("[data-go]"); if (g) show(g.dataset.go); });
+document.querySelectorAll("[data-size]").forEach((b) => b.onclick = () => {
+  document.querySelectorAll("[data-size]").forEach((x) => x.classList.toggle("on", x === b));
+  $("#stage").classList.toggle("phone", b.dataset.size === "phone");
+});
+
+// A fake live pitch line: a wandering, smoothed contour drawn as you "record".
+function liveLine(canvas, running) {
+  const g = canvas.getContext("2d"), W = canvas.width, H = canvas.height;
+  let pts = [], v = 0.5, raf = 0, t = 0;
+  const draw = () => {
+    g.clearRect(0, 0, W, H);
+    if (running()) { v += (Math.random() - .5) * .08 + (0.5 - v) * .04 + Math.sin(t / 9) * .01; pts.push(v); t++; }
+    const n = pts.length, step = W / 240;
+    g.strokeStyle = "#e0643c"; g.lineWidth = 5; g.lineJoin = g.lineCap = "round"; g.shadowColor = "rgba(224,100,60,.5)"; g.shadowBlur = 10;
+    g.beginPath(); pts.slice(-240).forEach((p, i) => { const x = i * step, y = H * (.15 + .7 * p); i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.stroke();
+    raf = requestAnimationFrame(draw);
+  };
+  draw();
+  return { reset: () => { pts = []; }, stop: () => cancelAnimationFrame(raf) };
+}
+
+let idx = 0, recording = false, sessionLine;
+function renderStep() {
+  const s = SESSION[idx];
+  $("#dots").innerHTML = SESSION.map((_, i) => `<i class="${i < idx ? "done" : i === idx ? "now" : ""}"></i>`).join("");
+  $("#count").textContent = `${idx + 1} of ${SESSION.length}`;
+  $("#kind").textContent = s.kind; $("#line").textContent = s.line; $("#hint").textContent = s.hint;
+  $("#result").classList.remove("on"); $("#done").classList.remove("on");
+  document.querySelector(".s-mid").style.visibility = document.querySelector(".s-bot").style.visibility = "visible";
+  sessionLine?.reset();
+}
+function startSession() {
+  idx = 0; recording = false; $("#rec").classList.remove("on");
+  if (!sessionLine) sessionLine = liveLine($("#live"), () => recording);
+  renderStep();
+}
+function toggleRec() {
+  recording = !recording;
+  $("#rec").classList.toggle("on", recording);
+  $("#recHint").textContent = recording ? "Recording… press to stop" : "Press to record · Space";
+  if (recording) { sessionLine.reset(); $("#result").classList.remove("on"); }
+  else setTimeout(() => $("#result").classList.add("on"), 350);
+}
+$("#rec").onclick = toggleRec;
+document.addEventListener("keydown", (e) => { if (e.code === "Space" && $("#session").classList.contains("on") && !$("#done").classList.contains("on")) { e.preventDefault(); toggleRec(); } });
+$("#redo").onclick = () => { $("#result").classList.remove("on"); toggleRec(); };
+$("#next").onclick = () => {
+  if (idx < SESSION.length - 1) { idx++; renderStep(); }
+  else { $("#result").classList.remove("on"); document.querySelector(".s-mid").style.visibility = document.querySelector(".s-bot").style.visibility = "hidden"; $("#dots").innerHTML = SESSION.map(() => '<i class="done"></i>').join(""); $("#done").classList.add("on"); }
+};
+document.querySelectorAll(".feel button").forEach((b) => b.onclick = () => document.querySelectorAll(".feel button").forEach((x) => x.classList.toggle("on", x === b)));
+
+$("#chapters").innerHTML = CHAPTERS.map(([t, s, p], i) => `<button class="card" data-go="${t === "Resonance" ? "chapter" : "library"}"><small>${i + 1}</small><b>${t}</b><span>${s}</span><div class="bar2"><i style="width:${p * 100}%"></i></div></button>`).join("");
+
+// The chapter: click a text and its recorder opens right under it.
+function renderTexts(on) {
+  $("#texts").innerHTML = TEXTS.map(([t, h, check], i) => `<li class="${i === on ? "on" : ""}" data-i="${i}">
+    ${check ? '<span class="pill">Check-in · record it each visit</span>' : ""}
+    <div class="t">${t}</div><p class="h">${h}</p>
+    <div class="inline"><button class="rec" aria-label="Record"><i></i></button><div class="live"><canvas width="900" height="112"></canvas></div>
+      <div class="res"><b>A little brighter than your first “ee”.</b><p>176 Hz · F3, steady. Same mic and pitch as before, so the comparison is fair.</p><div class="act"><button>▶ Listen</button><button>Then and now</button><button>Next text →</button></div></div></div></li>`).join("");
+  const li = $("#texts li.on");
+  let rec = false; const line = liveLine(li.querySelector("canvas"), () => rec);
+  li.querySelector(".rec").onclick = () => { rec = !rec; li.querySelector(".rec").classList.toggle("on", rec); if (rec) { line.reset(); li.querySelector(".res").classList.remove("on"); } else li.querySelector(".res").classList.add("on"); };
+}
+$("#texts").addEventListener("click", (e) => { const li = e.target.closest("li"); if (li && !li.classList.contains("on")) renderTexts(+li.dataset.i); });
+renderTexts(0);
+show("room");
+// Scale the frame to fit the window, so the whole screen is visible at any size.
+const fit = () => { const d = $(".device"), phone = $("#stage").classList.contains("phone"); const w = phone ? 390 : 1280, h = phone ? 844 : 800; d.style.zoom = Math.min(1, (innerWidth - 32) / w, (innerHeight - $("#stage").offsetTop - 40) / h); };
+addEventListener("resize", fit); document.querySelectorAll("[data-size]").forEach((b) => b.addEventListener("click", fit)); fit();
+</script>
+</body>
+</html>

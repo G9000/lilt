@@ -4,8 +4,26 @@
     {
       "name": "web",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--dir", "web", "dev", "--host", "127.0.0.1"],
+      "runtimeArgs": [
+        "--dir",
+        "web",
+        "dev",
+        "--host",
+        "127.0.0.1"
+      ],
       "port": 5173
+    },
+    {
+      "name": "mockups",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--bind",
+        "127.0.0.1"
+      ],
+      "port": 8765
     }
   ]
 }
