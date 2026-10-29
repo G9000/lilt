@@ -6,7 +6,8 @@ import { Icon, takeName, Toast, useToast } from "../components/bits";
 
 /**
  * Every take, newest first, grouped by day, one row each like a voice memo: play, what it was,
- * its waveform, when, and quiet actions. Shown inside Practice.
+ * its waveform, when, and quiet actions. Several takes of the same text on one day fold into one
+ * row ("3 takes"), the newest on top. Shown inside Practice.
  */
 
 const isoDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -72,7 +73,7 @@ export function HistoryPage() {
       {groups.map((g) => (
         <section key={g.day} className="rl-day" aria-labelledby={`rl-${g.day}`}>
           <h2 id={`rl-${g.day}`}>{dayLabel(g.day)}</h2>
-          <ul>{g.takes.map((t) => <TakeRow key={t.id} take={t} title={takeTitle(t, texts)} onUpdate={update} onDelete={() => void remove(t)} />)}</ul>
+          <ul>{bySameText(g.takes).map((ts) => <TakeGroup key={ts[0].id} takes={ts} title={takeTitle(ts[0], texts)} onUpdate={update} onDelete={(t) => void remove(t)} />)}</ul>
         </section>
       ))}
       {takes && takes.length > 0 && <button className="rl-more" onClick={() => setDays((d) => d + 365)}>Show older</button>}
@@ -83,7 +84,30 @@ export function HistoryPage() {
   );
 }
 
-function TakeRow({ take, title, onUpdate, onDelete }: { take: Take; title: string; onUpdate: (t: Take) => void; onDelete: () => void }) {
+/** A day's takes, with every take of the same text together (newest first); free recordings stay apart. */
+function bySameText(takes: Take[]): Take[][] {
+  const out: Take[][] = [], at = new Map<string, Take[]>();
+  for (const t of takes) {
+    const g = t.prompt_id !== "free" ? at.get(t.prompt_id) : undefined;
+    if (g) g.push(t);
+    else { const n = [t]; out.push(n); if (t.prompt_id !== "free") at.set(t.prompt_id, n); }
+  }
+  return out;
+}
+
+function TakeGroup({ takes, title, onUpdate, onDelete }: { takes: Take[]; title: string; onUpdate: (t: Take) => void; onDelete: (t: Take) => void }) {
+  const [open, setOpen] = useState(false);
+  const [first, ...rest] = takes;
+  return (
+    <>
+      <TakeRow take={first} title={title} onUpdate={onUpdate} onDelete={() => onDelete(first)}
+        more={rest.length ? <button className="rl-more-takes" aria-expanded={open} onClick={() => setOpen((o) => !o)}>{takes.length} takes<span aria-hidden="true">{open ? "↑" : "↓"}</span></button> : null} />
+      {open && rest.map((t, i) => <TakeRow key={t.id} take={t} title={`Take ${rest.length - i}`} sub onUpdate={onUpdate} onDelete={() => onDelete(t)} />)}
+    </>
+  );
+}
+
+function TakeRow({ take, title, onUpdate, onDelete, more, sub }: { take: Take; title: string; onUpdate: (t: Take) => void; onDelete: () => void; more?: React.ReactNode; sub?: boolean }) {
   const audio = useRef<HTMLAudioElement>(null);
   const [bars, setBars] = useState<number[]>([]);
   const [pos, setPos] = useState(0);
@@ -105,14 +129,14 @@ function TakeRow({ take, title, onUpdate, onDelete }: { take: Take; title: strin
   const status = STATUS[take.status];
   const text = take.prompt_id === "free" ? null : take.prompt_text;
   return (
-    <li className={`rl-row${playing ? " playing" : ""}`}>
+    <li className={`rl-row${playing ? " playing" : ""}${sub ? " sub" : ""}`}>
       <button className="rl-play" onClick={toggle} aria-label={`${playing ? "Pause" : "Play"} ${title}`}>
         {playing ? <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="1.5" width="2.4" height="9" rx=".8" /><rect x="7.1" y="1.5" width="2.4" height="9" rx=".8" /></svg>
           : <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 1.6l7.3 4.4-7.3 4.4z" /></svg>}
       </button>
       <div className="rl-what">
-        <b>{title}{take.favourite && <span className="rl-fav" aria-label="Favourite">{Icon.star}</span>}</b>
-        <span>{[text, length(take.analysis_summary?.duration_s), status].filter(Boolean).join(" · ")}</span>
+        <b>{title}{take.favourite && <span className="rl-fav" aria-label="Favourite">{Icon.star}</span>}{more}</b>
+        <span>{[sub ? null : text, length(take.analysis_summary?.duration_s), status].filter(Boolean).join(" · ")}</span>
       </div>
       <div className="rl-wave" onClick={seek} aria-hidden="true">
         {(bars.length ? bars : Array(64).fill(0.14)).map((h, i, arr) => <i key={i} className={i / arr.length < pos ? "on" : ""} style={{ transform: `scaleY(${h.toFixed(3)})` }} />)}
@@ -120,11 +144,11 @@ function TakeRow({ take, title, onUpdate, onDelete }: { take: Take; title: strin
       <time className="rl-time" dateTime={take.created_utc}>{clock(take.created_utc)}</time>
       <div className="rl-actions">
         <button onClick={() => void api.patchTake(take.id, { favourite: !take.favourite }).then(onUpdate)} aria-pressed={take.favourite}
-          aria-label={take.favourite ? "Remove from favourites" : "Add to favourites"} title="Favourite">{Icon.star}</button>
-        <button onClick={() => setNoting((n) => !n)} aria-expanded={noting} aria-label="Note" title="Note">
+          aria-label={take.favourite ? "Remove from favourites" : "Add to favourites"} title={take.favourite ? "Your favourite take" : "Star this take"}>{Icon.star}</button>
+        <button onClick={() => setNoting((n) => !n)} aria-expanded={noting} aria-label="Note" title="Add a note">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 12.8V3.6c0-.5.4-.8.8-.8h8.4c.5 0 .8.4.8.8v6.2L10 12.8zM10 12.8V10h3" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg>
         </button>
-        <button className="danger" onClick={onDelete} aria-label="Delete recording" title="Delete">
+        <button className="danger" onClick={onDelete} aria-label="Delete recording" title="Delete this take">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.2c0 .4.4.8.8.8h4.2c.4 0 .8-.4.8-.8l.6-8.2" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       </div>

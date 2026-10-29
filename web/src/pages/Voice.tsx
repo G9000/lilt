@@ -5,7 +5,6 @@ import { ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
-import { LeaveIcon, SettingsAppIcon, StudioIcon, TextsIcon } from "../desk/icons";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
 import { MixtapeSections, useMixtape } from "./Courses";
@@ -37,6 +36,8 @@ import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
 const RATINGS: { r: Rating; label: string; face: string }[] = [
   { r: "again", label: "Again", face: "😣" }, { r: "hard", label: "Hard", face: "😕" }, { r: "good", label: "Good", face: "🙂" }, { r: "easy", label: "Easy", face: "😌" },
 ];
+/** A card's hint away from its chapter: "Your check-in: …" only means something there. */
+const cardHint = (h: string) => { const t = h.replace(/^your check-in:\s*/i, ""); return t.charAt(0).toUpperCase() + t.slice(1); };
 const deckName = (it: DeckItem) => (it.card.kind === "reference" ? "Reference" : it.card.deck_title);
 const friendlyDate = (d: string, today: string) => {
   const days = Math.round((Date.parse(d) - Date.parse(today)) / 86400000);
@@ -263,15 +264,15 @@ function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
   );
   // The thumbnail is a copy saved with the course, so showing it asks nothing of YouTube.
   const poster = video.image ? picture(video.image) : undefined;
+  // Small until you want it: a thumbnail row; pressing it opens the full player.
   return (
-    <div className="ci-video">
-      <button type="button" className={`ci-poster${poster ? "" : " plain"}`} onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
+    <button type="button" className="ci-vrow" onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
+      <span className={`ci-thumb${poster ? "" : " plain"}`}>
         {poster && <img src={poster} alt="" loading="lazy" />}
         <span className="ci-play" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5.5 3.5l7 4.5-7 4.5z" fill="currentColor" /></svg></span>
-        <span className="ci-vtext"><b>{video.title || "Watch a video"}</b>{video.by && <small>{video.by}</small>}</span>
-      </button>
-      <p className="ci-vmeta">Plays from YouTube when you press it · <a href={watch} target="_blank" rel="noreferrer">Open on YouTube</a></p>
-    </div>
+      </span>
+      <span className="ci-vtext"><small>Video{video.by ? ` · ${video.by}` : ""}</small><b>{video.title || "Watch a video"}</b><small>Plays from YouTube when you press it</small></span>
+    </button>
   );
 }
 
@@ -350,7 +351,7 @@ const PLACES = [
   { id: "free", label: "Studio", to: "/studio/free", icon: "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2" },
   { id: "recordings", label: "Recordings", to: "/history", icon: "M3 6.5v3M5.5 4v8M8 2.5v11M10.5 5v6M13 7v2" },
   { id: "mixtape", label: "Mixtape", to: "/studio/mixtape", icon: "M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8M5 12l1-2h4l1 2" },
-  { id: "progress", label: "Progress", to: "/progress", icon: "M2.5 13.5h11M4 11V8.5M7 11V5.5M10 11V7M13 11V3.5", soon: true },
+  { id: "settings", label: "Settings", to: "/studio/settings", icon: "M8 5.6a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8zM8 1.8v1.6M8 12.6v1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M1.8 8h1.6M12.6 8h1.6M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1" },
 ];
 
 /**
@@ -511,7 +512,8 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
   texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; itemId?: string; locked: boolean; onNewChapter: () => void;
 }) {
   const [open, setOpen] = useState<Set<string>>(() => new Set([current]));
-  useEffect(() => { setOpen((o) => (o.has(current) ? o : new Set([...o, current]))); }, [current]);
+  // Only the page you're on stays unfolded; the rest fold away as you move.
+  useEffect(() => { setOpen(new Set([current])); }, [current]);
   const toggle = (id: string) => setOpen((o) => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const left = deck ? deck.items.filter((i) => !i.done_today).length : 0;
   const total = deck?.items.length ?? 0;
@@ -528,7 +530,6 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
         <button key={p.id} className="ve-home" onClick={() => go(p.to)} disabled={locked} aria-current={current === p.id ? "page" : undefined}>
           <span className="ve-home-ic"><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
           <span className="t">{p.label}</span>
-          {"soon" in p && <span className="ve-soon-tag">Soon</span>}
           {p.id === "mixtape" && texts?.edition && (texts.edition.updates
             ? <span className="ve-mix-tag new">{texts.edition.updates} new</span>
             : texts.edition.mine ? <span className="ve-mix-tag">{texts.edition.changes}</span> : null)}
@@ -554,12 +555,6 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
         })}
         {texts && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
       </ul>
-      <div className="ve-side-foot">
-        <a href="#/studio/settings" aria-current={current === "settings" ? "page" : undefined}><SettingsAppIcon />Practice settings</a>
-        <a href="#/guided"><StudioIcon />Guided session</a>
-        <a href="#/texts"><TextsIcon />All practice texts</a>
-        <a href="#/"><LeaveIcon />Back to the room</a>
-      </div>
     </nav>
   );
 }
@@ -823,7 +818,7 @@ function MicHelp({ error, onRetry }: { error: string; onRetry: () => void }) {
 
 /** Nothing chosen yet: the recorder takes a free recording, saved in today's Studio session. */
 const FREE = { role: "free" as const, prompt_id: "free", prompt_text: "Free recording" };
-const FREE_HINT = "Talk freely, or pick a card or text to practise";
+const FREE_HINT = "Press the wave to watch your pitch, or Record to keep a take";
 
 /** A free take's summary: listen back, then the measured pitch line and numbers once analysis lands. */
 function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void }) {
@@ -904,7 +899,7 @@ function StudioDoc({ band, onRecording, onTake }: { band: [number, number] | nul
             <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake liveButton
               onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} />
           </div>
-          <p className="ci-lede-plain">Talk, hum, sing, try things. Press record for a take you can play back, or the wave button to just watch your pitch. Takes here don't count toward the course; they're kept in <a href="#/history">Recordings</a>.</p>
+          <p className="ci-lede-plain">Talk, hum, sing, try things. Record a take to play back, or press the wave to just watch your pitch. Nothing here counts toward the course; takes are kept in <a href="#/history">Recordings</a>.</p>
           {freeTake && <section className="ve-free" aria-label="Your take"><h2>Your take</h2><FreeResult take={freeTake} band={band} /></section>}
         </article>
       </div>
@@ -1443,7 +1438,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                   {on && it.card.kind !== "exercise"
                     ? <ReadAlong text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} kind={it.card.text_kind} stream={mic.stream} active={recOn} />
                     : <p className="readtext ve-read" aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
-                  {it.card.hint && <p className="ve-hint">{it.card.hint}</p>}
+                  {it.card.hint && <p className="ve-hint">{cardHint(it.card.hint)}</p>}
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(j)} disabled={phase.k !== "say" || recOn}>Practise {it.card.front.slice(0, 40)} next</button>}
                   {on && item && (
                     <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k === "rate"}

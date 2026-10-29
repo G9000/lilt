@@ -346,3 +346,6 @@
 .ss.open { translate: -50% 0; scale: 1; opacity: 1; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .ss { transition: opacity 0.2s; translate: -50% 0; scale: 1; } }
 @media (max-width: 700px) { .ss { top: 34px; bottom: 6px; width: calc(100vw - 12px); border-radius: 18px; } }
+
+/* On a phone the practice window fills the screen: no pretend window buttons. */
+@media (max-width: 860px) { .ds.app-full .ds-lights { display: none; } }
