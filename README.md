@@ -1,17 +1,22 @@
 # Lilt
 
-Lilt is a personal, local app for practising voice feminization. It opens on today's plan.
-You record a short guided session in the browser, and every original recording is kept on
-your own machine. You get one grounded next step that you can hear, try again and compare.
-Your AI agent can read the same evidence through MCP.
-You can also use the AI coach in AI connection settings with an eligible ChatGPT plan.
+Lilt is a small, private app for practising out loud, a few minutes a day. You read a short text,
+see your voice live as you speak, listen back, and try again. Every recording stays on your own
+computer, so in a month you can hear how far you've come.
 
-- **Goal it is built around:** a more feminine speaking voice that sounds natural, feels comfortable
-  and works in everyday conversation, with emphasis on a lighter sound and forward resonance.
-- **What it is not:** a clinical tool. It does not diagnose, give a femininity score or replace a
-  speech and language therapist.
+- **How it teaches:** courses are plain Markdown chapters: one skill at a time, each explained
+  before you practise it, with a check-in text you repeat every visit so change shows over time.
+  Today's cards bring texts back on a spaced schedule; your rating decides when, never a score.
+- **Make it yours:** remix any chapter into your own version by asking your AI (ChatGPT, or any agent
+  over MCP). The original stays as it is, and every change can be undone.
+- **The first course** is voice training: warm-ups, pitch, resonance, vocal weight, intonation,
+  then everyday speech, reading and real life. Lilt measures pitch and resonance with Praat and
+  describes what it heard in words. A course for another kind of practice is a new folder of
+  Markdown (see [docs/courses.md](docs/courses.md)).
+- **What it is not:** a clinical tool. It doesn't diagnose, score you or replace a speech and
+  language therapist.
 - **Docs:** the design and stack are in [docs/tech-stack.md](docs/tech-stack.md). What has actually
-  been verified is in [VALIDATION.md](VALIDATION.md).
+  been verified is in [VALIDATION.md](VALIDATION.md). Contributions are welcome.
 
 ## Quick start (native, macOS)
 
