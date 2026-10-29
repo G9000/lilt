@@ -24,9 +24,10 @@ with its own `course.md`.
   every chapter.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-warmup.md` … `09-resonance.md`: one chapter each. The number at the start of the file
-  name sets the order. To add a chapter, add a file like `10-reading.md`. `09-resonance.md` is held
-  vowels: each take's resonance (F2 and F3) is compared with your first take of the same vowel.
+- `01-start-here.md` … `11-real-life.md`: one chapter each. The number at the start of the file
+  name sets the order (and the order Today's cards open in). To add a chapter, add a file like
+  `12-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
+  compared with your first take of the same vowel.
 
 ## A chapter file
 
@@ -40,7 +41,9 @@ source_url: https://…
 written_by: Instructions paraphrased from the source.
 ---
 
-How to do it: the paragraph shown in the box at the top of the chapter.
+What the skill is, how it feels, and how you'll know you're on track: the intro shown in the box at
+the top of the chapter. Several paragraphs are fine (leave a blank line between them), and
+`**bold**` works.
 
 ## hum-comfortable
 
@@ -50,7 +53,14 @@ mmmmmmm
 ```
 
 - **Front matter** (between the `---` lines): `id`, `title` and `kind` are required; `subtitle`,
-  `source_url` and `written_by` are optional.
+  `source_url` and `written_by` are optional, and so are:
+  - `area`: the skill it trains, for Progress: `recording`, `resonance`, `pitch`, `lightness`,
+    `intonation` or `carryover`.
+  - `check_in`: the id of one text to record every visit (Practice marks it _Check-in_), so its
+    takes show change over time.
+  - `exercises`: built-in exercises (from `content/exercises/`, by id, comma-separated) that join
+    this chapter in Today.
+  - `today: false`: keep this chapter's texts out of Today's cards (Start here uses it).
 - **`kind`** sets how the text is shown and read along: `hum`, `words`, `automatic`, `phrases`,
   `sentences`, `passage` or `prompt` (a question you answer in your own words).
 - **Each text** starts with `## ` and a short id, unique in the chapter. The lines under it are

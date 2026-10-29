@@ -114,3 +114,27 @@ fn hurt_card_is_suspended_pauses_plan_and_resume_brings_it_back() {
     cards::resume_suspended(&app).unwrap();
     assert!(!cards::load_state(&app)[&card].suspended);
 }
+
+#[test]
+fn chapters_set_their_own_cards_and_older_copies_fall_back() {
+    use crate::courses::syllabus;
+    let (_d, app) = app();
+    let all = cards::all_cards(&app);
+    // Start here (`today: false`) makes no cards and takes no stage: Warm-ups is stage 1, and the
+    // stages run on without a gap, so Today's unlocking never stalls on an empty one.
+    assert!(!all.iter().any(|c| c.level_id == "start-here"));
+    assert!(all.iter().any(|c| c.stage == 1 && c.level_id == "warmup"));
+    let max = all.iter().map(|c| c.stage).max().unwrap();
+    assert!((1..=max).all(|s| all.iter().any(|c| c.stage == s)), "no empty stage");
+    // `area` and `exercises` come from the chapter...
+    assert!(all.iter().any(|c| c.id == "text.weight.light-hello" && c.area == "lightness"));
+    assert!(all.iter().any(|c| c.id == "ex.nhsfife.real-phrases-intonation" && c.level_id == "intonation"));
+    // ...and a copy made before they existed falls back to the built-in table by chapter id.
+    let v = crate::courses::get(&app, "voice").unwrap();
+    let file = std::fs::read_to_string(root().join("content/courses/voice/02-warmup.md")).unwrap();
+    let old = file.lines().filter(|l| !l.starts_with("exercises:") && !l.starts_with("area:")).collect::<Vec<_>>().join("\n");
+    syllabus::write(&app, &v, "02-warmup.md", &old, "an older copy").unwrap();
+    let all = cards::all_cards(&app);
+    assert!(all.iter().any(|c| c.id == "ex.nhsfife.forward-hum" && c.level_id == "warmup"));
+    assert!(all.iter().any(|c| c.id == "text.warmup.hum" && c.area == "resonance"));
+}

@@ -46,6 +46,9 @@ pub(crate) fn front_matter(src: &str) -> Result<(Map<String, Value>, &str)> {
     Ok((meta, body))
 }
 
+/// The skills a chapter can say it trains (`area:`), as Progress shows them.
+pub const AREAS: [&str; 6] = ["recording", "resonance", "pitch", "lightness", "intonation", "carryover"];
+
 /// Non-empty lines joined into one line of text.
 fn joined<'a>(lines: impl Iterator<Item = &'a str>) -> String {
     lines.map(str::trim).filter(|l| !l.is_empty()).collect::<Vec<_>>().join(" ")
@@ -86,13 +89,38 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
     if items.is_empty() {
         bail!("has no texts (each starts with `## <id>`)");
     }
+    // Optional course keys: the area it trains, built-in exercises that join it, its check-in text
+    // (recorded every visit), and `today: false` to keep its texts out of Today's cards.
+    let text = |k: &str| meta.get(k).and_then(Value::as_str).map(str::trim).filter(|v| !v.is_empty()).map(String::from);
+    let check_in = text("check_in");
+    if let Some(c) = &check_in {
+        if !items.iter().any(|i| i["id"] == c.as_str()) {
+            bail!("check_in `{c}` is not a text in this chapter");
+        }
+    }
+    let area = text("area");
+    if let Some(a) = &area {
+        if !AREAS.contains(&a.as_str()) {
+            bail!("area `{a}` isn't one of {}", AREAS.join(", "));
+        }
+    }
+    let today = text("today").as_deref() != Some("false");
+    // Present but empty means none; absent means the built-in table applies (older copies).
+    if let Some(ex) = meta.get("exercises").and_then(Value::as_str).map(String::from) {
+        meta.insert("exercises".into(), json!(ex.split(',').map(str::trim).filter(|e| !e.is_empty()).collect::<Vec<_>>()));
+    }
+    meta.insert("area".into(), json!(area));
+    meta.insert("check_in".into(), json!(check_in));
+    meta.insert("today".into(), json!(today));
     // Optional: no source link, or no subtitle or credit line.
     meta.entry("source_url").or_insert(Value::Null);
     for key in ["subtitle", "written_by"] {
         meta.entry(key).or_insert_with(|| Value::String(String::new()));
     }
     meta.insert("level".into(), json!(level));
-    meta.insert("basis".into(), Value::String(joined(basis.lines())));
+    // The intro keeps its paragraphs (blank lines); lines within one are joined.
+    let paragraphs: Vec<String> = basis.split("\n\n").map(|p| joined(p.lines())).filter(|p| !p.is_empty()).collect();
+    meta.insert("basis".into(), Value::String(paragraphs.join("\n\n")));
     meta.insert("items".into(), Value::Array(items));
     Ok(Value::Object(meta))
 }
@@ -167,6 +195,24 @@ mod tests {
     }
 
     #[test]
+    fn reads_the_course_keys_and_keeps_intro_paragraphs() {
+        let src = "---\nid: pitch\ntitle: Pitch\nkind: hum\narea: pitch\nexercises: a.one, b.two\ncheck_in: two\ntoday: false\n---\n\nFirst paragraph,\nstill first.\n\nSecond **paragraph**.\n\n## one\n\nmm\n\n## two\n\naa\n";
+        let c = chapter(src, 1).unwrap();
+        assert_eq!(c["area"], "pitch");
+        assert_eq!(c["exercises"], json!(["a.one", "b.two"]));
+        assert_eq!(c["check_in"], "two");
+        assert_eq!(c["today"], false);
+        assert_eq!(c["basis"], "First paragraph, still first.\n\nSecond **paragraph**.");
+        let plain = chapter(WARMUP, 1).unwrap();
+        assert_eq!((plain["area"].clone(), plain["check_in"].clone(), plain["today"].clone()), (Value::Null, Value::Null, json!(true)));
+        assert!(plain.get("exercises").is_none(), "absent, so older copies fall back to the built-in table");
+        let e = chapter(&src.replace("check_in: two", "check_in: three"), 1).unwrap_err().to_string();
+        assert!(e.contains("check_in"), "{e}");
+        assert!(chapter(&src.replace("area: pitch", "area: singing"), 1).unwrap_err().to_string().contains("area"));
+        assert_eq!(chapter(&src.replace("exercises: a.one, b.two", "exercises:"), 1).unwrap()["exercises"], json!([]), "empty means none");
+    }
+
+    #[test]
     fn rejects_broken_chapters() {
         assert!(chapter("id: x\n", 1).is_err(), "no front matter");
         assert!(chapter("---\nid: x\ntitle: X\nkind: hum\n---\n\nNo texts.\n", 1).is_err(), "no texts");
@@ -186,9 +232,11 @@ mod tests {
         let cover = t["home_cover"].as_str().unwrap();
         assert!(dir.join(cover).exists(), "cover {cover} is missing");
         let levels = t["levels"].as_array().unwrap();
-        assert_eq!(levels.len(), 9);
+        assert_eq!(levels.len(), 11);
         for (i, l) in levels.iter().enumerate() {
             assert_eq!(l["level"], i + 1);
+            // Every chapter of the shipped course says what it trains and names its check-in.
+            assert!(l["area"].is_string() && l["check_in"].is_string(), "{}", l["id"]);
             for it in l["items"].as_array().unwrap() {
                 assert!(!it["text"].as_str().unwrap().is_empty() && !it["hint"].as_str().unwrap().is_empty(), "{} {}", l["id"], it["id"]);
             }

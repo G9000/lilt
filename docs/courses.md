@@ -50,6 +50,10 @@ each:
 
 1. Make `content/courses/<id>/` with a `course.md` (copy voice's and change it), an `_about.md`, an
    `index.md`, and one or more `NN-name.md` chapters. Put pictures in `images/`.
+   Optional front matter: `area` (the skill it trains, for Progress), `check_in` (the text to
+   record every visit), `exercises` (built-in exercises that join it in Today) and `today: false`
+   (no Today cards). Without `area` or `exercises`, the voice course's built-in tables by chapter
+   id apply, so copies made before course version 2 keep working.
    A chapter with `draft: true` in its front matter (as "New chapter" makes) shows in Practice but
    makes no cards in Today until the line is gone.
 2. Pick its `kind`. An existing one (`voice`, `language`) gets that kind's name and tile; a new word

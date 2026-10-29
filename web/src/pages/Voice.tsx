@@ -225,6 +225,23 @@ function Medal({ className }: { className?: string }) {
     </svg>
   );
 }
+/** A chapter's intro: all of it the first time; once you've practised here, its first paragraph and "Read more". */
+function ChapterIntro({ basis, started }: { basis: string; started: boolean }) {
+  // Decided once per visit (the parent keys this by chapter), so it never folds up under you.
+  const [open] = useState(!started);
+  const [first, ...rest] = basis.split("\n\n");
+  if (!rest.length) return <Markdown src={basis} className="ve-how-md" />;
+  return (
+    <>
+      <Markdown src={first} className="ve-how-md" />
+      <details className="ve-how-more" open={open}>
+        <summary>Read more</summary>
+        <Markdown src={rest.join("\n\n")} className="ve-how-md" />
+      </details>
+    </>
+  );
+}
+
 const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(textId(COURSE, l.id, it.id)));
 
 const Chevron = ({ open }: { open: boolean }) => (
@@ -380,6 +397,7 @@ export function UpdatesDoc({ course, onTexts, back = "#/studio", backLabel = "Ba
           {same > 0 && <p className="ve-up-note">{same} more {same === 1 ? "change matches" : "changes match"} what you'd already done.</p>}
           {error && <p className="ve-up-error" role="alert">{error}</p>}
           <p className="ve-up-actions">
+            {choose.length > 1 && !ready && <button className="ve-up-quiet" onClick={() => setPicks(Object.fromEntries(choose.map((c) => [c.id, "original" as const])))}>Take all of Lilt's new versions</button>}
             <button className="ve-up-go" onClick={apply} disabled={busy || !ready}>Bring in {n} {n === 1 ? "update" : "updates"}</button>
             {!ready && <span className="ve-up-note">Choose for each one above first.</span>}
           </p>
@@ -546,6 +564,15 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const [elapsed, setElapsed] = useState(0);
   const [listening, setListening] = useState(false);
   const rec = useRef<TakeRecorder | null>(null);
+  const starting = useRef(false);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      if (rec.current?.state === "recording") void rec.current.stop().catch(() => {});
+    };
+  }, []);
   const metaRef = useRef(meta);
   metaRef.current = meta;
   const recording = state === "recording";
@@ -594,14 +621,22 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
 
 
   const start = async () => {
-    if (!metaRef.current) return;
-    setErr(null); setListening(false);
-    const stream = mic.stream ?? (await mic.request());
-    if (!stream) return;
-    kept.current = [];
-    const r = new TakeRecorder(stream, (x) => { setState(x.state); if (x.error) setErr(x.error); });
-    rec.current = r;
-    try { await r.start(metaRef.current); setElapsed(0); } catch (e: any) { setState("error"); setErr(e.message); }
+    if (!metaRef.current || starting.current) return;
+    starting.current = true;
+    try {
+      setErr(null); setListening(false);
+      const stream = mic.stream ?? (await mic.request());
+      if (!stream || !mounted.current) return;
+      kept.current = [];
+      const r = new TakeRecorder(stream, (x) => { setState(x.state); if (x.error) setErr(x.error); });
+      rec.current = r;
+      await r.start(metaRef.current);
+      if (!mounted.current) { if (r.state === "recording") await r.stop(); return; }
+      setElapsed(0);
+    } catch (e: any) {
+      // No take was captured when starting failed; let the learner retry Record.
+      setState("idle"); setErr(e.message);
+    } finally { starting.current = false; }
   };
   const stop = async () => {
     try { onSaved(await rec.current!.stop()); } catch (e: any) { setErr(e.message); }
@@ -1041,8 +1076,9 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             )}
           </header>
           <blockquote className="ve-how">
-            <b>How to do it</b>
-            {howTo(level.basis)} <span className="ve-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</span>
+            <b>About this chapter</b>
+            <ChapterIntro key={level.id} basis={howTo(level.basis)} started={level.items.some((it) => practised.has(textId(COURSE, level.id, it.id)))} />
+            <span className="ve-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</span>
           </blockquote>
           {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
           <ol className="ve-items">
@@ -1052,6 +1088,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                 <li key={it.id} ref={(el) => { itemRefs.current[i] = el; }} className={`ve-item${on ? " on" : ""}${level.kind === "passage" ? " passage" : ""}${remixed.has(it.id) ? " fresh" : ""}`}
                   onClick={() => { if (!on) choose(i); }}>
                   <span className="ve-mk num" aria-hidden="true">{i + 1}.</span>
+                  {it.id === level.check_in && <span className="ve-checkin" title="Record this one each time you visit, so you can hear and see your change">Check-in · record it each visit</span>}
                   {on && !isPrompt
                     ? <ReadAlong text={it.text} levelId={level.id} hint={it.hint} kind={level.kind} stream={mic.stream} active={recording}
                         onStarts={(s) => { starts.current = s; }} alignment={latest?.read_along?.starts ?? null} pitch={latestPitch} />

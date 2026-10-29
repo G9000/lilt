@@ -229,6 +229,12 @@ fn commit(app: &App, c: &Course, next: Files, action: &str, file: &str, note: &s
 /// Check, keep the current files in history, then write `next` as your version and reload the app.
 /// Bringing in updates also moves the base to the original it came from (`new_base`); the old
 /// base is kept with the history, so undo puts it back.
+/// Follow a newer original without changing your copy: you kept your version of an older edition.
+pub fn set_base(app: &App, c: &Course, base: &Files) -> Result<()> {
+    let _g = app.write_lock.lock().unwrap();
+    write_files(&mine(app, c).join(".base"), base)
+}
+
 pub fn commit_with_base(app: &App, c: &Course, next: Files, action: &str, file: &str, note: &str, new_base: Option<Files>) -> Result<Value> {
     ensure!(note.trim().len() >= 3, "say in a few words what this change is (`note`)");
     let _g = app.write_lock.lock().unwrap();

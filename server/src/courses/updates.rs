@@ -12,6 +12,10 @@
 //!
 //! Pieces only you changed stay as they are. Whole files work the same way (a new chapter in the
 //! original comes in; a chapter you removed that the original then changed is yours to decide).
+//!
+//! A new edition of the original (its `version` in `_about.md` went up, as when the voice course was
+//! rewritten skill by skill) renames and replaces chapters, so it isn't merged piece by piece: it's
+//! one change, the whole new course or your copy as it is. Never half old and half new.
 
 use crate::app::App;
 use crate::courses::Course;
@@ -102,8 +106,23 @@ fn part(c: &Change) -> &'static str {
 /// One change of the original, how it will be handled, and the versions to choose between.
 struct Change { id: String, file: String, key: String, outcome: Outcome, base: Option<String>, orig: Option<String>, mine: Option<String> }
 
+/// A course's edition: `version` in its `_about.md`.
+fn version(f: &Files) -> Option<String> {
+    f.get("_about.md").and_then(|s| s.lines().find_map(|l| l.strip_prefix("version:"))).map(|v| v.trim().to_string())
+}
+
+/// The id of the one change a new edition makes.
+const EDITION: &str = "edition";
+
 /// Every change of the original since your copy's base, file by file and piece by piece.
 fn changes(base: &Files, orig: &Files, mine: &Files) -> Vec<Change> {
+    if let (Some(b), Some(o)) = (version(base), version(orig)) {
+        if b != o {
+            let untouched = base.len() == mine.len() && base.iter().all(|(n, s)| same(Some(s), mine.get(n)));
+            let outcome = if untouched { Outcome::Take } else { Outcome::Choose };
+            return vec![Change { id: EDITION.into(), file: String::new(), key: String::new(), outcome, base: None, orig: None, mine: None }];
+        }
+    }
     let mut out = Vec::new();
     let names: std::collections::BTreeSet<&String> = base.keys().chain(orig.keys()).collect();
     for name in names {
@@ -168,15 +187,22 @@ pub fn list(app: &App, course: &Course) -> Value {
     let titles: BTreeMap<String, String> = mine.iter().chain(orig.iter())
         .filter_map(|(n, s)| texts::chapter(s, 0).ok().map(|c| (n.clone(), c["title"].as_str().unwrap_or_default().to_string())))
         .collect();
-    let rows: Vec<Value> = changes(&base, &orig, &mine).iter().map(|c| json!({
+    let (vb, vo) = (version(&base).unwrap_or_default(), version(&orig).unwrap_or_default());
+    let rows: Vec<Value> = changes(&base, &orig, &mine).iter().map(|c| if c.id == EDITION { json!({
+        "id": EDITION, "file": "", "title": format!("A new edition of Lilt's course (version {vo})"), "part": "The whole course",
+        "kind": "changed",
+        "handling": if c.outcome == Outcome::Take { "take" } else { "choose" },
+        "yours": { "markdown": format!("Keep your own version as it is (from version {vb}, with your changes). Lilt won't offer this edition again.") },
+        "original": { "markdown": format!("Take version {vo}: every chapter as Lilt now has it. Your version now is kept in your history, so you can undo.") },
+        "before": Value::Null,
+    }) } else { json!({
         "id": c.id, "file": c.file, "title": label(&c.file, &c.key, &titles), "part": part(c),
         "kind": match (&c.base, &c.orig) { (None, _) => "added", (_, None) => "removed", _ => "changed" },
         "handling": match c.outcome { Outcome::Take => "take", Outcome::Keep => "already", Outcome::Choose => "choose" },
         "yours": show(&c.file, &c.key, c.mine.as_ref()),
         "original": show(&c.file, &c.key, c.orig.as_ref()),
         "before": show(&c.file, &c.key, c.base.as_ref()),
-    })).collect();
-    let version = |f: &Files| f.get("_about.md").and_then(|s| s.lines().find_map(|l| l.strip_prefix("version:"))).map(|v| v.trim().to_string());
+    }) }).collect();
     json!({
         "course": course.id,
         "using": "mine",
@@ -195,6 +221,24 @@ pub fn apply(app: &App, course: &Course, choices: &BTreeMap<String, String>, not
     let all = changes(&base, &orig, &mine);
     for id in choices.keys() {
         ensure!(all.iter().any(|c| &c.id == id), "`{id}` isn't one of the updates");
+    }
+    if let [c] = all.as_slice() {
+        if c.id == EDITION {
+            let wants = c.outcome == Outcome::Take || match choices.get(EDITION).map(String::as_str) {
+                Some("original") => true,
+                Some("yours") => false,
+                _ => bail!("a new edition: choose \"yours\" or \"original\" for `{EDITION}`"),
+            };
+            if !wants {
+                syllabus::set_base(app, course, &orig)?;
+                return Ok(json!({ "course": course.id, "using": "mine", "updates_taken": 0, "kept_yours": 1 }));
+            }
+            let note = if note.trim().is_empty() { "Took the new edition of Lilt's course" } else { note };
+            let mut r = syllabus::commit_with_base(app, course, orig.clone(), "update", "", note, Some(orig))?;
+            r["updates_taken"] = json!(1);
+            r["kept_yours"] = json!(0);
+            return Ok(r);
+        }
     }
     let mut take: BTreeMap<&String, Vec<&String>> = BTreeMap::new();
     let mut whole: BTreeMap<&String, Option<&String>> = BTreeMap::new();
@@ -270,6 +314,19 @@ mod tests {
         assert!(ch.iter().any(|c| c.key == "## a" && c.outcome == Outcome::Choose));
         let mine_already = BASE.replace("one", "ONE");
         assert!(changes(&files(BASE), &files(&orig), &files(&mine_already)).iter().any(|c| c.key == "## a" && c.outcome == Outcome::Keep));
+    }
+
+    #[test]
+    fn a_new_edition_is_one_change() {
+        let about = |v: u8| format!("---\nversion: {v}\n---\n\nNote.\n");
+        let base = BTreeMap::from([("_about.md".to_string(), about(1)), ("02-old.md".to_string(), BASE.to_string())]);
+        let orig = BTreeMap::from([("_about.md".to_string(), about(2)), ("05-new.md".to_string(), BASE.replace("id: c", "id: n"))]);
+        let ch = changes(&base, &orig, &base);
+        assert!(ch.len() == 1 && ch[0].id == EDITION && ch[0].outcome == Outcome::Take, "untouched: it just comes in");
+        let mut mine = base.clone();
+        mine.insert("02-old.md".into(), BASE.replace("one", "my one"));
+        let ch = changes(&base, &orig, &mine);
+        assert!(ch.len() == 1 && ch[0].outcome == Outcome::Choose, "edited: yours or the whole new edition");
     }
 
     #[test]

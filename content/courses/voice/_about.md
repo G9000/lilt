@@ -1,7 +1,7 @@
 ---
 schema: lilt.texts/1
-version: 1
-date_checked: 2026-10-26
+version: 2
+date_checked: 2026-10-29
 ---
 
-Practice texts are reading material for Lilt's exercises and Studio. Levels follow the NHS Fife progression order (automatic speech first, then longer and more spontaneous speech). Only move up when the current level feels comfortable and consistent.
+One skill at a time, then all together. Move on when a chapter feels comfortable and consistent, and come back whenever you like. It should never hurt: if it does, stop and rest.

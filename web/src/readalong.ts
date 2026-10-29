@@ -110,15 +110,15 @@ export function notesFor(levelId: string, hint: string, tokens: Token[]): Margin
   const h = hint.toLowerCase();
   const firstWhere = (re: RegExp) => words.find((w) => re.test(w.text.toLowerCase()))?.index;
   if (hint) notes.push({ word: null, text: hint, source: "This text's hint" });
-  if ((levelId === "m-words" || levelId === "warmup") && !/hold the m/.test(h)) {
+  if ((levelId === "resonance" || levelId === "warmup" || levelId === "m-words") && !/hold the m/.test(h)) {
     const m = firstWhere(/^[mn]/);
     if (m !== undefined) notes.push({ word: m, text: "Hold the m a little longer at first.", source: "NHS Fife, Activity 1" });
   }
-  if (levelId === "sentences" && !/\bm\b|buzz|m's/.test(h)) {
+  if ((levelId === "reading" || levelId === "sentences") && !/\bm\b|buzz|m's/.test(h)) {
     const m = firstWhere(/^[mnl]/);
     if (m !== undefined) notes.push({ word: m, text: "Feel the buzz of the m, n or l up front.", source: "Lilt reading cue, from the forward hum activity" });
   }
-  if (levelId === "sentences" || levelId === "passages" || levelId === "phrases") {
+  if (levelId === "reading" || levelId === "sentences" || levelId === "passages" || levelId === "phrases" || levelId === "real-life") {
     const c = words.find((w, i) => i < words.length - 1 && /[,;:]$/.test(w.text))?.index;
     if (c !== undefined && !/comma/.test(h)) notes.push({ word: c, text: "A comma: breathe here if you need to.", source: "Lilt reading cue" });
   }

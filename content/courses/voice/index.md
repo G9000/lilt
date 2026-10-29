@@ -29,13 +29,20 @@ and hear the change for yourself instead of guessing.
 
 - **Today** is a handful of cards. Say one, listen back, and tell Lilt how it felt. That decides
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
-- **Chapters** are seven steps from easy to harder, in the order NHS Fife's voice therapists
-  suggest: humming, then counting and days of the week, then everyday phrases, longer sentences,
-  short passages, and finally your own words. Stay on a chapter until it feels easy, then move on.
+- **[Start here](#/studio/start-here)** first: five minutes to set up your mic and record your baseline, so everything after
+  it is clear and comparable.
+- **Chapters** go one skill at a time, then bring them together: warm-ups, pitch, resonance, vocal
+  weight and intonation, then easy automatic words, everyday phrases, reading, your own words, and
+  real life (yes, phone calls). Each one explains what the skill is and how it should feel before it
+  asks anything of you. Stay on a chapter until it feels easy, then move on, and go back whenever you
+  like.
+- **Check-ins**: every chapter has one text marked _Check-in_. Record it each time you visit. Same
+  words every time, so you can hear (and see) your voice change over the weeks.
 - **Free recording**: don't pick anything, just talk. You'll get your pitch line back when you stop.
-- **The recorder** draws your pitch as you speak, with your comfortable range shaded behind it.
-  Pitch is only part of the picture, though. Resonance, rhythm and how it feels in your throat
-  matter just as much.
+- **The recorder** draws your pitch as you speak, with your comfortable range shaded behind it, and
+  after each take shows your pitch and, on the same text, how your resonance has moved. Pitch is only
+  part of the picture, though. Resonance, weight, melody and how it feels in your throat matter just
+  as much.
 
 ![Placeholder: another picture of your own](images/placeholder-window.webp)
 
@@ -56,15 +63,27 @@ wrong without writing any code. Contributions are welcome on GitHub (link coming
 
 ## Sources
 
-The exercises and chapter instructions are short paraphrases of NHS Fife Speech and Language
-Therapy patient advice, linked here so you can read the originals. Pages issued November 2023 unless
-noted, checked on 26 October 2026.
+Every exercise is written in Lilt's own words, from ideas in the guides below, so you can read the
+originals. Checked on 29 October 2026.
 
-- [Shaping your voice: Lighten brighten: pitch and resonance](https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/): humming, forward resonance, raising pitch safely.
-- [Shaping your voice: Lighten brighten: intonation](https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-intonation/): real-life phrases with rise and fall.
-- [Shaping your voice: Lighten/brighten: articulation](https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lightenbrighten-articulation/): smiling to brighten.
-- [Progression activities to shape your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/) (no issue date): the order of the chapters, from automatic speech to your own words.
+- NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
+  (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"
+  activities, and [the progression activities](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/)
+  that set the order of the later chapters.
+- NHS Fife, Shaping your voice: [pitch and resonance](https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/),
+  [articulation](https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lightenbrighten-articulation/)
+  and [intonation](https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-intonation/).
+- NHS Fife, [How to take care of your voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/how-to-take-care-of-your-voice/).
+- NHS Lothian, Voice and Communication Therapy for Trans and Non-binary People:
+  [What is it?](https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-What-is-it.pdf)
+  and [Where to start](https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf)
+  (February 2026): warm-ups, relaxation, voice care and vocal weight.
+- NIDCD, [Taking care of your voice](https://www.nidcd.nih.gov/health/taking-care-your-voice).
+- Research behind the "one skill at a time" order: Leung, Oates and Chan (2018), [a review of what
+  listeners use to hear a speaker's gender](https://pubmed.ncbi.nlm.nih.gov/29392290/) (pitch,
+  resonance, loudness, articulation and intonation all play a part), and Leung, Oates, Chan and Papp
+  (2021), [on resonance and pitch](https://pubmed.ncbi.nlm.nih.gov/34232704/).
 
-NHS Fife allows this material for private study and personal use only. An AI checked each exercise
-against its source; no clinician has reviewed it. Some texts, like the smooth sentences and the
-passages, were written for Lilt, and each chapter says so.
+NHS Fife allows its material for private study and personal use. An AI checked each exercise against
+its source; no clinician has reviewed this course. If you're a speech and language therapist or a
+voice coach and spot something wrong, I'd really like to hear it.

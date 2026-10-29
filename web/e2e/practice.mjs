@@ -26,11 +26,21 @@ async function record(page, seconds = 2.5) {
   await page.getByRole("button", { name: "Stop recording" }).click();
 }
 
+async function unlocked(page) {
+  for (let i = 0; i < 100; i++) {
+    const held = await page.evaluate(async () => (await navigator.locks.query()).held.some((l) => l.name === "lilt-recording"));
+    if (!held) return;
+    await page.waitForTimeout(50);
+  }
+  throw new Error("Recording lock wasn't released within five seconds.");
+}
+
 async function main() {
   const browser = await chromium.launch({
     channel: "chrome",
     headless: true,
-    args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", `--use-file-for-fake-audio-capture=${wav}`, "--autoplay-policy=no-user-gesture-required"],
+    ignoreDefaultArgs: ["--headless=old"],
+    args: ["--headless=new", "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", `--use-file-for-fake-audio-capture=${wav}`, "--autoplay-policy=no-user-gesture-required"],
   });
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, permissions: ["microphone"], colorScheme: "light" });
   const page = await ctx.newPage();
@@ -66,13 +76,38 @@ async function main() {
   check("a free take's summary shows in the recorder half", true);
   await shot(page, "2-free");
 
+  // A competing tab must show a retryable recording warning, without an empty save attempt.
+  const peer = await ctx.newPage();
+  peer.on("pageerror", (e) => errors.push(e.message));
+  await peer.goto(`${BASE}/#/studio`);
+  await peer.getByRole("button", { name: "Start recording" }).waitFor();
+  await page.getByRole("button", { name: "Start recording" }).click();
+  await page.getByRole("button", { name: "Stop recording" }).waitFor();
+  await peer.getByRole("button", { name: "Start recording" }).click();
+  await peer.getByRole("alert").filter({ hasText: "Lilt is already recording" }).waitFor();
+  check("another tab explains why recording was refused", true);
+  check("a refused start keeps Record available and offers no empty save", await peer.getByRole("button", { name: "Start recording" }).isEnabled() && await peer.getByRole("button", { name: "Retry saving" }).count() === 0);
+  await page.getByRole("button", { name: "Stop recording" }).click();
+  await page.locator(".ve-state.saved").waitFor({ state: "attached" });
+  await record(peer, 1);
+  await peer.locator(".ve-state.saved").waitFor({ state: "attached" });
+  check("the refused tab can record and save after the first stops", true);
+  await page.getByRole("button", { name: "Start recording" }).click();
+  await page.getByRole("button", { name: "Stop recording" }).waitFor();
+  await page.goto(`${BASE}/#/studio/warmup`); // Hash navigation unmounts the recorder without closing the tab.
+  await unlocked(page);
+  await record(peer, 1);
+  await peer.locator(".ve-state.saved").waitFor({ state: "attached" });
+  check("leaving a recorder finishes its take and releases the lock", true);
+  await peer.close();
+
   // A chapter: nothing picked, then pick text 1 from the tree and record it.
   await page.goto(`${BASE}/#/studio/warmup`);
-  await page.locator(".ve-dock.art").waitFor();
+  await page.locator(".ve-item").first().waitFor();
   check("a chapter opens with nothing picked", (await page.locator(".ve-item.on").count()) === 0);
   await page.locator(".ve-file").filter({ hasText: "mmmmmmm" }).first().click();
   await page.locator(".ve-item.on").waitFor();
-  check("the tree opens a text and the address follows", page.url().endsWith("/#/studio/warmup/hum-comfortable"));
+  check("the tree opens a text and the address follows", page.url().endsWith("/#/studio/warmup/hum"));
   await record(page);
   await page.locator(".ve-item.on .ve-take .prc-insight").waitFor({ timeout: 60000 });
   check("a chapter take shows under its text with a note", true);

@@ -11,7 +11,7 @@ const Ext = () => <svg className="vext" viewBox="0 0 12 12" aria-hidden="true" f
 
 // Which reading-cue set fits each exercise's practice text.
 const READ_LEVEL: Record<string, string> = {
-  "nhsfife.forward-hum": "m-words", "nhsfife.smile-brighten": "phrases", "nhsfife.gentle-pitch-count": "automatic",
+  "nhsfife.forward-hum": "resonance", "nhsfife.smile-brighten": "phrases", "nhsfife.gentle-pitch-count": "automatic",
   "nhsfife.real-phrases-intonation": "phrases", "nhsfife.progression-ladder": "automatic",
 };
 

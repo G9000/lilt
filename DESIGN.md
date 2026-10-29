@@ -94,10 +94,12 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   the document keeps the URL and the tree in step. Links at the bottom carry the desk's app icons
   (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document
-  (720px column): a bold Geist H1 (54px, 760, −0.05em), a sans subtitle and meta line, a "How to do it" note on a
-  soft `--fill` panel, then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
+  (720px column): a bold Geist H1 (54px, 760, −0.05em), a sans subtitle and meta line, an "About this chapter" note on a
+  soft `--fill` panel (what the skill is, how it feels, how you'll know it's working; all of it on a first
+  visit, then its first paragraph and a quiet "Read more ↓" once you've practised there), then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
   under each and a quiet number in the margin. The active text has no card: it is in full ink with its
-  number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick.
+  number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick. Each chapter's check-in text carries a small coral pill above it,
+  "Check-in · record it each visit".
   Wider than 1100px, the screen splits in half: the text on the left, the recorder on the right.
   **While idle** (not recording or listening) the right half is just artwork and the record pill:
   the room's **cat asleep on its blanket** in the current light, filling the whole right half edge

@@ -219,7 +219,17 @@ export interface Profile {
 
 /** `example` is an optional recording of someone saying the text, as `audio/<file>`. */
 export interface TextItem { id: string; text: string; hint: string; example?: string }
-export interface TextLevel { id: string; level: number; title: string; subtitle: string; kind: string; basis: string; source_url: string | null; written_by: string; items: TextItem[] }
+export interface TextLevel {
+  id: string; level: number; title: string; subtitle: string; kind: string;
+  /** The chapter's intro: Markdown paragraphs separated by blank lines. */
+  basis: string;
+  source_url: string | null; written_by: string; items: TextItem[];
+  /** The text to record every visit, so takes of it show change over time. */
+  check_in?: string | null;
+  area?: string | null;
+  /** false: the chapter's texts aren't Today cards (Start here). */
+  today?: boolean;
+}
 /** `home` is the Practice home page as Markdown (content/courses/voice/index.md); `home_cover` its banner. */
 export interface Texts { note: string; levels: TextLevel[]; home?: string; home_cover?: string; pitch_reference?: PitchReference; edition?: Edition }
 /** Whether these are the learner's own version of the syllabus (changed by an AI agent over MCP) and how many changes it has. */

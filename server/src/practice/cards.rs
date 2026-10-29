@@ -80,7 +80,7 @@ pub struct ReviewLog {
     pub due_after: Option<String>,
 }
 
-/// Areas that each practice-text level mainly trains (for display and progress).
+/// Areas the original chapters train, for a chapter with no `area:` (a copy made before course version 2).
 fn level_area(level: &str) -> &'static str {
     match level {
         "warmup" | "m-words" => "resonance",
@@ -106,6 +106,7 @@ pub fn all_cards(app: &App) -> Vec<Card> {
         area: "baseline".into(), level_id: "automatic".into(), text_kind: "automatic".into(),
         exercise_id: None, exercise_version: None, prompt_id: ref_prompt, source: "Lilt reference task (NHS Fife automatic speech)".into(),
     });
+    // Built-in exercises for a chapter with no `exercises:` (a copy made before course version 2).
     let exercise_after: BTreeMap<&str, Vec<&str>> = BTreeMap::from([
         ("warmup", vec!["nhsfife.forward-hum"]),
         ("automatic", vec!["nhsfife.gentle-pitch-count"]),
@@ -113,7 +114,9 @@ pub fn all_cards(app: &App) -> Vec<Card> {
     ]);
     let levels = crate::courses::syllabus::texts(app)["levels"].as_array().cloned().unwrap_or_default();
     // A draft chapter (a blank "New chapter" not filled in yet) has placeholder texts: no cards.
-    let levels: Vec<_> = levels.into_iter().filter(|l| l["draft"] != "true").collect();
+    // A chapter marked `today: false` (Start here) has no cards either, and takes no stage, so the
+    // next chapter opens on day one.
+    let levels: Vec<_> = levels.into_iter().filter(|l| l["draft"] != "true" && l["today"] != false).collect();
     for (si, l) in levels.iter().enumerate() {
         let lid = l["id"].as_str().unwrap_or_default();
         let ltitle = l["title"].as_str().unwrap_or_default();
@@ -124,12 +127,16 @@ pub fn all_cards(app: &App) -> Vec<Card> {
             out.push(Card {
                 id: crate::courses::text_id(crate::courses::DEFAULT, lid, iid), stage, deck: lid.into(), deck_title: ltitle.into(), kind: "text".into(),
                 front: it["text"].as_str().unwrap_or_default().into(), hint: it["hint"].as_str().unwrap_or_default().into(),
-                area: level_area(lid).into(), level_id: lid.into(), text_kind: lkind.into(),
+                area: l["area"].as_str().unwrap_or(level_area(lid)).into(), level_id: lid.into(), text_kind: lkind.into(),
                 exercise_id: None, exercise_version: None, prompt_id: crate::courses::text_id(crate::courses::DEFAULT, lid, iid),
                 source: l["written_by"].as_str().unwrap_or_default().into(),
             });
         }
-        for ex_id in exercise_after.get(lid).cloned().unwrap_or_default() {
+        let exercises: Vec<String> = match l["exercises"].as_array() {
+            Some(a) => a.iter().filter_map(|e| e.as_str().map(String::from)).collect(),
+            None => exercise_after.get(lid).cloned().unwrap_or_default().into_iter().map(String::from).collect(),
+        };
+        for ex_id in &exercises {
             if let Some(ex) = reg.latest(ex_id) {
                 out.push(Card {
                     id: format!("ex.{}", ex.id), stage, deck: lid.into(), deck_title: ltitle.into(), kind: "exercise".into(),
