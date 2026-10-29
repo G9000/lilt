@@ -653,10 +653,14 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 .ve .ve-dock { position: relative; margin: 18px 0 2px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
   display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "rec now" "scope scope" "sub sub"; column-gap: 14px; row-gap: 12px; align-items: center; }
 .ve .ve-dock .ve-art, .ve .ve-dock .ve-cat, .ve .ve-dock .ve-result-pane, .ve .ve-dock .ve-stats, .ve .ve-dock .ve-state, .ve .ve-dock .ve-sp { display: none; }
-.ve .ve-dock .ve-rec { height: 44px; padding: 0 20px 0 16px; gap: 9px; justify-self: start; background: var(--rec); color: #fff; font-weight: 600; box-shadow: 0 6px 18px -8px rgba(255, 66, 85, 0.8); }
-.ve .ve-dock .ve-rec i { width: 10px; height: 10px; background: #fff; box-shadow: none; }
+/* Calm until it's recording: an ink button with a small red dot; red only while it records. */
+.ve .ve-dock .ve-rec { height: 44px; padding: 0 20px 0 16px; gap: 9px; justify-self: start; background: var(--ink); color: var(--ve-paper); font-weight: 600; box-shadow: none; }
+.ve .ve-dock .ve-rec i { width: 9px; height: 9px; background: var(--rec); box-shadow: none; }
 .ve .ve-dock .ve-rec kbd { display: none; }
-.ve .ve-dock .ve-rec:hover:not(:disabled) { background: color-mix(in srgb, var(--rec) 88%, #000); }
+.ve .ve-dock .ve-rec:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 85%, var(--ve-paper)); }
+.ve .ve-dock .ve-rec.on { background: var(--rec); color: #fff; box-shadow: 0 6px 18px -8px rgba(255, 66, 85, 0.8); }
+.ve .ve-dock .ve-rec.on i { background: #fff; }
+.ve .ve-dock .ve-rec.on:hover:not(:disabled) { background: color-mix(in srgb, var(--rec) 88%, #000); }
 .ve .ve-dock .ve-rec:disabled { background: var(--fill-2); color: var(--ink-3); box-shadow: none; }
 .ve .ve-dock .ve-rec:disabled i { background: var(--ink-3); }
 .ve .ve-dock .ve-now { justify-content: flex-start; min-width: 0; }

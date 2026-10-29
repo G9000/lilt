@@ -624,10 +624,12 @@ function useHeld(value: number | null, run: boolean, smooth = false): { v: numbe
 }
 
 /** The recorder at the bottom: one button, the waveform with the pitch line on it, and the numbers. */
-function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false }: {
+function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false, retake = false }: {
   meta: TakeMeta | null; band: [number, number] | null; allowRetake: boolean; quiet?: boolean;
   /** Offer "Show my pitch live" (Studio); a text's recorder only records. */
   liveButton?: boolean;
+  /** You've recorded this text before: the button says "Record again". */
+  retake?: boolean;
   onSaved: (t: Take) => void; onRecording: (on: boolean) => void; children?: ReactNode; idleHint: string;
   /** The last take's result, shown in place of the cat once recording stops (split screen only). */
   result?: ReactNode;
@@ -781,7 +783,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
         <i aria-hidden="true" />
         {recording ? <>Stop<span className="ve-clock">{clock(elapsed)}</span></>
           : state === "saving" ? "Saving…"
-          : state === "saved" && allowRetake ? "Record again" : "Record"}
+          : (state === "saved" && allowRetake) || retake ? "Record again" : "Record"}
         {(recording || canStart) && <kbd aria-hidden="true">Space</kbd>}
       </button>
       <div className="ve-dock-sub">
@@ -1144,7 +1146,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   // The recorder sits under the text it records.
   const recorder = (
     <Dock key={promptId} meta={sessionId ? { session_id: sessionId, ...FREE, ...(item && { prompt_id: promptId, prompt_text: item.text }) } : null}
-            band={band} allowRetake onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
+            band={band} allowRetake retake={!!(latest || previous)} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
             idleHint={item ? "Press record and read the highlighted text" : FREE_HINT}>
             <button className="ve-icon" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1} aria-label={item ? "Next text" : "Start with text 1"} title={`${item ? "Next text" : "Start with text 1"} (↓)`}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
