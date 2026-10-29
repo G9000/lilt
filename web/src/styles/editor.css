@@ -152,14 +152,23 @@
 .ve-how { margin: 0 0 40px; padding: 16px 20px 17px; border-radius: 14px; background: var(--fill); color: var(--ink-2); font-size: 15px; line-height: 1.55; }
 .ve-how.warn { background: var(--warn-soft); }
 .ve-how b { color: var(--ink); font-weight: 600; font-size: 13px; display: block; margin-bottom: 3px; }
-.ve-how-md p { margin: 0 0 10px; }
-.ve-how-md p:last-child { margin-bottom: 4px; }
-.ve-how-md strong { color: var(--ink); font-weight: 600; font-size: inherit; display: inline; margin: 0; }
-.ve-how details.ve-how-more { background: none; border-radius: 0; color: inherit; }
-.ve-how details.ve-how-more > summary { display: block; width: max-content; min-height: 0; margin: 0 0 6px; padding: 0; color: var(--ink); font-size: 13px; font-weight: 600; }
-.ve-how details.ve-how-more > summary::before { content: none; }
-.ve-how details.ve-how-more > summary::after { content: " ↓"; color: var(--ink-3); }
-.ve-how details.ve-how-more[open] > summary { display: none; }
+/* A chapter's intro (Voice.tsx ChapterIntro): an opening line, then labelled cards. */
+.ci { margin: 0 0 44px; }
+.ci-lede p { margin: 0; font-size: 18px; line-height: 1.5; color: var(--ink); text-wrap: pretty; }
+.ci-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-top: 18px; }
+.ci-card { padding: 14px 16px 15px; border-radius: 14px; background: var(--fill); }
+.ci-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.ci-card h3 { display: flex; align-items: center; gap: 7px; margin: 0 0 5px; font: 650 13.5px var(--font); color: var(--ink); }
+.ci-card h3::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex: none; }
+.ci-card p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); text-wrap: pretty; }
+.ci-card p:last-child { margin-bottom: 0; }
+.ci-card strong { color: var(--ink); font-weight: 600; }
+.ci-card.care { background: color-mix(in srgb, var(--accent) 11%, var(--fill)); }
+.ci-card.care h3 { color: color-mix(in srgb, var(--accent) 70%, var(--ink)); }
+.ci-more { display: inline-flex; gap: 4px; margin-top: 12px; padding: 0; background: none; border: 0; color: var(--ink); font: 600 13.5px var(--font); cursor: pointer; }
+.ci-more span { color: var(--ink-3); }
+.ci-src { margin: 14px 2px 0; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
+.ci-src a { color: inherit; }
 .ve-checkin { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 8px; padding: 3px 10px; border-radius: 99px; background: var(--accent-soft, color-mix(in srgb, var(--accent) 14%, transparent)); color: color-mix(in srgb, var(--accent) 80%, var(--ink)); font-size: 12px; font-weight: 600; }
 .ve-checkin::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .ve-src { display: block; margin-top: 8px; font-size: 12px; color: var(--ink-3); }

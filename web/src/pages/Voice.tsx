@@ -225,20 +225,37 @@ function Medal({ className }: { className?: string }) {
     </svg>
   );
 }
-/** A chapter's intro: all of it the first time; once you've practised here, its first paragraph and "Read more". */
-function ChapterIntro({ basis, started }: { basis: string; started: boolean }) {
+/**
+ * A chapter's intro: its opening line, then each **Bold lead.** paragraph as a small labelled card
+ * (the voice-care one tinted), in two columns where there's room. All of it the first time; once
+ * you've practised there, the opening line and "Read more".
+ */
+function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }) {
   // Decided once per visit (the parent keys this by chapter), so it never folds up under you.
-  const [open] = useState(!started);
-  const [first, ...rest] = basis.split("\n\n");
-  if (!rest.length) return <Markdown src={basis} className="ve-how-md" />;
+  const [open, setOpen] = useState(!started);
+  const [lede, ...paras] = howTo(level.basis).split("\n\n");
+  const cards = paras.map((p) => {
+    const m = p.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/);
+    if (!m) return { label: "", body: p };
+    // "**On track when** it all feels easy" reads as a card titled "Signs it's working".
+    if (/^on track when$/i.test(m[1].trim())) return { label: "Signs it's working", body: m[2].charAt(0).toUpperCase() + m[2].slice(1) };
+    return { label: m[1].replace(/[.:]$/, ""), body: m[2] };
+  });
   return (
-    <>
-      <Markdown src={first} className="ve-how-md" />
-      <details className="ve-how-more" open={open}>
-        <summary>Read more</summary>
-        <Markdown src={rest.join("\n\n")} className="ve-how-md" />
-      </details>
-    </>
+    <section className="ci" aria-label="About this chapter">
+      <Markdown src={lede} className="ci-lede" />
+      {cards.length > 0 && (open ? (
+        <div className="ci-grid">
+          {cards.map((c, i) => (
+            <section key={i} className={`ci-card${/gentle|care/i.test(c.label) ? " care" : ""}`}>
+              {c.label && <h3>{c.label}</h3>}
+              <Markdown src={c.body} />
+            </section>
+          ))}
+        </div>
+      ) : <button type="button" className="ci-more" onClick={() => setOpen(true)}>Read more <span aria-hidden="true">↓</span></button>)}
+      <p className="ci-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>
+    </section>
   );
 }
 
@@ -1075,11 +1092,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
               </div>
             )}
           </header>
-          <blockquote className="ve-how">
-            <b>About this chapter</b>
-            <ChapterIntro key={level.id} basis={howTo(level.basis)} started={level.items.some((it) => practised.has(textId(COURSE, level.id, it.id)))} />
-            <span className="ve-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</span>
-          </blockquote>
+          <ChapterIntro key={level.id} level={level} started={level.items.some((it) => practised.has(textId(COURSE, level.id, it.id)))} />
           {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
           <ol className="ve-items">
             {level.items.map((it, i) => {
