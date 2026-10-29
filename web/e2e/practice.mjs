@@ -70,10 +70,11 @@ async function main() {
   check("home shows your practice", /1 day of practice this month/.test(await page.locator(".ve-days").innerText()));
   check("start card is gone once a range is set", (await page.locator(".ve-start-card").count()) === 0);
 
-  // Free recording on Home: the result fills the right half.
+  // Free recording on Home: the result shows in the page, under "Your take"; the recorder stays a small floating pill.
   await record(page);
-  await page.locator(".ve-result-pane .prc-insight").waitFor({ timeout: 60000 });
-  check("a free take's summary shows in the recorder half", true);
+  await page.locator(".ve-free .prc-insight").waitFor({ timeout: 60000 });
+  check("a free take's summary shows in the page", true);
+  check("the recorder floats as a small pill once idle", (await page.locator(".ve-dock.idle").boundingBox()).width < 520);
   await shot(page, "2-free");
 
   // A competing tab must show a retryable recording warning, without an empty save attempt.

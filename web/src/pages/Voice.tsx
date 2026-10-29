@@ -562,16 +562,9 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
 
 /* ---------------------------------------------------------------- the dock */
 
-/** True when the screen is split (text left, recorder right); results then show in the right half. */
-const SPLIT = "(min-width: 1101px)";
+/** The recorder floats over the text at every size, so results always show under the text you said. */
 function useSplit() {
-  const [split, setSplit] = useState(() => window.matchMedia(SPLIT).matches);
-  useEffect(() => {
-    const m = window.matchMedia(SPLIT), f = () => setSplit(m.matches);
-    m.addEventListener("change", f);
-    return () => m.removeEventListener("change", f);
-  }, []);
-  return split;
+  return false;
 }
 
 type Pt = PitchPoint;
