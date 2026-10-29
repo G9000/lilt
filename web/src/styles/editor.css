@@ -25,6 +25,8 @@
    chapters are folders (a chevron, the name, a count or a medal); their cards and texts are files
    under an indent guide, with a tick once practised and the open one highlighted. */
 .ve-side { overflow: auto; padding: 50px 8px 12px; display: flex; flex-direction: column; scrollbar-width: thin; font-size: 13px; }
+/* A long chapter list scrolls the sidebar; nothing in it gets squeezed to fit. */
+.ve-side > * { flex-shrink: 0; }
 .ve-side h6 { margin: 18px 10px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 600 12px var(--font); color: var(--ink-3); }
 .ve-side h6 span { font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
 /* Home: a row like the folders, its icon where their chevrons sit */
