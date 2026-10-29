@@ -246,6 +246,27 @@ const TIP_ICONS: [RegExp, string][] = [
 const tipIcon = (label: string) => TIP_ICONS.find(([re]) => re.test(label))?.[1] ?? "M8 3v3M8 10v3M3 8h3M10 8h3";
 
 /**
+ * A chapter's video. Until you press play it is only a card drawn here (no request to YouTube, so
+ * nothing about you leaves this computer); then YouTube's no-cookie player loads in its place.
+ */
+function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
+  const [on, setOn] = useState(false);
+  const watch = `https://www.youtube.com/watch?v=${video.id}`;
+  if (on) return (
+    <div className="ci-video">
+      <div className="ci-frame"><iframe src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`} title={video.title || "Video"} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen /></div>
+      <p className="ci-vmeta">{video.by && <>{video.by} · </>}<a href={watch} target="_blank" rel="noreferrer">Open on YouTube</a></p>
+    </div>
+  );
+  return (
+    <button type="button" className="ci-vcard" onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
+      <span className="ci-play" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5.5 3.5l7 4.5-7 4.5z" fill="currentColor" /></svg></span>
+      <span className="ci-vtext"><b>{video.title || "Watch a video"}</b><small>{video.by ? `${video.by} · ` : ""}plays from YouTube</small></span>
+    </button>
+  );
+}
+
+/**
  * A chapter's intro: its opening line, then each **Label.** paragraph as one row of a tip list
  * (icon, label, one line), voice care tinted. All of it the first time; once you've practised
  * there, the opening line and "Show tips". The sources fold away under the list.
@@ -273,6 +294,7 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
           ))}
         </ul>
       ) : <button type="button" className="ci-more" onClick={() => setOpen(true)}>Show tips ({tips.length}) <span aria-hidden="true">↓</span></button>)}
+      {level.video && <ChapterVideo video={level.video} />}
       <details className="ci-src">
         <summary>Where this comes from</summary>
         <p>{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>

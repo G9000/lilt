@@ -5,6 +5,9 @@ subtitle: Bright and forward
 kind: hum
 area: resonance
 check_in: ee
+video: https://www.youtube.com/watch?v=BW8X2nXexQs
+video_title: The Most Powerful Element of Voice Feminization: Resonance
+video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/
 written_by: Written for Lilt, from NHS Fife's resonance and articulation tuning-in activities and "Shaping your voice" (Activity 1, and articulation). The measurement and its limits are in analysis/EVALUATION.md.
 ---

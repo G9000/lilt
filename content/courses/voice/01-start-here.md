@@ -6,6 +6,9 @@ kind: phrases
 area: recording
 check_in: today
 today: false
+video: https://www.youtube.com/watch?v=BfCS01MkbIY
+video_title: Voice Feminization for Absolute Beginners: How to Get Started Now
+video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/
 written_by: Written for Lilt, from NHS Fife's "Supporting you to find your authentic voice" and "How to take care of your voice", NHS Lothian's voice and communication therapy guides (2026) and NIDCD's voice care advice.
 ---

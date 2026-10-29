@@ -99,7 +99,8 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   visit, then its first paragraph and a quiet "Read more ↓" once you've practised there), then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
   under each and a quiet number in the margin. The active text has no card: it is in full ink with its
   number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick. Each chapter's check-in text carries a small coral pill above it,
-  "Check-in · record it each visit".
+  "Check-in · record it each visit". A chapter with a video shows a quiet card under its tips (a red play tile, title, channel, "plays
+  from YouTube"); nothing loads from YouTube until it's pressed, then the no-cookie player opens in place.
   Wider than 1100px, the screen splits in half: the text on the left, the recorder on the right.
   **While idle** (not recording or listening) the right half is just artwork and the record pill:
   the room's **cat asleep on its blanket** in the current light, filling the whole right half edge

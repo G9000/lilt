@@ -104,10 +104,28 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
             bail!("area `{a}` isn't one of {}", AREAS.join(", "));
         }
     }
+    // An optional video for the chapter: `video: <YouTube link or id>`, with `video_title` and
+    // `video_by`. Practice loads nothing from YouTube until you press play.
+    let mut video = None;
+    if let Some(v) = text("video") {
+        // watch?v=ID&…, youtu.be/ID?…, embed/ID, or the bare id.
+        let id = match v.split_once("v=") {
+            Some((_, rest)) => rest,
+            None => v.trim_end_matches('/').rsplit('/').next().unwrap_or(""),
+        };
+        let id = id.split(['&', '?', '#']).next().unwrap_or("");
+        if id.len() != 11 || !id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
+            bail!("video `{v}` isn't a YouTube link (like https://www.youtube.com/watch?v=xxxxxxxxxxx)");
+        }
+        video = Some(json!({ "id": id, "title": text("video_title").unwrap_or_default(), "by": text("video_by").unwrap_or_default() }));
+    }
     let today = text("today").as_deref() != Some("false");
     // Present but empty means none; absent means the built-in table applies (older copies).
     if let Some(ex) = meta.get("exercises").and_then(Value::as_str).map(String::from) {
         meta.insert("exercises".into(), json!(ex.split(',').map(str::trim).filter(|e| !e.is_empty()).collect::<Vec<_>>()));
+    }
+    if let Some(v) = video {
+        meta.insert("video".into(), v);
     }
     meta.insert("area".into(), json!(area));
     meta.insert("check_in".into(), json!(check_in));
@@ -210,6 +228,10 @@ mod tests {
         assert!(e.contains("check_in"), "{e}");
         assert!(chapter(&src.replace("area: pitch", "area: singing"), 1).unwrap_err().to_string().contains("area"));
         assert_eq!(chapter(&src.replace("exercises: a.one, b.two", "exercises:"), 1).unwrap()["exercises"], json!([]), "empty means none");
+        let with_video = src.replace("today: false", "video: https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10\nvideo_title: A video\nvideo_by: A channel");
+        assert_eq!(chapter(&with_video, 1).unwrap()["video"], json!({ "id": "dQw4w9WgXcQ", "title": "A video", "by": "A channel" }));
+        assert_eq!(chapter(&src.replace("today: false", "video: https://youtu.be/dQw4w9WgXcQ"), 1).unwrap()["video"]["id"], "dQw4w9WgXcQ");
+        assert!(chapter(&src.replace("today: false", "video: https://evil.example/x"), 1).is_err());
     }
 
     #[test]

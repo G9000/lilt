@@ -5,6 +5,9 @@ subtitle: Finding a range that feels like you
 kind: hum
 area: pitch
 check_in: count-5
+video: https://www.youtube.com/watch?v=5OyfNLWf3UM
+video_title: Low-Pitched Feminine Voice: Guided Practice
+video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/
 written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shaping your voice: pitch and resonance" (Activity 2), and NHS Lothian's "Where to start" (2026).
 ---
