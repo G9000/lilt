@@ -10,15 +10,15 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's "Supporting you to find your authentic voice" and "How to take care of your voice", NHS Lothian's voice and communication therapy guides (2026) and NIDCD's voice care advice.
 ---
 
-Hi, and welcome. Before any exercises, let's get you comfy and make sure Lilt can actually hear you. Five minutes here makes every take after it clearer and easier to compare.
+Hi bestie. Five minutes of setup now saves you from yelling at a jumpy pitch line later.
 
-**Your mic.** Sit about 20 to 30 cm from your laptop or mic, facing it, in the quietest room you've got: fans, open windows and the TV all make your voice harder to hear. On a Mac, open System Settings, then Sound, then Input, and set the input volume to about three quarters; when you talk, the meter should fill about halfway. If Control Center shows **Mic Mode** while you record, pick **Standard**, because Voice Isolation trims the soft sounds this practice is made of. A cheap wired headset or USB mic close to your mouth is the best upgrade you can make. Whatever you use, keep it the same each time, so today's takes and next month's can be compared.
+**Your mic.** Sit 20–30 cm away, in your quietest room (the fan is not your duet partner). On a Mac: System Settings → Sound → Input, volume about three quarters. If Control Center shows **Mic Mode**, pick **Standard**: Voice Isolation eats the soft sounds, and soft sounds are literally the whole assignment. A cheap headset mic is the best glow-up you can buy. Same setup every time, so your takes stay comparable.
 
-**Getting ready.** Have water nearby and sip it. Sit or stand tall but easy, let your shoulders drop and your jaw hang loose. Practise a few minutes at a time, a few times a day, rather than one long session: short and often is what builds a habit. Record, then listen back. Your ear is the real judge.
+**Getting ready.** Water nearby, shoulders down, jaw loose. A few minutes, a few times a day beats one heroic hour. Record, listen back; your ear is the judge.
 
-**Be gentle with your voice.** It should never hurt. If your throat feels tight, scratchy or tired, stop and rest; that's not failing, it's looking after the instrument. If speaking hurts, or hoarseness or any other change to your voice lasts more than six weeks, see a GP or a speech and language therapist. Lilt is a practice tool, not a medical one.
+**Be gentle.** It should never hurt. Tight or scratchy? Stop and rest; that's self-care, not a fail. If speaking hurts, or hoarseness or any voice change lasts more than six weeks, see a GP or a speech and language therapist. Lilt is a practice tool, not a doctor.
 
-**Your baseline.** Record the texts below in your everyday voice, not your practice voice. They're your starting point: in a few weeks you'll be glad you can hear where you began.
+**Your baseline.** Record the texts below in your everyday voice. Future you will want the "before" pic.
 
 ## today
 

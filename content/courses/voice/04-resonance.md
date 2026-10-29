@@ -9,13 +9,11 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's resonance and articulation tuning-in activities and "Shaping your voice" (Activity 1, and articulation). The measurement and its limits are in analysis/EVALUATION.md.
 ---
 
-Resonance is how the space above your voice box shapes the sound: your throat, mouth and nose. A smaller, brighter space sounds lighter; a bigger, darker one sounds heavier. It's as important as pitch for how a voice is heard, and it's the part you can change most without any strain at all.
+Resonance is how the space above your voice box shapes the sound. Smaller and brighter sounds lighter; bigger and darker sounds heavier. It matters as much as pitch, and it's the part you can change without any strain. Lowkey the main character of this whole course.
 
-**How it feels.** Hum and touch your chest, then your neck, cheeks and forehead. Where does it buzz most? Bright resonance buzzes forward: your lips, the front of your face, behind your nose. Smiling helps, and so does keeping your tongue forward, its tip resting behind your top teeth. A small, gentle lift in your throat, like the start of a stifled giggle, makes the space smaller and brighter.
+**How it feels.** Hum and touch your chest, neck, cheeks, forehead: where's the buzz? You want it forward, on your lips and the front of your face. Smile, keep your tongue forward, and add the tiny lift of a stifled giggle.
 
-**You're on track when** your hum tingles on your lips, and "ee" sounds clear and bright rather than deep and hollow. On the held vowels below, Lilt measures your resonance (from F2 and F3) and compares each take with your first one. It's a rough guide; your ear decides.
-
-**Keep the rest the same** on the held vowels: the same easy pitch, the same distance from the same mic. Then only the space changes.
+**On track when** your hum tingles on your lips and "ee" sounds bright, not hollow. On the held vowels Lilt compares each take with your first. Same pitch, same mic, same distance, so only the space changes. Rough guide; your ear decides.
 
 ## ee
 
@@ -45,7 +43,7 @@ many · maybe · mellow · morning · lemon
 
 eye · air · ear
 
-> Start each word with a tiny stifled giggle, then say it. Feel the space above your voice box get smaller.
+> Start each word with a tiny stifled giggle, like reading the group chat in a meeting. Feel the space get smaller.
 
 ## ah
 

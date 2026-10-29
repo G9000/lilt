@@ -9,11 +9,9 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-Longer sentences, then short passages. Reading is a great middle step: you don't have to think of what to say, but you do have to keep your voice going for longer, through breaths and full stops.
+Longer sentences, then short passages. You don't have to think of what to say, but you do have to keep the voice going, through breaths and full stops.
 
-**How it feels.** Read at an easy pace and breathe at the commas. Voices tend to drop at the end of a sentence, so notice the last few words and bring them back up gently. If you get tired, stop, sip some water and come back later.
-
-**You're on track when** the end of a passage sounds like the start, and you finish feeling fine. Record the passage below each time you visit and listen to how it changes over the weeks.
+**On track when** the end sounds like the start. Voices love to nosedive at the end of a sentence, so catch the last few words and lift them gently. Tired? Water, break, come back. Record the check-in passage each visit and enjoy the glow-up over the weeks.
 
 ## market
 

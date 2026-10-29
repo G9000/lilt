@@ -10,11 +10,9 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-Now we bring everything together: your comfortable pitch, bright resonance, light weight and a little melody. We start with words you can say without thinking (counting, days, months), so all your attention can go on how your voice sounds and feels.
+Now everything together: comfy pitch, bright resonance, light weight, a bit of melody. On words so automatic your brain can go full autopilot, so all your attention goes on the voice.
 
-**How it feels.** Like the warm-ups, just with words. If one part slips (the resonance drops back, or the pitch climbs), slow down and go back to the hum for a moment, then try again.
-
-**You're on track when** your voice stays the same from the first word to the last, and it feels easy enough that you could keep going. Move on when it feels consistent and comfortable, not before; and step back a chapter whenever you need to. That's how the NHS Fife therapists suggest moving up.
+**On track when** you sound the same from the first word to the last. If something slips, hum for a second and try again. Move on when it feels easy; come back whenever you like. Not a speedrun.
 
 ## week-days
 
@@ -32,7 +30,7 @@ One, two, three, four, five, six, seven, eight, nine, ten.
 
 January, February, March, April, May, June, July, August, September, October, November, December.
 
-> Twelve in a row: notice if the voice drifts by the end.
+> Twelve in a row: notice if your voice drifts by December. Relatable.
 
 ## fifty-to-seventy-five
 

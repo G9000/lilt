@@ -9,13 +9,11 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shaping your voice: pitch and resonance" (Activity 2), and NHS Lothian's "Where to start" (2026).
 ---
 
-Pitch is how high or low your voice sits: how fast your vocal folds vibrate. It's the part most people think of first, and it does matter. But the goal isn't to go as high as you can. A comfortable pitch that you can keep all day, with a bright resonance on top (the next chapter), sounds far more natural than a strained high one. High pitch with a dark, big resonance can sound a bit cartoony, so the two are best grown together.
+Pitch is how high or low your voice sits. It matters, but the goal is not "as high as possible". A comfy pitch with bright resonance on top sounds natural; a strained squeak with dark resonance sounds like a cartoon mouse with a mortgage.
 
-**How it feels.** A comfortable pitch feels easy in your throat, like you could talk for an hour. You shouldn't feel squeezing, tightness or a need to push. Find yours by humming at your usual speaking pitch, sliding smoothly up to a higher note that still feels comfy, and sliding back down. Somewhere a little above where you started is usually a good target.
+**How it feels.** Easy, like you could chat for an hour. Hum at your normal speaking pitch, glide up to a higher note that still feels comfy, glide back. A little above where you started is a good target.
 
-**You're on track when** you can hold your target on a hum and then on counting, and it still feels relaxed by the end. Your pitch line on the recorder will look steady, gently rising and falling, not climbing as you go.
-
-Once you've found a range you like, set it in [Practice settings](#/studio/settings): Lilt shades it behind your pitch line so you can see when you're in it.
+**On track when** you can hold it on a hum, then on counting, and it still feels relaxed. Found your range? Save it in [Practice settings](#/studio/settings) so Lilt shades it behind your line.
 
 ## count-5
 
@@ -33,7 +31,7 @@ mmm
 
 mmm ↗ ↘
 
-> Glide smoothly up to a higher note that still feels comfy, then back down. Never strain to go higher.
+> Glide smoothly up to a higher note that still feels comfy, then back down. We're not trying to summon dogs.
 
 ## hum-target
 

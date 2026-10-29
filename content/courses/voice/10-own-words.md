@@ -9,11 +9,9 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-Now there's no script. Each prompt is a question; answer it in your own words for up to a minute. This is where it gets real: when you're thinking about what to say, your old voice likes to sneak back in. That's completely normal.
+No script now: answer each prompt in your own words, for up to a minute. Thinking about what to say is exactly when the old voice sneaks back in. Totally normal; it's not a fail, it's the boss level.
 
-**How it feels.** Harder than reading, at first. Talk about easy, everyday things so your attention can stay partly on your voice. If it slips, pause, hum for a second, and carry on.
-
-**You're on track when** you can talk for a minute and most of it sounds like your practised voice when you listen back. Don't chase perfect; chase a little more each week.
+**On track when** most of your minute sounds like your practised voice. If it slips, pause, hum, carry on. Chase a little better each week, not perfect.
 
 ## day
 
@@ -25,7 +23,7 @@ Tell me about your day so far.
 
 Describe the room you're in right now.
 
-> No need to be clever: just describe it.
+> Room tour, but make it audio. No need to be clever.
 
 ## q3
 

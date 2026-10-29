@@ -9,11 +9,11 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's vocal-cord tuning-in activity and NHS Lothian's "Where to start" (2026).
 ---
 
-Vocal weight is how heavy or light your voice sounds: how firmly your vocal folds press together. A heavy voice is thick and buzzy, like calling across a field. A light voice is thinner and softer, but still clear. Many voices people hear as feminine sit on the lighter side.
+Vocal weight is how heavy or light your voice sounds. Heavy is thick and buzzy, like calling across a field. Light is thinner and softer, but still clear.
 
-**How it feels.** Feel the two ends once, gently, just to know where they are (they're not for practising). Sigh out a soft, breathy "ah", as if sinking into the sofa. Then a slightly firmer "ah", as if calling to someone in the next room, never pushed. Now find the middle: clear, easy, a little lighter than your usual. Not whispery: a very breathy voice wastes air, dries your throat and gets tiring, so it isn't the goal.
+**How it feels.** Find the two ends once, gently: a soft sofa-sigh "ah", then a slightly firmer "ah" like calling into the next room. Then the middle: clear, easy, a bit lighter than usual. Not whispery: breathy wastes air, dries your throat, and gives haunted Victorian child, which is not the vibe.
 
-**You're on track when** your voice sounds clear and light without any extra air, and you can keep it for a whole sentence without getting tired. Lilt doesn't measure weight yet, so listen back and compare with your earlier takes.
+**On track when** you sound clear and light with no extra air, for a whole sentence. Lilt can't measure weight yet, so listen back and compare.
 
 ## light-hello
 
@@ -31,7 +31,7 @@ aaah · aaah · aaah
 
 Hello, how are you today?
 
-> Say it in your light, clear voice. If it turns breathy, add a little more voice.
+> Light and clear. If it turns breathy, add a little more voice: clear, not ASMR.
 
 ## light-count
 

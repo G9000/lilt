@@ -9,11 +9,11 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lothian's voice and communication therapy guides (2026).
 ---
 
-The places you'll actually use your voice: answering the phone, ordering, asking a stranger, booking an appointment. The phone is often the hardest, because the other person only has your voice to go on, so it's a great one to practise.
+Where it all pays off: the phone, the counter, the stranger, the receptionist. The phone is the final boss, because they only have your voice to go on.
 
-**How it feels.** Rehearse each line here first, then try it for real when you feel ready: a call to a friend who knows, ordering a coffee, a quick question in a shop. Start small and somewhere you feel safe. Afterwards, come back and record the line again while it's fresh.
+**How it goes.** Rehearse a line here, then try it for real when you feel ready, somewhere small and safe: a call to a friend who knows, ordering a coffee. Then come back and record it while it's fresh.
 
-**You're on track when** you can say these without thinking about them, and the first word sounds as practised as the rest. Be proud of every real-life try, however it goes. That's the whole point of all this.
+**On track when** these come out without thinking, and the first word sounds as practised as the rest. Every real-life try counts, however it goes. That's literally the point.
 
 ## answer-phone
 
@@ -43,7 +43,7 @@ Sorry, could you tell me how to get to the station from here?
 
 Hey! I just wanted to hear your voice. Have you got a minute to chat?
 
-> Like calling someone close. Warm and easy.
+> Like calling someone close. Yes, an actual phone call. Millennials, we believe in you.
 
 ## lovely-day
 

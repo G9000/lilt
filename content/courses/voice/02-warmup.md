@@ -10,15 +10,13 @@ source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voic
 written_by: Written for Lilt, from NHS Lothian's "Where to start" (2026) and NHS Fife's tuning-in activities.
 ---
 
-A minute or two of warming up before you practise makes everything else easier, the same way you'd stretch before a run. Your voice is muscles and breath, and they like to be eased in.
+Stretch before the run. Your voice is muscles and breath, and nobody likes being woken up with a foghorn.
 
-**Breath first.** Put one hand on your chest and one on your belly. Breathe in slowly through your nose so the lower hand moves more than the upper one, then let it out through your mouth. Three to five of these is plenty; stop if you feel dizzy. (If you bind, your breath may sit higher; be extra gentle.)
+**Breath.** One hand on your chest, one on your belly; breathe in slowly so the belly hand moves more. Three to five breaths. Dizzy? Stop. Binding? Be extra gentle.
 
-**Let go of tension.** Open your mouth as if you're about to bite a big apple, then let it relax. Breathe out warm, silent air as if misting a mirror. Raise your eyebrows like you're pleasantly surprised. These loosen the space your voice travels through.
+**Release.** Mouth open like you're about to bite a big apple. Silent warm breath, like misting a mirror. Eyebrows up, pleasantly surprised. Then the hums below, easy and clear, not breathy.
 
-**Then hum.** Easy, quiet sounds on one comfortable note, then sliding slowly up and down like a soft siren. Aim for a clear, easy sound rather than a breathy one.
-
-**You're on track when** the sounds feel smooth and effortless and your throat feels open and comfy. If anything strains, make it smaller and quieter.
+**On track when** it all feels smooth and effortless. Anything strains? Smaller and quieter.
 
 ## hum
 
@@ -30,7 +28,7 @@ mmmmmmm
 
 brrrrrrr
 
-> Let your lips flutter loosely, like a horse or a motorboat. Easy breath, no pushing.
+> Let your lips flutter loosely, like a horse or a motorboat. You will look silly. That's the point.
 
 ## ng
 
@@ -48,4 +46,4 @@ zzzzzz · vvvvvv
 
 mmm ↗ ↘
 
-> A soft siren: slide a little up and back down. Never further than feels easy.
+> A soft siren: slide a little up and back down. Ambulance, not air-raid. Never further than feels easy.

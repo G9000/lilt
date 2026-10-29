@@ -29,20 +29,14 @@ and hear the change for yourself instead of guessing.
 
 - **Today** is a handful of cards. Say one, listen back, and tell Lilt how it felt. That decides
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
-- **[Start here](#/studio/start-here)** first: five minutes to set up your mic and record your baseline, so everything after
-  it is clear and comparable.
-- **Chapters** go one skill at a time, then bring them together: warm-ups, pitch, resonance, vocal
-  weight and intonation, then easy automatic words, everyday phrases, reading, your own words, and
-  real life (yes, phone calls). Each one explains what the skill is and how it should feel before it
-  asks anything of you. Stay on a chapter until it feels easy, then move on, and go back whenever you
-  like.
-- **Check-ins**: every chapter has one text marked _Check-in_. Record it each time you visit. Same
-  words every time, so you can hear (and see) your voice change over the weeks.
-- **Free recording**: don't pick anything, just talk. You'll get your pitch line back when you stop.
-- **The recorder** draws your pitch as you speak, with your comfortable range shaded behind it, and
-  after each take shows your pitch and, on the same text, how your resonance has moved. Pitch is only
-  part of the picture, though. Resonance, weight, melody and how it feels in your throat matter just
-  as much.
+- **[Start here](#/studio/start-here)** first: set up your mic and record your "before".
+- **Chapters**: one skill at a time (warm-ups, pitch, resonance, weight, melody), then all of it
+  together, all the way to phone calls. Stay until it feels easy; go back whenever. Not a speedrun.
+- **Check-ins**: one text per chapter, same words every visit, so you can hear the glow-up.
+- **Free recording**: just talk. You'll get your pitch line back.
+- **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your
+  pitch and how your resonance has moved. Pitch is only part of it; resonance, weight and melody
+  matter just as much.
 
 ![Placeholder: another picture of your own](images/placeholder-window.webp)
 

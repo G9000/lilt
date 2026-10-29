@@ -10,11 +10,11 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's intonation tuning-in activity and "Shaping your voice: intonation", and NHS Lothian's "Where to start" (2026).
 ---
 
-Intonation is the melody of your voice: how it rises and falls as you talk. It carries meaning and feeling, and a voice with more movement often sounds warmer and lighter. Monotone speech, even at a higher pitch, can sound flat and forced.
+Intonation is the melody: how your voice rises and falls. More movement often sounds warmer and lighter. Monotone, even at a higher pitch, gives NPC reading the terms and conditions.
 
-**How it feels.** Read the same lines three ways: plainly; as a storyteller reading to children, with big, playful rises and falls; and gently, as if sharing sad news. Notice how much your voice can move. Then try short everyday phrases with the melody a little exaggerated, so it lifts on the words that matter and at the end of questions.
+**How it feels.** Read the same line plainly, then like a storyteller at kids' story time, then gently, like breaking small bad news. Feel how much your voice can move. Lift on the words that matter and at the end of questions.
 
-**You're on track when** your pitch line on the recorder waves rather than lying flat, and the melody sounds friendly and natural when you listen back. Exaggerate while practising; in real life it settles back by itself.
+**On track when** your pitch line waves instead of flatlining. Over-act while practising; real life tones it down for you.
 
 ## melody
 
@@ -26,7 +26,7 @@ It was the first warm morning of spring, and the whole street seemed to wake up 
 
 Once upon a time, a tiny cat found a door that had never been opened before.
 
-> As a storyteller reading to children: big rises and falls, lots of expression.
+> Kids' story-time energy: big rises and falls. Commit to the bit.
 
 ## gentle-news
 

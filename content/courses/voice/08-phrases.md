@@ -10,17 +10,15 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's progression activities and "Shaping your voice: intonation".
 ---
 
-Short phrases you'd actually say in a day: greetings, thanks, ordering, a quick question. They're short enough to keep everything in place, and real enough that the voice starts to feel like yours in the places you'll use it.
+Short things you actually say: greetings, thanks, ordering, a quick question. Short enough to keep it all in place, real enough to feel like you.
 
-**How it feels.** Say each one as if someone's really there. Let the melody follow the meaning, and keep the brightness up front. Say your own name and a short introduction too: those are often the hardest, because they're so automatic.
-
-**You're on track when** the phrases sound friendly and natural when you listen back, not performed. Try changing them to the things you actually say most.
+**On track when** they sound friendly and natural, not like a customer-service bot. Swap in the things you really say, and do your own name too: it's the sneakiest one.
 
 ## coffee
 
 Hi, could I get a coffee, please?
 
-> Your check-in: friendly and unhurried, like at the counter.
+> Your check-in: friendly and unhurried, like at the counter. Not like the barista owes you money.
 
 ## black-coffee
 
