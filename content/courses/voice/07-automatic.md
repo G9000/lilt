@@ -10,40 +10,44 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-Everything together, on words so easy your brain goes full autopilot.
+Easy words free up some attention for the quality you are practising. Pick one cue for this visit; you don't have to manage every part of your voice at once.
 
-**Same voice throughout.** First word to last.
+**Listen first.** Replay a short take you liked from an earlier chapter. Name the one thing you want to bring into counting or days of the week.
 
-**Slipping?** Hum for a second, then go again.
+**Try one thing.** Use that cue on a short sequence. Breathe and pause naturally. Keeping a familiar voice quality does not mean keeping the pitch flat.
 
-**Not a speedrun.** Move on when it's easy; come back whenever.
+**Use it in words.** Finish with "Monday works for me. How about you?" or a sentence you actually say. Practise this little bridge on the same visit, even while longer speech is still new.
+
+**Listen back.** Can you hear the quality you chose near both the start and the end? If it drifts, pause and try a shorter sequence; an easy hum can be a reminder if you find it helpful.
+
+**Ready for more?** A short sequence and your everyday sentence feel comfortable and repeatable. Perfect consistency is not a requirement to explore the next step.
 
 ## week-days
 
 Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.
 
-> Your check-in: every day in your practised voice, the same from Monday to Sunday.
+> Your check-in: use one familiar cue through the week. Allow normal melody and breaths; listen to Monday and Sunday for the quality you chose.
 
 ## one-to-ten
 
 One, two, three, four, five, six, seven, eight, nine, ten.
 
-> An easy pace. Same voice from start to finish.
+> Use an easy pace and one chosen cue. After counting, try it in a real greeting and listen to both.
 
 ## months-of-year
 
 January, February, March, April, May, June, July, August, September, October, November, December.
 
-> Twelve in a row: notice if your voice drifts by December. Relatable.
+> Take natural breaths. Compare the beginning and end for the quality you wanted, allowing normal changes of pitch.
 
 ## fifty-to-seventy-five
 
 Fifty, fifty-one, fifty-two … all the way to seventy-five.
 
-> Longer: take a breath whenever you need one.
+> A longer option: pause and breathe whenever needed. Shorten the sequence if it becomes effortful.
 
 ## alphabet
 
 A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z.
 
-> Light and bright on every letter. The "ee" sounds (B, C, D, E) help keep it forward.
+> Use an easy, clear sound. The letters have different vowels, so they will not all sound or feel identical; focus on one comfortable cue.

@@ -9,46 +9,50 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's progression activities.
 ---
 
-No script. This is where the old voice sneaks back in, and that's normal: it's the boss level.
+Talking asks you to think about the words as well as the voice. Some variation is expected while you get used to doing both.
 
-**Easy topics.** Keep half your attention on your voice.
+**Listen first.** Replay a short spontaneous take you liked, or use an easy phrase as your reference. Choose one quality to return to, not a list of things to monitor.
 
-**Slipping?** Pause, hum, carry on.
+**Try one thing.** Answer an easy prompt for 15–30 seconds to start, or longer if it stays comfortable. Put the message first. If you lose the cue while thinking, pause and begin the next sentence easily.
 
-**Signs it's working.** Most of your minute sounds practised. Better, not perfect.
+**Use it today.** Try the same opening sentence in a voice note to yourself or a short, low-pressure conversation if you want to.
+
+**Listen back.** Pick one moment you liked and describe why. Could you repeat its opening comfortably? A section that sounded different is information for the next try, not a failed minute.
+
+**Ready for more?** You can return to a familiar quality after a pause while still paying attention to what you want to say. Build the duration gradually if it feels useful.
 
 ## day
 
 Tell me about your day so far.
 
-> Your check-in: talk for about a minute, as if to a friend.
+> Your check-in: begin with 15–30 seconds, building towards a minute if comfortable. Listen for one moment you liked and try its opening again.
 
 ## q2
 
 Describe the room you're in right now.
 
-> Room tour, but make it audio. No need to be clever.
+> Describe one or two things in the room. Keep one easy cue available and let the message lead.
 
 ## q3
 
 What's something you're looking forward to this week?
 
-> Let your practised voice come along while you think.
+> Share one thing you are looking forward to. If the cue slips while you think, a comfortable restart is enough.
 
 ## q4
 
 Tell me about a place you love to go.
 
-> Talk for up to a minute.
+> Talk for a short comfortable stretch, up to a minute if you want. Afterwards, name one sound or phrase you liked.
 
 ## q5
 
 What would you cook for a friend tonight, and why?
 
-> Relaxed and conversational.
+> Explain your choice as if talking to a friend. Try one familiar cue without trying to control every word.
 
 ## q6
 
 What's a small thing that made you smile recently?
 
-> Smile while you answer, if it feels natural.
+> Answer naturally. A smile is optional; listen for a quality you enjoy and can repeat comfortably.

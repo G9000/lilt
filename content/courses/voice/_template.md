@@ -12,20 +12,25 @@ written_by: Who wrote the texts, or where they come from.
 What this skill is, in a sentence or two. Say where the exercise comes from (a therapist's guide, a
 coach, your own experience) so people can trust it.
 
-**How it feels.** What to notice in your body while you do it.
+**Listen first.** Link an available demonstration or suggest replaying a personal take. Say what
+single contrast to listen for; do not claim a missing audio example exists.
 
-**You're on track when** something you can hear or feel tells you it's working.
+**Try one thing.** Give one small, comfortable action. Sensations can be optional clues; avoid a
+required throat position or a number the learner must hit.
+
+**Use it in words.** Include one short phrase the learner might actually say on this visit.
+
+**Listen back.** Ask whether the try was comfortable, repeatable and closer to the sound the learner
+wants. Explain what to simplify if the difference is unclear.
 
 ## first-text
 
 The words to read aloud.
 
-> A one-line hint shown under the text.
-
-example: audio/first-text.mp3
+> One cue and one listening question, shown under the text.
 
 ## second-text
 
-More words to read aloud.
+Hello, how are you?
 
-> Another hint. The `example:` line is optional; leave it out if there's no recording.
+> Carry the same small cue into this real phrase. Which of two comfortable takes do you prefer?

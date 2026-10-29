@@ -29,6 +29,24 @@ with its own `course.md`.
   `12-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
   compared with your first take of the same vowel.
 
+## How a lesson teaches
+
+Keep each chapter practical: listen to an example or a preferred personal take, try one small
+cue, use it in a real phrase, then listen back. The checks are comfort, repeatability and the
+learner's preferred sound. Buzzing sensations and acoustic numbers are clues, not pass marks.
+Let natural melody vary; do not turn a voice-quality cue into a requirement to raise every ending.
+
+The early chapters have bridge cards alongside their skill exercises. `warmup/hum-to-hello` comes
+second, so a fresh Today deck can offer a hum and a real greeting on day one. Pitch, resonance and
+intonation have their own short phrase too. All earlier chapter and text IDs and spoken texts are
+preserved for recording comparisons. This is an incremental revision within edition 2, so existing
+personal copies can review the changed pieces through Updates rather than replacing the whole course.
+
+Dedicated A/B recordings are still missing. Use the existing video links and personal takes;
+`audio/README.md` describes the human-recording briefs. Do not add an `example:` line until its real,
+permitted audio file exists. A generated speech voice or synthetic tone is not evidence of vocal
+weight or resonance technique. No clinician has reviewed the content or pacing.
+
 ## A chapter file
 
 ```markdown

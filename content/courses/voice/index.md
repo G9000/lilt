@@ -30,22 +30,56 @@ and hear the change for yourself instead of guessing.
 - **Today** is a handful of cards. Say one, listen back, and tell Lilt how it felt. That decides
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
 - **[Start here](#/studio/start-here)** first: set up your mic and record your "before".
-- **Chapters**: one skill at a time (warm-ups, pitch, resonance, weight, melody), then all of it
-  together, all the way to phone calls. Stay until it feels easy; go back whenever. Not a speedrun.
+- **Chapters**: one skill at a time (warm-ups, pitch, resonance, weight, melody), with a small
+  everyday phrase on the same visit. Later chapters build longer reading and conversation.
+  Stay until it feels useful and comfortable; go back whenever. Not a speedrun.
 - **Check-ins**: one text per chapter, same words every visit, so you can hear the glow-up.
 - **Free recording**: just talk. You'll get your pitch line back.
 - **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your
-  pitch and how your resonance has moved. Pitch is only part of it; resonance, weight and melody
-  matter just as much.
+  pitch and a rough comparison of your vowel resonances. The numbers describe a take; they cannot
+  choose your voice or decide whether a change sounds better. Your comfort and listening lead.
+
+## A small daily practice
+
+You don't need to finish a chapter in a sitting. For an eight-minute visit, try this as a loose
+budget, with room to stop earlier:
+
+- **Settle and listen, about two minutes.** Try an easy warm-up, then hear one example or replay a
+  take you like. Choose one thing to explore, such as a lighter sound or brighter resonance.
+- **Two short tries, about three minutes.** Record a familiar version, then one small change.
+  Listen to the pair. Which do you prefer, and was it comfortable? If you cannot hear a useful
+  difference, revisit the example or make the exercise easier.
+- **Put it in words, about two minutes.** Try the same cue in "Hello, how are you?" or a phrase
+  you actually use. This starts in the warm-up chapter; you don't have to unlock all the later
+  chapters before practising a greeting.
+- **Choose what to keep, about a minute.** Ask: was it comfortable, could I repeat it, and did I
+  prefer the sound? Keep one useful cue for next time. "I'm not sure yet" is an honest answer.
+
+These times are a way to organise a visit, not a required dose. Finish sooner if you want to.
+Today still introduces new cards gradually; the chapters are also there to browse at your pace.
+Let meaning guide your melody: ordinary falls, rises and pauses all belong in speaking.
+
+## Listening examples
+
+The early skill chapters link to demonstrations by voice teachers, and NHS Fife has a
+[warm-up demonstration](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/how-to-take-care-of-your-voice/).
+Listen for one contrast at a time, pause, then try a small comfortable version. The aim is to
+understand the quality being explored, without having to copy the speaker's whole voice.
+
+Dedicated A/B audio clips for these exercises are not available yet. Your own saved takes can
+be personal references: replay a short version you like, then compare the next try with it.
+If you cannot hear what a cue means, it is fine to stay with an easy exercise or ask a voice
+professional for help. Bigger movements and higher numbers are not a substitute for understanding.
 
 ![Placeholder: another picture of your own](images/placeholder-window.webp)
 
 ## Be gentle with your voice
 
-It should never hurt. Keep the effort low, sip water, and take breaks. Some days your voice won't
-cooperate; that's normal, not a step back. If speaking hurts, or you're hoarse for more than a
-couple of days, stop and see a GP or a speech and language therapist. Plenty of them offer
-gender-affirming voice support. Lilt is a practice tool, not a medical one.
+It should never hurt. Stop if speaking hurts, feels strained or becomes hoarse, and rest instead
+of pushing through. If symptoms persist, keep returning, or concern you, contact a GP or speech
+and language therapist. Don't wait for a set number of days or weeks to ask for help. Keep the
+effort low, sip water and take breaks. Some days your voice won't cooperate; that's normal,
+not a step back. Lilt is a practice tool, and no clinician has reviewed this course.
 
 ## Make it better
 
@@ -57,8 +91,11 @@ wrong without writing any code. Contributions are welcome on [GitHub](https://gi
 
 ## Sources
 
-Every exercise is written in Lilt's own words, from ideas in the guides below, so you can read the
-originals. Checked on 29 October 2026.
+The exercise instructions are written in Lilt's own words, from ideas in the guides below, so you
+can read the originals. The listening questions, early greeting cards and suggested daily loop are
+Lilt's teaching choices; they have not been validated as a training programme. The chapter video
+cards link to their named creators' demonstrations; their audio is not copied into Lilt.
+Voice-care and person-centred practice guidance rechecked on 29 October 2026.
 
 - NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
   (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"
@@ -73,6 +110,8 @@ originals. Checked on 29 October 2026.
   and [Where to start](https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf)
   (February 2026): warm-ups, relaxation, voice care and vocal weight.
 - NIDCD, [Taking care of your voice](https://www.nidcd.nih.gov/health/taking-care-your-voice).
+- ASHA, [Gender affirming voice and communication](https://www.asha.org/practice-portal/professional-issues/gender-affirming-voice-and-communication/):
+  self-chosen goals, listening to your own recordings and considering communication in everyday situations.
 - Research behind the "one skill at a time" order: Leung, Oates and Chan (2018), [a review of what
   listeners use to hear a speaker's gender](https://pubmed.ncbi.nlm.nih.gov/29392290/) (pitch,
   resonance, loudness, articulation and intonation all play a part), and Leung, Oates, Chan and Papp
