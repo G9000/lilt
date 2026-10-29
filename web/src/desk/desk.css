@@ -367,3 +367,38 @@
 .sp-chip { min-height: 0; padding: 4px 10px; border-radius: 99px; background: rgba(30, 215, 96, 0.18); color: #9cf0b8; font: 600 12px var(--font); }
 .sp-chip.quiet { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); }
 .sp-pick small { font-size: 11.5px; line-height: 1.4; color: rgba(255, 255, 255, 0.55); }
+/* Signed in to your own Spotify: what's playing, controls, your playlists. */
+.sp-now { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.sp-art { flex: none; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #0d0c12; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06); }
+.sp-art img { width: 100%; height: 100%; object-fit: cover; }
+.sp-art i { font-style: normal; color: rgba(255, 255, 255, 0.5); }
+.sp-art.spin { animation: ds-spin 8s linear infinite; }
+@keyframes ds-spin { to { transform: rotate(360deg); } }
+.sp-what { display: grid; min-width: 0; }
+.sp-what small { font-size: 11.5px; color: rgba(255, 255, 255, 0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-what b { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-ctl { display: flex; align-items: center; gap: 6px; }
+.sp-ctl .ds-r-play { width: 32px; height: 32px; min-height: 32px; }
+.sp-ctl .ds-r-skip { width: 26px; height: 26px; min-height: 26px; }
+.sp-ctl .sp-chip { margin-left: auto; }
+.sp-lists { list-style: none; margin: 0; padding: 4px; max-height: 220px; overflow: auto; border-radius: 12px; background: rgba(255, 255, 255, 0.05); scrollbar-width: thin; }
+.sp-lists button { width: 100%; min-height: 0; display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 8px; background: none; color: #fff; text-align: left; }
+.sp-lists button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); }
+.sp-lists img, .sp-lists i { flex: none; width: 36px; height: 36px; border-radius: 6px; object-fit: cover; display: grid; place-items: center; font-style: normal; background: rgba(255, 255, 255, 0.08); }
+.sp-lists span { display: grid; min-width: 0; }
+.sp-lists b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-lists small, .sp-empty { font-size: 11.5px; color: rgba(255, 255, 255, 0.55); }
+.sp-empty { padding: 8px; }
+.sp-err { margin: 0; font-size: 12px; line-height: 1.4; color: #ffb3a7; }
+/* Setting it up */
+.sp-h { font-size: 14px; }
+.sp-setup small { font-size: 11.5px; line-height: 1.45; color: rgba(255, 255, 255, 0.6); }
+.sp-setup a { color: #9cf0b8; }
+.sp-steps { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 12px; line-height: 1.45; color: rgba(255, 255, 255, 0.8); }
+.sp-copy { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; min-height: 0; margin-top: 4px; padding: 5px 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.08); color: #fff; font: 11.5px var(--mono, monospace); text-align: left; word-break: break-all; }
+.sp-copy span { flex: none; font: 600 11px var(--font); color: #9cf0b8; }
+.sp-setup input { width: 100%; height: 34px; padding: 0 10px; border-radius: 10px; border: 0; background: rgba(255, 255, 255, 0.1); color: #fff; font: 13px var(--mono, monospace); }
+.sp-signin { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; border-radius: 99px; background: #1ed760; color: #000; font: 700 14px var(--font); }
+.sp-signin svg { width: 20px; height: 20px; }
+.sp-signin:hover { background: #3be477; }
+.sp-chip:disabled { opacity: 0.4; }
