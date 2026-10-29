@@ -663,14 +663,24 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 .ve .ve-dock .ve-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
 .ve .ve-dock .ve-stat b { font-size: 17px; }
 .ve .ve-dock .ve-now-read b { font-size: 34px; }
-.ve .ve-dock .ve-state { display: inline-flex; }
+.ve .ve-dock .ve-state { display: none; }
+.ve .ve-dock .ve-rec kbd { display: none; }
+.ve .ve-dock .ve-rec { height: 44px; padding: 0 18px 0 16px; }
 .ve .ve-dock .ve-dock-sub { justify-content: space-between; min-height: 0; }
-/* idle: just the pill */
-.ve .ve-dock.idle { width: auto; padding: 6px; border-radius: 99px; grid-template-columns: auto auto; grid-template-areas: "rec sub"; row-gap: 0; column-gap: 4px; align-items: center; animation: none; }
-.ve .ve-dock.idle .ve-now, .ve .ve-dock.idle .ve-scope, .ve .ve-dock.idle .ve-stats, .ve .ve-dock.idle .ve-dock-msg { display: none; }
-.ve .ve-dock.idle .ve-rec { height: 44px; padding: 0 16px 0 14px; }
-.ve .ve-dock.idle .ve-dock-sub { gap: 2px; padding-right: 6px; flex-wrap: nowrap; }
-.ve .ve-dock.idle .ve-ghost, .ve .ve-dock.idle .ve-link { white-space: nowrap; font-size: 13px; }
+/* idle: one capsule. A red Record button, then round icon buttons (next text, live pitch). */
+.ve .ve-dock.idle { width: auto; padding: 5px; border-radius: 99px; grid-template-columns: auto auto; grid-template-areas: "rec sub"; row-gap: 0; column-gap: 4px; align-items: center; animation: none; }
+.ve .ve-dock.idle .ve-now, .ve .ve-dock.idle .ve-scope, .ve .ve-dock.idle .ve-stats, .ve .ve-dock.idle .ve-dock-msg, .ve .ve-dock.idle .ve-sp { display: none; }
+.ve .ve-dock.idle .ve-rec { height: 44px; padding: 0 20px 0 16px; gap: 9px; background: var(--rec); color: #fff; font-weight: 600; box-shadow: 0 6px 18px -8px rgba(255, 66, 85, 0.8); }
+.ve .ve-dock.idle .ve-rec i { width: 10px; height: 10px; background: #fff; box-shadow: none; }
+.ve .ve-dock.idle .ve-rec kbd { display: none; }
+.ve .ve-dock.idle .ve-rec:hover:not(:disabled) { background: color-mix(in srgb, var(--rec) 88%, #000); }
+.ve .ve-dock.idle .ve-rec:disabled { background: var(--fill-2); color: var(--ink-3); box-shadow: none; }
+.ve .ve-dock.idle .ve-rec:disabled i { background: var(--ink-3); }
+.ve .ve-dock.idle .ve-dock-sub { gap: 2px; padding: 0; flex-wrap: nowrap; }
+.ve .ve-icon { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); background: none; transition: background-color 0.15s ease, color 0.15s ease; }
+.ve .ve-icon:hover:not(:disabled) { background: var(--fill-2); color: var(--ink); }
+.ve .ve-icon:disabled { opacity: 0.35; }
+.ve .ve-icon svg { width: 17px; height: 17px; }
 .ve .ve-dock.idle.quiet { display: none; }
 @media (max-width: 860px) {
   .ve .ve-dock { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); width: auto; max-width: none; transform-origin: bottom center; }

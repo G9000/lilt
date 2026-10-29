@@ -789,7 +789,9 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
         <span className="ve-sp" />
         {!recording && !quiet && (listening
           ? <button className="ve-ghost" aria-pressed="true" onClick={() => setListening(false)}>Stop listening</button>
-          : <button className="ve-ghost" onClick={() => void startListening()} disabled={state === "saving"}>Show my pitch live</button>)}
+          : <button className="ve-icon" onClick={() => void startListening()} disabled={state === "saving"} aria-label="Show my pitch live" title="Show my pitch live, without recording">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 9c1.4-3.2 2.6-3.2 3.6 0s2.4 3.2 3.4 0 2.4-3.2 3.5 0 1.9 1.6 2.5 0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>)}
       </div>
       {mic.error ? <MicHelp error={mic.error} onRetry={() => void mic.request()} /> : err && <p className="ve-err" role="alert">{err}</p>}
       {state === "error" && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
@@ -1172,7 +1174,9 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
       <Dock key={promptId} meta={sessionId ? { session_id: sessionId, ...FREE, ...(item && { prompt_id: promptId, prompt_text: item.text }) } : null}
         band={band} allowRetake onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
         idleHint={item ? "Press record and read the highlighted text" : FREE_HINT}>
-        <button className="ve-link" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1}>{item ? "Next text" : "Start with text 1"} <kbd>↓</kbd></button>
+        <button className="ve-icon" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1} aria-label={item ? "Next text" : "Start with text 1"} title={`${item ? "Next text" : "Start with text 1"} (↓)`}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
       </Dock>
       <Toast text={toast} />
     </>
