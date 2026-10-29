@@ -6,6 +6,7 @@ kind: hum
 area: pitch
 check_in: count-5
 video: https://www.youtube.com/watch?v=5OyfNLWf3UM
+video_image: images/video-5OyfNLWf3UM.jpg
 video_title: Low-Pitched Feminine Voice: Guided Practice
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/

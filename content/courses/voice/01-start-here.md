@@ -7,6 +7,7 @@ area: recording
 check_in: today
 today: false
 video: https://www.youtube.com/watch?v=BfCS01MkbIY
+video_image: images/video-BfCS01MkbIY.jpg
 video_title: Voice Feminization for Absolute Beginners: How to Get Started Now
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/

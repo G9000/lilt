@@ -7,6 +7,7 @@ area: resonance
 check_in: hum
 exercises: nhsfife.forward-hum
 video: https://www.youtube.com/watch?v=1f9TBpHm2a0
+video_image: images/video-1f9TBpHm2a0.jpg
 video_title: Trans Voice Vocal Warm-up: Do This Every Day
 video_by: Nicole Gress, speech-language pathologist
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf

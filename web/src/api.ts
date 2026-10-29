@@ -230,7 +230,7 @@ export interface TextLevel {
   /** false: the chapter's texts aren't Today cards (Start here). */
   today?: boolean;
   /** A YouTube video for the chapter; nothing loads from YouTube until it's played. */
-  video?: { id: string; title: string; by: string } | null;
+  video?: { id: string; title: string; by: string; image?: string | null } | null;
 }
 /** `home` is the Practice home page as Markdown (content/courses/voice/index.md); `home_cover` its banner. */
 export interface Texts { note: string; levels: TextLevel[]; home?: string; home_cover?: string; pitch_reference?: PitchReference; edition?: Edition }

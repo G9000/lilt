@@ -6,6 +6,7 @@ kind: hum
 area: resonance
 check_in: ee
 video: https://www.youtube.com/watch?v=BW8X2nXexQs
+video_image: images/video-BW8X2nXexQs.jpg
 video_title: The Most Powerful Element of Voice Feminization: Resonance
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/

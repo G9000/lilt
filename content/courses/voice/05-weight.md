@@ -6,6 +6,7 @@ kind: phrases
 area: lightness
 check_in: light-hello
 video: https://www.youtube.com/watch?v=a0PpzrWsTUE
+video_image: images/video-a0PpzrWsTUE.jpg
 video_title: Voice Essentials: Vocal Weight for Beginners
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/

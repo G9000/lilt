@@ -258,11 +258,17 @@ function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
       <p className="ci-vmeta">{video.by && <>{video.by} · </>}<a href={watch} target="_blank" rel="noreferrer">Open on YouTube</a></p>
     </div>
   );
+  // The thumbnail is a copy saved with the course, so showing it asks nothing of YouTube.
+  const poster = video.image ? picture(video.image) : undefined;
   return (
-    <button type="button" className="ci-vcard" onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
-      <span className="ci-play" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5.5 3.5l7 4.5-7 4.5z" fill="currentColor" /></svg></span>
-      <span className="ci-vtext"><b>{video.title || "Watch a video"}</b><small>{video.by ? `${video.by} · ` : ""}plays from YouTube</small></span>
-    </button>
+    <div className="ci-video">
+      <button type="button" className={`ci-poster${poster ? "" : " plain"}`} onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
+        {poster && <img src={poster} alt="" loading="lazy" />}
+        <span className="ci-play" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5.5 3.5l7 4.5-7 4.5z" fill="currentColor" /></svg></span>
+        <span className="ci-vtext"><b>{video.title || "Watch a video"}</b>{video.by && <small>{video.by}</small>}</span>
+      </button>
+      <p className="ci-vmeta">Plays from YouTube when you press it · <a href={watch} target="_blank" rel="noreferrer">Open on YouTube</a></p>
+    </div>
   );
 }
 

@@ -117,7 +117,13 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
         if id.len() != 11 || !id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
             bail!("video `{v}` isn't a YouTube link (like https://www.youtube.com/watch?v=xxxxxxxxxxx)");
         }
-        video = Some(json!({ "id": id, "title": text("video_title").unwrap_or_default(), "by": text("video_by").unwrap_or_default() }));
+        let image = text("video_image");
+        if let Some(i) = &image {
+            if !i.starts_with("images/") || i.contains("..") {
+                bail!("video_image must be a file in images/, like `video_image: images/video-{id}.jpg`");
+            }
+        }
+        video = Some(json!({ "id": id, "title": text("video_title").unwrap_or_default(), "by": text("video_by").unwrap_or_default(), "image": image }));
     }
     let today = text("today").as_deref() != Some("false");
     // Present but empty means none; absent means the built-in table applies (older copies).
@@ -229,9 +235,10 @@ mod tests {
         assert!(chapter(&src.replace("area: pitch", "area: singing"), 1).unwrap_err().to_string().contains("area"));
         assert_eq!(chapter(&src.replace("exercises: a.one, b.two", "exercises:"), 1).unwrap()["exercises"], json!([]), "empty means none");
         let with_video = src.replace("today: false", "video: https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10\nvideo_title: A video\nvideo_by: A channel");
-        assert_eq!(chapter(&with_video, 1).unwrap()["video"], json!({ "id": "dQw4w9WgXcQ", "title": "A video", "by": "A channel" }));
+        assert_eq!(chapter(&with_video, 1).unwrap()["video"], json!({ "id": "dQw4w9WgXcQ", "title": "A video", "by": "A channel", "image": null }));
         assert_eq!(chapter(&src.replace("today: false", "video: https://youtu.be/dQw4w9WgXcQ"), 1).unwrap()["video"]["id"], "dQw4w9WgXcQ");
         assert!(chapter(&src.replace("today: false", "video: https://evil.example/x"), 1).is_err());
+        assert!(chapter(&src.replace("today: false", "video: https://youtu.be/dQw4w9WgXcQ\nvideo_image: ../secret.jpg"), 1).is_err());
     }
 
     #[test]
