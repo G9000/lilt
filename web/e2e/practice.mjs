@@ -77,7 +77,7 @@ async function main() {
   await record(page);
   await page.locator(".ve-free .prc-insight").waitFor({ timeout: 60000 });
   check("a free take's summary shows in the page", true);
-  check("the recorder floats as a small pill once idle", (await page.locator(".ve-dock.idle").boundingBox()).width < 520);
+  check("the recorder sits in the page, not floating over it", await page.locator(".ve-dock").evaluate((e) => getComputedStyle(e).position !== "absolute"));
   await shot(page, "2-free");
 
   // A competing tab must show a retryable recording warning, without an empty save attempt.

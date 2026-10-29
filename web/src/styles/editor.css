@@ -646,51 +646,40 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 /* the live chart is the shared pitch chart, drawn straight on the recorder */
 .ve-scope .pianoroll { background: transparent; border-radius: 0; }
 
-/* The recorder floats: idle, a small pill at the bottom right (Record, and live pitch); while you
-   record or listen it grows into a card with the readout, the live line and the numbers, then
-   shrinks back. Results show under the text you said, never in a separate pane. */
+/* The recorder sits under the text it records: idle, a red Record button with a quiet next-text arrow;
+   while you record, your pitch now and the live line open right there. (Studio centres one.) */
 .ve-doc { position: relative; grid-template-rows: auto minmax(0, 1fr); }
 .ve-resize.split { display: none !important; }
-.ve-col { padding-bottom: 140px; }
-.ve .ve-dock { position: absolute; right: 24px; bottom: 24px; z-index: 30; width: 400px; max-width: calc(100% - 32px); border: 0; border-radius: 22px;
-  padding: 16px 16px 12px; background: var(--ve-glass-hi, var(--ve-glass)); backdrop-filter: var(--ve-blur, blur(24px)); -webkit-backdrop-filter: var(--ve-blur, blur(24px));
-  box-shadow: 0 0 0 1px var(--hair), 0 24px 60px -20px rgba(0, 0, 0, 0.45);
-  grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "now rec" "scope scope" "stats stats" "sub sub"; column-gap: 12px; row-gap: 12px;
-  transform-origin: bottom right; animation: ve-grow 0.28s var(--ease) both; }
-@keyframes ve-grow { from { opacity: 0; transform: scale(0.92) translateY(6px); } }
-.ve .ve-dock .ve-art, .ve .ve-dock .ve-cat, .ve .ve-dock .ve-result-pane { display: none; }
-.ve .ve-dock .ve-scope { height: 110px; }
-.ve .ve-dock .ve-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
-.ve .ve-dock .ve-stat b { font-size: 17px; }
-.ve .ve-dock .ve-now-read b { font-size: 34px; }
-.ve .ve-dock .ve-state { display: none; }
+.ve .ve-dock { position: relative; margin: 18px 0 2px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "rec now" "scope scope" "sub sub"; column-gap: 14px; row-gap: 12px; align-items: center; }
+.ve .ve-dock .ve-art, .ve .ve-dock .ve-cat, .ve .ve-dock .ve-result-pane, .ve .ve-dock .ve-stats, .ve .ve-dock .ve-state, .ve .ve-dock .ve-sp { display: none; }
+.ve .ve-dock .ve-rec { height: 44px; padding: 0 20px 0 16px; gap: 9px; justify-self: start; background: var(--rec); color: #fff; font-weight: 600; box-shadow: 0 6px 18px -8px rgba(255, 66, 85, 0.8); }
+.ve .ve-dock .ve-rec i { width: 10px; height: 10px; background: #fff; box-shadow: none; }
 .ve .ve-dock .ve-rec kbd { display: none; }
-.ve .ve-dock .ve-rec { height: 44px; padding: 0 18px 0 16px; }
-.ve .ve-dock .ve-dock-sub { justify-content: space-between; min-height: 0; }
-/* idle: one capsule. A red Record button, then round icon buttons (next text, live pitch). */
-.ve .ve-dock.idle { width: auto; padding: 5px; border-radius: 99px; grid-template-columns: auto auto; grid-template-areas: "rec sub"; row-gap: 0; column-gap: 4px; align-items: center; animation: none; }
-.ve .ve-dock.idle .ve-now, .ve .ve-dock.idle .ve-scope, .ve .ve-dock.idle .ve-stats, .ve .ve-dock.idle .ve-dock-msg, .ve .ve-dock.idle .ve-sp { display: none; }
-.ve .ve-dock.idle .ve-rec { height: 44px; padding: 0 20px 0 16px; gap: 9px; background: var(--rec); color: #fff; font-weight: 600; box-shadow: 0 6px 18px -8px rgba(255, 66, 85, 0.8); }
-.ve .ve-dock.idle .ve-rec i { width: 10px; height: 10px; background: #fff; box-shadow: none; }
-.ve .ve-dock.idle .ve-rec kbd { display: none; }
-.ve .ve-dock.idle .ve-rec:hover:not(:disabled) { background: color-mix(in srgb, var(--rec) 88%, #000); }
-.ve .ve-dock.idle .ve-rec:disabled { background: var(--fill-2); color: var(--ink-3); box-shadow: none; }
-.ve .ve-dock.idle .ve-rec:disabled i { background: var(--ink-3); }
-.ve .ve-dock.idle .ve-dock-sub { gap: 2px; padding: 0; flex-wrap: nowrap; }
+.ve .ve-dock .ve-rec:hover:not(:disabled) { background: color-mix(in srgb, var(--rec) 88%, #000); }
+.ve .ve-dock .ve-rec:disabled { background: var(--fill-2); color: var(--ink-3); box-shadow: none; }
+.ve .ve-dock .ve-rec:disabled i { background: var(--ink-3); }
+.ve .ve-dock .ve-now { justify-content: flex-start; min-width: 0; }
+.ve .ve-dock .ve-now-read b { font-size: 26px; }
+.ve .ve-dock .ve-now-read > span { margin-top: 3px; }
+.ve .ve-dock .ve-scope { height: 96px; animation: ve-rise 0.25s var(--ease) both; }
+.ve .ve-dock .ve-dock-sub { min-height: 0; gap: 4px 12px; justify-content: flex-start; }
+.ve .ve-dock .ve-dock-sub > * { margin-left: 0; }
+.ve .ve-dock.idle { grid-template-areas: "rec sub"; row-gap: 0; }
+.ve .ve-dock.idle .ve-now, .ve .ve-dock.idle .ve-scope, .ve .ve-dock.idle .ve-dock-msg { display: none; }
+.ve .ve-dock.idle .ve-dock-sub { flex-wrap: nowrap; }
+.ve .ve-dock.idle.quiet { display: none; }
 .ve .ve-icon { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--ink-2); background: none; transition: background-color 0.15s ease, color 0.15s ease; }
 .ve .ve-icon:hover:not(:disabled) { background: var(--fill-2); color: var(--ink); }
 .ve .ve-icon:disabled { opacity: 0.35; }
 .ve .ve-icon svg { width: 17px; height: 17px; }
-.ve .ve-dock.idle.quiet { display: none; }
-@media (max-width: 860px) {
-  .ve .ve-dock { left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); width: auto; max-width: none; transform-origin: bottom center; }
-  .ve .ve-dock.idle { left: auto; right: 12px; }
-  .ve .ve-dock { row-gap: 8px; padding: 12px 12px 10px; }
-  .ve .ve-dock .ve-scope { height: 64px; }
-  .ve .ve-dock .ve-stats { display: none; }
-  .ve .ve-dock .ve-now-read b { font-size: 28px; }
-}
-@media (prefers-reduced-motion: reduce) { .ve .ve-dock { animation: none; } }
+/* Studio: one bigger recorder, centred, nothing else around it */
+.ve-studio-rec { margin: 8px 0 32px; }
+.ve-studio-rec .ve-dock { margin: 0; }
+.ve-studio-rec .ve-dock.idle { justify-content: start; }
+.ve-studio-rec .ve-dock .ve-rec { height: 52px; padding: 0 24px 0 20px; font-size: 16px; }
+.ve-studio-rec .ve-dock .ve-scope { height: 160px; }
+.ve-studio-rec .ve-dock .ve-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-area: auto; grid-column: 1 / -1; }
 
 /* Studio (free talk): a plain opening line, like a chapter's. */
 .ci-lede-plain { margin: 0 0 32px; max-width: 34em; font-size: 18px; line-height: 1.5; color: var(--ink-2); }

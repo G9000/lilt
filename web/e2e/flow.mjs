@@ -228,6 +228,8 @@ async function main() {
   await page.getByRole("button", { name: /Practise “Black coffee/ }).click();
   await page.locator('.readtext[aria-label="Black coffee, please."]').waitFor();
   check("Practise opens the chosen text at the reading desk", true);
+  // Watching your pitch without recording lives in Studio.
+  await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
   // The readout correctly shows "–" during pauses, so watch for a note over a few seconds.
   let note = "–";
@@ -238,7 +240,9 @@ async function main() {
   check("Live pitch readout shows a note while listening", /^[A-G]♯?\d$/.test(note.trim()), note);
   await snap("13-studio-live");
   await page.getByRole("button", { name: "Stop listening" }).click();
-  // Read-along: the highlighter should move while reading.
+  // Back to the text. Read-along: the highlighter should move while reading.
+  await page.goto(`${BASE}/#/studio/phrases/black-coffee`);
+  await page.locator('.readtext[aria-label="Black coffee, please."]').waitFor();
   await page.getByRole("button", { name: "Start recording" }).click();
   let moved = false;
   for (let i = 0; i < 20 && !moved; i++) {
@@ -265,10 +269,10 @@ async function main() {
   // The open chapter folder in the tree (the second list; the first holds Today).
   check("The chapter counts the practised text", /^1\/\d+$/.test(await page.locator(".ve-tree").nth(1).locator(".ve-folder.open .ve-open .c").first().textContent()));
   await snap("14-studio-result");
-  await page.goto(`${BASE}/#/studio/warmup`);
+  await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
   await page.waitForTimeout(2500);
-  check("Warm-up shows a steadiness meter", await page.getByText("Steadiness").count() > 0);
+  check("Studio shows a steadiness meter", await page.getByText("Steadiness").count() > 0);
   check("Live readout shows the comfortable range state", await page.getByText(/your range/i).count() > 0);
   await page.getByRole("button", { name: "Stop listening" }).click();
   // Theme toggle
