@@ -69,8 +69,11 @@ async function main() {
   await page.locator(".ve-practice").waitFor({ timeout: 10000 });
   check("home shows your practice", /1 day of practice this month/.test(await page.locator(".ve-days").innerText()));
   check("start card is gone once a range is set", (await page.locator(".ve-start-card").count()) === 0);
+  check("Home has no recorder: free talk lives in Studio", (await page.locator(".ve-dock").count()) === 0);
 
-  // Free recording on Home: the result shows in the page, under "Your take"; the recorder stays a small floating pill.
+  // Free recording in Studio: the result shows in the page, under "Your take"; the recorder stays a small floating pill.
+  await page.goto(`${BASE}/#/studio/free`);
+  await page.getByRole("heading", { name: "Studio" }).waitFor();
   await record(page);
   await page.locator(".ve-free .prc-insight").waitFor({ timeout: 60000 });
   check("a free take's summary shows in the page", true);
@@ -80,7 +83,7 @@ async function main() {
   // A competing tab must show a retryable recording warning, without an empty save attempt.
   const peer = await ctx.newPage();
   peer.on("pageerror", (e) => errors.push(e.message));
-  await peer.goto(`${BASE}/#/studio`);
+  await peer.goto(`${BASE}/#/studio/free`);
   await peer.getByRole("button", { name: "Start recording" }).waitFor();
   await page.getByRole("button", { name: "Start recording" }).click();
   await page.getByRole("button", { name: "Stop recording" }).waitFor();
@@ -102,10 +105,10 @@ async function main() {
   check("leaving a recorder finishes its take and releases the lock", true);
   await peer.close();
 
-  // A chapter: nothing picked, then pick text 1 from the tree and record it.
+  // A chapter: its first text is up straight away (Record always records a text); pick text 1 from the tree and record it.
   await page.goto(`${BASE}/#/studio/warmup`);
   await page.locator(".ve-item").first().waitFor();
-  check("a chapter opens with nothing picked", (await page.locator(".ve-item.on").count()) === 0);
+  check("a chapter opens with its first text up", (await page.locator(".ve-item.on").count()) === 1);
   await page.locator(".ve-file").filter({ hasText: "mmmmmmm" }).first().click();
   await page.locator(".ve-item.on").waitFor();
   check("the tree opens a text and the address follows", page.url().endsWith("/#/studio/warmup/hum"));
@@ -114,10 +117,10 @@ async function main() {
   check("a chapter take shows under its text with a note", true);
   await shot(page, "3-chapter");
 
-  // Today: pick the first card, record, rate.
+  // Today: the first card is up straight away; record, rate.
   await page.goto(`${BASE}/#/deck`);
   await page.locator(".ve-item").first().waitFor();
-  check("today opens with no card picked", (await page.locator(".ve-item.on").count()) === 0);
+  check("today opens with its first card up", (await page.locator(".ve-item.on").count()) === 1);
   await page.locator(".ve-item:not(.done)").first().click();
   await page.locator(".ve-item.on").waitFor();
   await record(page);

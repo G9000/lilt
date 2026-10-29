@@ -60,12 +60,11 @@ async function main() {
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);
   const listed = await page.locator(".ve-item").count();
   const chapters = await page.locator(".ve-folder").count() - 1; // the tree's folders: Today, then the chapters
-  const nothingPicked = await page.locator(".ve-item.on").count() === 0;
-  // Opened from the computer, nothing is picked yet (the recorder takes free recordings); pick the first card.
-  await page.locator(".ve-item").first().click();
+  // Opened from the computer, the first card is up straight away: Record always records a card.
+  const firstUp = await page.locator(".ve-item").first().evaluate((e) => e.classList.contains("on"));
   await page.locator(".ve-item.on .readtext").waitFor();
-  check("The computer opens Practice full screen with nothing picked, today's cards (reference first) and the chapters",
-    nothingPicked && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item.on .readtext").innerText()), `${listed} cards, ${chapters} chapters`);
+  check("The computer opens Practice full screen with the first card up, today's cards (reference first) and the chapters",
+    firstUp && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item.on .readtext").innerText()), `${listed} cards, ${chapters} chapters`);
   await snap("00-deck");
   const ratings = ["good", "again", "good", "good", "good", "good"];
   let rated = 0;

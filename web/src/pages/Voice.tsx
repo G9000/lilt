@@ -111,7 +111,7 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "recordings" | "progress"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -185,6 +185,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
         {texts && (
           <nav className="ve-chips" aria-label="Chapters" ref={chips}>
             <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
+            <button aria-current={doc === "free" ? "page" : undefined} onClick={() => go("/studio/free")} disabled={recording}>Studio</button>
             <button aria-current={doc === "recordings" ? "page" : undefined} onClick={() => go("/history")} disabled={recording}>Recordings</button>
             <button aria-current={doc === "mixtape" ? "page" : undefined} onClick={() => go("/studio/mixtape")} disabled={recording}>Mixtape</button>
             <button aria-current={doc === "today" ? "page" : undefined} onClick={() => go("/deck")} disabled={recording}>Today</button>
@@ -200,8 +201,10 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
           ? <div className="ve-page"><div className="ve-col ve-embed"><PracticeSettings /></div></div>
           : doc === "mixtape"
           ? <div className="ve-page"><div className="ve-col ve-embed"><MixtapeDoc onTexts={setTexts} /></div></div>
+          : doc === "free"
+          ? profile && <StudioDoc band={profile.comfort_range_hz ?? null} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "home"
-          ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} />
           : doc === "start"
           ? profile && <StartDoc profile={profile} onProfile={setProfile} onRecording={setRecording} onTake={(t) => { setPractised((s) => new Set([...s, t.prompt_id])); setHistory((h) => [...h, t]); }} />
           : doc === "today"
@@ -344,6 +347,7 @@ function Folder({ id, label, extra, current, open, onToggle, onOpen, locked, chi
 /** The places above the tree: Home, your recordings and your progress. */
 const PLACES = [
   { id: "home", label: "Home", to: "/studio", icon: "M2.8 7.2L8 2.8l5.2 4.4V13a.8.8 0 01-.8.8H9.6V10H6.4v3.8H3.6a.8.8 0 01-.8-.8z" },
+  { id: "free", label: "Studio", to: "/studio/free", icon: "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2" },
   { id: "recordings", label: "Recordings", to: "/history", icon: "M3 6.5v3M5.5 4v8M8 2.5v11M10.5 5v6M13 7v2" },
   { id: "mixtape", label: "Mixtape", to: "/studio/mixtape", icon: "M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8M5 12l1-2h4l1 2" },
   { id: "progress", label: "Progress", to: "/progress", icon: "M2.5 13.5h11M4 11V8.5M7 11V5.5M10 11V7M13 11V3.5", soon: true },
@@ -834,17 +838,12 @@ function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, num
  * content/courses/voice/index.md, then the chapters with your progress (generated, so it never goes stale).
  * Nothing is picked, so the recorder takes free recordings.
  */
-function HomeDoc({ texts, deck, practised, history, profile, onRecording, onTake }: {
-  texts: Texts; deck: Deck | null; practised: Set<string>; history: Take[]; profile: Profile; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
+function HomeDoc({ texts, deck, practised, history, profile }: {
+  texts: Texts; deck: Deck | null; practised: Set<string>; history: Take[]; profile: Profile;
 }) {
   const band = profile.comfort_range_hz ?? null;
   const cut = texts.home ? texts.home.indexOf("\n## ") : -1;
   const intro = texts.home && cut >= 0 ? texts.home.slice(0, cut) : texts.home ?? "", rest = cut >= 0 ? texts.home!.slice(cut + 1) : "";
-  const split = useSplit();
-  const [studio, setStudio] = useState<string | null>(null);
-  const [freeTake, setFreeTake] = useState<Take | null>(null);
-  useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
-  const freeView = freeTake && <FreeResult take={freeTake} band={band} />;
   const cover = texts.home_cover && picture(texts.home_cover);
   return (
     <>
@@ -878,11 +877,31 @@ function HomeDoc({ texts, deck, practised, history, profile, onRecording, onTake
               </p>
             )}
           </section>
-          {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
+        </article>
+      </div>
+    </>
+  );
+}
+
+/**
+ * Studio: free talk, outside the course. Play with your voice, watch your pitch live, record whatever
+ * you like; takes land in Recordings and count toward nothing.
+ */
+function StudioDoc({ band, onRecording, onTake }: { band: [number, number] | null; onRecording: (on: boolean) => void; onTake: (t: Take) => void }) {
+  const [studio, setStudio] = useState<string | null>(null);
+  const [freeTake, setFreeTake] = useState<Take | null>(null);
+  useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
+  return (
+    <>
+      <div className="ve-page">
+        <article className="ve-col">
+          <header className="ve-head"><h1>Studio</h1><p className="ve-subtitle">Free talk. No script, nothing to finish.</p></header>
+          <p className="ci-lede-plain">Talk, hum, sing, try things. Press record for a take you can play back, or the wave button to just watch your pitch. Takes here don't count toward the course; they're kept in <a href="#/history">Recordings</a>.</p>
+          {freeTake && <section className="ve-free" aria-label="Your take"><h2>Your take</h2><FreeResult take={freeTake} band={band} /></section>}
         </article>
       </div>
       <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake
-        onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} result={split ? freeView : null} />
+        onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} />
     </>
   );
 }
@@ -1037,8 +1056,8 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
 }) {
   const mic = useMic();
   const [sessionId, setSessionId] = useState<string | null>(null);
-  // -1 until a text is picked; the recorder takes free recordings meanwhile.
-  const [sel, setSel] = useState(() => (itemId ? Math.max(0, level.items.findIndex((i) => i.id === itemId)) : -1));
+  // Record always records a text: the one in the address, or the first. (Free talk lives in Studio.)
+  const [sel, setSel] = useState(() => (itemId ? Math.max(0, level.items.findIndex((i) => i.id === itemId)) : 0));
   // After a remix, the texts that changed (or arrived) glow for a moment.
   const seen = useRef(new Map(level.items.map((it) => [it.id, `${it.text}|${it.hint}`])));
   const [remixed, setRemixed] = useState<Set<string>>(new Set());
@@ -1252,8 +1271,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const curRef = useRef<HTMLLIElement>(null);
   const split = useSplit();
-  // Opened from the computer, no card is chosen yet: the recorder takes free recordings meanwhile.
-  const [chosen, setChosen] = useState(!!first);
+  // The first card is up straight away: Record always records a card. (Free talk lives in Studio.)
+  const [chosen, setChosen] = useState(true);
   const [studio, setStudio] = useState<string | null>(null);
   const [freeTake, setFreeTake] = useState<Take | null>(null);
   useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
@@ -1336,7 +1355,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   } : null;
   const date = new Date(`${deck.local_date}T12:00:00`).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
   // Listen back, the measured pitch and the rating: under the card, or in the right half when split.
-  const free = (!chosen && phase.k === "say") || phase.k === "end";
+  const free = false;
   const freeView = free && freeTake && <FreeResult take={freeTake} band={band} />;
   const rateView = phase.k === "rate" && (
     <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={phase.take.id}>
@@ -1398,7 +1417,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
             </div>
           ) : (
             <blockquote className="ve-how"><b>How to do it</b>
-              {!chosen && "Pick a card to start, or just press record and talk freely. "}Say each card in your practice voice, listen back, then rate how it felt. Your rating decides when a card comes back; pitch numbers never do.</blockquote>
+              Say each card in your practice voice, listen back, then rate how it felt. Your rating decides when a card comes back; pitch numbers never do.</blockquote>
           )}
           {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
           <ol className="ve-items">

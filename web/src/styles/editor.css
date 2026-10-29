@@ -691,3 +691,7 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
   .ve .ve-dock .ve-now-read b { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) { .ve .ve-dock { animation: none; } }
+
+/* Studio (free talk): a plain opening line, like a chapter's. */
+.ci-lede-plain { margin: 0 0 32px; max-width: 34em; font-size: 18px; line-height: 1.5; color: var(--ink-2); }
+.ci-lede-plain a { color: var(--ink); }
