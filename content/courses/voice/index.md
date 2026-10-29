@@ -51,7 +51,7 @@ gender-affirming voice support. Lilt is a practice tool, not a medical one.
 
 If you've already found your voice, or you coach or teach this, I'd love your help. Every chapter
 is a plain Markdown file, so you can fix an exercise, add a chapter or tell me where I've got it
-wrong without writing any code. Contributions are welcome on GitHub (link coming soon).
+wrong without writing any code. Contributions are welcome on [GitHub](https://github.com/G9000/lilt).
 
 ![Placeholder: one more picture](images/placeholder-cat.webp)
 
