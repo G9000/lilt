@@ -349,3 +349,21 @@
 
 /* On a phone the practice window fills the screen: no pretend window buttons. */
 @media (max-width: 860px) { .ds.app-full .ds-lights { display: none; } }
+
+/* The radio's source: Lilt's lo-fi, or your Spotify (desk/Spotify.tsx). */
+.fl-src { pointer-events: auto; display: inline-flex; gap: 2px; margin: 0 0 6px 6px; padding: 3px; border-radius: 99px; background: rgba(18, 17, 24, 0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.fl-src button { min-height: 0; padding: 3px 10px; border-radius: 99px; font: 600 11.5px var(--font); color: rgba(255, 255, 255, 0.7); background: none; }
+.fl-src button[aria-selected="true"] { background: rgba(255, 255, 255, 0.92); color: #17151c; }
+.fl-spotify { pointer-events: auto; width: 300px; padding: 10px; border-radius: 22px; color: #fff; background: linear-gradient(135deg, #24212d, #121118); box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 22px 40px -18px rgba(0, 0, 0, 0.8); }
+.sp { display: grid; gap: 8px; }
+.sp-player { min-height: 80px; border-radius: 12px; overflow: hidden; background: rgba(255, 255, 255, 0.06); }
+.sp-player iframe { display: block; border: 0; border-radius: 12px; }
+.sp-change { justify-self: start; min-height: 0; padding: 0 4px; background: none; color: rgba(255, 255, 255, 0.65); font: 500 12px var(--font); }
+.sp-change:hover { color: #fff; }
+.sp-pick input { width: 100%; height: 34px; padding: 0 10px; border-radius: 10px; border: 0; background: rgba(255, 255, 255, 0.1); color: #fff; font: 13px var(--font); }
+.sp-pick input::placeholder { color: rgba(255, 255, 255, 0.5); }
+.sp-pick input[aria-invalid="true"] { box-shadow: 0 0 0 1px #ff8a80; }
+.sp-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.sp-chip { min-height: 0; padding: 4px 10px; border-radius: 99px; background: rgba(30, 215, 96, 0.18); color: #9cf0b8; font: 600 12px var(--font); }
+.sp-chip.quiet { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); }
+.sp-pick small { font-size: 11.5px; line-height: 1.4; color: rgba(255, 255, 255, 0.55); }

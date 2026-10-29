@@ -7,11 +7,19 @@ import { micInUse } from "../micuse";
  * Nothing is downloaded or sent anywhere. It pauses itself whenever the microphone is in use.
  */
 
-interface Mood { name: string; bpm: number; rain: boolean; prog: number[][] }
+/** A mood: its tempo, its four chords (MIDI notes, one bar each), and its texture: rain, vinyl
+ *  crackle, and how much drum (full, soft brushes, or none). */
+interface Mood { name: string; bpm: number; rain: boolean; prog: number[][]; drums?: "full" | "soft" | "none"; vinyl?: number }
 const MOODS: Mood[] = [
   { name: "Rain on the window", bpm: 70, rain: true, prog: [[53, 57, 60, 64, 67], [52, 55, 59, 62], [50, 53, 57, 60, 64], [48, 52, 55, 59]] },
   { name: "Desk lamp", bpm: 76, rain: false, prog: [[50, 53, 57, 60], [55, 59, 62, 65], [48, 52, 55, 59, 62], [45, 48, 52, 55]] },
   { name: "City at dusk", bpm: 66, rain: false, prog: [[51, 55, 58, 62], [56, 60, 63, 67], [53, 56, 60, 63], [58, 62, 65, 68]] },
+  { name: "Night bus", bpm: 74, rain: false, vinyl: 0.5, prog: [[48, 51, 55, 58, 62], [44, 48, 51, 55], [51, 55, 58, 62], [46, 50, 53, 55]] },
+  { name: "Sunday morning", bpm: 82, rain: false, drums: "soft", prog: [[55, 59, 62, 66], [52, 55, 59, 62, 66], [57, 60, 64, 67], [50, 54, 57, 60, 64]] },
+  { name: "Train window", bpm: 68, rain: false, vinyl: 0.3, prog: [[46, 50, 53, 57], [45, 48, 52, 55], [43, 46, 50, 53], [41, 45, 48, 52, 55]] },
+  { name: "Snow day", bpm: 60, rain: false, drums: "none", vinyl: 0.6, prog: [[57, 61, 64, 68, 71], [54, 57, 61, 64, 68], [50, 54, 57, 61], [52, 56, 59, 61]] },
+  { name: "Bedroom cassette", bpm: 78, rain: false, vinyl: 0.8, prog: [[51, 55, 58, 62], [55, 58, 62, 65], [48, 51, 55, 58], [46, 51, 53, 58]] },
+  { name: "Library, after hours", bpm: 64, rain: true, drums: "soft", prog: [[50, 53, 57, 60], [46, 50, 53, 57], [55, 58, 62, 65], [57, 61, 64, 67]] },
 ];
 const mtof = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 function loadVolume() {
@@ -23,6 +31,7 @@ class Engine {
   private master!: GainNode;
   private keys!: GainNode;
   private rain!: GainNode;
+  private vinyl!: GainNode;
   private noise!: AudioBuffer;
   private timer = 0;
   private next = 0;
@@ -59,6 +68,19 @@ class Engine {
     const rlp = ctx.createBiquadFilter(); rlp.type = "lowpass"; rlp.frequency.value = 1600;
     this.rain = ctx.createGain(); this.rain.gain.value = 0;
     rain.connect(rlp).connect(this.rain).connect(this.master); rain.start();
+    // Vinyl: soft surface hiss and the odd crackle, looped.
+    const vin = ctx.createBufferSource(); vin.loop = true;
+    vin.buffer = this.buffer(4, () => (Math.random() < 0.0004 ? (Math.random() * 2 - 1) * 0.9 : (Math.random() * 2 - 1) * 0.012));
+    const vhp = ctx.createBiquadFilter(); vhp.type = "highpass"; vhp.frequency.value = 900;
+    this.vinyl = ctx.createGain(); this.vinyl.gain.value = 0;
+    vin.connect(vhp).connect(this.vinyl).connect(this.master); vin.start();
+  }
+
+  /** Rain and vinyl follow the mood. */
+  private texture() {
+    const ctx = this.ctx!, M = MOODS[this.mood];
+    this.rain.gain.setTargetAtTime(M.rain ? 0.32 : 0, ctx.currentTime, 0.5);
+    this.vinyl.gain.setTargetAtTime((M.vinyl ?? 0) * 0.5, ctx.currentTime, 0.5);
   }
 
   private env(g: GainNode, t: number, peak: number, attack: number, hold: number, end: number) {
@@ -100,9 +122,11 @@ class Engine {
       if (pos === 0) { chord.forEach((m, i) => this.ep(m, t + i * 0.018, beat * 3.6)); this.voice("sine", mtof(chord[0] - 12), t, 0.15, 0.6, beat * 1.6, this.master); }
       if (pos === 8 && Math.random() < 0.55) chord.slice(1).forEach((m, i) => this.ep(m, t + i * 0.015, beat * 1.8, 0.04));
       if (pos === 10) this.voice("sine", mtof(chord[0] - 12), t, 0.15, 0.6, beat * 0.9, this.master);
-      if (pos === 0 || pos === 7 || (pos === 10 && Math.random() < 0.4)) this.kick(t);
-      if (pos === 4 || pos === 12) this.hit(t, "bandpass", 1700, 0.11, 0.18);
-      if (pos % 2 === 0) this.hit(t, "highpass", 7000, pos % 4 ? 0.018 : 0.03, 0.05);
+      const drums = M.drums ?? "full";
+      if (drums === "full" && (pos === 0 || pos === 7 || (pos === 10 && Math.random() < 0.4))) this.kick(t);
+      if (drums === "soft" && pos === 0) this.kick(t);
+      if (drums !== "none" && (pos === 4 || pos === 12)) this.hit(t, "bandpass", drums === "soft" ? 2600 : 1700, drums === "soft" ? 0.05 : 0.11, drums === "soft" ? 0.28 : 0.18);
+      if (drums !== "none" && pos % 2 === 0) this.hit(t, "highpass", 7000, (pos % 4 ? 0.018 : 0.03) * (drums === "soft" ? 0.6 : 1), 0.05);
       if (pos % 4 === 2 && Math.random() < 0.22) this.voice("sine", mtof(chord[0] + 12 + [0, 2, 4, 7, 9][Math.floor(Math.random() * 5)]), t, 0.03, 0.4, 1.4, this.keys);
       this.next += s16;
       this.step++;
@@ -116,7 +140,7 @@ class Engine {
     if (!this.timer) { this.next = ctx.currentTime + 0.08; this.timer = window.setInterval(this.tick, 25); }
     this.master.gain.cancelScheduledValues(ctx.currentTime);
     this.master.gain.setTargetAtTime(0.5 * this.volume, ctx.currentTime, 0.35);
-    this.rain.gain.setTargetAtTime(MOODS[this.mood].rain ? 0.32 : 0, ctx.currentTime, 0.5);
+    this.texture();
     this.playing = true;
   }
 
@@ -139,7 +163,7 @@ class Engine {
   skip(d: number) {
     this.mood = (this.mood + d + MOODS.length) % MOODS.length;
     this.step = 0;
-    if (this.ctx) this.rain.gain.setTargetAtTime(MOODS[this.mood].rain ? 0.32 : 0, this.ctx.currentTime, 0.5);
+    if (this.ctx) this.texture();
   }
 }
 

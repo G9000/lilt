@@ -2,6 +2,7 @@ import { motion, useDragControls, useMotionValue } from "motion/react";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
 import { radio, useRadio } from "./lofi";
+import { SpotifyRadio } from "./Spotify";
 import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
@@ -124,6 +125,13 @@ function SettingsWidget() {
 
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();
+  // The radio plays Lilt's own lo-fi, or your Spotify; the choice is kept in this browser.
+  const [source, setSource] = useState<"lofi" | "spotify">(() => { try { return localStorage.getItem("lilt.radio.source") === "spotify" ? "spotify" : "lofi"; } catch { return "lofi"; } });
+  const pick = (s: "lofi" | "spotify") => {
+    setSource(s);
+    try { localStorage.setItem("lilt.radio.source", s); } catch { /* private mode */ }
+    if (s === "spotify" && (r.playing || r.ducked)) void radio.toggle();
+  };
   const [note, setNote] = useState<string | null>(null);
   const [writing, setWriting] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -169,7 +177,12 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
 
   return (
     <div className={`fls${inside ? " away" : ""}`} ref={box}>
-      <Widget id="radio" delay={0} label="Lo-fi radio">
+      <Widget id="radio" delay={0} label="Radio">
+        <div className="fl-src" role="tablist" aria-label="Radio source">
+          <button role="tab" aria-selected={source === "lofi"} onClick={() => pick("lofi")}>Lo-fi</button>
+          <button role="tab" aria-selected={source === "spotify"} onClick={() => pick("spotify")}>Spotify</button>
+        </div>
+        {source === "spotify" ? <div className="fl-spotify"><SpotifyRadio /></div> : (
         <div className={`fl-radio${r.playing ? " playing" : ""}`}>
           <div className="ds-disc fl-disc" aria-hidden="true"><div className="ds-label" /></div>
           <div className="fl-r-info">
@@ -187,6 +200,7 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
             </div>
           </div>
         </div>
+        )}
       </Widget>
       <Widget id="settings" delay={-1.8} label="Settings">
         <SettingsWidget />
