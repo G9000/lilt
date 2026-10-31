@@ -18,7 +18,7 @@ import { SettingsAppIcon } from "./icons";
  */
 
 type Spot = { x: number; y: number };
-const HOME: Record<string, Spot> = { radio: { x: 1520, y: 345 }, note: { x: 448, y: 250 }, clock: { x: 1150, y: 205 }, plant: { x: 400, y: 545 }, settings: { x: 1390, y: 205 } };
+const HOME: Record<string, Spot> = { radio: { x: 1520, y: 345 }, note: { x: 448, y: 250 }, clock: { x: 1150, y: 205 }, plant: { x: 400, y: 545 }, settings: { x: 1010, y: 200 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -149,6 +149,9 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
   // sit on today's cards (one you moved stays where you put it).
   useEffect(() => {
     const check = () => {
+      // While the camera is at the desk or flying, the widgets are hidden: measuring them then
+      // would shove them around, and they'd visibly jump back as the room settles.
+      if (!box.current?.closest(".room-stage.settled")) return;
       const stack = document.querySelector(".cs")?.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
       box.current?.querySelectorAll<HTMLElement>(".fl").forEach((el) => {

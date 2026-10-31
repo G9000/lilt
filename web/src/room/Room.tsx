@@ -110,7 +110,12 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
       const left = drift ? clamp(v.left - m.sx * 22, vw - W * v.s, 0) : v.left;
       const top = drift ? clamp(v.top - m.sy * 12, Math.min(0, vh - H * v.s), 0) : v.top;
       const st = stage.current;
-      if (st) { st.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${v.s})`; st.style.setProperty("--inv", String(1 / v.s)); }
+      if (st) {
+        st.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${v.s})`; st.style.setProperty("--inv", String(1 / v.s));
+        // Settled: the camera has landed in the room. The floating widgets wait for it.
+        const settled = !c.inside && !c.flying;
+        if (st.classList.contains("settled") !== settled) st.classList.toggle("settled", settled);
+      }
       const b = bubble.current;
       if (b) {
         const x = left + CAT_SPOT.x * v.s, y = top + (CAT_SPOT.y - 30) * v.s;
@@ -189,9 +194,12 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   const say = aside ?? state.say;
   const peekTop = Math.min(MAIN_SCREEN[0][1], MAIN_SCREEN[1][1]) - 8;
   const peekX = (MAIN_SCREEN[0][0] + MAIN_SCREEN[1][0]) / 2;
+  // Opened in the room, it starts settled (no flight); after that only the camera loop sets it,
+  // so this class name never changes and React never resets it.
+  const settledAtStart = useRef(!inside).current;
   return (
     <div className={`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`} aria-hidden={inside} onPointerDown={onPoint} onPointerMove={onHover}>
-      <div className="room-stage" ref={stage} style={{ width: W, height: H }}>
+      <div className={settledAtStart ? "room-stage settled" : "room-stage"} ref={stage} style={{ width: W, height: H }}>
         {LIGHTS.map((l) => (
           <img key={l} ref={(el) => { arts.current[l] = el; }} className="room-art" src={roomUrl(l)} alt="" draggable={false}
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />

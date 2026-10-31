@@ -250,7 +250,7 @@
 
 /* ===== Little things floating in the room, pinned to the painting ===== */
 .fls { position: absolute; inset: 0; pointer-events: none; transition: opacity 0.3s; }
-.fls.away { opacity: 0; }
+.fls.away, .room-stage:not(.settled) .fls { opacity: 0; }
 .fls.away * { pointer-events: none !important; }
 .fl { position: absolute; transform: translate(-50%, -100%) scale(var(--inv, 1)); transform-origin: 50% 100%; transition: opacity 0.3s; }
 .fl.off { opacity: 0; pointer-events: none; }
