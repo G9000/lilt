@@ -348,7 +348,9 @@
 @media (max-width: 700px) { .ss { top: 34px; bottom: 6px; width: calc(100vw - 12px); border-radius: 18px; } }
 
 /* On a phone the practice window fills the screen: no pretend window buttons. */
-@media (max-width: 860px) { .ds.app-full .ds-lights { display: none; } }
+/* Full-screen apps (Practice) fill the screen: no window buttons over their sidebar; the menu bar's
+   Leave desk and the dock's door take you back. */
+.ds-win.full .ds-lights { display: none; }
 
 /* The radio's source: Lilt's lo-fi, or your Spotify (desk/Spotify.tsx). */
 .fl-src { pointer-events: auto; display: inline-flex; gap: 2px; margin: 0 0 6px 6px; padding: 3px; border-radius: 99px; background: rgba(18, 17, 24, 0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
