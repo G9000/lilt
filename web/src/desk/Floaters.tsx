@@ -18,9 +18,11 @@ import { SettingsAppIcon } from "./icons";
  */
 
 type Spot = { x: number; y: number };
-const HOME: Record<string, Spot> = { radio: { x: 1520, y: 345 }, note: { x: 448, y: 250 }, clock: { x: 1150, y: 205 }, plant: { x: 400, y: 545 }, settings: { x: 1010, y: 200 } };
+// Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
+// 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
+const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
-const KEY = "lilt.room.layout.cel-studio";
+const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
 let layout = load();
 const listeners = new Set<() => void>();
