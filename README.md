@@ -9,8 +9,8 @@ computer, so in a month you can hear how far you've come.
   Today's cards bring texts back on a spaced schedule; your rating decides when, never a score.
 - **Make it yours:** remix any chapter into your own version by asking your AI (ChatGPT, or any agent
   over MCP). The original stays as it is, and every change can be undone.
-- **The first course** is voice training: warm-ups, pitch, resonance, vocal weight, intonation,
-  then everyday speech, reading and real life. Lilt measures pitch and resonance with Praat and
+- **The first course** is voice training: warm-ups, pitch, resonance, vocal weight, articulation,
+  intonation, then everyday speech, reading, laughs and little sounds, and real life. Lilt measures pitch and resonance with Praat and
   describes what it heard in words. A course for another kind of practice is a new folder of
   Markdown (see [docs/courses.md](docs/courses.md)).
 - **What it is not:** a clinical tool. It doesn't diagnose, score you or replace a speech and
@@ -133,18 +133,19 @@ Then open <http://127.0.0.1:7878>.
    - **Compare** puts the original and the retry side by side as an A/B pair.
 6. If a pointer doesn't match what you hear or feel, say so. Your note is kept with the review and
    is taken into account next time.
-7. **Chapters** are free practice, in the same Practice page. The sidebar lists the eleven
-   chapters with how many texts you've practised in each. A chapter reads like a document: how to do
+7. **Chapters** are free practice, in the same Practice page. The sidebar lists the thirteen
+   chapters in three parts (Get ready, The skills, Bring it together) with how many texts you've
+   practised in each, and a dot on the chapter that's next up. A chapter reads like a document: how to do
    it, then each text in a reading serif with a hint under it. Pick a text (or press <kbd>↓</kbd>),
    press record, and the docked recorder draws your pitch live.
    - **Show my pitch live** lets you watch without recording.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
-8. **Texts** has 69 texts across 11 chapters: setup, warm-ups, pitch, resonance, vocal weight,
-   intonation, automatic speech, everyday phrases, reading, your own words and real life.
-   Each chapter follows a small loop: listen to an example or personal reference, try one cue,
-   record, listen back, then use it in a real phrase. The second warm-up card is a greeting,
+8. **Texts** has 86 texts across 13 chapters: setup, warm-ups, pitch, resonance, vocal weight,
+   articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
+   little sounds, and real life. Each chapter explains the technique in a few numbered steps (how to
+   find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,
    available in a fresh Today deck on day one. The four setup texts stay outside Today's cards.
 
    Instructions draw on the linked NHS Fife and NHS Lothian sources; the listening questions, bridge

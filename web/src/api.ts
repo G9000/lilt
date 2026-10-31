@@ -227,6 +227,8 @@ export interface TextLevel {
   /** The text to record every visit, so takes of it show change over time. */
   check_in?: string | null;
   area?: string | null;
+  /** Which part of the course it's in ("Get ready", "The skills"…); chapters in a row with the same part are grouped. */
+  part?: string | null;
   /** false: the chapter's texts aren't Today cards (Start here). */
   today?: boolean;
   /** A YouTube video for the chapter; nothing loads from YouTube until it's played. */

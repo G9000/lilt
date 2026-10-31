@@ -1,5 +1,6 @@
 ---
 id: resonance
+part: The skills
 title: Resonance
 subtitle: Bright and forward
 kind: hum
@@ -10,67 +11,73 @@ video_image: images/video-BW8X2nXexQs.jpg
 video_title: The Most Powerful Element of Voice Feminization: Resonance
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/
-written_by: Written for Lilt, from NHS Fife's resonance and articulation tuning-in activities and "Shaping your voice" (Activity 1, and articulation). The measurement and its limits are in analysis/EVALUATION.md.
+written_by: Written for Lilt, from NHS Fife's resonance and articulation tuning-in activities and "Shaping your voice" (Activity 1, and articulation). The whisper siren and small-dog pant are common resonance exercises in trans voice training, chosen by Lilt. The measurement and its limits are in analysis/EVALUATION.md.
 ---
 
-Resonance helps shape whether a voice sounds brighter or darker. Here you explore a small change you can hear and comfortably repeat.
+Resonance is the space your voice travels through after it leaves your vocal folds: your throat and mouth. A smaller space sounds brighter, a bigger one darker, the way a small bottle rings higher than a big one when you blow across it. For a lot of listeners it matters even more than pitch.
 
-**Listen first.** Use the linked resonance video to listen for a brighter/darker contrast. Keep pitch and resonance as separate listening questions: did the note change, the sound quality change, or both?
+**Hear the difference first.** Whisper "ee" and slide it up and down like a siren. You'll hear the whisper itself get brighter and darker, with no voice at all. That change is resonance. Play the chapter video for a voiced demonstration.
 
-**Try one thing.** Start with an easy hum, then open it into "ee". A small smile can be a cue to explore. Try a second version with a smaller change and compare; don't hold your throat in a position or chase tingling.
+**Make the space smaller.** Three things do it. Your tongue: high and forward, like in "ee". Your lips: a slight smile instead of rounded. Your larynx (voice box): it can float up a little. To feel it, pant lightly like a tiny dog, then like a big one. The small dog pulls things up and forward.
 
-**Use it in words.** Say "Morning! How are you?" after an easy hum. See whether the quality you liked is still audible once the words begin.
+**Try it in sound.** Hum, then open into a bright "ee" with a hint of a smile. Then the words. Small changes count; you're not holding a pose.
 
-**Listen back.** Is one take brighter to your ear without becoming squeezed or uncomfortable? A lip buzz is one possible sensation, not proof of success. If the difference is unclear, return to the demonstration rather than making the movement bigger.
+**Use it in words.** "Morning! How are you?" after an easy hum. Is the brightness still there once the words start?
 
-**Keep comparisons fair.** For the held-vowel check-ins, use the same vowel, mic and distance, with a similar easy pitch and loudness. Lilt's formant comparison is a rough description: it reads the loud vowel parts of a take, a higher pitch on its own barely moves it, and it tends to understate a real change a little. It cannot establish that only resonance changed or choose the better-sounding take.
+**Listen back fairly.** Compare like with like: the same vowel, a similar pitch and loudness, the same mic distance. Lilt compares each held vowel with your first take of it. It's a rough reading and tends to understate real change, so trust your ears first.
 
-**Ready for more?** You can repeat the preferred sound in the vowel and a short greeting with low effort. Come back to the vowel when a longer phrase gets difficult.
+**If it feels tight,** you're squeezing rather than shrinking. Go back to the whisper siren, which needs no effort at all.
 
 ## ee
 
 eeeeee
 
-> Your check-in: hold an easy ee, as in see, for about four seconds or less if needed. Compare with your earlier ee at a similar pitch and loudness, then decide by listening.
+> Your check-in: an easy "ee" as in "see", about four seconds. Keep your pitch and loudness close to last time so the comparison is fair.
 
 ## bright-morning
 
 Morning! How are you?
 
-> After an easy hum, try the small brighter quality you liked in this greeting. Compare with an ordinary take; a lip buzz is optional.
+> Hum, then say it with the small brighter "ee" space you found. Compare with an ordinary take.
+
+## whisper-siren
+
+eee ↗ ↘ · eee
+
+> Whisper the sliding "ee" first and listen to the whisper brighten as it goes up. Then say the last "ee" out loud, keeping the bright version of that space.
 
 ## forward-hum
 
 mmmmmmm
 
-> Try an easy hum, with a small smile if helpful. Listen to the change you prefer; tingling is optional and not a target to force.
+> Hum with a small smile and feel for a buzz on your lips or the front of your face. If you don't feel one, that's fine; listen instead.
 
 ## m-vowels
 
 mmmee · mmmaa · mmmoo
 
-> Open an easy m into each vowel. Each vowel will sound different; listen for a comfortable transition rather than an identical buzz.
+> Open the hum into each vowel. "Oo" will always be darker than "ee"; try to keep the tongue forward even there.
 
 ## m-words
 
 many · maybe · mellow · morning · lemon
 
-> Let the m last a little longer, then release into the word. Compare one usual take with one small change and choose what you prefer.
+> Lean into each m for a moment, then release into the word. The m sets the space; the word keeps it.
 
 ## giggle
 
 eye · air · ear
 
-> If the gentle giggle cue from the source feels easy, try it briefly before a word, then say the word normally. Skip this cue if it causes tension; a normal easy hum is enough.
+> Do a small, silent giggle first and notice how the back of your throat lifts and opens. Then say each word with that feeling. Skip it if it makes you tense.
 
 ## ah
 
 aaaaaa
 
-> Hold an easy ah, as in father, for about four seconds or less. Compare ah with your earlier ah, not with ee or oo.
+> An easy "ah" as in "father", about four seconds. "Ah" is naturally darker than "ee", so only compare it with your earlier "ah".
 
 ## oo
 
 oooooo
 
-> Hold an easy oo, as in food, for about four seconds or less. Compare oo with your earlier oo; a different vowel is not a resonance progress test.
+> An easy "oo" as in "food". Lips round for "oo", but let the tongue stay a little forward. Compare only with your earlier "oo".

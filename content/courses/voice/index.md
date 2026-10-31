@@ -30,9 +30,10 @@ and hear the change for yourself instead of guessing.
 - **Today** is a handful of cards. Say one, listen back, and tell Lilt how it felt. That decides
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
 - **[Start here](#/studio/start-here)** first: set up your mic and record your "before".
-- **Chapters**: one skill at a time (warm-ups, pitch, resonance, weight, melody), with a small
-  everyday phrase on the same visit. Later chapters build longer reading and conversation.
-  Stay until it feels useful and comfortable; go back whenever. Not a speedrun.
+- **Chapters** come in three parts. _Get ready_: setup and warm-ups. _The skills_: pitch,
+  resonance, vocal weight, articulation and melody, one at a time, each with an everyday phrase on
+  the same visit. _Bring it together_: lists, phrases, reading, talking, laughs and little sounds,
+  then real life. Stay until it feels easy; go back whenever. Not a speedrun.
 - **Check-ins**: one text per chapter, same words every visit, so you can hear the glow-up.
 - **Free recording**: just talk. You'll get your pitch line back.
 - **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your

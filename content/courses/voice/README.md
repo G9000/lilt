@@ -24,23 +24,31 @@ with its own `course.md`.
   every chapter.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-start-here.md` … `11-real-life.md`: one chapter each. The number at the start of the file
+- `01-start-here.md` … `13-real-life.md`: one chapter each. The number at the start of the file
   name sets the order (and the order Today's cards open in). To add a chapter, add a file like
-  `12-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
+  `14-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
   compared with your first take of the same vowel.
 
 ## How a lesson teaches
 
-Keep each chapter practical: listen to an example or a preferred personal take, try one small
-cue, use it in a real phrase, then listen back. The checks are comfort, repeatability and the
-learner's preferred sound. Buzzing sensations and acoustic numbers are clues, not pass marks.
-Let natural melody vary; do not turn a voice-quality cue into a requirement to raise every ending.
+The chapters come in three parts: **Get ready** (setup and warm-ups), **The skills** (pitch,
+resonance, vocal weight, articulation and intonation, one at a time) and **Bring it together**
+(automatic speech, everyday phrases, reading, your own words, laughs and little sounds, real life).
+
+Each chapter's intro is a handful of short **Label.** steps, shown numbered in Practice. Teach the
+technique concretely: what the skill is, how to find it in your body (tongue, lips, larynx, breath),
+one way to try it, a real phrase to use it in, and what to listen for. Write warmly and directly,
+like talking to a friend. Say the voice-care rule once (the closing note in `_about.md` adds it to
+every chapter, and a step whose label says "gentle" or "care" gets a heart); hints don't need to
+repeat it, except where an exercise has its own risk. Buzzing sensations and acoustic numbers are
+clues, not pass marks, and natural melody varies; never make rising endings a rule.
 
 The early chapters have bridge cards alongside their skill exercises. `warmup/hum-to-hello` comes
 second, so a fresh Today deck can offer a hum and a real greeting on day one. Pitch, resonance and
-intonation have their own short phrase too. All earlier chapter and text IDs and spoken texts are
-preserved for recording comparisons. This is an incremental revision within edition 2, so existing
-personal copies can review the changed pieces through Updates rather than replacing the whole course.
+intonation have their own short phrase too. Edition 3 renumbered the files to add Articulation
+and Laughs and little sounds, so a personal copy takes it as one whole change through Updates. Every
+earlier chapter and text id, and the words of every check-in, are unchanged, so recordings still
+line up.
 
 Dedicated A/B recordings are still missing. Use the existing video links and personal takes;
 `audio/README.md` describes the human-recording briefs. Do not add an `example:` line until its real,
@@ -72,6 +80,8 @@ mmmmmmm
 
 - **Front matter** (between the `---` lines): `id`, `title` and `kind` are required; `subtitle`,
   `source_url` and `written_by` are optional, and so are:
+  - `part`: the part of the course it belongs to (`Get ready`, `The skills`, `Bring it together`).
+    Practice groups chapters under these headings.
   - `area`: the skill it trains, for Progress: `recording`, `resonance`, `pitch`, `lightness`,
     `intonation` or `carryover`.
   - `check_in`: the id of one text to record every visit (Practice marks it _Check-in_), so its

@@ -123,6 +123,11 @@
 .ve .ve-file:disabled { opacity: 1; }
 .ve-tick { width: 13px; height: 13px; flex: none; color: var(--ok); }
 .ve-note-row { padding: 4px 8px; font-size: 12px; color: var(--ink-3); }
+.ve-tree + .ve-tree { margin-top: 6px; }
+/* A part of the course over its chapters ("Get ready", "The skills"…): a quiet label, indented to the names */
+.ve-part { padding: 8px 8px 3px 24px; font-size: 11.5px; font-weight: 600; color: var(--ink-3); }
+/* The first unfinished chapter: a small accent dot before its count */
+.ve-next-dot { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
 .ve-side-foot { margin-top: auto; padding: 12px 0 0; display: grid; gap: 1px; border-top: 1px solid var(--hair); }
 .ve-side-foot a { display: flex; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--ink-2); text-decoration: none; transition: background-color 0.12s ease, color 0.12s ease; }
@@ -171,6 +176,9 @@
 .ci-tips p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
 .ci-tips li.care .ci-ic { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
 .ci-tips li.care b { color: color-mix(in srgb, var(--accent) 75%, var(--ink)); }
+/* the steps are numbered: the number sits in the tip's square */
+.ci-n { font: 600 13px/1 var(--font); font-variant-numeric: tabular-nums; }
+.ci-skip { display: none !important; }
 .ci-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 16px; }
 .ve .ci-link { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; padding: 0; background: none; border: 0; color: var(--ink); font: 600 13px var(--font); cursor: pointer; }
 .ve .ci-link.quiet { color: var(--ink-3); font-weight: 500; }
@@ -203,7 +211,7 @@
 .ve-src { display: block; margin-top: 8px; font-size: 12px; color: var(--ink-3); }
 .ve-src a { color: inherit; text-decoration-color: var(--line-strong); }
 
-.ve-items { list-style: none; margin: 0; padding: 0; }
+.ve-items { list-style: none; margin: 0; padding: 0; scroll-margin-top: 16px; }
 .ve-item { position: relative; margin: 0 -24px 4px; padding: 18px 24px 20px; border-radius: 16px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
 .ve-item:not(.on):not(.done) .readtext { color: var(--ink-3); transition: color 0.2s ease; }
 .ve-item:not(.on) .ve-hint { color: var(--ink-3); }
@@ -394,6 +402,14 @@
 .ve-chapters .t b { font-size: 15px; font-weight: 600; color: var(--ink); }
 .ve-chapters .t small { font-size: 13px; color: var(--ink-3); }
 .ve-chapters .c { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+/* parts of the course on Home: a small heading over each run of chapters */
+.ve-md .ve-part-h { margin: 24px 0 6px; font-size: 13px; font-weight: 600; color: var(--ink-3); letter-spacing: 0; }
+.ve-part-group:first-of-type .ve-part-h { margin-top: 12px; }
+.ve-part-group .ve-chapters { margin-bottom: 0; }
+.ve-part-group:last-of-type .ve-chapters { margin-bottom: 40px; }
+.ve-chapters .t b { display: flex; align-items: center; gap: 8px; }
+.ve-chapters .ve-tag { font-size: 11.5px; letter-spacing: 0; }
+.ve-chapters a.next .n { background: var(--accent); color: #fff; }
 @media (hover: hover) and (pointer: fine) {
   .ve .ve-start-card .ve-start-go:hover::after { transform: translate(3px, -1px) rotate(45deg); }
   .ve-chapters a:hover { background: var(--fill); }
@@ -570,6 +586,11 @@
   .ve .ve-chips button[aria-current="page"] { background: var(--ink); color: var(--ve-paper); }
   .ve-col { padding: 24px 18px 40px; }
   .ve-mk { display: none; }
+  /* the steps are tighter, and a link jumps past them to the texts */
+  .ci-skip { display: inline-flex !important; margin-top: 12px; }
+  .ci-tips li { grid-template-columns: 24px 1fr; gap: 10px; padding: 10px 0; }
+  .ci-ic { width: 24px; height: 24px; border-radius: 7px; }
+  .ci-tips b { margin-top: 2px; }
   .ve-head h1 { font-size: 34px; }
   .ve-md h1 { font-size: 34px; }
   .ve-md figure { margin-bottom: 24px; }

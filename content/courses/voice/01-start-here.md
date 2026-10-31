@@ -1,5 +1,6 @@
 ---
 id: start-here
+part: Get ready
 title: Start here
 subtitle: Your mic, your space, and your voice today
 kind: phrases
@@ -14,48 +15,40 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's "Supporting you to find your authentic voice" and "How to take care of your voice", NHS Lothian's voice and communication therapy guides (2026) and NIDCD's voice care advice.
 ---
 
-Hi bestie. Five minutes of setup, then you're ready.
+Hi bestie. Five minutes of setup, one "before" recording, and you're ready.
 
-**Your mic.** Start about 20–30 cm away, in a quiet room. Adjust the distance for your mic; the fan is not your duet partner.
+**Set up your corner.** A quiet room, the mic about 20–30 cm from your mouth, and the same setup every time so your takes compare fairly. On a Mac, set Mic Mode to Standard in Control Center if you see it; Voice Isolation changes quiet sounds. The fan is not your duet partner.
 
-**Input volume.** Use the microphone check. Aim for a clear recording without the loud warning; there is no input-volume setting that fits every mic. A broken pitch line can also mean silence, unvoiced sounds or uncertain tracking, so listen to the audio before turning anything up.
+**Check your level.** Count to ten below and play it back. You want it clear, with no loud warning. A gappy pitch line on its own doesn't mean you're too quiet: unvoiced sounds like s and h never draw a line.
 
-**Mic Mode.** If Control Center shows it, pick Standard for comparable takes. Voice Isolation can alter quiet sounds.
+**Record your "before".** Read the texts below in your everyday voice. Don't change anything yet. Future you will want this, trust me.
 
-**Same setup, every time.** Keep the mic, distance and room as similar as you can. Use the mic you already have before buying anything.
+**How every chapter works.** The same small loop each time: hear an example, try one change, record, listen back, then use it in a real phrase straight away. Five to ten minutes is plenty. Short and often beats long and rare.
 
-**Choose what matters to you.** Pick one quality you want to explore: a lighter sound, brighter resonance, an easy pitch or a particular melody. Someone else's voice can give you an idea without becoming an exact target.
+**Your ears decide.** Lilt shows your pitch and a rough read of your resonance, but numbers describe a take; they don't grade it. The questions that matter: did it feel easy, could I do it again, and do I like how it sounds?
 
-**Listen first.** Use the linked beginner video to get oriented. For a skill demonstration, open that skill's chapter and its video. There are no dedicated exercise audio clips yet; your saved takes are useful personal references too.
-
-**Your baseline.** Record the texts below in your everyday voice. Future you wants the "before" pic. Save a take you like as well, so you have something you want to come back to.
-
-**One small practice loop.** Hear an example, choose one small change, record a short try, then listen back. Try the same change in "Hello, how are you?" straight away. Ask: was it comfortable, can I repeat it, and do I prefer the sound? "I'm not sure yet" is a useful answer.
-
-**Short and often.** Keep the visit small enough to finish comfortably. Today offers a manageable handful of cards; you can stop before they're all done. Start with the warm-up chapter, where the second card already opens into a greeting.
-
-**Be gentle.** It should never hurt. Stop if speaking hurts, feels strained or becomes hoarse, and rest instead of pushing through. If symptoms persist, keep returning, or concern you, contact a GP or speech and language therapist. Don't wait for a set number of days or weeks to ask for help.
+**Be gentle with your voice.** It should never hurt. If your voice feels strained, scratchy or hoarse, stop and rest. If that keeps happening or worries you, talk to a GP or a speech and language therapist.
 
 ## today
 
 Hello, this is my voice today.
 
-> Your check-in: use whatever voice feels natural today. Listen back and name one thing you like and one thing you are curious about.
+> Your check-in, every visit: say it however your voice wants to today. Listen back for one thing you like.
 
 ## level
 
 One, two, three, four, five, six, seven, eight, nine, ten.
 
-> A level check: listen for a clear recording without distortion. Use the microphone level and loud warning as clues; gaps in pitch alone do not mean the input is too quiet.
+> A level check. Play it back: is it clear, with no crackle or loud warning? If it's hard to hear, move a little closer before turning the input up.
 
 ## baseline-read
 
 I'm starting something new today, and I'm going to be patient with myself while I learn.
 
-> Your baseline: read in your everyday voice. Keep these words the same for later comparisons; no need to change anything yet.
+> Your "before": your everyday voice, no changes. These exact words come back later so you can hear how far you've come.
 
 ## baseline-talk
 
 What are you hoping your voice will feel like?
 
-> Answer in your own words for about half a minute, or less if you prefer. Name a situation where you want your voice to feel more like you.
+> Talk for up to half a minute. Name one place you'd like your voice to feel more like you: a phone call, a café, with friends.

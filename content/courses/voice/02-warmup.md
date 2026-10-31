@@ -1,5 +1,6 @@
 ---
 id: warmup
+part: Get ready
 title: Warm-ups
 subtitle: Breath, release, and gentle hums
 kind: hum
@@ -11,59 +12,77 @@ video_image: images/video-1f9TBpHm2a0.jpg
 video_title: Trans Voice Vocal Warm-up: Do This Every Day
 video_by: Nicole Gress, speech-language pathologist
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf
-written_by: Written for Lilt, from NHS Lothian's "Where to start" (2026) and NHS Fife's tuning-in activities. The easy-onset text is a common voice-care exercise, chosen by Lilt.
+written_by: Written for Lilt, from NHS Lothian's "Where to start" (2026) and NHS Fife's breathing and tuning-in activities. The easy-onset, yawn-sigh, straw and cool-down texts are common voice-care exercises, chosen by Lilt.
 ---
 
-A gentle start, then a few real words. You don't have to work through every sound on every visit.
+Two minutes that make everything after them easier. Pick two or three of these; you don't need them all every time.
 
-**Listen first.** Choose one easy sound from the chapter's warm-up video. Pause after the example and listen for an unforced, continuous sound. NHS Fife also has a [short warm-up demonstration](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/how-to-take-care-of-your-voice/).
+**Breathe low.** Sit or stand tall with your shoulders loose. Put one hand on your belly and breathe in through your nose so the hand moves out and your shoulders stay still. Breathe out slowly on a quiet "sss". Three or four of those.
 
-**Try one thing.** Let your shoulders settle and take a few easy breaths. Choose a comfortable hum or a loose lip trill for a few seconds. Stay in an easy part of your range; a warm-up is not a range test.
+**Let go of the tension.** Roll your shoulders back a few times. Rub your jaw muscles gently with your fingertips and let your mouth hang a little open. Finish with a big lazy yawn that turns into a sigh.
 
-**Use it in words.** Open the hum into "Hello, how are you?" You can do this from your first visit; later chapters aren't a permission slip to speak.
+**Get the voice buzzing.** Hum, trill your lips like a motorboat, or blow "ooo" through a straw. These keep your lips partly closed, which lets the voice switch on with almost no effort. That's why voice therapists love them.
 
-**Listen back.** Does the sound start easily? Does the greeting feel as comfortable as the hum? A buzz may be noticeable, but you don't need to produce a particular sensation. If it feels strained, stop and rest.
+**Use it in words.** Let a hum open straight into "Hello, how are you?". Yes, on day one. You don't need to finish the later chapters before you're allowed to talk.
 
-**Ready for more?** You can repeat the sound and greeting comfortably and recognise the take you prefer. Keep a useful warm-up in your routine when you explore another skill.
+**Listen back.** Did the sound start smoothly, without a click or a push? Was the greeting as easy as the hum? Keep your favourite warm-up and come back to it before any chapter.
 
 ## hum
 
 mmmmmmm
 
-> Your check-in: hum on an easy note for a few seconds. Listen for a comfortable start and a continuous sound; noticing a buzz is optional.
+> Your check-in: lips together, teeth apart, an easy note for a few seconds. Listen for a smooth start and a steady sound.
 
 ## hum-to-hello
 
 mmm… hello, how are you?
 
-> Let an easy hum open into the greeting. Listen back: are the first words as comfortable as the hum? Repeat the easier version.
+> Hum, then let the lips open into the greeting without stopping the sound. Do the first words feel as easy as the hum?
+
+## yawn-sigh
+
+haaah ↘
+
+> Start a yawn, then sigh it out on a voice that slides gently down. Let the throat feel wide and lazy. It's a great reset whenever things feel tight.
 
 ## lip-trill
 
 brrrrrrr
 
-> Let your lips flutter loosely on an easy note. If the trill will not come easily, use the hum instead; there is nothing to force.
+> Loose lips, a steady stream of air, an easy note. If your lips won't flutter, press a fingertip into each cheek, or just hum instead.
+
+## straw
+
+ooo ↗ ↘
+
+> Hum "ooo" through a drinking straw, then slide it gently up and down. Most of the effort moves to your lips, so your throat gets an easy ride. No straw nearby? A small "ooo" with rounded lips works too.
 
 ## ng
 
 nnnnggg
 
-> Use the ng at the end of sing. Keep it easy, then let it finish; no need to chase a buzz behind your nose.
+> The ng from the end of "sing". Feel it hum behind your nose, then let it go.
 
 ## zzz
 
 zzzzzz · vvvvvv
 
-> A gentle zzz, then vvv, on one easy note. Compare how comfortably each starts and choose the easier one.
+> A gentle zzz, then vvv, on one easy note. Which starts more easily for you? Use that one.
 
 ## siren
 
 mmm ↗ ↘
 
-> Slide a little up and down within an easy range. Keep it small; stop if there is strain.
+> A small slide up and back down, like a quiet siren. Stay inside the easy part of your range; this is a stretch, not a range test.
 
 ## easy-onset
 
 I eat apples every evening, always.
 
-> Every word starts with a vowel. Let each one begin softly, as if a quiet h were just before it, rather than with a sudden click in the throat. Compare a soft start with your usual one and keep whichever feels easier.
+> Every word starts with a vowel. Begin each one softly, as if there were a tiny h in front, instead of a click in the throat. Compare that with your usual start.
+
+## cool-down
+
+mmm ↘ … aaah
+
+> A cool-down for the end of a visit: an easy hum sliding down, opening into a relaxed sigh. Then sip some water.

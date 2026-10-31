@@ -34,13 +34,13 @@ fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
     let (dir, app) = app();
     let v = crate::courses::get(&app, "voice").unwrap();
     let call = |name: &str, args: serde_json::Value| mcp::call(&app, name, args.as_object().unwrap());
-    let shipped = std::fs::read_to_string(root().join("content/courses/voice/08-phrases.md")).unwrap();
+    let shipped = std::fs::read_to_string(root().join("content/courses/voice/09-phrases.md")).unwrap();
     let has_card = |id: &str| cards::all_cards(&app).iter().any(|c| c.id == id);
     assert_eq!(syllabus::list(&app, &v)["using"], "original");
 
     // A file Lilt can't read, a non-syllabus name, or a change to the safety section is refused.
-    assert!(syllabus::write(&app, &v, "08-phrases.md", "no front matter", "break it").is_err());
-    assert!(syllabus::write(&app, &v, "../08-phrases.md", &shipped, "escape").is_err());
+    assert!(syllabus::write(&app, &v, "09-phrases.md", "no front matter", "break it").is_err());
+    assert!(syllabus::write(&app, &v, "../09-phrases.md", &shipped, "escape").is_err());
     let home = std::fs::read_to_string(root().join("content/courses/voice/index.md")).unwrap();
     let pushy = home.replace("It should never hurt.", "Push through it.");
     assert!(syllabus::write(&app, &v, "index.md", &pushy, "be tougher").unwrap_err().to_string().contains("Be gentle"));
@@ -48,13 +48,13 @@ fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
 
     // Reword a text and add one: your version, with the original untouched, and new cards.
     let edited = shipped.replacen("Black coffee, please.", "Tea, please.", 1) + "\n## mine-extra\n\nmorning, mum\n\n> Easy.\n";
-    let r = syllabus::write(&app, &v, "08-phrases.md", &edited, "shorter first line, one more text").unwrap();
+    let r = syllabus::write(&app, &v, "09-phrases.md", &edited, "shorter first line, one more text").unwrap();
     assert_eq!(r["using"], "mine");
-    assert_eq!(std::fs::read_to_string(root().join("content/courses/voice/08-phrases.md")).unwrap(), shipped);
+    assert_eq!(std::fs::read_to_string(root().join("content/courses/voice/09-phrases.md")).unwrap(), shipped);
     assert!(has_card("text.phrases.mine-extra"));
     let cmp = call("syllabus_compare", serde_json::json!({})).unwrap().structured_content.unwrap();
     let d = &cmp["differences_from_original"][0];
-    assert_eq!((d["file"].as_str(), d["texts_added"][0].as_str()), (Some("08-phrases.md"), Some("mine-extra")));
+    assert_eq!((d["file"].as_str(), d["texts_added"][0].as_str()), (Some("09-phrases.md"), Some("mine-extra")));
     assert_eq!(d["texts_changed"].as_array().unwrap().len(), 1);
 
     // A new chapter, removed again, then undo brings it back.
@@ -79,7 +79,7 @@ fn syllabus_edits_go_to_your_own_version_and_can_be_undone() {
     assert!(syllabus::undo(&app, &v).is_err());
 
     // Your version survives a restart.
-    syllabus::write(&app, &v, "08-phrases.md", &edited, "again").unwrap();
+    syllabus::write(&app, &v, "09-phrases.md", &edited, "again").unwrap();
     drop(app);
     let again = App::open(config(dir.path())).unwrap();
     assert!(cards::all_cards(&again).iter().any(|c| c.id == "text.phrases.mine-extra"));
@@ -92,11 +92,11 @@ fn syllabus_changes_from_another_process_are_picked_up() {
     let (dir, app) = app();
     let other = App::open(config(dir.path())).unwrap();
     let v = crate::courses::get(&app, "voice").unwrap();
-    let src = std::fs::read_to_string(root().join("content/courses/voice/08-phrases.md")).unwrap() + "\n## from-elsewhere\n\nmm\n\n> Easy.\n";
-    syllabus::write(&other, &v, "08-phrases.md", &src, "from the stdio server").unwrap();
+    let src = std::fs::read_to_string(root().join("content/courses/voice/09-phrases.md")).unwrap() + "\n## from-elsewhere\n\nmm\n\n> Easy.\n";
+    syllabus::write(&other, &v, "09-phrases.md", &src, "from the stdio server").unwrap();
     assert!(cards::all_cards(&app).iter().any(|c| c.id == "text.phrases.from-elsewhere"));
-    let e = syllabus::write(&app, &v, "08-phrases.md", "oops", "break it").unwrap_err().to_string();
-    assert!(e.contains("in 08-phrases.md:"), "{e}");
+    let e = syllabus::write(&app, &v, "09-phrases.md", "oops", "break it").unwrap_err().to_string();
+    assert!(e.contains("in 09-phrases.md:"), "{e}");
 }
 
 fn copy_dir(from: &std::path::Path, to: &std::path::Path) {
@@ -119,14 +119,14 @@ fn updates_to_the_original_come_in_piece_by_piece() {
     let v = crate::courses::get(&app, "voice").unwrap();
     let texts = content.join("courses/voice");
     let read = |n: &str| std::fs::read_to_string(texts.join(n)).unwrap();
-    let words = read("08-phrases.md");
+    let words = read("09-phrases.md");
     let first = words.lines().skip_while(|l| *l != "## black-coffee").nth(2).unwrap().to_string();
     let second = words.lines().skip_while(|l| *l != "## free-later").nth(2).unwrap().to_string();
     assert_eq!(updates::list(&app, &v)["using"], "original");
 
     // You reword p1; then Lilt's original rewords p1 and p2, adds a chapter and softens the safety section.
-    syllabus::write(&app, &v, "08-phrases.md", &words.replace(&first, "my own first line"), "mine").unwrap();
-    std::fs::write(texts.join("08-phrases.md"), words.replace(&first, "lilt's new first line").replace(&second, "lilt's new second line")).unwrap();
+    syllabus::write(&app, &v, "09-phrases.md", &words.replace(&first, "my own first line"), "mine").unwrap();
+    std::fs::write(texts.join("09-phrases.md"), words.replace(&first, "lilt's new first line").replace(&second, "lilt's new second line")).unwrap();
     std::fs::write(texts.join("12-new.md"), read("_template.md").replace("id: my-chapter", "id: brand-new")).unwrap();
     let home = read("index.md");
     std::fs::write(texts.join("index.md"), home.replace("It should never hurt.", "It should never hurt, not even a little.")).unwrap();
@@ -134,16 +134,16 @@ fn updates_to_the_original_come_in_piece_by_piece() {
     let l = updates::list(&app, &v);
     assert_eq!(l["available"], true);
     let handling = |id: &str| l["changes"].as_array().unwrap().iter().find(|c| c["id"] == id).map(|c| c["handling"].as_str().unwrap().to_string());
-    assert_eq!(handling("08-phrases.md### black-coffee").as_deref(), Some("choose"));
-    assert_eq!(handling("08-phrases.md### free-later").as_deref(), Some("take"));
+    assert_eq!(handling("09-phrases.md### black-coffee").as_deref(), Some("choose"));
+    assert_eq!(handling("09-phrases.md### free-later").as_deref(), Some("take"));
     assert_eq!(handling("12-new.md").as_deref(), Some("take"));
     assert_eq!(handling("index.md### Be gentle with your voice").as_deref(), Some("take"));
 
     // A choice is needed for p1; keep yours.
     assert!(updates::apply(&app, &v, &BTreeMap::new(), "").unwrap_err().to_string().contains("choose"));
-    let r = updates::apply(&app, &v, &BTreeMap::from([("08-phrases.md### black-coffee".to_string(), "yours".to_string())]), "").unwrap();
+    let r = updates::apply(&app, &v, &BTreeMap::from([("09-phrases.md### black-coffee".to_string(), "yours".to_string())]), "").unwrap();
     assert_eq!((r["updates_taken"].as_u64(), r["kept_yours"].as_u64()), (Some(3), Some(1)));
-    let mine = syllabus::read(&app, &v, "08-phrases.md", "mine").unwrap()["markdown"].as_str().unwrap().to_string();
+    let mine = syllabus::read(&app, &v, "09-phrases.md", "mine").unwrap()["markdown"].as_str().unwrap().to_string();
     assert!(mine.contains("my own first line") && mine.contains("lilt's new second line"));
     assert!(cards::all_cards(&app).iter().any(|c| c.id == "text.brand-new.first-text"));
     assert!(syllabus::read(&app, &v, "index.md", "mine").unwrap()["markdown"].as_str().unwrap().contains("not even a little"));
@@ -244,8 +244,8 @@ async fn a_remix_is_one_change_and_needs_chatgpt() {
     let v = courses::get(&app, "voice").unwrap();
     let read = |n: &str| std::fs::read_to_string(root().join("content/courses/voice").join(n)).unwrap();
     let a = read("02-warmup.md").replace("title: Warm-ups", "title: Short warm-ups");
-    let b = read("08-phrases.md").replace("title: Everyday phrases", "title: Phrases");
-    syllabus::write_many(&app, &v, vec![("02-warmup.md".into(), a), ("08-phrases.md".into(), b)], "Shorter titles").unwrap();
+    let b = read("09-phrases.md").replace("title: Everyday phrases", "title: Phrases");
+    syllabus::write_many(&app, &v, vec![("02-warmup.md".into(), a), ("09-phrases.md".into(), b)], "Shorter titles").unwrap();
     let h = syllabus::history(&app, &v);
     assert_eq!((h["changes"].as_array().unwrap().len(), h["changes"][0]["action"].as_str()), (1, Some("remix")));
     let locked = read("index.md").replace("It should never hurt.", "Push through it.");
@@ -275,10 +275,10 @@ async fn a_blank_chapter_lands_in_your_mixtape() {
     let res = router.clone().oneshot(post()).await.unwrap();
     assert_eq!(res.status(), StatusCode::OK);
     let v: serde_json::Value = serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
-    assert_eq!((v["chapter"].as_str(), v["file"].as_str()), (Some("my-chapter-1"), Some("12-my-chapter-1.md")));
+    assert_eq!((v["chapter"].as_str(), v["file"].as_str()), (Some("my-chapter-1"), Some("14-my-chapter-1.md")));
     let res = router.oneshot(post()).await.unwrap();
     let v: serde_json::Value = serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
-    assert_eq!(v["file"].as_str(), Some("13-my-chapter-2.md"));
+    assert_eq!(v["file"].as_str(), Some("15-my-chapter-2.md"));
     let t = crate::courses::syllabus::texts(&app);
     assert_eq!(t["levels"].as_array().unwrap().last().unwrap()["title"], "New chapter");
 }
@@ -307,18 +307,18 @@ fn a_new_edition_comes_in_whole_or_not_at_all() {
         copy_dir(&root().join("content"), &content);
         let texts = content.join("courses/voice");
         let read = |n: &str| std::fs::read_to_string(texts.join(n)).unwrap();
-        // The older edition: version 1, and the phrases chapter under its old file name.
-        let (about, phrases) = (read("_about.md"), read("08-phrases.md"));
-        std::fs::write(texts.join("_about.md"), about.replace("version: 2", "version: 1")).unwrap();
-        std::fs::rename(texts.join("08-phrases.md"), texts.join("04-phrases.md")).unwrap();
+        // The older edition: version 2, and the phrases chapter under its old file name.
+        let (about, phrases) = (read("_about.md"), read("09-phrases.md"));
+        std::fs::write(texts.join("_about.md"), about.replace("version: 3", "version: 2")).unwrap();
+        std::fs::rename(texts.join("09-phrases.md"), texts.join("04-phrases.md")).unwrap();
         let mut cfg = config(&dir.path().join("data"));
         cfg.content_dir = content.clone();
         let app = App::open(cfg).unwrap();
         let v = crate::courses::get(&app, "voice").unwrap();
         syllabus::write(&app, &v, "04-phrases.md", &phrases.replace("Black coffee, please.", "Tea, please."), "mine").unwrap();
-        // Lilt ships version 2.
+        // Lilt ships version 3.
         std::fs::write(texts.join("_about.md"), &about).unwrap();
-        std::fs::rename(texts.join("04-phrases.md"), texts.join("08-phrases.md")).unwrap();
+        std::fs::rename(texts.join("04-phrases.md"), texts.join("09-phrases.md")).unwrap();
         let l = updates::list(&app, &v);
         assert_eq!(l["changes"].as_array().unwrap().len(), 1);
         assert_eq!((l["changes"][0]["id"].as_str(), l["changes"][0]["handling"].as_str()), (Some("edition"), Some("choose")));
@@ -326,8 +326,8 @@ fn a_new_edition_comes_in_whole_or_not_at_all() {
         let mine = syllabus::mine_files(&app, &v);
         if pick == "original" {
             assert_eq!(r["updates_taken"], 1);
-            assert!(mine.contains_key("08-phrases.md") && !mine.contains_key("04-phrases.md"));
-            assert!(!mine["08-phrases.md"].contains("Tea, please."));
+            assert!(mine.contains_key("09-phrases.md") && !mine.contains_key("04-phrases.md"));
+            assert!(!mine["09-phrases.md"].contains("Tea, please."));
         } else {
             assert_eq!(r["kept_yours"], 1);
             assert!(mine["04-phrases.md"].contains("Tea, please."));

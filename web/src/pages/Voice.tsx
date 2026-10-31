@@ -7,6 +7,7 @@ import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
+import { byPart, textLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 
@@ -232,25 +233,9 @@ function Medal({ className }: { className?: string }) {
     </svg>
   );
 }
-// A small line icon for each kind of tip, picked from its label.
-const TIP_ICONS: [RegExp, string][] = [
-  [/gentle|care/i, "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z"],
-  [/signs|working/i, "M3.5 8.5l3 3 6-7"],
-  [/volume|mode/i, "M3 5h10M3 11h10M6 3.5v3M10 9.5v3"],
-  [/mic\b|your mic/i, "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2"],
-  [/same|setup/i, "M3.5 6.5a4.5 4.5 0 018-2l1 1M12.5 9.5a4.5 4.5 0 01-8 2l-1-1M11.5 2.5v3h-3M4.5 13.5v-3h3"],
-  [/short|often|speedrun/i, "M8 2.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM8 5v3l2 1.5"],
-  [/baseline|record|come back/i, "M8 4.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"],
-  [/breath|breathe/i, "M2.5 6h7a2 2 0 10-2-2M2.5 10h9a2 2 0 11-2 2"],
-  [/slipping|not breathy/i, "M8 3l5.5 9.5h-11zM8 7v2.5M8 11v.01"],
-  [/target|middle/i, "M8 2.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM8 5.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"],
-  [/find|note|hum|buzz/i, "M6 11.5V3.5l6-1.5v8M6 11.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM12 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"],
-  [/pair|together/i, "M6.5 9.5l3-3M7 4.5l1-1a2.5 2.5 0 013.5 3.5l-1 1M9 11.5l-1 1A2.5 2.5 0 014.5 9l1-1"],
-  [/lift|three|act|melody|ends|watch/i, "M2 9c1.5-3 3-3 4 0s2.5 3 4 0 2.5-3 4 0"],
-  [/name|yours|rehearse|topics/i, "M3 4.5h10v6H7l-3 2.5v-2.5H3z"],
-];
-// A small sparkle for anything else.
-const tipIcon = (label: string) => TIP_ICONS.find(([re]) => re.test(label))?.[1] ?? "M8 3v3M8 10v3M3 8h3M10 8h3";
+/** Voice care keeps its heart; every other tip is a numbered step. */
+const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z";
+const isCare = (label: string) => /gentle|care/i.test(label);
 
 /**
  * A chapter's video. Until you press play it is only a card drawn here (no request to YouTube, so
@@ -280,9 +265,10 @@ function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
 }
 
 /**
- * A chapter's intro: its opening line, then each **Label.** paragraph as one row of a tip list
- * (icon, label, one line), voice care tinted. All of it the first time; once you've practised
- * there, the opening line and "Show tips". The sources fold away under the list.
+ * A chapter's intro: its opening line, then each **Label.** paragraph as a numbered step (number,
+ * label, a line or two), voice care tinted with a heart. All of it the first time; once you've
+ * practised there, the opening line and "Show tips". The sources fold away under the list. On a
+ * phone, "Skip to the texts" jumps past the steps.
  */
 function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }) {
   // Decided once per visit (the parent keys this by chapter), so it never folds up under you.
@@ -299,14 +285,24 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
     <section className="ci" aria-label="About this chapter">
       <Markdown src={lede} className="ci-lede" />
       {tips.length > 0 && open && (
-        <ul className="ci-tips" id={`tips-${level.id}`}>
-          {tips.map((t, i) => (
-            <li key={i} className={/gentle|care/i.test(t.label) ? "care" : undefined}>
-              <span className="ci-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={tipIcon(t.label)} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
-              <div>{t.label && <b>{t.label}</b>}<Markdown src={t.body} /></div>
-            </li>
-          ))}
-        </ul>
+        <button type="button" className="ci-link ci-skip" onClick={() => document.getElementById(`texts-${level.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+          Skip to the texts<span aria-hidden="true">↓</span>
+        </button>
+      )}
+      {tips.length > 0 && open && (
+        <ol className="ci-tips" id={`tips-${level.id}`}>
+          {tips.map((t, i) => {
+            const care = isCare(t.label);
+            return (
+              <li key={i} className={care ? "care" : undefined}>
+                {care
+                  ? <span className="ci-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+                  : <span className="ci-ic ci-n" aria-hidden="true">{tips.slice(0, i + 1).filter((x) => !isCare(x.label)).length}</span>}
+                <div>{t.label && <b>{t.label}</b>}<Markdown src={t.body} /></div>
+              </li>
+            );
+          })}
+        </ol>
       )}
       <div className="ci-foot">
         {tips.length > 0 && (
@@ -325,6 +321,8 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
 }
 
 const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(textId(COURSE, l.id, it.id)));
+/** The first chapter you haven't finished: next up. */
+const nextChapter = (texts: Texts, practised: Set<string>) => texts.levels.find((l) => !chapterDone(l, practised));
 
 const Chevron = ({ open }: { open: boolean }) => (
   <svg className={`ve-chev${open ? " open" : ""}`} viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -520,6 +518,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
   const toggle = (id: string) => setOpen((o) => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const left = deck ? deck.items.filter((i) => !i.done_today).length : 0;
   const total = deck?.items.length ?? 0;
+  const next = texts && nextChapter(texts, practised);
   const file = (key: string, label: string, done: boolean, on: boolean, to: string, disabled = false) => (
     <li key={key}>
       <button className={`ve-file${done ? " done" : ""}`} onClick={() => go(to)} disabled={locked || disabled} aria-current={on ? "page" : undefined} title={label}>
@@ -546,18 +545,21 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
         </Folder>
       </ul>
       <h6>Chapters{texts && <span>{texts.levels.filter((l) => chapterDone(l, practised)).length} of {texts.levels.length} complete</span>}</h6>
-      <ul className="ve-tree">
-        {texts?.levels.map((l) => {
-          const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
-          return (
-            <Folder key={l.id} id={l.id} label={l.title} current={current === l.id && !itemId} open={open.has(l.id)} onToggle={toggle} onOpen={() => go(`/studio/${l.id}`)} locked={locked}
-              extra={d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}>
-              {l.items.map((it) => file(it.id, it.text, practised.has(textId(COURSE, l.id, it.id)), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
-            </Folder>
-          );
-        })}
-        {texts && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
-      </ul>
+      {texts && byPart(texts.levels).map((g, gi, groups) => (
+        <ul className="ve-tree" key={`${gi}-${g.part ?? ""}`}>
+          {g.part && <li className="ve-part" aria-hidden="true">{g.part}</li>}
+          {g.levels.map((l) => {
+            const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
+            return (
+              <Folder key={l.id} id={l.id} label={l.title} current={current === l.id && !itemId} open={open.has(l.id)} onToggle={toggle} onOpen={() => go(`/studio/${l.id}`)} locked={locked}
+                extra={d >= n ? <Medal className="ve-medal-s" /> : <>{l.id === next?.id && <i className="ve-next-dot" title="Next up" />}<span className="c">{d}/{n}</span></>}>
+                {l.items.map((it) => file(it.id, textLabel(it.text, it.id), practised.has(textId(COURSE, l.id, it.id)), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
+              </Folder>
+            );
+          })}
+          {gi === groups.length - 1 && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
+        </ul>
+      ))}
     </nav>
   );
 }
@@ -848,6 +850,7 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
   const cut = texts.home ? texts.home.indexOf("\n## ") : -1;
   const intro = texts.home && cut >= 0 ? texts.home.slice(0, cut) : texts.home ?? "", rest = cut >= 0 ? texts.home!.slice(cut + 1) : "";
   const cover = texts.home_cover && picture(texts.home_cover);
+  const next = nextChapter(texts, practised);
   return (
     <>
       <div className="ve-page">
@@ -859,20 +862,26 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
           {rest && <Markdown src={rest} className="ve-md" />}
           <section className="ve-md">
             <h2>The chapters</h2>
-            <ol className="ve-chapters">
-              {texts.levels.map((l) => {
-                const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
-                return (
-                  <li key={l.id}>
-                    <a href={`#/studio/${l.id}`}>
-                      <span className="n">{l.level}</span>
-                      <span className="t"><b>{l.title}</b><small>{l.subtitle}</small></span>
-                      {d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}
-                    </a>
-                  </li>
-                );
-              })}
-            </ol>
+            {byPart(texts.levels).map((g, gi) => (
+              <div className="ve-part-group" key={`${gi}-${g.part ?? ""}`}>
+                {g.part && <h3 className="ve-part-h">{g.part}</h3>}
+                <ol className="ve-chapters">
+                  {g.levels.map((l) => {
+                    const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
+                    const isNext = l.id === next?.id;
+                    return (
+                      <li key={l.id}>
+                        <a href={`#/studio/${l.id}`} className={isNext ? "next" : undefined}>
+                          <span className="n">{l.level}</span>
+                          <span className="t"><b>{l.title}{isNext && <span className="ve-tag next">Next up</span>}</b><small>{l.subtitle}</small></span>
+                          {d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+            ))}
             {texts.edition?.mine && (
               <p className="ve-edition">
                 You're playing your mixtape of these chapters ({texts.edition.changes} {texts.edition.changes === 1 ? "change" : "changes"}).{" "}
@@ -954,7 +963,7 @@ function NextStep({ deck, texts, practised }: { deck: Deck | null; texts: Texts;
       <button className="ve-next-go" onClick={() => go(`/deck?card=${encodeURIComponent(left[0].card.id)}`)}>Start today's cards</button>
     </div>
   );
-  const chapter = texts.levels.find((l) => !chapterDone(l, practised));
+  const chapter = nextChapter(texts, practised);
   return (
     <div className="ve-next">
       <p><b>Today's cards are done.</b> Anything more is a bonus{chapter ? <>, like the next text in {chapter.title}</> : null}.</p>
@@ -1190,7 +1199,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
           </header>
           <ChapterIntro key={level.id} level={level} started={level.items.some((it) => practised.has(textId(COURSE, level.id, it.id)))} />
           {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
-          <ol className="ve-items">
+          <ol className="ve-items" id={`texts-${level.id}`}>
             {level.items.map((it, i) => {
               const on = i === sel;
               return (

@@ -1,5 +1,6 @@
 ---
 id: pitch
+part: The skills
 title: Pitch
 subtitle: Finding a range that feels like you
 kind: hum
@@ -10,59 +11,65 @@ video_image: images/video-5OyfNLWf3UM.jpg
 video_title: Low-Pitched Feminine Voice: Guided Practice
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/
-written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shaping your voice: pitch and resonance" (Activity 2), and NHS Lothian's "Where to start" (2026).
+written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shaping your voice: pitch and resonance" (Activity 2), and NHS Lothian's "Where to start" (2026). The mm-hm text is a common speech-therapy way to find a speaking pitch, chosen by Lilt.
 ---
 
-Pitch is how high or low your voice sounds. Explore a pitch you like that also feels easy to use.
+Pitch is how high or low your voice sits. It matters, but less than people think: a voice pushed high while everything else stays the same tends to sound strained or cartoony. You're looking for a note that's a little higher, easy, and yours.
 
-**Listen first.** Use the linked guided-practice video to hear possibilities. Pick one small contrast you can recognise; you don't need to match the speaker's exact note or voice.
+**Find where you are now.** Say "mm-hm!" the way you'd agree with a friend. That little sound lands close to your natural speaking pitch. Watch where it sits on the pitch line.
 
-**Try one thing.** Hum near your usual speaking pitch, then explore a small change if you want to. Return to the easy note and count to five. Your choice can stay close to where you started; higher is not automatically better.
+**Explore upwards, gently.** Glide from that note up and back down on a hum. Somewhere a few notes above your starting point there's usually a spot that still feels easy. That's your starting note, not a ceiling. If your voice flips, thins out or your throat tightens, you've gone past it; come back down.
 
-**Use it in words.** Say "Hello, how are you?" with the same easy starting point, letting the pitch move with the sentence. A speaking voice does not have to stay on one note.
+**Anchor it.** Hum your note, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
 
-**Listen back.** Compare two short takes: which sounds closer to what you want, and which feels easier? The Hz reading helps describe the take. It doesn't choose your target or decide whether your voice is feminine.
+**Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. A flat, held pitch sounds more robotic than feminine.
 
-**Ready for more?** You can find your chosen starting point again and use it in a short phrase without squeezing. Your optional [comfortable range](#/studio/settings) is a reminder of your choice, not a pass mark.
+**Listen back.** Does it sound like you, and could you talk like this for a few minutes? Once you know your note, save it as your [comfortable range](#/studio/settings) so the recorder shows it behind your pitch line.
 
 ## count-5
 
 One, two, three, four, five.
 
-> Your check-in: count from an easy starting pitch you chose. Listen for comfort and continuity, allowing normal movement between the numbers.
+> Your check-in: hum your note, then count. Let the numbers move a little, like normal speech.
 
 ## easy-hello
 
 Hello, how are you?
 
-> Start near the easy pitch you chose, then let the greeting move naturally. Compare two takes for comfort and the sound you prefer.
+> Start near your note and let the greeting go where it wants. "How are you?" can rise, fall, or both.
 
 ## hum-speak
 
 mmm
 
-> Hum near the pitch you would normally speak at. This is a starting point to explore, not something you must leave behind.
+> Hum where you'd normally speak. This is home base: everything else is measured from here.
+
+## mm-hm
+
+mm-hm!
+
+> Agree with an imaginary friend. Say it a few times without thinking about it; where it lands is close to your everyday speaking pitch.
 
 ## glide
 
 mmm ↗ ↘
 
-> Explore a small glide up and back down within an easy range. Notice which part feels comfortable and sounds useful to you.
+> Slide up from home base and back down. Notice where it still feels easy, and where it starts to thin or squeeze.
 
 ## hum-target
 
 mmmmmm
 
-> Hum on the comfortable note you chose for a few seconds. A small smile is optional; do not force a lift or squeeze in your throat.
+> Hum on your chosen note for a few seconds. A small smile can help it feel lighter. If your throat tightens, take the note down a step.
 
 ## hum-into-count
 
 mmm… one, two, three, four, five.
 
-> Open an easy hum into counting. Keep the same comfortable approach while letting the numbers sound like speech.
+> Hum your note, then open it into counting without a gap. Keep the numbers sounding like speech, not singing.
 
 ## count-20
 
 One, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty.
 
-> A longer try: return to your easy starting point after each breath. Let the pitch move naturally and stop before it feels tiring.
+> A longer run. Pitch tends to sink as you go; take a breath and hum your note again whenever it does.

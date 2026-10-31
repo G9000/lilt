@@ -1,5 +1,6 @@
 ---
 id: my-chapter
+part: The skills
 title: Chapter title
 subtitle: A short line under the title
 kind: phrases

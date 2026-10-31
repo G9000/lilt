@@ -261,11 +261,11 @@ mod tests {
         let cover = t["home_cover"].as_str().unwrap();
         assert!(dir.join(cover).exists(), "cover {cover} is missing");
         let levels = t["levels"].as_array().unwrap();
-        assert_eq!(levels.len(), 11);
+        assert_eq!(levels.len(), 13);
         for (i, l) in levels.iter().enumerate() {
             assert_eq!(l["level"], i + 1);
-            // Every chapter of the shipped course says what it trains and names its check-in.
-            assert!(l["area"].is_string() && l["check_in"].is_string(), "{}", l["id"]);
+            // Every chapter of the shipped course says what it trains, its part, and names its check-in.
+            assert!(l["area"].is_string() && l["part"].is_string() && l["check_in"].is_string(), "{}", l["id"]);
             for it in l["items"].as_array().unwrap() {
                 assert!(!it["text"].as_str().unwrap().is_empty() && !it["hint"].as_str().unwrap().is_empty(), "{} {}", l["id"], it["id"]);
             }

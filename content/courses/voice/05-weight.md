@@ -1,5 +1,6 @@
 ---
 id: weight
+part: The skills
 title: Vocal weight
 subtitle: Light, not breathy
 kind: phrases
@@ -10,41 +11,47 @@ video_image: images/video-a0PpzrWsTUE.jpg
 video_title: Voice Essentials: Vocal Weight for Beginners
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/
-written_by: Written for Lilt, from NHS Fife's vocal-cord tuning-in activity and NHS Lothian's "Where to start" (2026).
+written_by: Written for Lilt, from NHS Fife's vocal-cord tuning-in activity and NHS Lothian's "Where to start" (2026). The uh-oh text is Lilt's own choice.
 ---
 
-Vocal weight is a way of describing how heavy or light a voice sounds. The aim here is a small change you like while keeping the sound clear and easy.
+Vocal weight is how heavy or light your voice sounds: a booming "HEY!" across a field is heavy, a soft "uh-oh" to a toddler is light. It's separate from pitch and loudness. Lighter, but still clear, is the sound most people are after.
 
-**Listen first.** Use the linked vocal-weight video to hear a contrast before trying to make one. Listen for the quality being demonstrated without assuming a higher pitch or a quieter volume is the whole difference.
+**Find the two ends.** Say "ah" two ways: airy, like a sigh, then a little fuller, like calling to someone in the next room (not loud, just thicker). The light, clear sound you want sits between them.
 
-**Try one thing.** Say a short, clear "hello" in your usual voice. Try a slightly lighter version at a similar pitch and conversational loudness. Make a smaller change if it becomes airy or effortful; no shouting, forced whispering or exaggerated extremes are needed.
+**Go light, not breathy.** Breathy sounds soft but wastes air and tires and dries your voice. If you hear a lot of air, add a touch more clarity. If you feel a push in your chest or throat, back off.
 
-**Use it in words.** Carry that one change into "Hello, how are you today?" It is fine to stop after a short phrase.
+**Borrow a light moment.** Little sounds are naturally light: "uh-oh", "huh?", a gentle "aww". Start from one of them and carry its feel into the next words.
 
-**Listen back.** Which take sounds closer to the quality you want? Could you still speak clearly and comfortably? If you cannot hear the contrast, revisit the example or ask a voice professional rather than pushing harder.
+**Use it in words.** "Hello, how are you today?" with the same light, clear feel, at an ordinary speaking volume.
 
-**Ready for more?** You can repeat your preferred light, clear phrase without extra effort. Lilt does not measure vocal weight, so a pitch or resonance number cannot mark this exercise as correct.
+**Listen back.** Is it lighter than your everyday take, and still easy to understand? Lilt doesn't measure weight, so this one is all your ears. Playing two takes back to back helps a lot.
 
 ## light-hello
 
 aaah… hello.
 
-> Your check-in: an easy, clear ah into hello. Compare with an earlier take: which quality do you prefer, and was it comfortable?
+> Your check-in: a light, clear "ah" that flows into "hello". Compare with an earlier take.
 
 ## middle
 
 aaah · aaah · aaah
 
-> Say each ah easily, leaving space to breathe. Explore a small lighter version; return to your usual clear sound if the change becomes airy or effortful.
+> Three ahs: airy, then fuller, then the clear middle between them. Play it back; which one do you want to keep?
+
+## uh-oh
+
+uh-oh! · huh? · aww
+
+> Say them the way you'd say them to a small child: light and easy. Notice how little effort they take.
 
 ## light-phrase
 
 Hello, how are you today?
 
-> Try the same small change in this sentence. If it becomes breathy or tense, return to an ordinary clear hello, then try a smaller change.
+> Bring the light, clear feel into the sentence. If it turns breathy, add a little more voice; if it gets heavy, think "uh-oh".
 
 ## light-count
 
 One, two, three, four, five.
 
-> Count with the easy quality you chose, leaving room for natural pitch movement. Listen for clarity and comfort from first number to last.
+> Keep every number as light as the first, and let the pitch move naturally.
