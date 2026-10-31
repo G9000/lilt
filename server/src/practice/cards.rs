@@ -307,7 +307,7 @@ pub fn today_queue(app: &App) -> Result<Value> {
     if paused {
         return Ok(json!({
             "local_date": today, "paused": true, "items": [], "counts": {"new": 0, "review": 0, "again": 0},
-            "open_stage": open_stage, "cap": cap,
+            "open_stage": open_stage, "stages": max_stage, "cap": cap,
             "message": "Your plan is paused after a comfort report. Rest today; a quick check-in is still fine.",
         }));
     }
@@ -397,7 +397,14 @@ pub struct RateReq {
 pub fn rate(app: &App, req: RateReq) -> Result<Value> {
     if !["again", "hard", "good", "easy", "ouch"].contains(&req.rating.as_str()) { bail!("unknown rating"); }
     let cards = all_cards(app);
-    let card = cards.iter().find(|c| c.id == req.card_id).cloned().ok_or_else(|| anyhow!("card not found"))?;
+    // A before-and-after isn't a spaced card: it can only be reported as hurting (which pauses the plan).
+    let card = match cards.iter().find(|c| c.id == req.card_id) {
+        Some(c) => c.clone(),
+        None => {
+            let (today, _) = util::local_now(&app.profile().timezone);
+            before_after(app, &today).into_iter().map(|(c, _)| c).find(|c| c.id == req.card_id && req.rating == "ouch").ok_or_else(|| anyhow!("card not found"))?
+        }
+    };
     if let Some(t) = &req.take_id { app.take(t).map_err(|_| anyhow!("take does not exist"))?; }
     let _g = app.write_lock.lock().unwrap();
     if let Some(t) = &req.take_id {

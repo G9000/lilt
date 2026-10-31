@@ -273,6 +273,11 @@
 .ve-take .ab { display: grid; gap: 8px; }
 .ve-take-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .ve-result { margin-top: 16px; display: grid; gap: 12px; cursor: default; }
+/* scrolled into view after a take, with a little room above */
+.ve-result, .ve-take { scroll-margin-top: 24px; }
+/* the warm-up's measured details, folded under the rating */
+.ve-details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink-3); }
+.ve-details[open] summary { margin-bottom: 10px; }
 .ve .ve-ghost { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--ink-2); background: var(--fill); white-space: nowrap; }
 .ve .ve-ghost:hover:not(:disabled) { background: var(--fill-2); color: var(--ink); }
 .ve .ve-ghost[aria-pressed="true"] { color: var(--accent-ink); background: var(--accent-soft); }
@@ -732,8 +737,11 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 .ve-ba-l:first-child { margin-top: 0; }
 .ve-ba-q { margin-top: 16px; }
 .ve-ba-q .ve-q { margin: 0 0 8px; }
-.ve-ba-scale { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+/* fixed-width end labels so the three scales line up */
+.ve-ba-scale { display: grid; grid-template-columns: 76px repeat(5, 36px) 76px; align-items: center; gap: 6px; }
 .ve-ba-scale small { font-size: 12px; color: var(--ink-3); }
+.ve-ba-scale small:first-child { text-align: right; }
+@media (max-width: 420px) { .ve-ba-scale { grid-template-columns: 60px repeat(5, 32px) 60px; gap: 4px; } }
 .ve .ve-ba-scale button { min-width: 36px; min-height: 36px; padding: 0; border-radius: 10px; background: var(--fill); color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
 .ve .ve-ba-scale button[aria-pressed="true"] { background: var(--ink); color: var(--ve-paper); }
 .ve-ba .ve-rate-more { margin-top: 18px; }

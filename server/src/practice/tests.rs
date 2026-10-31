@@ -223,4 +223,8 @@ fn before_texts_come_back_every_three_weeks() {
     t.created_utc = (chrono::Utc::now() - chrono::Duration::days(22)).to_rfc3339();
     app.save_take(&t).unwrap();
     assert_eq!(ba(&app), vec![("text.start-here.baseline-read".to_string(), "before_after".to_string(), false)]);
+    // It isn't rated like a card, but "it hurts" still pauses the plan.
+    assert!(cards::rate(&app, RateReq { card_id: "text.start-here.baseline-read".into(), take_id: None, rating: "good".into() }).is_err());
+    rate(&app, "text.start-here.baseline-read", None, "ouch");
+    assert!(app.current_plan().unwrap().paused);
 }

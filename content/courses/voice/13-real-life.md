@@ -12,9 +12,7 @@ written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lot
 
 Practice in a quiet room is one thing; a noisy café or a phone call is another. This chapter rehearses the moments you'll actually meet, so they feel familiar when they come.
 
-**Rehearse here first.** Say the line in your everyday voice, then in your practice voice. Keep the version you'd be happy to use.
-
-**Pick a small step.** A voice note to yourself, a hello to someone you trust, ordering a drink. You choose when and where; there's no schedule and no test.
+**Climb a ladder.** A voice note to yourself, then one to a friend, then ordering something, then a phone call to a shop. Move up a rung when the one below feels ordinary, and step back down whenever you like. Rehearse each line here first, with the cues you can combine (see "Add a second cue" in Automatic speech). If your voice is tired or low by the evening, use it a little less tomorrow.
 
 **Phones are harder.** The line is tinnier and there's no face to help, so voices often drop back. Start calls with a line you've rehearsed, and take your time.
 

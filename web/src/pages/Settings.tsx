@@ -2,7 +2,7 @@ import "../styles/texts.css";
 import "../styles/settings.css";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Profile, TextItem } from "../api";
-import { textLabel } from "../chapters";
+import { idLabel } from "../chapters";
 import { applyTextSize, readTextSize, TEXT_SIZES, type TextSize, type Theme } from "../App";
 import { Callout } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
@@ -176,7 +176,8 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
               </button>
             </li>
           ))}
-          {shown.length === 0 && <li className="sx-none">No settings match.</li>}
+          {/* Your goal, range, warm-up, session length and reminder live in Practice settings. */}
+          {shown.length === 0 && <li className="sx-none">No settings match here. <button className="btn-secondary sx-btn" onClick={toPractice}>Look in Practice settings</button></li>}
         </ul>
       </nav>
       <section className="sx-main" aria-label={cur?.title}>
@@ -245,7 +246,7 @@ export function PracticeSettings() {
           {warmups.length > 0 && (
             <Row label="Daily warm-up" htmlFor="warm" help="Opens Today's cards every day, with the cool-down at the end. It isn't spaced like the others.">
               <select id="warm" value={p.warmup_card ?? "hum"} onChange={(e) => edit({ ...p, warmup_card: e.target.value })}>
-                {warmups.map((w) => <option key={w.id} value={w.id}>{textLabel(w.text, w.id)}</option>)}
+                {warmups.map((w) => <option key={w.id} value={w.id}>{idLabel(w.id)}</option>)}
                 <option value="">None</option>
               </select>
             </Row>

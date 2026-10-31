@@ -13,7 +13,9 @@ written_by: Written for Lilt, from NHS Fife's progression activities. The reacti
 
 Now you start combining. Counting and lists are words you never have to think about, so all your attention can go to the voice.
 
-**Pick one cue.** Brightness, a light feel, or your starting note: just one per take. Trying to manage everything at once is how voices get stiff.
+**Pick one cue.** Brightness, a light feel, or your note: just one per take. Trying to manage everything at once is how voices get stiff.
+
+**Add a second cue.** Once one cue lasts from Monday to Sunday, keep it and add one more: brightness first, then lightness, then your note. If both fall apart, go back to one. That's how the separate skills turn into one voice.
 
 **Say it, keep it going.** Run through the list with your cue. The hard part isn't the start; it's still having it at the end. Most voices drift back towards the old habit as the list goes on.
 

@@ -7,7 +7,7 @@ import { radio, useRadio } from "./lofi";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
 import { SettingsButton } from "./SettingsSheet";
-import { CoursesIcon, LeaveIcon, Mark, ProgressIcon, RecordingsIcon, StudioIcon, TextsIcon, TodayIcon } from "./icons";
+import { CoursesIcon, LeaveIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
 
 /**
  * The small Mac inside the room's monitor: wallpaper, menu bar, widgets, one app window, a dock.
@@ -102,11 +102,11 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
       )}
 
       <nav className="ds-dock ds-boot" aria-label="Apps">
-        {dockApp("/deck", "Practice", <TodayIcon date={now} />, !page || section === "deck" || section === "guided" || section === "practice" || section === "review")}
-        {dockApp("/studio", "Chapters", <StudioIcon />, section === "studio")}
-        {dockApp("/texts", "Practice texts", <TextsIcon />, section === "texts" || section === "library")}
-        {dockApp("/progress", "Progress", <ProgressIcon />, section === "progress" || section === "compare")}
-        {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history")}
+        {/* Named for what they open. Practice texts and Progress stay reachable by link but aren't
+            apps until they offer more than the chapters (and Progress has something to show). */}
+        {dockApp("/deck", "Today", <TodayIcon date={now} />, !page || section === "deck" || section === "guided" || section === "practice" || section === "review")}
+        {dockApp("/studio", "Practice", <StudioIcon />, section === "studio" || section === "texts" || section === "library")}
+        {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
         <span className="ds-sep" />
         {dockApp("/", "Back to the room", <LeaveIcon />, false)}
@@ -123,7 +123,7 @@ function TodayWidget({ deck, light, reload }: { deck: Deck | null; light: Light;
   const left = deck ? deck.items.filter((i) => !i.done_today) : [];
   const done = !!deck && (deck.all_done || left.length === 0);
   const minutes = Math.max(1, left.length);
-  const stages = deck?.stages ?? 7;
+  const stages = deck?.stages ?? deck?.open_stage ?? 1;
   const learned = deck?.total_cards ? (deck.learned ?? 0) / deck.total_cards : 0;
   return (
     <article className="ds-w ds-today" aria-label="Today's practice">

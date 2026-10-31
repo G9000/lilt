@@ -195,6 +195,8 @@ function StackCard({ item, depth, index, count, light, crop, first, delay, onSwi
 function StaticCard({ light, title, sub, onStart }: { light: string; title: string; sub: string; onStart: () => void }) {
   return (
     <motion.article className="cs-card top" onTap={onStart} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING} whileTap={{ scale: 0.985 }}>
+      {/* The same dark frame and white text as the live cards */}
+      <div className="cs-drag">
       <div className="cs-in">
         <div className="cs-img" style={{ backgroundImage: `url(room/room-${light}.webp)`, backgroundPosition: CROPS[0] }} />
         <svg className="cs-shape" viewBox="0 0 300 146" preserveAspectRatio="none" aria-hidden="true"><path d={SHAPE} /></svg>
@@ -205,6 +207,7 @@ function StaticCard({ light, title, sub, onStart }: { light: string; title: stri
           <div className="cs-foot"><span className="cs-count">Sit down at the desk</span>
             <span className="cs-go" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span></div>
         </div>
+      </div>
       </div>
     </motion.article>
   );

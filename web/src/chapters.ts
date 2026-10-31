@@ -8,7 +8,11 @@ const hasWord = (text: string) => (text.match(/\p{L}+/gu) ?? []).some((w) => w.t
  * made readable ("forward-hum" → "Forward hum"). An id under three letters says less than the text.
  */
 export function textLabel(text: string, id: string): string {
-  if (hasWord(text) || id.length < 3) return text;
+  return hasWord(text) || id.length < 3 ? text : idLabel(id);
+}
+
+/** A text id made readable: "hum-to-hello" → "Hum to hello", "ng" → "Ng". */
+export function idLabel(id: string): string {
   const name = id.replace(/[-_]+/g, " ").trim();
   return name.charAt(0).toUpperCase() + name.slice(1);
 }

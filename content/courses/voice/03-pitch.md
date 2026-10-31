@@ -16,35 +16,17 @@ written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shap
 
 Pitch is how high or low your voice sits. It matters, but less than people think: a voice pushed high while everything else stays the same tends to sound strained or cartoony. You're looking for a note that's a little higher, easy, and yours.
 
-**Find where you are now.** Say "mm-hm!" the way you'd agree with a friend. That little sound lands close to your natural speaking pitch. Watch where it sits on the pitch line.
+**Find where you are now.** Say "mm-hm!" the way you'd agree with a friend. That little sound lands close to your natural speaking pitch. Watch where it sits on the pitch line: that's where you speak now.
 
-**Explore upwards, gently.** Glide from that note up and back down on a hum. Somewhere a few notes above your starting point there's usually a spot that still feels easy. That's your starting note, not a ceiling. You don't need to reach the women's average shown after each take; many women speak below it. If you feel squeezing or strain, the sound turns breathy or hollow, or you couldn't keep it up for a chat, you've gone past it; come back down.
+**Explore upwards, gently.** Glide from where you speak now up and back down on a hum. About two to four semitones above it (two to four piano keys) there's usually a spot that still feels easy; Lilt shows semitones after each take. That's your note, a starting point rather than a ceiling. You don't need to reach the women's average shown after each take; many women speak below it. If you feel squeezing or strain, the sound turns breathy or hollow, or you couldn't keep it up for a chat, you've gone past it; come back down.
 
-**If your voice flips.** Near the top of your range the voice may flip into a lighter mode (head voice). That's not a mistake, and lots of feminine voices use a mix of both. What to avoid for speaking is a breathy, hollow falsetto.
+**If your voice flips.** Near the top of your range the voice may flip into a lighter mode. That's normal. For everyday speaking, most people stay just below the flip; a speaking voice built above it is possible, but best learned with a coach. If the flipped sound is breathy or hollow, come back down.
 
 **Anchor it.** Hum your note, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
 
 **Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. A flat, held pitch sounds robotic.
 
-**Listen back.** Does it sound like you, and could you talk like this for a few minutes? Once you know your note, save it as your [comfortable range](#/studio/settings) so the recorder shows it behind your pitch line.
-
-## count-5
-
-One, two, three, four, five.
-
-> Your check-in: hum your note, then count. Let the numbers move a little, like normal speech.
-
-## easy-hello
-
-Hello, how are you?
-
-> Start near your note and let the greeting go where it wants. "How are you?" can rise, fall, or both.
-
-## hum-speak
-
-mmm
-
-> Hum where you'd normally speak. This is home base: everything else is measured from here.
+**Listen back.** Does it sound like you, and could you talk like this for a few minutes? Once you know your note, save the range around it as your [comfortable range](#/studio/settings) so the recorder shows it behind your pitch line.
 
 ## mm-hm
 
@@ -52,23 +34,41 @@ mm-hm!
 
 > Agree with an imaginary friend. Say it a few times without thinking about it; where it lands is close to your everyday speaking pitch.
 
+## hum-speak
+
+mmm
+
+> Hum where you'd normally speak. That's where you speak now: everything else is measured from here.
+
 ## glide
 
 mmm ↗ ↘
 
-> Slide up from home base and back down. Notice where it still feels easy, and where it starts to squeeze or turn breathy. A flip partway up is normal.
+> Slide up from where you speak now and back down. Notice where it still feels easy, and where it starts to squeeze or turn breathy. A flip partway up is normal.
 
 ## hum-target
 
 mmmmmm
 
-> Hum on your chosen note for a few seconds. A small smile can help it feel lighter. If your throat tightens, take the note down a step.
+> Hum on your note for a few seconds. A small smile can help it feel lighter. If your throat tightens, take the note down a step.
 
 ## hum-into-count
 
 mmm… one, two, three, four, five.
 
 > Hum your note, then open it into counting without a gap. Keep the numbers sounding like speech, not singing.
+
+## count-5
+
+One, two, three, four, five.
+
+> Your check-in: hum somewhere easy (your note, once you've found it), then count. Let the numbers move a little, like normal speech.
+
+## easy-hello
+
+Hello, how are you?
+
+> Start near your note (or anywhere easy, if you haven't found it yet) and let the greeting go where it wants. "How are you?" can rise, fall, or both.
 
 ## count-20
 

@@ -58,14 +58,15 @@ async function main() {
   await record(page, 3);
   await page.locator(".prc-insight").first().waitFor({ timeout: 60000 });
   check("starting-voice take gets a note in words", (await page.locator(".prc-insight .n").first().innerText()).length > 0);
-  await page.getByRole("button", { name: "Use this as my range" }).click();
+  await page.getByRole("button", { name: "Use it for now" }).click();
   await page.getByText("You're all set.").waitFor();
   const profile = await page.evaluate(() => fetch("/api/profile").then((r) => r.json()));
   check("the comfortable range is saved", Array.isArray(profile.comfort_range_hz), JSON.stringify(profile.comfort_range_hz));
   await shot(page, "1-start");
 
   // Home again: your practice instead of the start card.
-  await page.getByRole("button", { name: "Back to Home" }).click();
+  check("after the range, Start here is offered next", await page.getByRole("button", { name: "Next: Start here" }).isVisible());
+  await page.goto(`${BASE}/#/studio`);
   await page.locator(".ve-practice").waitFor({ timeout: 10000 });
   const days = await page.locator(".ve-days").innerText();
   check("home shows your practice", /1 day of practice this month/.test(days), days);
@@ -122,7 +123,8 @@ async function main() {
   await page.goto(`${BASE}/#/deck`);
   await page.locator(".ve-item").first().waitFor();
   check("today opens with its first card up", (await page.locator(".ve-item.on").count()) === 1);
-  await page.locator(".ve-item:not(.done)").first().click();
+  // A new card (the warm-up first in the list folds its pitch details away).
+  await page.locator(".ve-item:not(.done)").filter({ hasText: "New card" }).first().click();
   await page.locator(".ve-item.on").waitFor();
   await record(page);
   await page.getByText("How did that feel?").waitFor({ timeout: 15000 });

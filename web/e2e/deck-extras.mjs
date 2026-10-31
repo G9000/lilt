@@ -43,12 +43,35 @@ async function main() {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
 
+  // A first visit: sitting down (Enter in the room) opens Start here, not Today.
+  await page.goto(`${BASE}/#/`);
+  await page.waitForTimeout(1500);
+  await page.keyboard.press("Enter");
+  await page.waitForURL(/#\/studio\/start-here/, { timeout: 8000 }).then(() => check("a first visit sits down at Start here", true), () => check("a first visit sits down at Start here", false, page.url()));
+
   // Today opens with the warm-up and closes with the cool-down.
   await page.goto(`${BASE}/#/deck`);
   await page.locator(".ve-item").first().waitFor({ timeout: 15000 });
   const kinds = await page.locator(".ve-items .ve-kind").allInnerTexts();
   check("the warm-up opens today's cards", /Warm-up/.test(kinds[0]), kinds[0]);
   check("the cool-down closes them", /Cool-down/.test(kinds[kinds.length - 1]), kinds[kinds.length - 1]);
+
+  // The warm-up comes every day: no "Again", and no "next in…".
+  await page.locator(".ve-item.on").filter({ hasText: "Warm-up" }).waitFor();
+  await record(page);
+  await page.getByText("How did that feel?").waitFor({ timeout: 15000 });
+  check("a daily card offers no Again", (await page.getByRole("button", { name: /^Again/ }).count()) === 0);
+  await page.getByRole("button", { name: "Good", exact: true }).click();
+  await page.waitForFunction(() => !document.body.innerText.includes("How did that feel?"), null, { timeout: 8000 });
+
+  // "Again" on a new card comes back before the cool-down, which still closes the day.
+  await page.goto(`${BASE}/#/deck?card=${encodeURIComponent("text.warmup.hum-to-hello")}`);
+  await page.locator(".ve-item.on").filter({ hasText: "New card" }).waitFor({ timeout: 15000 });
+  await record(page);
+  await page.getByRole("button", { name: /^Again,/ }).click();
+  await page.waitForFunction(() => !document.body.innerText.includes("How did that feel?"), null, { timeout: 8000 });
+  const kindsAfter = await page.locator(".ve-items .ve-kind").allInnerTexts();
+  check("Again lands before the cool-down", /Cool-down/.test(kindsAfter[kindsAfter.length - 1]) && kindsAfter.some((k) => /Again/.test(k)), kindsAfter.join(" | "));
 
   // An eyes-off review: no line or numbers while recording, rate first, then the pitch.
   await page.goto(`${BASE}/#/deck?card=${encodeURIComponent("text.warmup.lip-trill")}`);
@@ -88,7 +111,16 @@ async function main() {
   await page.waitForFunction(() => !document.body.innerText.includes("Save and carry on"), null, { timeout: 8000 });
   const after = takeFiles().filter((x) => x.t.prompt_id === "text.start-here.baseline-read").sort((a, b) => a.t.created_utc.localeCompare(b.t.created_utc)).pop();
   const answers = after?.t.self_report?.answers ?? {};
-  check("the three answers are kept with the take", answers.satisfied === "4" && answers.like_me === "3" && answers.effort === "2", JSON.stringify(answers));
+  check("the three answers are kept with the take", answers.satisfied === "4" && answers.like_me === "3" && answers.ease === "2", JSON.stringify(answers));
+
+  // "It hurts" pauses everything, and the same page offers the way back.
+  await page.goto(`${BASE}/#/deck`);
+  await page.locator(".ve-item.on").waitFor({ timeout: 15000 });
+  await page.getByRole("button", { name: "It hurts or feels strained" }).click();
+  await page.getByRole("heading", { name: "Let's stop here" }).waitFor({ timeout: 8000 });
+  await page.getByRole("button", { name: "I feel fine, resume" }).click();
+  await page.getByRole("heading", { name: "Today" }).waitFor({ timeout: 8000 });
+  check("after it hurt, Resume brings the cards back", (await page.locator(".ve-item.on").count()) === 1);
 
   check("no page errors", errors.length === 0, errors.join(" | "));
   await browser.close();

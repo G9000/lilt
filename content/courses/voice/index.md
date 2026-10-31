@@ -31,7 +31,7 @@ and hear the change for yourself instead of guessing.
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
 - **[Start here](#/studio/start-here)** first: set up your mic and record your "before".
 - **Chapters** come in three parts. _Get ready_: setup and warm-ups. _The skills_: pitch,
-  resonance, vocal weight, articulation and melody, one at a time, each with an everyday phrase on
+  resonance, vocal weight, articulation and intonation, one at a time, each with an everyday phrase on
   the same visit. _Bring it together_: lists, phrases, reading, talking, laughs and little sounds,
   then real life. Stay until it feels easy; go back whenever. Not a speedrun.
 - **Check-ins**: one text per chapter, same words every visit, so you can hear the glow-up.
@@ -82,9 +82,12 @@ professional for help. Bigger movements and higher numbers are not a substitute 
 It should never hurt. Stop if speaking hurts, feels strained or becomes hoarse, and rest instead
 of pushing through. If symptoms persist, keep returning, or concern you, ask for help; don't wait.
 
-- **See a GP straight away** for hoarseness that hasn't cleared in about three weeks, sudden
-  voice loss, pain when you speak or swallow, or a lump in your neck. Coughing up blood or
-  trouble breathing is urgent. A GP can refer you to ENT, who can look at your vocal folds.
+- **See a GP or primary care doctor straight away** (in the US, ask for an ENT or laryngologist)
+  for hoarseness that hasn't cleared in about three weeks, sudden voice loss, pain when you speak
+  or swallow, or a lump in your neck. Coughing up blood or trouble breathing is urgent. ENT can
+  look at your vocal folds.
+- **After voice surgery,** follow your surgeon's rest plan and get the all-clear before using
+  these exercises, including whispering.
 - **Get checked before you start** if you already have a hoarse voice or reflux, smoke or vape,
   or use your voice a lot for work.
 - **Build up slowly.** Practice is only part of your day's talking. If your voice is tired, sore or
@@ -100,7 +103,8 @@ no clinician has reviewed this course.
 Hearing your own voice can be hard, especially at the start. You don't have to listen to your
 "before" recording until you want to. Plateaus and off days are part of it for everyone, and it's
 fine to pause for a while and come back. If things feel heavy, talk to someone you trust; in the US
-and Canada, [Trans Lifeline](https://translifeline.org) is run by and for trans people.
+and Canada, [Trans Lifeline](https://translifeline.org) is run by and for trans people, and in the
+UK, [Switchboard LGBT+](https://switchboard.lgbt) is there to listen.
 
 ## Working with a professional
 
@@ -151,6 +155,9 @@ Voice-care guidance and the technique were checked against these sources again o
   intonation all play a part), and Leung, Oates, Chan and Papp (2021),
   [on resonance and pitch](https://pubmed.ncbi.nlm.nih.gov/34232704/). Neither sets an order for
   training; the chapter order is Lilt's choice.
+- The average speaking pitch on the scale after each take: Leung, Oates, Papp and Chan (2022),
+  "Speaking fundamental frequencies of adult speakers of Australian English and effects of sex,
+  age, and geographical location", Journal of Voice 36(3).
 - When to see a GP about hoarseness: NHS Greater Glasgow and Clyde,
   [ENT referral guidance for hoarseness](https://www.rightdecisions.scot.nhs.uk/ggc-primary-care/ear-nose-and-throat-ent/ear-nose-and-throat-ent-referral-guidance/throat-conditions/hoarseness).
 - How a straw helps: Ingo Titze, [straw phonation](https://www.vocology.utah.edu/_resources/documents/intro_a_video_straw_phonation_titze.pdf)

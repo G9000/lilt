@@ -1,6 +1,6 @@
 import { CoursesPage } from "./pages/Courses";
 import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "./api";
 import { CardStack } from "./desk/CardStack";
 import { RoomFloaters } from "./desk/Floaters";
@@ -85,6 +85,11 @@ export function App() {
   useEffect(() => { if (!inside) setInstant(false); }, [inside]);
   // The room, the inbox and the lights all follow today's deck; refresh it as you move around.
   useEffect(() => { void api.deck().then(setDeck, () => setDeck(null)); }, [inside, seg[0]]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Until you've recorded your "before", sitting down opens Start here (mic setup and baseline), not Today.
+  const [needsStart, setNeedsStart] = useState(false);
+  useEffect(() => { void api.history({ prompt_id: "text.start-here.baseline-read", days: 3650 }).then((h) => setNeedsStart(h.takes.length === 0), () => setNeedsStart(false)); }, [inside]);
+  const sitDown = useRef(() => go("/deck"));
+  sitDown.current = () => go(needsStart ? "/studio/start-here" : "/deck");
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
@@ -93,7 +98,7 @@ export function App() {
         || el.isContentEditable || el.matches?.("[role=button], [role=textbox], [role=slider], [role=switch], [role=checkbox]")) return;
       // A/B playback never during a take or a live pitch reading.
       if ((e.key === "a" || e.key === "b") && !micInUse()) window.dispatchEvent(new CustomEvent("lilt:play-tag", { detail: e.key.toUpperCase() }));
-      if (e.key === "Enter" && window.location.hash.replace(/^#/, "") in { "": 1, "/": 1 }) { e.preventDefault(); go("/deck"); }
+      if (e.key === "Enter" && window.location.hash.replace(/^#/, "") in { "": 1, "/": 1 }) { e.preventDefault(); sitDown.current(); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -123,13 +128,13 @@ export function App() {
   return (
     <MicProvider>
       <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
-      <Room inside={inside} onEnter={() => go("/deck")} cards={left} done={done}>
+      <Room inside={inside} onEnter={() => sitDown.current()} cards={left} done={done}>
         <RoomFloaters deck={deck} inside={inside} />
       </Room>
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>
         <RoomTop inbox={inbox} />
         <CardStack deck={deck} onStart={(id) => go(id ? `/deck?card=${encodeURIComponent(id)}` : "/deck")} />
-        <p className="ds-hint">Click the computer to start <kbd>↵</kbd></p>
+        <p className="ds-hint">Click the computer to sit down <kbd>↵</kbd></p>
       </div>
       <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}
         onTheme={() => setTheme(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox} />

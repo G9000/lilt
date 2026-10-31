@@ -18,7 +18,7 @@ Resonance is the space your voice travels through after it leaves your vocal fol
 
 **Hear the difference first.** Softly whisper "ee" and slide it up and down like a siren, just for a few seconds (no loud stage whisper). You'll hear the whisper itself get brighter and darker, with no voice at all. That change is resonance. Play the chapter video for a voiced demonstration.
 
-**Make the space smaller.** Three things do it. Your tongue: forward, not pulled back into your throat. Your lips: a slight smile instead of rounded. Your larynx (voice box): it can float up a little, which shortens the space.
+**Make the space smaller.** Three things do it. Your tongue: forward, not pulled back into your throat. Your lips: a slight smile instead of rounded. Your larynx (voice box): it can float up a little, which shortens the space. If it sounds pinched or cartoonish, you've lifted too far; ease back.
 
 **Find your larynx.** Rest a fingertip lightly on your throat and swallow: you'll feel the larynx rise and drop. Now pant a few times like a tiny dog, then like a big one. The tiny dog keeps it up. Then say "wa wa wa" with the tiny-dog feeling, and keep that lift into words. A few pants is plenty; stop if you feel dizzy.
 
@@ -32,18 +32,6 @@ Resonance is the space your voice travels through after it leaves your vocal fol
 
 **If it feels tight,** you're squeezing rather than shrinking. Reset with an easy hum or the straw from the warm-ups, then try a smaller change.
 
-## ee
-
-eeeeee
-
-> Your check-in: an easy "ee" as in "see", about four seconds. Keep your pitch and loudness close to last time so the comparison is fair.
-
-## bright-morning
-
-Morning! How are you?
-
-> Hum, then say it with the small brighter "ee" space you found. Compare with an ordinary take.
-
 ## whisper-siren
 
 eee ↗ ↘ · eee
@@ -56,23 +44,35 @@ wa · wa · wa
 
 > Pant like a tiny dog a few times, then say "wa" with that lifted feeling. Listen for a brighter "wa" than your usual one.
 
-## bright-slide
-
-eee · eee · eee
-
-> One easy note: a darker "ee", a brighter "ee", then darker again. Only the brightness moves; check the pitch line stays flat.
-
 ## forward-hum
 
 mmmmmmm
 
 > Hum with a small smile and feel for a buzz on your lips or the front of your face. If you don't feel one, that's fine; listen instead.
 
+## bright-slide
+
+eee · eee · eee
+
+> One easy note: a darker "ee", a brighter "ee", then darker again. Only the brightness moves; check the pitch line stays flat. Play it back without looking: can you hear which was which?
+
 ## m-vowels
 
 mmmee · mmmaa · mmmoo
 
 > Open the hum into each vowel. "Oo" will always be darker than "ee"; try to keep the tongue forward even there.
+
+## ee
+
+eeeeee
+
+> Your check-in: an easy "ee" as in "see", about four seconds, as bright as feels easy today. Keep your pitch and loudness close to last time so the comparison is fair.
+
+## bright-morning
+
+Morning! How are you?
+
+> Hum, then say it with the brighter "ee" space (from the whisper siren, if you've tried it). Compare with an ordinary take.
 
 ## m-words
 

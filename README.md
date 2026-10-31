@@ -71,9 +71,10 @@ Then open <http://127.0.0.1:7878>.
      full screen, laid out like a writing app: chapters in a sidebar, the chapter as a page of
      things to read, and the recorder docked at the bottom. Click any card further down to do it next.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
-   of Lilt is an app on it: **Today** (the widgets), **Practice**, **Practice texts**, **Progress**
-   and **Recordings** in the dock, Settings and the light/dark switch in the menu bar. **Leave desk**
-   (or the door in the dock) walks you back out to the room.
+   of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Recordings**
+   and **Courses** in the dock, Settings and the light/dark switch in the menu bar. **Leave desk**
+   (or the door in the dock) walks you back out to the room. Until you've recorded your "before",
+   sitting down opens Start here instead of Today.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
      with your clock. Birds cross the windows by day; stars and city lights come out at night. The
      cat sleeps on the bed and breathes; when you arrive it flicks an ear and says hello, and tapping

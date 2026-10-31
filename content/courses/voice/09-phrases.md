@@ -15,11 +15,11 @@ The lines you'll actually use this week. Practise them here and they're ready wh
 
 **Make them yours.** Swap in your own name, your usual order, your real way of saying thanks. A phrase you actually say is worth ten you don't.
 
-**Two takes.** Record one in your everyday voice, then one with your practice voice. Play them back to back. The difference you hear is what you're building.
+**Two takes.** Record one in your everyday voice, then one with your practice voice (the cues you can already combine; see "Add a second cue" in Automatic speech). Play them back to back. The difference you hear is what you're building.
 
 **Start ready.** Real life doesn't give you a hum first. Try starting a phrase cold, with no warm-up sound, and see if your voice is there from the first word.
 
-**Try one out there.** When you feel like it, use one line for real: ordering a drink, a voice note to yourself, a hello to someone you trust. Rehearsing here counts too. Build up your outside use gradually; if your voice is tired or low by the evening, use it a little less tomorrow.
+**Try one out there.** When you feel like it, use one line for real, and build up gradually; Real life has a ladder of steps.
 
 **Listen back.** Which take do you like more, and could you say it like that again without preparing?
 

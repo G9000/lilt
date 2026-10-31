@@ -163,8 +163,12 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
     const id = window.setTimeout(() => {
       const f = frame.current;
       f.poked = f.t;
-      setAside("mrrp… welcome back");
-      window.setTimeout(() => setAside((a) => (a === "mrrp… welcome back" ? null : a)), 3200);
+      // A first visit (in this browser) gets a hello; after that, welcome back.
+      let seen = false;
+      try { seen = localStorage.getItem("lilt.room.seen") === "1"; localStorage.setItem("lilt.room.seen", "1"); } catch { /* private window */ }
+      const hi = seen ? "mrrp… welcome back" : "mrrp… hello!";
+      setAside(hi);
+      window.setTimeout(() => setAside((a) => (a === hi ? null : a)), 3200);
     }, 900);
     return () => window.clearTimeout(id);
   }, [inside]);
@@ -192,7 +196,8 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   };
 
   const say = aside ?? state.say;
-  const peekTop = Math.min(MAIN_SCREEN[0][1], MAIN_SCREEN[1][1]) - 8;
+  // Under the monitor, so it never covers the clock in the window above it.
+  const peekTop = Math.max(...MAIN_SCREEN.map((p) => p[1])) + 8;
   const peekX = (MAIN_SCREEN[0][0] + MAIN_SCREEN[1][0]) / 2;
   // Opened in the room, it starts settled (no flight); after that only the camera loop sets it,
   // so this class name never changes and React never resets it.
@@ -210,7 +215,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
           onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)} onFocus={() => setHover(true)} onBlur={() => setHover(false)} />
         <div className="room-peek" style={{ left: peekX, top: peekTop }} aria-hidden="true">
           <b>{cards === null ? "Your desk" : cards === 0 ? "All done today" : `${cards} card${cards === 1 ? "" : "s"} today`}</b>
-          <span>Click the screen to sit down</span>
+          <span>Sit down at the desk</span>
         </div>
         {children}
       </div>

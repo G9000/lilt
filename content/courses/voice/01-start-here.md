@@ -25,11 +25,11 @@ Hi, friend. Five minutes of setup, one "before" recording, and you're ready.
 
 **Record your "before".** Read the texts below in your everyday voice. Don't change anything yet. Future you will want this, trust me. You don't have to listen back to it until you want to.
 
-**How every chapter works.** The same small loop each time: hear an example, try one change, record, listen back, then use it in a real phrase straight away. Five to ten minutes is plenty. Short and often beats long and rare.
+**How every chapter works.** The same small loop each time: hear an example or replay a take you like, try one change, record, listen back, then use it in a real phrase straight away. Five to ten minutes is plenty. Short and often beats long and rare.
 
-**Your ears decide.** Lilt shows your pitch and a rough read of your resonance, but numbers describe a take; they don't grade it. The questions that matter: did it feel easy, could I do it again, and do I like how it sounds?
+**Your ears decide.** Lilt shows your pitch and a rough read of your resonance, but numbers describe a take; they don't grade it. The questions that matter: did it feel easy, could I do it again, and do I like how it sounds? Inside your head your voice sounds lower and fuller than it does to anyone else; the recording is closer to what others hear. Listen back on headphones, not a laptop speaker.
 
-**Be gentle with your voice.** It should never hurt. If your voice feels strained, scratchy or hoarse, stop and rest, and do less tomorrow. Skip practice when you have a cold or have lost your voice. Swallow or sip water instead of clearing your throat. If you already have hoarseness or reflux, or you smoke or vape, get checked by a GP before you start. Hoarseness lasting more than about three weeks, pain, sudden voice loss or a lump in your neck: see a GP, who can refer you to ENT.
+**Be gentle with your voice.** It should never hurt: stop and rest if it strains. When to see a doctor is on Home and at the end of every chapter.
 
 ## today
 

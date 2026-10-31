@@ -355,7 +355,7 @@ const PLACES = [
   { id: "free", label: "Studio", to: "/studio/free", icon: "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2" },
   { id: "recordings", label: "Recordings", to: "/history", icon: "M3 6.5v3M5.5 4v8M8 2.5v11M10.5 5v6M13 7v2" },
   { id: "mixtape", label: "Mixtape", to: "/studio/mixtape", icon: "M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8M5 12l1-2h4l1 2" },
-  { id: "settings", label: "Settings", to: "/studio/settings", icon: "M8 5.6a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8zM8 1.8v1.6M8 12.6v1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M1.8 8h1.6M12.6 8h1.6M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1" },
+  { id: "settings", label: "Practice settings", to: "/studio/settings", icon: "M8 5.6a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8zM8 1.8v1.6M8 12.6v1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M1.8 8h1.6M12.6 8h1.6M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1" },
 ];
 
 /**
@@ -671,6 +671,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const [elapsed, setElapsed] = useState(0);
   const [listening, setListening] = useState(false);
   const rec = useRef<TakeRecorder | null>(null);
+  const box = useRef<HTMLElement>(null);
   const starting = useRef(false);
   const mounted = useRef(true);
   useEffect(() => {
@@ -699,6 +700,17 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
 
 
   useEffect(() => { onRecording(recording); }, [recording]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The recorder sits in the page, under the text: bring it into view while you record (live line and
+  // Stop), and the take's result once it's saved (it renders just after the recorder).
+  useEffect(() => { if (recording) box.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [recording]);
+  useEffect(() => {
+    if (state !== "saved") return;
+    const id = window.setTimeout(() => {
+      const next = box.current?.nextElementSibling;
+      if (next) next.scrollIntoView({ block: "start", behavior: "smooth" });
+    }, 120);
+    return () => window.clearTimeout(id);
+  }, [state]);
   useEffect(() => () => onRecording(false), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Loudness for the waveform, while the microphone is in use.
@@ -790,7 +802,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const showResult = idle && !!result;
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   return (
-    <section className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}`} aria-label="Recorder">
+    <section ref={box} className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}`} aria-label="Recorder">
       {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
       <div className="ve-now" aria-live="off">
         <div className={`ve-now-read${nowHeld.held ? " held" : ""}`}>
@@ -1053,16 +1065,17 @@ function StartDoc({ profile, onProfile, onRecording, onTake }: {
   const save = async () => { if (range) { onProfile(await api.saveProfile({ ...profile, comfort_range_hz: range })); setSaved(true); } };
   const result = take && (
     <>
-      <FreeResult take={take} band={range} onMeasured={(m) => void measured(m)} />
+      {/* No range is chosen yet, so the take isn't judged against one. */}
+      <FreeResult take={take} band={saved ? range : null} onMeasured={(m) => void measured(m)} />
       {range && (saved ? (
         <div className="ve-start-done">
-          <p><b>You're all set.</b> Your comfortable range is {range[0]}–{range[1]} Hz, and this take is your Day 1.</p>
-          <div><button className="ve-start-go" onClick={() => go("/deck")}>Start today's cards</button><button className="ve-link" onClick={() => go("/studio")}>Back to Home</button></div>
+          <p><b>You're all set.</b> Your comfortable range is {range[0]}–{range[1]} Hz for now, and this take is your Day 1. Once you find your note in the Pitch chapter, move the range up to match in Practice settings.</p>
+          <div><button className="ve-start-go" onClick={() => go("/studio/start-here")}>Next: Start here</button><button className="ve-link" onClick={() => go("/deck")}>Start today's cards</button></div>
         </div>
       ) : (
         <div className="ve-start-done">
-          <p>From this take, your comfortable range looks like <b>{range[0]}–{range[1]} Hz</b>. The recorder shades it so you can see where you are while you practise.</p>
-          <div><button className="ve-start-go" onClick={() => void save()}>Use this as my range</button><span className="ve-small">You can record it again first, if you like.</span></div>
+          <p>Right now you speak at about <b>{range[0]}–{range[1]} Hz</b>. Lilt can shade this behind your pitch line as your comfortable range for now. When you find your note in the Pitch chapter, you'll move it up.</p>
+          <div><button className="ve-start-go" onClick={() => void save()}>Use it for now</button><span className="ve-small">You can record it again first, if you like.</span></div>
         </div>
       ))}
     </>
@@ -1082,7 +1095,7 @@ function StartDoc({ profile, onProfile, onRecording, onTake }: {
               <span className="ve-mk num" aria-hidden="true">1.</span>
               <p className="readtext ve-read">{REF.text}</p>
               <p className="ve-hint">An easy pace, in your everyday voice. The daily reference card uses this same line.</p>
-              <Dock key="start" meta={studio ? { session_id: studio, role: "reference", prompt_id: REF.prompt_id, prompt_text: REF.text } : null} band={range} allowRetake
+              <Dock key="start" meta={studio ? { session_id: studio, role: "reference", prompt_id: REF.prompt_id, prompt_text: REF.text } : null} band={saved ? range : null} allowRetake
         onSaved={(t) => { onTake(t); setTake(t); setRange(null); setSaved(false); }} onRecording={onRecording} idleHint="Press record and count from one to ten"
         />
               {!split && result}
@@ -1211,12 +1224,6 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             <p className="ve-subtitle">{level.subtitle}</p>
             <p className="ve-meta">{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
             <div className="ve-head-actions">
-              {/* Editing the chapter's Markdown yourself: coming later, shown so you know it's planned. */}
-              <button className="ve-edit-btn" aria-disabled="true" aria-describedby="ve-edit-soon" onClick={(e) => e.preventDefault()}>
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.6 2.9l2.5 2.5M3 13l.6-3.1 7.3-7.3a1 1 0 011.4 0l1.1 1.1a1 1 0 010 1.4L6.1 12.4z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                Edit
-                <span className="ve-soon-tip" id="ve-edit-soon" role="tooltip">Coming soon: edit this chapter yourself</span>
-              </button>
               <button className="ve-remix-btn" disabled={recording} title={recording ? "Stop recording first" : undefined} onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               Remix
@@ -1289,6 +1296,10 @@ function ChapterTake({ take, before, band, onUseRange, onUpdate }: { take: Take;
 /* ---------------------------------------------------------------- today: the voice deck */
 
 interface Result { item: DeckItem; rating: Rating | "saved"; median: number | null }
+/** Cards that come every day (warm-up, reference, cool-down): no "Again", and no "next in…". */
+/** One label for "this hurts", before a take and after it. */
+const HURT = "It hurts or feels strained";
+const everyDay = (it?: DeckItem) => !!it && (it.kind === "warmup" || it.kind === "daily" || it.kind === "cooldown");
 /** After rating an eyes-off take, "reveal" shows its pitch before moving on (q: the queue to go on with). */
 type Phase = { k: "say"; retryOf: string | null } | { k: "rate"; take: Take } | { k: "reveal"; take: Take; q: DeckItem[] } | { k: "end" } | { k: "hurt" };
 const KIND_TAG: Partial<Record<DeckItem["kind"], string>> = { new: "New card", again: "Again", warmup: "Warm-up", cooldown: "Cool-down", before_after: "Before and after" };
@@ -1297,11 +1308,11 @@ const KIND_TAG: Partial<Record<DeckItem["kind"], string>> = { new: "New card", a
 const BEFORE_AFTER_QS = [
   { id: "satisfied", q: "How happy are you with how it sounds?", lo: "Not yet", hi: "Very" },
   { id: "like_me", q: "Does it sound like you?", lo: "Not really", hi: "Completely" },
-  { id: "effort", q: "How much effort did it take?", lo: "Very little", hi: "A lot" },
+  { id: "ease", q: "How easy did it feel?", lo: "Hard work", hi: "Easy" },
 ];
 
 /** A "before" text again, weeks later: your take now beside your very first one, and three questions. */
-function BeforeAfter({ take, item, onDone }: { take: Take; item: DeckItem; onDone: () => void }) {
+function BeforeAfter({ take, item, onDone, onAgain, onHurt }: { take: Take; item: DeckItem; onDone: () => void; onAgain: () => void; onHurt: () => void }) {
   const [first, setFirst] = useState<Take | null | undefined>(undefined);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -1337,6 +1348,8 @@ function BeforeAfter({ take, item, onDone }: { take: Take; item: DeckItem; onDon
       <div className="ve-rate-more">
         <button className="ve-next-go" onClick={() => void save()} disabled={busy}>Save and carry on</button>
         {first && <button className="ve-ghost" onClick={() => go(`/compare?a=${first.id}&b=${take.id}`)}>Detailed comparison</button>}
+        <button className="ve-pill" onClick={onAgain} disabled={busy}>Record it again</button>
+        <button className="ve-pill ouch" onClick={onHurt} disabled={busy}>{HURT}</button>
       </div>
       {err && <p role="alert" className="ve-err">{err}</p>}
     </div>
@@ -1384,19 +1397,27 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   // The first card is up straight away: Record always records a card. (Free talk lives in Studio.)
   const [chosen, setChosen] = useState(true);
 
-  useEffect(() => {
-    Promise.all([api.deck(), api.deckSession()]).then(([d, s]) => {
-      setDeck(d); onDeck(d); setSession(s);
-      setComfort(s.comfort?.comfort ?? null);
-      const left = d.items.filter((i) => !i.done_today);
-      const pick = first ? left.findIndex((i) => i.card.id === first) : -1;
-      setQueue(pick > 0 ? [left[pick], ...left.slice(0, pick), ...left.slice(pick + 1)] : left);
-      if (d.paused) setPhase({ k: "hurt" }); else if (!left.length) setPhase({ k: "end" });
-    }, (e) => setErr(e.message));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const load = () => Promise.all([api.deck(), api.deckSession()]).then(([d, s]) => {
+    setDeck(d); onDeck(d); setSession(s);
+    setComfort(s.comfort?.comfort ?? null);
+    const left = d.items.filter((i) => !i.done_today);
+    const pick = first ? left.findIndex((i) => i.card.id === first) : -1;
+    setQueue(pick > 0 ? [left[pick], ...left.slice(0, pick), ...left.slice(pick + 1)] : left);
+    setIdx(0); setResults([]);
+    setPhase(d.paused ? { k: "hurt" } : left.length ? { k: "say", retryOf: null } : { k: "end" });
+  }, (e) => setErr(e.message));
+  useEffect(() => { void load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const resume = () => void api.resumePlan().then(load, (e) => setErr(e.message));
 
   const item = queue[idx];
   useEffect(() => { curRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [idx, phase.k]);
+  // A rating, a reveal or a before-and-after appears under the card: bring its top into view.
+  useEffect(() => {
+    if (phase.k !== "rate" && phase.k !== "reveal") return;
+    const id = window.setTimeout(() => document.querySelector(".ve-item.on .ve-result")?.scrollIntoView({ block: "start", behavior: "smooth" }), 150);
+    return () => window.clearTimeout(id);
+  }, [phase.k]);
+
   useEffect(() => { if (phase.k === "end" || phase.k === "hurt") titleRef.current?.focus({ preventScroll: true }); }, [phase.k]);
 
   const choose = (j: number) => {
@@ -1417,7 +1438,10 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       let q = queue;
       if (r === "again") {
         const fresh = res.deck.items.find((i) => i.card.id === item.card.id) ?? item;
-        q = [...queue, { ...fresh, kind: "again", done_today: false, eyes_off: false }];
+        // Back later today, but still before the cool-down that closes the day.
+        const again: DeckItem = { ...fresh, kind: "again", done_today: false, eyes_off: false };
+        const cool = queue.findIndex((x, j) => j > idx && x.kind === "cooldown");
+        q = cool < 0 ? [...queue, again] : [...queue.slice(0, cool), again, ...queue.slice(cool)];
         setQueue(q);
       }
       // An eyes-off take shows its pitch once you've rated it; the others move straight on.
@@ -1440,7 +1464,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       const el = e.target as HTMLElement;
       if (e.metaKey || e.ctrlKey || e.altKey || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName)) return;
       const n = Number(e.key);
-      if (n >= 1 && n <= 4) { e.preventDefault(); void rate(RATINGS[n - 1].r); }
+      if (n >= 1 && n <= 4 && !(n === 1 && everyDay(item))) { e.preventDefault(); void rate(RATINGS[n - 1].r); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -1477,21 +1501,19 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       <div className="ve-rate-more"><button className="ve-next-go" onClick={() => advance(phase.q)}>Next card</button></div>
     </div>
   ) : phase.k === "rate" && item.kind === "before_after" ? (
-    <BeforeAfter key={phase.take.id} take={phase.take} item={item} onDone={beforeAfterDone} />
+    <BeforeAfter key={phase.take.id} take={phase.take} item={item} onDone={beforeAfterDone} onAgain={() => setPhase({ k: "say", retryOf: phase.take.id })} onHurt={ouchNow} />
   ) : phase.k === "rate" && (
     <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={phase.take.id}>
       <ListenBack src={phase.take.audio_url} />
-      {item.eyes_off
-        ? <p className="ve-small">An eyes-off take: rate it by what you heard. Lilt shows the pitch once you've rated it.</p>
-        : <Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
+      {/* Rate straight after listening; the measured details follow (folded for the daily warm-ups). */}
       <div className="ve-rate-box">
         <p className="ve-q" id="feel-q">How did that feel?</p>
         <div className="vc-rate ve-rate" role="group" aria-labelledby="feel-q">
-          {RATINGS.map((r, i) => (
-            <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={`${r.label}, next ${item.preview[r.r]}`}>
+          {RATINGS.map((r, i) => (everyDay(item) && r.r === "again") ? null : (
+            <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={everyDay(item) ? r.label : `${r.label}, next ${item.preview[r.r]}`}>
               <span className="face" aria-hidden="true">{r.face}</span>
               <span className="l">{r.label}<kbd aria-hidden="true">{i + 1}</kbd></span>
-              <small>{item.preview[r.r] === "later today" ? "in a few min" : item.preview[r.r]}</small>
+              {!everyDay(item) && <small>{item.preview[r.r] === "later today" ? "in a few min" : item.preview[r.r]}</small>}
             </button>
           ))}
         </div>
@@ -1502,13 +1524,17 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
           </button>
           <button className="ve-pill ouch" onClick={() => void rate("ouch")} disabled={busy}>
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.3-5.5-7A3 3 0 018 5.2 3 3 0 0113.5 7C13.5 10.7 8 14 8 14z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
-            It hurt or felt strained
+            {HURT}
           </button>
         </div>
       </div>
+      {item.eyes_off
+        ? <p className="ve-small">An eyes-off take: rate it by what you heard. Lilt shows the pitch once you've rated it.</p>
+        : everyDay(item) && item.kind !== "daily"
+          ? <details className="ve-details"><summary>Pitch details</summary><Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} /></details>
+          : <Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
     </div>
   );
-
   return (
     <>
       <div className="ve-page">
@@ -1518,11 +1544,20 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
               : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}>Let's stop here</h1>
               : <h1>Today</h1>}
             <p className="ve-subtitle">{date}</p>
-            <p className="ve-meta">{doneCount} of {total} done{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
+            <p className="ve-meta">{phase.k === "hurt" ? "Paused" : `${doneCount} of ${total} done`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
           </header>
           {phase.k === "hurt" ? (
-            <blockquote className="ve-how warn"><b>Rest your voice</b>
-              That card is paused and so is your plan. Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</blockquote>
+            <>
+              <blockquote className="ve-how warn"><b>Rest your voice</b>
+                That card is paused and so is your plan. Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</blockquote>
+              <div className="ve-endbox">
+                <p className="ve-small">When speaking feels easy again, pick up where you left off. The paused card comes back gently.</p>
+                <div className="ve-rate-more">
+                  <button className="ve-next-go" onClick={resume}>I feel fine, resume</button>
+                  <button className="ve-ghost" onClick={() => go("/")}>Back to the room</button>
+                </div>
+              </div>
+            </>
           ) : phase.k === "end" ? (
             <div className="ve-endbox">
               {comfort ? <p className="ve-note ok" role="status">{comfort === "strain" || comfort === "pain" ? "Noted. Your plan is paused so you can rest." : "Noted. See you tomorrow."}</p> : (
@@ -1536,7 +1571,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                   </div>
                 </>
               )}
-              <p className="ve-small">Your takes are in <a href="#/history">your recordings</a> and <a href="#/progress">progress</a>. Anything more today is a bonus: try a chapter on the left.</p>
+              <p className="ve-small">Your takes are in <a href="#/history">your recordings</a>. Anything more today is a bonus: try a chapter on the left.</p>
+              <div className="ve-rate-more"><button className="ve-ghost" onClick={() => go("/")}>Back to the room</button></div>
             </div>
           ) : (
             <blockquote className="ve-how"><b>How to do it</b>
@@ -1563,13 +1599,15 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                   {on && it.card.kind !== "exercise"
                     ? <ReadAlong text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} kind={it.card.text_kind} stream={mic.stream} active={recOn} />
                     : <p className="readtext ve-read" aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
+                  {/* The little numbers in the text point to these notes, as in the chapters. */}
+                  {on && it.card.kind !== "exercise" && <ReadNotes text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} withHint={false} />}
                   {it.card.hint && <p className="ve-hint">{cardHint(it.card.hint)}</p>}
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(j)} disabled={phase.k !== "say" || recOn}>Practise {it.card.front.slice(0, 40)} next</button>}
                   {on && item && (
                     <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k !== "say"} eyesOff={!!item.eyes_off && phase.k === "say"}
                       onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
                       idleHint={phase.k === "reveal" ? "Have a look, then carry on" : phase.k === "rate" ? (item.kind === "before_after" ? "Listen to both, then answer" : "Listen back, then rate how it felt") : "Press record and say the card"}>
-                      {phase.k === "say" && !recOn && <button className="ve-link ouch" onClick={ouchNow}>Stop, my voice hurts</button>}
+                      {phase.k === "say" && !recOn && <button className="ve-link ouch" onClick={ouchNow}>{HURT}</button>}
                     </Dock>
                   )}
                   {on && rateView}

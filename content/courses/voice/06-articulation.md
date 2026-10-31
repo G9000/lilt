@@ -16,7 +16,7 @@ Articulation is how your lips, tongue and jaw shape sounds. Lighter, quicker con
 
 **Lips that move.** "Pa ba ma": let your lips meet and spring apart. Keep your jaw loose; it doesn't need to do the work.
 
-**Lighter back sounds.** K and g are made at the back of the tongue, where they can sound heavy. Keep them short and crisp, and let the next vowel come forward.
+**Crisp s.** Keep the tongue tip just behind your top teeth and the s short and bright, not slushy or lisped. Listeners notice it.
 
 **Use it in words.** "Thanks, that's perfect, see you later!" with quick, light consonants. Clear doesn't mean slow or over-pronounced.
 
@@ -56,4 +56,4 @@ Ten tiny kittens sat on a little table.
 
 Can I take a quick look at the cake?
 
-> K at the back of the tongue: keep each one short, then bring the vowel forward again.
+> Quick and clear all the way through, with the vowels staying forward.

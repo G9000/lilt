@@ -67,7 +67,7 @@ function CourseList() {
           ))}
         </ul>
       )}
-      <p className="co-note">A new course is a folder in <code>content/courses</code> with a <code>course.md</code>; see the README there.</p>
+      <p className="co-note">Each course is a set of plain Markdown chapters you can read and change. To make a new one, see the README on GitHub.</p>
     </div>
   );
 }
