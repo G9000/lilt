@@ -7,7 +7,7 @@ import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
-import { byPart, textLabel } from "../chapters";
+import { byPart, isLong, passageTitle, readingTime, textLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 
@@ -1247,6 +1247,8 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                   onClick={() => { if (!on) choose(i); }}>
                   <span className="ve-mk num" aria-hidden="true">{i + 1}.</span>
                   {it.id === level.check_in && <span className="ve-checkin" title="Record this one each time you visit, so you can hear and see your change">Check-in · record it each visit</span>}
+                  {/* A long passage gets its title and reading time, so the shelf is easy to browse. */}
+                  {isLong(it.text) && <p className="ve-ptitle">{passageTitle(it.id)}<span>{readingTime(it.text)}</span></p>}
                   {on && !isPrompt
                     ? <ReadAlong text={it.text} levelId={level.id} hint={it.hint} kind={level.kind} stream={mic.stream} active={recording}
                         onStarts={(s) => { starts.current = s; }} alignment={latest?.read_along?.starts ?? null} pitch={latestPitch} />

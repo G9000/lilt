@@ -8,7 +8,20 @@ const hasWord = (text: string) => (text.match(/\p{L}+/gu) ?? []).some((w) => w.t
  * made readable ("forward-hum" → "Forward hum"). An id under three letters says less than the text.
  */
 export function textLabel(text: string, id: string): string {
+  if (isLong(text)) return passageTitle(id);
   return hasWord(text) || id.length < 3 ? text : idLabel(id);
+}
+
+/** Words in a text, for reading times. */
+export const wordCount = (text: string) => (text.match(/\p{L}[\p{L}'’-]*/gu) ?? []).length;
+/** A passage long enough to want a title of its own (about 40 words and up). */
+export const isLong = (text: string) => wordCount(text) >= 40;
+/** About how long a passage takes to read aloud, at an easy 150 words a minute. */
+export const readingTime = (text: string) => `about ${Math.max(1, Math.round(wordCount(text) / 150))} min`;
+/** A passage's title from its id: "night-bus-2" → "Night bus, part 2", "sky-blue" → "Sky blue". */
+export function passageTitle(id: string): string {
+  const part = id.match(/^(.*)-(\d+)$/);
+  return part ? `${idLabel(part[1])}, part ${part[2]}` : idLabel(id);
 }
 
 /** A text id made readable: "hum-to-hello" → "Hum to hello", "ng" → "Ng". */

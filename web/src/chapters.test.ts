@@ -1,7 +1,7 @@
 // node --test src/chapters.test.ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byPart, textLabel } from "./chapters.ts";
+import { byPart, passageTitle, readingTime, textLabel } from "./chapters.ts";
 
 test("a vocalise is named by its id", () => {
   assert.equal(textLabel("mmmmmmm", "forward-hum"), "Forward hum");
@@ -29,4 +29,14 @@ test("chapters group in runs of the same part", () => {
   const g = byPart([{ id: "a", part: "Get ready" }, { id: "b", part: "Get ready" }, { id: "c", part: "The skills" }, { id: "d" }]);
   assert.deepEqual(g.map((x) => [x.part, x.levels.map((l) => l.id)]), [["Get ready", ["a", "b"]], ["The skills", ["c"]], [null, ["d"]]]);
   assert.deepEqual(byPart([{ id: "a" }, { id: "b", part: " " }]).map((x) => x.part), [null]);
+});
+
+test("a long passage is named by its title, with its parts numbered", () => {
+  const long = "word ".repeat(140).trim();
+  assert.equal(textLabel(long, "night-bus-2"), "Night bus, part 2");
+  assert.equal(textLabel(long, "sky-blue"), "Sky blue");
+  assert.equal(passageTitle("lemon-cake"), "Lemon cake");
+  assert.equal(readingTime(long), "about 1 min");
+  assert.equal(readingTime("word ".repeat(300)), "about 2 min");
+  assert.equal(textLabel("One, two, three, four, five.", "count-5"), "One, two, three, four, five.", "short texts keep their words");
 });

@@ -261,7 +261,7 @@ mod tests {
         let cover = t["home_cover"].as_str().unwrap();
         assert!(dir.join(cover).exists(), "cover {cover} is missing");
         let levels = t["levels"].as_array().unwrap();
-        assert_eq!(levels.len(), 14);
+        assert_eq!(levels.len(), 16);
         for (i, l) in levels.iter().enumerate() {
             assert_eq!(l["level"], i + 1);
             // Every chapter of the shipped course says what it trains, its part, and names its check-in.

@@ -218,6 +218,9 @@
 .ve-src a { color: inherit; text-decoration-color: var(--line-strong); }
 
 .ve-items { list-style: none; margin: 0; padding: 0; scroll-margin-top: 16px; }
+/* a long passage's title and reading time, above its text */
+.ve-ptitle { margin: 0 0 6px; display: flex; align-items: baseline; gap: 10px; font-size: 15px; font-weight: 600; color: var(--ink); }
+.ve-ptitle span { font-size: 12px; font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .ve-item { position: relative; margin: 0 -24px 4px; padding: 18px 24px 20px; border-radius: 16px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
 .ve-item:not(.on):not(.done) .readtext { color: var(--ink-3); transition: color 0.2s ease; }
 .ve-item:not(.on) .ve-hint { color: var(--ink-3); }
