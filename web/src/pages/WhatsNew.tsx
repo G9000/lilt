@@ -1,8 +1,8 @@
-import "../styles/whats-new.css";
+import "../styles/editor.css";
 import { Markdown } from "../components/Markdown";
 import { WHATS_NEW } from "../release";
 
-/** The release notes (whats-new.md): every version, newest first, in a window of their own. */
+/** The release notes (whats-new.md), in a window of their own, read like the course pages. */
 export function WhatsNewPage() {
-  return <Markdown src={WHATS_NEW} className="wn" />;
+  return <Markdown src={WHATS_NEW} className="ve-md" />;
 }
