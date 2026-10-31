@@ -560,7 +560,7 @@
 .ve .toast { bottom: 132px; }
 
 /* resizing: drag the sidebar's edge or the text/recorder divider; the sidebar folds away with the
-   toggle by the traffic lights (or ⌘\), and dragging it very narrow folds it too */
+   toggle at its top (or ⌘\), and dragging it very narrow folds it too */
 /* folding slides the sidebar's column to nothing and fades it, rather than removing it: the layout
    keeps its shape, and the tree keeps its width while it slides so nothing rewraps */
 .ve-motion .ve { transition: grid-template-columns 0.34s var(--ease); }
