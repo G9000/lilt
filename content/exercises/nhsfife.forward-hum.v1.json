@@ -9,21 +9,21 @@
   "primary_area": "resonance",
   "stage": "beginner",
   "prerequisites": [],
-  "purpose": "Use an easy, forward hum to find light, efficient voicing, then carry it into vowels and words. The source presents this as part of lightening and brightening a voice.",
+  "purpose": "Feel resonance move up and forward into your face and lips. The source presents this as part of lightening and brightening a voice.",
   "instructions": [
-    "Breathe in through your nose, then hum gently on a comfortable pitch. Notice any buzz at your lips and face.",
-    "Hum again, aiming the sound forward. A buzz at the lips usually comes with easy, efficient voicing; if you don't feel one, that's fine. What you're listening for is a brighter sound.",
+    "Breathe in through your nose, then hum gently on a comfortable pitch. Notice where you feel the vibration.",
+    "Hum again, aiming the sound forward. See if you can make your lips tingle.",
     "When that feels comfortable, keep smiling and move from the hum into a vowel: mmmee, mmmaa, mmmoo.",
     "Then say short words that start with m, holding the m a little longer at first: meet, many, maybe, Mary, magic."
   ],
   "primary_cue": {
     "id": "aim-forward",
-    "text": "Aim the hum forward; your lips may tingle."
+    "text": "Aim the hum forward until your lips tingle."
   },
   "cues": [
     {
       "id": "aim-forward",
-      "text": "Aim the hum forward; your lips may tingle.",
+      "text": "Aim the hum forward until your lips tingle.",
       "use_when": "default"
     },
     {
@@ -43,7 +43,7 @@
     },
     {
       "id": "quiet-build",
-      "text": "Smile and start with a quiet hum, then slowly get a little louder, noticing whether your lips tingle.",
+      "text": "Smile and start with a quiet hum, then slowly get a little louder until you feel a tingle on your lips.",
       "use_when": "target_not_met"
     }
   ],
@@ -56,7 +56,7 @@
   "check_questions": [
     {
       "id": "where_felt",
-      "text": "Where did you feel the buzz most? (A clue about easy voicing, not about resonance.)",
+      "text": "Where did you feel the vibration most?",
       "options": [
         {
           "id": "lips_face_nose",
@@ -86,12 +86,11 @@
     "from_source": true
   },
   "expected_observations": [
-    "A buzz at the lips and face, which usually comes with easy, efficient voicing.",
-    "Over time, a brighter sound in the words that follow the hum."
+    "Vibration in the face, lips and nose; the lips may tingle.",
+    "Over time, noticing when resonance has “dropped” and bringing it back up."
   ],
   "common_misunderstandings": [
-    "Where you feel vibration isn't resonance itself: a chest buzz mostly comes with a lower or heavier voice, and any hum buzzes the face. Listen for brightness.",
-    "Pitch alone does not decide how a voice sounds.",
+    "Pitch alone does not decide how a voice sounds. Where you feel resonance also matters.",
     "Lighter does not mean quieter or whispery."
   ],
   "stop_conditions": [
@@ -105,7 +104,7 @@
   ],
   "limitations": [
     "Public NHS patient-advice material written for self-guided practice. Lilt cannot check your technique, and it does not replace a speech and language therapist.",
-    "Lilt can't feel where your voice buzzes. Its resonance comparison works on held vowels only and is rough, so feedback here comes from what you report and from listening back."
+    "Lilt does not measure resonance automatically. Feedback comes from what you report and from listening back."
   ],
   "source": {
     "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/",

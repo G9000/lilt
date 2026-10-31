@@ -65,7 +65,8 @@ pub fn new_take(app: &App, sid: &str, t: T, mime: &str) -> String {
         prompt_id: t.prompt.into(),
         prompt_text: t.prompt.into(),
         exercise_id: t.exercise.map(String::from),
-        exercise_version: t.exercise.map(|_| 1),
+        // The newest version of the exercise, as a new plan would use.
+        exercise_version: t.exercise.map(|e| app.registry.read().unwrap().latest(e).map(|x| x.version).unwrap_or(1)),
         cue_id: None,
         retry_of: t.retry_of,
         triggered_by_review: None,

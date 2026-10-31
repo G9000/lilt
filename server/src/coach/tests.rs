@@ -27,7 +27,7 @@ fn useful_coaching_selects_a_cue_and_matched_retry_updates() {
     let (_d, app) = app();
     let s = session(&app);
     let t = upload(&app, &s.id, T::default(), "mixed_voiced_unvoiced.webm");
-    report(&app, &t.id, "where_felt", "throat_chest");
+    report(&app, &t.id, "brighter_easy", "effort");
     comfort(&app, &s.id, Comfort::Comfortable, 3, false);
     let r = coach::review_session(&app, &s.id).unwrap();
     let p = r.active_pointer.clone().unwrap();
@@ -44,11 +44,11 @@ fn useful_coaching_selects_a_cue_and_matched_retry_updates() {
     // Matched retry.
     let retry = upload(&app, &s.id, T { role: TakeRole::Retry, retry_of: Some(t.id.clone()), ..T::default() }, "mixed_voiced_unvoiced.webm");
     assert_eq!(retry.retry_of.as_deref(), Some(t.id.as_str()));
-    report(&app, &retry.id, "where_felt", "lips_face_nose");
+    report(&app, &retry.id, "brighter_easy", "brighter_easy");
     let r2 = coach::review_session(&app, &s.id).unwrap();
     assert_ne!(r2.id, r.id);
     let p2 = r2.active_pointer.unwrap();
-    assert!(p2.observation.contains("lips, face or nose"));
+    assert!(p2.observation.contains("brighter, and easy"));
     assert!(r2.other_observations.iter().any(|o| o.observation.starts_with("Original and retry")));
     // Original take untouched.
     assert_eq!(app.take(&t.id).unwrap().original.unwrap().sha256, t.original.unwrap().sha256);
@@ -59,7 +59,7 @@ fn pain_report_pauses_and_overrides_a_favourable_report() {
     let (_d, app) = app();
     let s = session(&app);
     let t = upload(&app, &s.id, T::default(), "harmonic_240.webm");
-    report(&app, &t.id, "where_felt", "lips_face_nose");
+    report(&app, &t.id, "brighter_easy", "brighter_easy");
     comfort(&app, &s.id, Comfort::Pain, 5, true);
     let r = coach::review_session(&app, &s.id).unwrap();
     let p = r.active_pointer.unwrap();
@@ -79,7 +79,7 @@ fn automatic_review_keeps_a_learners_pause() {
     app.write_plan(crate::practice::model::Plan { paused: true, author: "learner".into(), ..cur }, Some(v)).unwrap();
     let s = session(&app);
     let t = upload(&app, &s.id, T::default(), "mixed_voiced_unvoiced.webm");
-    report(&app, &t.id, "where_felt", "throat_chest");
+    report(&app, &t.id, "brighter_easy", "effort");
     comfort(&app, &s.id, Comfort::Comfortable, 3, false);
     let r = coach::review_session(&app, &s.id).unwrap();
     let plan = app.current_plan().unwrap();
@@ -94,7 +94,7 @@ fn stable_and_next_context_need_repeated_sessions() {
     for effort in [4u8, 3, 2] {
         let s = session(&app);
         let t = upload(&app, &s.id, T::default(), "harmonic_240.webm");
-        report(&app, &t.id, "where_felt", "lips_face_nose");
+        report(&app, &t.id, "brighter_easy", "brighter_easy");
         comfort(&app, &s.id, Comfort::Comfortable, effort, false);
         last = Some(coach::review_session(&app, &s.id).unwrap());
         if effort == 4 {
@@ -136,7 +136,7 @@ fn disagreement_is_kept_and_carried_forward() {
     let (_d, app) = app();
     let s = session(&app);
     let t = upload(&app, &s.id, T::default(), "harmonic_240.webm");
-    report(&app, &t.id, "where_felt", "throat_chest");
+    report(&app, &t.id, "brighter_easy", "effort");
     comfort(&app, &s.id, Comfort::Comfortable, 3, false);
     let r = coach::review_session(&app, &s.id).unwrap();
     let before = std::fs::read(app.paths.reviews_dir(&s.id).join(format!("{}.json", r.id))).unwrap();
@@ -146,7 +146,7 @@ fn disagreement_is_kept_and_carried_forward() {
     assert_eq!(app.review_responses(&r)[0].note.as_deref(), Some("felt it in my lips"));
     let s2 = session(&app);
     let t2 = upload(&app, &s2.id, T::default(), "harmonic_240.webm");
-    report(&app, &t2.id, "where_felt", "throat_chest");
+    report(&app, &t2.id, "brighter_easy", "effort");
     comfort(&app, &s2.id, Comfort::Comfortable, 3, false);
     let r2 = coach::review_session(&app, &s2.id).unwrap();
     assert!(r2.active_pointer.unwrap().confidence_basis.uncertainty.contains("felt it in my lips"));
@@ -184,4 +184,27 @@ fn invalid_agent_reviews_are_rejected_and_valid_ones_are_idempotent() {
     let mut model = measured_pointer(&t, shown, "Descriptive only.");
     model.evidence[0].class = EvidenceClass::ModelPerceived;
     assert!(err(model).contains("model-perceived evidence is disabled"));
+}
+
+/// Forward hum v2 is judged by what you hear (brighter and easy). Where you felt the buzz is kept as
+/// information only, so "throat or chest" is no longer a miss. Version 1 still scores old takes as before.
+#[test]
+fn forward_hum_v2_scores_what_you_hear_not_where_you_feel_it() {
+    let (_d, app) = app();
+    let s = session(&app);
+    let id = new_take(&app, &s.id, T::default(), "audio/wav");
+    let mut t = app.take(&id).unwrap();
+    let reg = app.registry.read().unwrap();
+    let (v1, v2) = (reg.get("nhsfife.forward-hum", 1).unwrap(), reg.get("nhsfife.forward-hum", 2).unwrap());
+    let answers = |pairs: &[(&str, &str)]| Some(TakeSelfReport { answers: pairs.iter().map(|(q, a)| (q.to_string(), a.to_string())).collect(), reported_utc: "2026-11-01T00:00:00Z".into() });
+    t.self_report = answers(&[("where_felt", "throat_chest")]);
+    assert_eq!(coach::take_signal(v1, &t).map(|x| x.0).as_deref(), Some("target_not_met"), "v1 unchanged");
+    t.exercise_version = Some(2);
+    assert_eq!(coach::take_signal(v2, &t), None, "where you felt it alone isn't a result");
+    t.self_report = answers(&[("brighter_easy", "brighter_easy"), ("where_felt", "throat_chest")]);
+    assert_eq!(coach::take_signal(v2, &t).map(|x| x.0).as_deref(), Some("target_met"));
+    t.self_report = answers(&[("brighter_easy", "effort"), ("where_felt", "lips_face_nose")]);
+    assert_eq!(coach::take_signal(v2, &t).map(|x| x.0).as_deref(), Some("target_not_met"));
+    assert_eq!(reg.latest("nhsfife.forward-hum").unwrap().version, 2);
+    assert_eq!(reg.latest("nhsfife.smile-brighten").unwrap().version, 2);
 }

@@ -3,10 +3,9 @@
   "version": 1,
   "title": "Smile to brighten",
   "areas": [
-    "resonance",
     "lightness"
   ],
-  "primary_area": "resonance",
+  "primary_area": "lightness",
   "stage": "beginner",
   "prerequisites": [],
   "purpose": "Hear and feel how smiling while you speak changes your voice. The source says it can make a voice sound brighter and lighter.",
@@ -103,7 +102,7 @@
   ],
   "dose_guidance": null,
   "expected_observations": [
-    "Smiling spreads the lips and shortens the space between your voice box and your lips a little, which raises its resonances, so the voice can sound brighter."
+    "Smiling shortens the space between your voice box and your lips. The source says a smaller space means less “echo”, which can make a voice brighter and lighter."
   ],
   "common_misunderstandings": [
     "Lighter does not mean quieter, breathier or whispering.",
