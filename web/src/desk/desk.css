@@ -65,7 +65,7 @@
 .ds.app-open .ds-cat { opacity: 0; }
 
 .ds-today { background: #0d0d10; overflow: visible; color: #fff; }
-.ds-t-img { position: absolute; inset: 9px 9px auto 9px; height: 120px; border-radius: 19px 19px 0 0; background-position: 50% 42%; background-size: 300% auto; background-repeat: no-repeat; }
+.ds-t-img { position: absolute; inset: 9px 9px auto 9px; height: 120px; border-radius: 19px 19px 0 0; background-position: 65% 42%; background-size: 300% auto; background-repeat: no-repeat; }
 .ds-t-shape { position: absolute; left: 9px; bottom: 9px; width: calc(100% - 18px); height: calc(100% - 88px); fill: #1b1b20; }
 .ds-t-body { position: absolute; left: 9px; right: 9px; bottom: 9px; top: 79px; padding: 12px 18px 16px; display: flex; flex-direction: column; }
 .ds-t-title { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; margin: 0; color: #fff; white-space: nowrap; }
@@ -90,8 +90,8 @@
 .ds-t-bar i { display: block; height: 100%; background: #ff8a5c; border-radius: inherit; }
 .ds-cat { position: absolute; right: 22px; top: -50px; width: 176px; height: 80px; pointer-events: none; z-index: 2; clip-path: inset(0 0 36% 0); filter: drop-shadow(0 -2px 6px rgba(0, 0, 0, 0.18)); transition: opacity 0.3s; }
 .ds-cat img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ds-cat .tail { transform-origin: 59% 75%; animation: ds-tail 4.6s ease-in-out infinite; }
-.ds-cat .body { transform-origin: 50% 82%; animation: ds-breathe 3.4s ease-in-out infinite; }
+.ds-cat .tail { transform-origin: 17% 75%; animation: ds-tail 4.6s ease-in-out infinite; }
+.ds-cat .body { transform-origin: 50% 86%; animation: ds-breathe 3.4s ease-in-out infinite; }
 @keyframes ds-tail { 0%, 70%, 100% { transform: rotate(0); } 80% { transform: rotate(4deg); } 90% { transform: rotate(-2deg); } }
 @keyframes ds-breathe { 50% { transform: scale(1.004, 1.018); } }
 

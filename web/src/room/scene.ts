@@ -10,16 +10,17 @@ export const LIGHTS: Light[] = ["day", "morning", "sunset", "night"];
 export type Quad = [[number, number], [number, number], [number, number], [number, number]];
 
 /** Screen corners (top-left, top-right, bottom-right, bottom-left) of the two front monitors. */
-export const MAIN_SCREEN: Quad = [[748, 351], [1008, 357], [1006, 463], [749, 444]];
-export const SIDE_SCREEN: Quad = [[1023, 373], [1176, 386], [1171, 499], [1019, 473]];
+export const MAIN_SCREEN: Quad = [[857, 320], [1148, 321], [1147, 481], [857, 466]];
+export const SIDE_SCREEN: Quad = [[1172, 348], [1415, 354], [1413, 520], [1172, 497]];
 /** Where the camera looks on the home screen, and the cat (for its speech bubble). */
-export const DESK_FOCUS = { x: 820, y: 420 };
-export const CAT_SPOT = { x: 300, y: 765 };
+export const DESK_FOCUS = { x: 960, y: 430 };
+export const CAT_SPOT = { x: 345, y: 735 };
 
 export const roomUrl = (l: Light) => `room/room-${l}.webp`;
 const catUrl = (part: string, l: Light) => `room/cat-${part}-${l}.webp`;
 
-const WINDOWS: Quad[] = [[[190, 74], [448, 83], [443, 285], [189, 295]], [[818, 52], [998, 46], [998, 276], [818, 280]], [[1036, 38], [1636, 4], [1635, 266], [1041, 280]]];
+/** The window panes (outlines of the glass): birds, clouds, stars and city lights stay inside them. */
+const WINDOWS: [number, number][][] = [[[306, 52], [506, 47], [509, 277], [340, 303]], [[604, 22], [935, 14], [935, 312], [617, 312]], [[958, 8], [1671, 0], [1671, 364], [1388, 329], [959, 309]]];
 
 const STOPS: { m: number; l: Light }[] = [
   { m: 0, l: "night" }, { m: 315, l: "night" }, { m: 435, l: "morning" }, { m: 640, l: "day" },
@@ -81,21 +82,24 @@ const catImages: Record<CatPart, Record<Light, HTMLImageElement>> | null = typeo
 
 export type CatMood = "sleep" | "listen" | "happy";
 
+/** Where the cat's sprites (body, tail, ear: each a full 363×173 frame) sit on the painting. */
+const CAT_BOX = { x: 62, y: 671, w: 363, h: 173 };
+
 /** Hit box around the sleeping cat, in painting pixels. */
-export const catHit = (x: number, y: number) => x > 20 && x < 340 && y > 715 && y < 880;
+export const catHit = (x: number, y: number) => x > 75 && x < 410 && y > 685 && y < 840;
 
 /* ---------- ambience ---------- */
 
 function rng(seed: number) { let s = seed; return () => ((s = (1664525 * s + 1013904223) >>> 0) / 4294967296); }
 const R = rng(132857);
 const DUST = Array.from({ length: 83 }, () => ({ x: R() * W, y: R() * H, r: 0.3 + R() * 1.5, k: 0.9 + R() * 2.1, p: R() * 6.283 }));
-const STARS = Array.from({ length: 58 }, () => ({ x: 1035 + R() * 600, y: 40 + R() * 180, r: 0.35 + R() * 0.8, p: R() * 6.283 }));
-const CITY = Array.from({ length: 185 }, () => ({ x: 1070 + R() * 570, y: 292 + R() * 100, r: 0.5 + R() * 1.4, p: R() * 6.283 }));
+const STARS = Array.from({ length: 58 }, () => ({ x: 975 + R() * 690, y: 18 + R() * 140, r: 0.35 + R() * 0.8, p: R() * 6.283 }));
+const CITY = Array.from({ length: 185 }, () => ({ x: 975 + R() * 690, y: 195 + R() * 120, r: 0.5 + R() * 1.4, p: R() * 6.283 }));
 const BIRDS = [
-  { lane: 2, y: 118, phase: 0.03, speed: 28, size: 1.1, flap: 4.3 }, { lane: 2, y: 146, phase: 0.32, speed: 24, size: 0.82, flap: 4.9 },
-  { lane: 2, y: 177, phase: 0.77, speed: 17, size: 0.56, flap: 3.6 }, { lane: 2, y: 209, phase: 0.53, speed: 15, size: 0.46, flap: 4.5 },
-  { lane: 0, y: 169, phase: 0.32, speed: 12, size: 0.67, flap: 3.1 }, { lane: 0, y: 141, phase: 0.78, speed: 13, size: 0.55, flap: 3.5 },
-  { lane: 1, y: 169, phase: 0.35, speed: 6.5, size: 0.5, flap: 2.6 },
+  { lane: 2, y: 78, phase: 0.03, speed: 28, size: 1.1, flap: 4.3 }, { lane: 2, y: 106, phase: 0.32, speed: 24, size: 0.82, flap: 4.9 },
+  { lane: 2, y: 137, phase: 0.77, speed: 17, size: 0.56, flap: 3.6 }, { lane: 2, y: 169, phase: 0.53, speed: 15, size: 0.46, flap: 4.5 },
+  { lane: 0, y: 129, phase: 0.32, speed: 12, size: 0.67, flap: 3.1 }, { lane: 0, y: 101, phase: 0.78, speed: 13, size: 0.55, flap: 3.5 },
+  { lane: 1, y: 109, phase: 0.35, speed: 6.5, size: 0.5, flap: 2.6 },
 ];
 
 export interface Frame {
@@ -109,9 +113,9 @@ export interface Frame {
   lights: number;
 }
 
-function quadPath(g: CanvasRenderingContext2D, q: Quad) {
+function quadPath(g: CanvasRenderingContext2D, q: readonly (readonly [number, number])[]) {
   g.moveTo(q[0][0], q[0][1]);
-  for (let i = 1; i < 4; i++) g.lineTo(q[i][0], q[i][1]);
+  for (let i = 1; i < q.length; i++) g.lineTo(q[i][0], q[i][1]);
   g.closePath();
 }
 
@@ -120,8 +124,8 @@ function clouds(g: CanvasRenderingContext2D, t: number, lum: number) {
   g.save(); g.beginPath(); WINDOWS.forEach((q) => quadPath(g, q)); g.clip();
   g.globalCompositeOperation = "screen";
   for (let i = 0; i < 11; i++) {
-    const lane = i % 3, [x0, x1] = lane === 0 ? [150, 470] : lane === 1 ? [785, 1035] : [1000, 1670];
-    const dx = x1 - x0, x = x0 + ((i * 0.272 * dx + t * (2.7 + (i % 4))) % (dx + 230)) - 110, y = 70 + ((i * 39) % 165);
+    const lane = i % 3, [x0, x1] = lane === 0 ? [300, 515] : lane === 1 ? [600, 940] : [955, 1670];
+    const dx = x1 - x0, x = x0 + ((i * 0.272 * dx + t * (2.7 + (i % 4))) % (dx + 230)) - 110, y = 40 + ((i * 39) % 165);
     g.globalAlpha = lum * (0.031 + (i % 3) * 0.009); g.fillStyle = "#fff1db";
     g.beginPath(); g.ellipse(x, y, 50 + (i % 3) * 16, 8 + (i % 2) * 4, -0.11, 0, Math.PI * 2); g.fill();
   }
@@ -159,7 +163,7 @@ function atmosphere(g: CanvasRenderingContext2D, t: number, w: Weights) {
   clouds(g, t, daylight);
   g.save(); g.globalCompositeOperation = "screen";
   if (daylight > 0.02) {
-    const x = 1340 + Math.sin(t * 0.18) * 32, y = 90 + Math.cos(t * 0.16) * 14;
+    const x = 1500 + Math.sin(t * 0.18) * 32, y = 200 + Math.cos(t * 0.16) * 14;
     const gr = g.createRadialGradient(x, y, 12, x, y, 510);
     gr.addColorStop(0, `rgba(255,228,157,${(0.065 + 0.014 * Math.sin(t * 0.37)) * daylight})`);
     gr.addColorStop(0.6, `rgba(255,210,143,${0.016 * daylight})`); gr.addColorStop(1, "rgba(255,219,164,0)");
@@ -179,10 +183,11 @@ function atmosphere(g: CanvasRenderingContext2D, t: number, w: Weights) {
   }
   // Screens and the desk lamp glow, much stronger after dark so night feels lived in.
   const lit = 0.25 + night * 0.75;
-  glow(g, 878, 408, 230, "150,175,255", lit * 0.22 * (1 + 0.06 * Math.sin(t * 1.2)));
-  glow(g, 1097, 436, 160, "150,175,255", lit * 0.18 * (1 + 0.06 * Math.sin(t * 1.1 + 2)));
-  glow(g, 878, 520, 260, "255,160,210", night * 0.1);
-  glow(g, 573, 295, 230, "252,168,71", night * 0.32 * (1 + 0.04 * Math.sin(t * 3.1)));
+  glow(g, 1002, 400, 230, "244,170,215", lit * 0.2 * (1 + 0.06 * Math.sin(t * 1.2)));
+  glow(g, 1293, 432, 160, "150,175,255", lit * 0.18 * (1 + 0.06 * Math.sin(t * 1.1 + 2)));
+  glow(g, 1000, 530, 260, "255,160,210", night * 0.1);
+  glow(g, 172, 268, 200, "252,168,71", night * 0.3 * (1 + 0.04 * Math.sin(t * 3.1)));
+  glow(g, 420, 400, 120, "252,168,71", night * 0.22 * (1 + 0.04 * Math.sin(t * 2.7 + 1)));
   g.restore();
 }
 
@@ -209,8 +214,8 @@ function lightsOn(g: CanvasRenderingContext2D, t: number, on: number) {
   // the lamp warms the desk
   if (on > 0.01) {
     g.save(); g.globalCompositeOperation = "screen";
-    glow(g, 573, 300, 300, "255,190,110", 0.5 * on);
-    g.save(); g.translate(600, 480); g.scale(1, 0.34); glow(g, 0, 0, 330, "255,200,130", 0.32 * on); g.restore();
+    glow(g, 172, 268, 280, "255,190,110", 0.5 * on);
+    g.save(); g.translate(760, 540); g.scale(1, 0.34); glow(g, 0, 0, 380, "255,200,130", 0.3 * on); g.restore();
     g.restore();
   }
   // bulbs light one by one, then twinkle
@@ -230,7 +235,7 @@ function plants(g: CanvasRenderingContext2D, t: number, w: Weights) {
   const light = clamp(w.day + w.morning * 0.75 + w.sunset * 0.8 + w.night * 0.4);
   g.save(); g.globalAlpha = 0.16 * light; g.lineCap = "round";
   for (let i = 0; i < 11; i++) {
-    const x = 1312 + i * 27, y = 8 + (i % 4) * 9, sway = Math.sin(t * 0.37 + i * 1.19) * 5;
+    const x = 1430 + i * 22, y = 8 + (i % 4) * 9, sway = Math.sin(t * 0.37 + i * 1.19) * 5;
     g.strokeStyle = i % 2 ? "#2c5130" : "#6f8842"; g.fillStyle = i % 2 ? "#587444" : "#859e52"; g.lineWidth = 1.35;
     g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + sway * 0.3, y + 17, x + sway, y + 36 + (i % 4) * 8); g.stroke();
     g.save(); g.translate(x + sway, y + 32 + (i % 4) * 7); g.rotate(Math.sin(t * 0.41 + i) * 0.07);
@@ -245,7 +250,7 @@ function catPart(g: CanvasRenderingContext2D, part: CatPart, w: Weights, move: (
   for (const l of LIGHTS) {
     const im = catImages[part][l];
     if (!im.complete || !im.naturalWidth || w[l] < 0.005) continue;
-    g.globalAlpha = w[l]; g.drawImage(im, 0, 710, 375, 171);
+    g.globalAlpha = w[l]; g.drawImage(im, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);
   }
   g.restore();
 }
@@ -259,9 +264,9 @@ function cat(g: CanvasRenderingContext2D, f: Frame) {
   const tail = 0.014 * Math.sin(t * 0.46) + 0.062 * Math.max(0, Math.sin(t * 0.31 + 2)) ** 9 + Math.sin(since * 13) * 0.13 * poke + lively * 0.05 * Math.sin(t * 1.4);
   const ear = (Math.max(0, Math.sin(t * (f.cat === "listen" ? 1.9 : 0.62) + 2)) ** 20) * 0.12 + Math.max(0, 1 - Math.abs(since) / 0.77) * 0.15 * Math.sin(since * 20);
   // The belly rises gently; scaling is anchored at the lower edge so the feet stay on the blanket.
-  catPart(g, "body", w, () => { g.translate(190, 850); g.scale(1 + 0.002 * breathe, 1 + 0.012 * breathe); g.translate(-190, -850); });
-  catPart(g, "tail", w, () => { g.translate(221, 838); g.rotate(tail); g.translate(-221, -838); });
-  catPart(g, "ear", w, () => { g.translate(312, 788); g.rotate(ear); g.translate(-312, -788); });
+  catPart(g, "body", w, () => { g.translate(243, 820); g.scale(1 + 0.002 * breathe, 1 + 0.012 * breathe); g.translate(-243, -820); });
+  catPart(g, "tail", w, () => { g.translate(124, 801); g.rotate(tail); g.translate(-124, -801); });
+  catPart(g, "ear", w, () => { g.translate(389, 739); g.rotate(ear); g.translate(-389, -739); });
 }
 
 function hearts(g: CanvasRenderingContext2D, f: Frame) {
