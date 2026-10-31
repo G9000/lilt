@@ -102,6 +102,15 @@ Then open <http://127.0.0.1:7878>.
    by default, `new_cards_per_day` in the profile). **Start** opens the Practice window: say the
    line, listen back, then rate how it felt: **Again** (later today), **Hard**, **Good** or
    **Easy**. Each button shows when the card will come back (keys 1–4 work too).
+   - **Your warm-up opens the deck and the cool-down closes it,** every day, not spaced like the
+     other cards and outside the cap. Pick which warm-up (or none) in Practice settings.
+   - **Eyes-off takes:** a review of a card you know well (three or more reviews) is eyes-off every
+     other time. The live pitch line and numbers stay hidden while you record, you rate by ear, and
+     then Lilt shows the pitch. Less feedback while practising helps the skill stick.
+   - **Before and after:** three weeks after your last take of a Start here "before" text, it comes
+     back in Today. Record it again, hear it beside your very first take, and answer three 1–5
+     questions (how happy you are with it, whether it sounds like you, how much effort it took),
+     kept with the take.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.

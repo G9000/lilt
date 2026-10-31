@@ -27,11 +27,19 @@ pub struct Profile {
     /// The sticky note on the room's wall. None until first edited (the room shows the goal).
     #[serde(default)]
     pub room_note: Option<String>,
+    /// The warm-up text (an id in the Warm-ups chapter) that opens every day's cards, with the
+    /// cool-down closing them. An empty string turns both off.
+    #[serde(default = "default_warmup")]
+    pub warmup_card: String,
     pub updated_utc: String,
 }
 
 fn default_new_cards() -> u32 {
     2
+}
+
+fn default_warmup() -> String {
+    "hum".into()
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -65,6 +73,7 @@ impl Default for Profile {
             comfort_range_hz: None,
             new_cards_per_day: 2,
             room_note: None,
+            warmup_card: default_warmup(),
             updated_utc: crate::util::now_utc(),
         }
     }

@@ -67,7 +67,8 @@ async function main() {
   // Home again: your practice instead of the start card.
   await page.getByRole("button", { name: "Back to Home" }).click();
   await page.locator(".ve-practice").waitFor({ timeout: 10000 });
-  check("home shows your practice", /1 day of practice this month/.test(await page.locator(".ve-days").innerText()));
+  const days = await page.locator(".ve-days").innerText();
+  check("home shows your practice", /1 day of practice this month/.test(days), days);
   check("start card is gone once a range is set", (await page.locator(".ve-start-card").count()) === 0);
   check("Home has no recorder: free talk lives in Studio", (await page.locator(".ve-dock").count()) === 0);
 
@@ -109,7 +110,7 @@ async function main() {
   await page.goto(`${BASE}/#/studio/warmup`);
   await page.locator(".ve-item").first().waitFor();
   check("a chapter opens with its first text up", (await page.locator(".ve-item.on").count()) === 1);
-  await page.locator(".ve-file").filter({ hasText: "mmmmmmm" }).first().click();
+  await page.locator(".ve-file").filter({ hasText: /^Hum$/ }).first().click();
   await page.locator(".ve-item.on").waitFor();
   check("the tree opens a text and the address follows", page.url().endsWith("/#/studio/warmup/hum"));
   await record(page);

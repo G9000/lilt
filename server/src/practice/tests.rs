@@ -50,7 +50,7 @@ fn card_intervals_grow_and_stay_bounded() {
 fn first_deck_is_reference_plus_new_cards_from_first_stage() {
     let (_d, app) = app();
     let q = queue_ids(&app);
-    assert_eq!(q[0].0, cards::REFERENCE_CARD);
+    assert_eq!(q[1].0, cards::REFERENCE_CARD);
     let new: Vec<_> = q.iter().filter(|x| x.1 == "new").collect();
     assert_eq!(new.len(), 2, "default two new cards a day: {q:?}");
     let all = cards::all_cards(&app);
@@ -93,7 +93,8 @@ fn missed_days_never_become_a_backlog() {
     store::write_json(&app.paths.root.join("cards/state.json"), &state).unwrap();
     let q = cards::today_queue(&app).unwrap();
     let cap = q["cap"].as_u64().unwrap() as usize;
-    assert!(q["items"].as_array().unwrap().len() <= cap, "overdue cards wait instead of piling up");
+    let capped = q["items"].as_array().unwrap().iter().filter(|i| i["kind"] != "warmup" && i["kind"] != "cooldown").count();
+    assert!(capped <= cap, "overdue cards wait instead of piling up");
     assert_eq!(q["counts"]["new"], 0);
 }
 
@@ -160,4 +161,66 @@ fn concurrent_plan_writes_get_one_version_each() {
     assert_eq!(oks, 1);
     assert_eq!(app.current_plan().unwrap().version, p.version + 1);
     assert_eq!(app.plan_history().len(), 2);
+}
+
+fn set_warmup(app: &App, id: &str) {
+    let mut p = app.profile();
+    p.warmup_card = id.into();
+    store::write_json(&app.paths.profile(), &p).unwrap();
+}
+
+/// Your warm-up opens every day's cards and the cool-down closes them: never spaced, never a new
+/// card, and outside the cap. Choosing none turns both off.
+#[test]
+fn warm_up_first_and_cool_down_last_every_day() {
+    let (_d, app) = app();
+    let q = queue_ids(&app);
+    assert_eq!((q[0].0.as_str(), q[0].1.as_str()), ("text.warmup.hum", "warmup"), "{q:?}");
+    assert_eq!((q.last().unwrap().0.as_str(), q.last().unwrap().1.as_str()), ("text.warmup.cool-down", "cooldown"), "{q:?}");
+    assert_eq!(q.iter().filter(|x| x.0 == "text.warmup.hum").count(), 1, "not also a new card");
+    // Rating it Easy doesn't push it days away, and it doesn't use up a new-card slot.
+    let r = rate(&app, "text.warmup.hum", None, "easy");
+    assert_eq!(r["next"], "tomorrow");
+    let q = queue_ids(&app);
+    assert!(q.iter().any(|x| x.0 == "text.warmup.hum" && x.2), "done today: {q:?}");
+    assert_eq!(q.iter().filter(|x| x.1 == "new").count(), 2, "still two new cards: {q:?}");
+    set_warmup(&app, "lip-trill");
+    assert_eq!(queue_ids(&app)[0].0, "text.warmup.lip-trill");
+    set_warmup(&app, "");
+    let q = queue_ids(&app);
+    assert!(q.iter().all(|x| x.1 != "warmup" && x.1 != "cooldown"), "{q:?}");
+}
+
+/// A review of a card you know well is eyes-off every other time: no live line, rate first.
+#[test]
+fn well_known_reviews_alternate_eyes_off() {
+    let (_d, app) = app();
+    let mut state = BTreeMap::new();
+    state.insert("text.warmup.lip-trill".to_string(), CardState { due: Some("2020-01-01".into()), interval_days: 6, ease: 2.5, reps: 3, ..Default::default() });
+    state.insert("text.warmup.ng".to_string(), CardState { due: Some("2020-01-01".into()), interval_days: 6, ease: 2.5, reps: 4, ..Default::default() });
+    state.insert("text.warmup.zzz".to_string(), CardState { due: Some("2020-01-01".into()), interval_days: 1, ease: 2.5, reps: 1, ..Default::default() });
+    store::write_json(&app.paths.root.join("cards/state.json"), &state).unwrap();
+    let q = cards::today_queue(&app).unwrap();
+    let eyes = |id: &str| q["items"].as_array().unwrap().iter().find(|i| i["card"]["id"] == id).unwrap()["eyes_off"].as_bool().unwrap();
+    assert!(eyes("text.warmup.lip-trill"));
+    assert!(!eyes("text.warmup.ng") && !eyes("text.warmup.zzz"));
+}
+
+/// Three weeks after your last "before" take, it comes back for a before-and-after; recording it
+/// today marks it done; nothing shows until you've recorded the first one.
+#[test]
+fn before_texts_come_back_every_three_weeks() {
+    let (_d, app) = app();
+    let ba = |app: &App| queue_ids(app).into_iter().filter(|x| x.1 == "before_after").collect::<Vec<_>>();
+    assert!(ba(&app).is_empty());
+    let s = session(&app);
+    let old = upload(&app, &s.id, T { role: crate::recordings::model::TakeRole::Free, prompt: "text.start-here.baseline-read", exercise: None, ..Default::default() }, "harmonic_240.wav");
+    assert!(ba(&app).iter().any(|x| x.0 == "text.start-here.baseline-read" && x.2), "recorded today: shown as done");
+    let mut t = app.take(&old.id).unwrap();
+    t.created_utc = (chrono::Utc::now() - chrono::Duration::days(10)).to_rfc3339();
+    app.save_take(&t).unwrap();
+    assert!(ba(&app).is_empty(), "not yet: ten days");
+    t.created_utc = (chrono::Utc::now() - chrono::Duration::days(22)).to_rfc3339();
+    app.save_take(&t).unwrap();
+    assert_eq!(ba(&app), vec![("text.start-here.baseline-read".to_string(), "before_after".to_string(), false)]);
 }

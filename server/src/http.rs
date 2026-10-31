@@ -100,6 +100,9 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
             return Err(anyhow::anyhow!("the note can hold up to 280 characters").into());
         }
     }
+    if p.warmup_card.len() > 64 || !p.warmup_card.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') {
+        return Err(anyhow::anyhow!("the warm-up must be a text id from the Warm-ups chapter, or empty for none").into());
+    }
     p.schema = "lilt.profile/1".into();
     p.updated_utc = util::now_utc();
     store::write_json(&app.paths.profile(), &p)?;

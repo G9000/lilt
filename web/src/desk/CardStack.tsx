@@ -9,7 +9,7 @@ import { setSpot, useLayoutStore } from "./Floaters";
  * away and it tucks in at the back; tap the card on top (or its arrow) to practise that one.
  */
 
-const KIND: Record<DeckItem["kind"], string> = { daily: "Daily", new: "New", review: "Review", again: "Again" };
+const KIND: Record<DeckItem["kind"], string> = { warmup: "Warm-up", daily: "Daily", before_after: "Before and after", new: "New", review: "Review", again: "Again", cooldown: "Cool-down" };
 const SUB: Record<string, string> = { reference: "The same every day", exercise: "Exercise", text: "Read aloud" };
 const CROPS = ["65% 42%", "8% 30%", "92% 20%", "30% 70%", "70% 60%"];
 const SHAPE = "M0 18 Q0 0 18 0 L160 0 Q172 0 181 8 L197 23 Q205 30 217 30 L282 30 Q300 30 300 48 L300 146 L0 146 Z";

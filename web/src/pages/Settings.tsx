@@ -1,7 +1,8 @@
 import "../styles/texts.css";
 import "../styles/settings.css";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { api, Profile } from "../api";
+import { api, Profile, TextItem } from "../api";
+import { textLabel } from "../chapters";
 import { applyTextSize, readTextSize, TEXT_SIZES, type TextSize, type Theme } from "../App";
 import { Callout } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
@@ -214,6 +215,9 @@ const HERO: Record<PaneId, string> = {
  */
 export function PracticeSettings() {
   const { p, edit, saved, err } = useProfileDraft();
+  // The warm-ups you can pin to the start of each day (the cool-down always closes it).
+  const [warmups, setWarmups] = useState<TextItem[]>([]);
+  useEffect(() => { void api.texts().then((t) => setWarmups(t.levels.find((l) => l.id === "warmup")?.items.filter((i) => i.id !== "cool-down") ?? []), () => {}); }, []);
   if (!p) return <p className="sx-note">Loading…</p>;
   return (
     <div className="sx sx-app">
@@ -238,6 +242,14 @@ export function PracticeSettings() {
           <Row label="Session length" htmlFor="mins" help="A planning guide, not a timer.">
             <span className="sx-unit"><input id="mins" type="number" min={2} max={30} value={p.session_minutes} onChange={(e) => edit({ ...p, session_minutes: Number(e.target.value) })} /><span>min</span></span>
           </Row>
+          {warmups.length > 0 && (
+            <Row label="Daily warm-up" htmlFor="warm" help="Opens Today's cards every day, with the cool-down at the end. It isn't spaced like the others.">
+              <select id="warm" value={p.warmup_card ?? "hum"} onChange={(e) => edit({ ...p, warmup_card: e.target.value })}>
+                {warmups.map((w) => <option key={w.id} value={w.id}>{textLabel(w.text, w.id)}</option>)}
+                <option value="">None</option>
+              </select>
+            </Row>
+          )}
           <Row label="Reminder" htmlFor="rem" help="Optional. Leave it empty for no reminder.">
             <input id="rem" type="time" value={p.reminder_time ?? ""} onChange={(e) => edit({ ...p, reminder_time: e.target.value || null })} />
           </Row>

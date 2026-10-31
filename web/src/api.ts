@@ -214,6 +214,8 @@ export interface Profile {
   comfort_range_hz: [number, number] | null;
   new_cards_per_day?: number;
   room_note?: string | null;
+  /** The Warm-ups text that opens every day's cards (the cool-down closes them); "" for none. */
+  warmup_card?: string;
   updated_utc: string;
 }
 
@@ -278,7 +280,9 @@ export interface DeckCard {
 }
 export interface DeckItem {
   card: DeckCard;
-  kind: "daily" | "new" | "review" | "again";
+  kind: "warmup" | "daily" | "before_after" | "new" | "review" | "again" | "cooldown";
+  /** Record without the live pitch line, and rate before seeing the numbers. */
+  eyes_off?: boolean;
   done_today: boolean;
   rating_today: Rating | "ouch" | null;
   preview: Record<Rating, string>;
