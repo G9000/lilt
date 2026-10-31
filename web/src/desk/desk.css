@@ -289,16 +289,25 @@
 .fl-r-info .ds-r-ctl { margin-top: 6px; gap: 6px; }
 .fl-r-info .ds-r-play { width: 32px; height: 32px; min-height: 32px; }
 .fl-r-info .ds-r-skip { width: 26px; height: 26px; min-height: 26px; }
-/* What's new: a small dark card; a click opens the release notes in Practice */
-.fl-news { pointer-events: auto; width: 236px; min-height: 0; display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 11px 12px; border: 0; border-radius: 18px; color: #fff; text-align: left; cursor: pointer;
-  background: linear-gradient(135deg, rgba(36, 33, 45, 0.95), rgba(18, 17, 24, 0.95)); box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 18px 34px -16px rgba(0, 0, 0, 0.8); }
+/* What's new: a small dark card that opens into the list of what came with this version */
+.fl-news { position: relative; pointer-events: auto; width: 236px; color: #fff; }
+.fl-news-head, .fl-news-list { background: linear-gradient(135deg, rgba(36, 33, 45, 0.95), rgba(18, 17, 24, 0.95)); box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 18px 34px -16px rgba(0, 0, 0, 0.8); }
+.fl-news-head { width: 100%; min-height: 0; display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 11px 12px; border: 0; border-radius: 18px; color: inherit; text-align: left; cursor: pointer; }
 .fl-news-ic { flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; background: linear-gradient(135deg, #f7a8c0, #b48cf2); color: #fff; font-size: 15px; }
 .fl-news-t { flex: 1; min-width: 0; display: grid; }
 .fl-news-t b { font-size: 13.5px; font-weight: 600; }
 .fl-news-t small { font-size: 11.5px; font-weight: 500; color: rgba(255, 255, 255, 0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fl-news-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #ff7a9c; box-shadow: 0 0 0 3px rgba(255, 122, 156, 0.25); }
-.fl-news-chev { flex: none; width: 12px; height: 12px; color: rgba(255, 255, 255, 0.55); transition: translate 0.2s var(--ease); }
-@media (hover: hover) and (pointer: fine) { .fl-news:hover { filter: brightness(1.12); } .fl-news:hover .fl-news-chev { translate: 2px 0; } }
+.fl-news-chev { flex: none; width: 12px; height: 12px; color: rgba(255, 255, 255, 0.55); transition: rotate 0.2s var(--ease); }
+.fl-news.open .fl-news-chev { rotate: 180deg; }
+/* the list drops down below the card (widgets are anchored at the bottom, so it can't push them up) */
+.fl-news-list { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 3; list-style: none; margin: 0; padding: 6px; max-height: 320px; overflow: auto; scrollbar-width: thin; border-radius: 16px; }
+.fl-news-list li > * { width: 100%; min-height: 0; display: grid; gap: 1px; padding: 8px 8px; border: 0; border-radius: 10px; background: none; color: inherit; text-align: left; font: inherit; }
+.fl-news-list li > button { cursor: pointer; }
+.fl-news-list b { font-size: 12.5px; font-weight: 600; }
+.fl-news-list span { font-size: 11.5px; line-height: 1.4; color: rgba(255, 255, 255, 0.68); }
+@media (hover: hover) and (pointer: fine) { .fl-news-head:hover { filter: brightness(1.12); } .fl-news-list li > button:hover { background: rgba(255, 255, 255, 0.07); } }
+.fl:has(.fl-news.open) { z-index: 6; }
 @media (max-width: 760px) { .fl { display: none; } }
 @media (prefers-reduced-motion: reduce) { .fl-bob { animation: none; } .fl-sticky { transition: none; } }
 .ds-reset { width: auto !important; padding: 0 8px !important; }

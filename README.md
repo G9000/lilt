@@ -60,9 +60,9 @@ Then open <http://127.0.0.1:7878>.
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: the lo-fi radio over the speaker, a
      clock in the window, the plant by the potted plant, a sticky note taped to the photo wall, and
-     **What's new**: the version you're running (now 0.2), with a dot until you've read it. It
-     opens the release notes as a page in Practice (also linked from the Practice home). They're
-     Markdown, in `web/src/whats-new.md`: add the next release at the top as `## <version> · <date>`.
+     **What's new**: the version you're running (now 0.2) and what came with it, with a dot until
+     you've opened it; each item opens the feature. New releases go at the top of
+     `web/src/release.ts`.
      The note starts as your goal; click it to write anything (up to 280 characters), click away to keep it. It's saved on
      the server (`room_note` in the profile). **Drag either one anywhere**; it remembers its spot
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
