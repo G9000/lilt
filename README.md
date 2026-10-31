@@ -157,7 +157,7 @@ Then open <http://127.0.0.1:7878>.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
-8. **Texts** has 98 texts across 13 chapters: setup, warm-ups, pitch, resonance, vocal weight,
+8. **Texts** has 112 texts across 14 chapters (the last, the Reading room, is an Extras shelf of fourteen minute-long passages outside Today): setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, and real life. Each chapter explains the technique in a few numbered steps (how to
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,

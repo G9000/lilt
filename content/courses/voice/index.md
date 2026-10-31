@@ -34,6 +34,9 @@ and hear the change for yourself instead of guessing.
   resonance, vocal weight, articulation and intonation, one at a time, each with an everyday phrase on
   the same visit. _Bring it together_: lists, phrases, reading, talking, laughs and little sounds,
   then real life. Stay until it feels easy; go back whenever. Not a speedrun.
+- **Extras**: the [Reading room](#/studio/reading-room), a shelf of minute-long passages (stories,
+  a letter, a recipe, a weather report, a job interview) for when you want a longer read. They stay
+  out of Today's cards.
 - **Check-ins**: one text per chapter, same words every visit, so you can hear the glow-up.
 - **Free recording**: just talk. You'll get your pitch line back.
 - **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your

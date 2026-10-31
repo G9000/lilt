@@ -24,9 +24,9 @@ with its own `course.md`.
   every chapter.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-start-here.md` … `13-real-life.md`: one chapter each. The number at the start of the file
+- `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md` is an Extras shelf of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. The number at the start of the file
   name sets the order (and the order Today's cards open in). To add a chapter, add a file like
-  `14-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
+  `15-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
   compared with your first take of the same vowel.
 
 ## How a lesson teaches
