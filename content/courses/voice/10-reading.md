@@ -57,3 +57,9 @@ The rain started just after lunch, light at first and then heavier. I made a cup
 My neighbour has a tiny garden full of mint, lavender and tall yellow flowers. In the evening, when the light turns golden, she waters everything by hand and hums to herself. I once asked her what the song was. She laughed and said she had no idea; she just made it up as she went along, a little different every night.
 
 > Read a bit, then tell it back in your own words. Did your voice change when you stopped reading?
+
+## shadow-read
+
+The kettle clicked off, and the kitchen filled with warm steam.
+
+> Record it, then play it back while mouthing along, and read it again straight after. Copy your own rhythm and melody, then keep them when you read on.

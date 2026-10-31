@@ -19,7 +19,11 @@ Intonation is the melody of speech: where your pitch goes up and down, which wor
 
 **Exaggerate, then dial back.** Read a line like a children's storyteller, way over the top. Then say it normally. The normal version usually keeps a little of the movement, which is exactly what you want.
 
+**Find your pace.** Rushing flattens the melody and lets your cues slip. A slightly unhurried pace leaves room for both: not slow, just not racing.
+
 **Endings can fall.** Not every question needs to rise and not every statement needs to fall. Let the meaning choose. A confident falling ending is fine.
+
+**Don't let endings crackle.** As a sentence ends, pitch sinks and voices often drop into a creak (vocal fry), which brings the old weight back. Finish the sentence a breath earlier, with voice to spare. A jumpy or broken pitch line on a creak may be the measurement struggling, not you.
 
 **Listen back.** Does it sound like what you meant? Does the pitch line move, or is it a straight ruler? A wavier line isn't automatically better; it just shouldn't be stuck.
 
@@ -64,3 +68,9 @@ I didn't say she took it. I said she borrowed it.
 Could I get a coffee, please? Thank you so much!
 
 > Way over the top first, like a cartoon. Then normal. Keep the bit of sparkle you liked.
+
+## no-fry
+
+That sounds really good to me.
+
+> Keep voice in "to me" right to the end, with breath to spare. If the last word crackles, take a breath earlier and try again.

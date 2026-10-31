@@ -6,7 +6,7 @@ subtitle: Breath, release, and gentle hums
 kind: hum
 area: resonance
 check_in: hum
-exercises: nhsfife.forward-hum
+exercises:
 video: https://www.youtube.com/watch?v=1f9TBpHm2a0
 video_image: images/video-1f9TBpHm2a0.jpg
 video_title: Trans Voice Vocal Warm-up: Do This Every Day
@@ -19,9 +19,11 @@ Two minutes that make everything after them easier. Pick two or three of these; 
 
 **Breathe low.** Sit or stand tall with your shoulders loose. Put one hand on your belly and breathe in through your nose so the hand moves out and your shoulders stay still. Breathe out slowly on a quiet "sss". Three or four of those.
 
-**Let go of the tension.** Roll your shoulders back a few times. Rub your jaw muscles gently with your fingertips and let your mouth hang a little open. Finish with a big lazy yawn that turns into a sigh. (A yawn is a reset: it opens and lowers the throat, which is the opposite of the shape you'll speak from later.)
+**Let go of the tension.** Roll your shoulders back a few times. Rub your jaw muscles gently with your fingertips and let your mouth hang a little open. Finish with the start of a yawn, sighed out gently. (A yawn is a reset: it lowers the larynx and opens the throat, the opposite of the shape you'll speak from later.)
 
-**Get the voice buzzing.** Hum, trill your lips like a motorboat, or say "ooo" into a straw. Partly closing the mouth builds a little air pressure behind the lips, which helps your vocal folds vibrate with less effort and less impact. That's why voice therapists love these.
+**Get the voice buzzing.** Hum, trill your lips like a motorboat, or say "ooo" into a straw. Narrowing the way out (your lips, a straw, or a hum through your nose) raises the air pressure just above your vocal folds, so they vibrate with less effort and less impact. That's why voice therapists love these.
+
+**Notice early tiredness.** Before anything hurts, your voice often warns you: a tight neck or jaw, an ache or "lump" in the throat, wanting to clear it, or a voice that's lower or rougher by the evening. Any of these means do less today.
 
 **Use it in words.** Let a hum open straight into "Hello, how are you?". Yes, on day one. You don't need to finish the later chapters before you're allowed to talk.
 
@@ -55,7 +57,7 @@ brrrrrrr
 
 ooo ↗ ↘
 
-> Say a soft "ooo" into a drinking straw, then slide it gently up and down. The straw builds a little air pressure behind your lips that helps the voice run with less effort. No straw nearby? A small "ooo" through nearly closed lips works too.
+> Say a soft "ooo" into a drinking straw, then slide it gently up and down. The narrow straw raises the air pressure just above your vocal folds, so the voice runs with less effort. No straw nearby? A small "ooo" through nearly closed lips works too.
 
 ## ng
 
@@ -79,7 +81,7 @@ mmm ↗ ↘
 
 I eat apples every evening, always.
 
-> Every word starts with a vowel. Begin each one softly, as if there were a tiny h in front, instead of a click in the throat. Compare that with your usual start.
+> Every word starts with a vowel. Begin each one softly, as if there were a tiny h in front, instead of a click in the throat. Then let the h go, so each vowel starts cleanly: no click, no puff of air.
 
 ## cool-down
 

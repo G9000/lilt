@@ -29,7 +29,7 @@ pub const PROGRESS_SESSIONS: usize = 3;
 
 pub fn goal_connection(area: &str) -> &'static str {
     match area {
-        "resonance" => "You chose a lighter, more feminine voice with forward resonance. Where you feel the vibration is how this source-checked activity tracks resonance.",
+        "resonance" => "Your goal includes a brighter, more forward sound. Where you feel the buzz is how this source-checked activity tracks it: a clue about easy voicing, not a measurement of resonance.",
         "lightness" => "Your goal includes a lighter sound. In this activity, your own listening judgement is the evidence. Lighter does not mean quieter.",
         "pitch" => "Pitch is one part of your goal, alongside resonance and lightness. Lilt does not treat a higher number as automatically better.",
         "intonation" => "You want a voice that sounds natural and like you. Rise and fall that fits the meaning helps with that. No particular melody is required.",

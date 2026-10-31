@@ -31,11 +31,18 @@ pub struct Profile {
     /// cool-down closing them. An empty string turns both off.
     #[serde(default = "default_warmup")]
     pub warmup_card: String,
+    /// Show where each take sits on the average man/woman pitch scale. Some people would rather not see it.
+    #[serde(default = "default_true")]
+    pub show_pitch_scale: bool,
     pub updated_utc: String,
 }
 
 fn default_new_cards() -> u32 {
     2
+}
+
+fn default_true() -> bool {
+    true
 }
 
 fn default_warmup() -> String {
@@ -74,6 +81,7 @@ impl Default for Profile {
             new_cards_per_day: 2,
             room_note: None,
             warmup_card: default_warmup(),
+            show_pitch_scale: true,
             updated_utc: crate::util::now_utc(),
         }
     }

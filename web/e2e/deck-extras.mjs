@@ -98,11 +98,11 @@ async function main() {
   await page.locator(".ve-item.on .ve-take").first().waitFor({ timeout: 60000 });
   const before = takeFiles().find((x) => x.t.prompt_id === "text.start-here.baseline-read");
   check("the before take is saved", !!before);
-  before.t.created_utc = new Date(Date.now() - 22 * 864e5).toISOString();
+  before.t.created_utc = new Date(Date.now() - 43 * 864e5).toISOString();
   fs.writeFileSync(before.f, JSON.stringify(before.t, null, 2));
   await page.goto(`${BASE}/#/deck?card=${encodeURIComponent("text.start-here.baseline-read")}`);
   await page.locator(".ve-item.on").filter({ hasText: "Before and after" }).waitFor({ timeout: 15000 });
-  check("three weeks later it's in Today as a before-and-after", true);
+  check("six weeks later it's in Today as a before-and-after", true);
   await record(page);
   await page.getByText("Your first take,").waitFor({ timeout: 15000 });
   check("the first take plays beside the new one", (await page.locator(".ve-ba .prc-player").count()) === 2);

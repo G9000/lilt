@@ -32,12 +32,12 @@ test("nothing to say without a pitch, or with too little voice", () => {
 const REF = { men_mean: 115, men_sd: 21, women_mean: 199, women_sd: 28, overlap_low: 145, overlap_high: 165 };
 
 test("a pitch is placed in words and semitones, never a percentage", () => {
-  assert.equal(placePitch(199, REF), "199 Hz sits within the average woman's range, right at the average woman's pitch.");
-  assert.match(placePitch(172, REF), /^172 Hz sits within the average woman's range, about 2\.5 semitones below the average woman's pitch \(199 Hz\)/);
-  assert.match(placePitch(155, REF), /in the overlap/);
-  assert.match(placePitch(140, REF), /between the average man's and woman's ranges/);
-  assert.match(placePitch(115, REF), /within the average man's range, about 9\.5 semitones below/);
-  assert.match(placePitch(240, REF), /above the average woman's range, about 3 semitones above/);
+  assert.match(placePitch(199, REF), /^199 Hz sits within the average woman's range, about 3 semitones above the overlap \(165 Hz\)\.$/);
+  assert.match(placePitch(172, REF), /^172 Hz sits within the average woman's range, about 0\.5 semitones above the overlap/);
+  assert.equal(placePitch(155, REF), "155 Hz sits in the overlap, where pitch alone can be heard either way.");
+  assert.match(placePitch(140, REF), /between the average man's and woman's ranges, about 0\.5 semitones below the overlap \(145 Hz\)/);
+  assert.match(placePitch(115, REF), /within the average man's range, about 4 semitones below the overlap/);
+  assert.match(placePitch(240, REF), /above the average woman's range, about 6\.5 semitones above the overlap/);
   assert.doesNotMatch(placePitch(172, REF), /%/);
 });
 

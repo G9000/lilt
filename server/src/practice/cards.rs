@@ -26,8 +26,12 @@ const UNLOCK_SHARE: f64 = 0.6;
 /// The chapter your daily warm-up comes from, and the text that cools down at the end.
 const WARMUP_CHAPTER: &str = "warmup";
 const COOL_DOWN: &str = "cool-down";
-/// Every few weeks your "before" texts from Start here come back, to hear next to your first takes.
+/// Your "before" texts from Start here come back to hear next to your first takes: first about six
+/// weeks after you recorded them (once there's been time to change), then every three weeks.
+const BEFORE_AFTER_FIRST_DAYS: i64 = 42;
 const BEFORE_AFTER_DAYS: i64 = 21;
+/// "Not today" on a before-and-after puts it off for a week.
+const BEFORE_AFTER_SNOOZE_DAYS: i64 = 7;
 const BEFORE_AFTER: [&str; 2] = ["baseline-read", "baseline-talk"];
 
 #[derive(Clone, Debug, Serialize)]
@@ -233,6 +237,7 @@ fn is_daily(app: &App, cards: &[Card], id: &str) -> bool {
 /// Start here's "before" texts, due again once your last take of one is three weeks old (and shown
 /// as done on the day you record it). Nothing until you've recorded the first one.
 fn before_after(app: &App, today: &str) -> Vec<(Card, bool)> {
+    let state = load_state(app);
     let texts = crate::courses::syllabus::texts(app);
     let Some(level) = texts["levels"].as_array().and_then(|ls| ls.iter().find(|l| l["id"] == "start-here")) else { return vec![] };
     let tz = app.profile().timezone;
@@ -242,16 +247,19 @@ fn before_after(app: &App, today: &str) -> Vec<(Card, bool)> {
     for iid in BEFORE_AFTER {
         let Some(it) = level["items"].as_array().and_then(|a| a.iter().find(|i| i["id"] == iid)) else { continue };
         let id = crate::courses::text_id(crate::courses::DEFAULT, "start-here", iid);
-        let last = takes.iter().filter(|t| t.prompt_id == id && t.original.is_some())
+        let days: Vec<String> = takes.iter().filter(|t| t.prompt_id == id && t.original.is_some())
             .filter_map(|t| chrono::DateTime::parse_from_rfc3339(&t.created_utc).ok())
-            .map(|at| util::local_at(at.with_timezone(&chrono::Utc), &tz).0).max();
-        let Some(last) = last else { continue };
-        let done = last == today;
-        if !done && date(&last) > td - Duration::days(BEFORE_AFTER_DAYS) { continue; }
+            .map(|at| util::local_at(at.with_timezone(&chrono::Utc), &tz).0).collect();
+        let (Some(first), Some(last)) = (days.iter().min(), days.iter().max()) else { continue };
+        // Put off with "Not today": done for today, then due again once the week is up.
+        let snoozed = state.get(&id).and_then(|s| s.due.clone()).filter(|d| date(d) > td);
+        let done = last == today || snoozed.is_some() && state.get(&id).and_then(|s| s.last_reviewed_date.as_deref()) == Some(today);
+        let wait = if first == last { BEFORE_AFTER_FIRST_DAYS } else { BEFORE_AFTER_DAYS };
+        if !done && (date(last) > td - Duration::days(wait) || snoozed.is_some()) { continue; }
         out.push((Card {
             id: id.clone(), stage: 0, deck: "start-here".into(), deck_title: "Before and after".into(), kind: "text".into(),
             front: it["text"].as_str().unwrap_or_default().into(),
-            hint: "Say it the way you speak now, then listen to it next to your very first take.".into(),
+            hint: "Say it with whatever you've practised that feels easy, then listen beside your very first take. Small changes count, and hearing none yet is normal.".into(),
             area: "recording".into(), level_id: "start-here".into(), text_kind: level["kind"].as_str().unwrap_or("phrases").into(),
             exercise_id: None, exercise_version: None, prompt_id: id,
             source: level["written_by"].as_str().unwrap_or_default().into(),
@@ -303,11 +311,13 @@ pub fn today_queue(app: &App) -> Result<Value> {
         if !in_stage.is_empty() && learned as f64 / in_stage.len() as f64 >= UNLOCK_SHARE { open_stage = s + 1; } else { break; }
     }
 
+    // The chapter the newest open stage belongs to, so a "new stage" note can name it and open it.
+    let open_chapter = cards.iter().find(|c| c.stage == open_stage).map(|c| json!({"id": c.deck, "title": c.deck_title}));
     let mut picked: Vec<(Card, String)> = vec![];
     if paused {
         return Ok(json!({
             "local_date": today, "paused": true, "items": [], "counts": {"new": 0, "review": 0, "again": 0},
-            "open_stage": open_stage, "stages": max_stage, "cap": cap,
+            "open_stage": open_stage, "open_chapter": open_chapter, "stages": max_stage, "cap": cap,
             "message": "Your plan is paused after a comfort report. Rest today; a quick check-in is still fine.",
         }));
     }
@@ -335,7 +345,12 @@ pub fn today_queue(app: &App) -> Result<Value> {
         .filter(|(_, s)| !(s.last_rating.as_deref() == Some("again") && s.last_reviewed_date.as_deref() == Some(today.as_str())))
         .collect();
     due.sort_by(|a, b| a.1.due.cmp(&b.1.due).then(b.1.lapses.cmp(&a.1.lapses)));
-    for (c, _) in due { if full(&picked) { break; } picked.push((c.clone(), "review".into())); }
+    // Leave one place for a new card while today's allowance and an open stage still have some, so
+    // reviews never stall the course.
+    let new_waiting = new_per_day > introduced_today
+        && cards.iter().any(|c| !daily(&c.id) && c.stage <= open_stage && state.get(&c.id).map(|s| s.reps == 0 && !s.suspended).unwrap_or(true));
+    let review_cap = if new_waiting { cap.saturating_sub(1) } else { cap };
+    for (c, _) in due { if picked.len() - fixed >= review_cap { break; } picked.push((c.clone(), "review".into())); }
     // 4. New cards, in order, from open stages, within today's allowance.
     let mut new_left = new_per_day.saturating_sub(introduced_today);
     for c in cards.iter().filter(|c| !daily(&c.id) && c.stage <= open_stage) {
@@ -379,7 +394,7 @@ pub fn today_queue(app: &App) -> Result<Value> {
     Ok(json!({
         "local_date": today, "paused": false, "items": items, "all_done": all_done,
         "counts": {"new": count("new"), "review": count("review") + count("daily") + count("warmup") + count("cooldown") + count("before_after"), "again": count("again")},
-        "open_stage": open_stage, "stages": max_stage, "cap": cap, "next_due": next_due,
+        "open_stage": open_stage, "open_chapter": open_chapter, "stages": max_stage, "cap": cap, "next_due": next_due,
         "learned": state.values().filter(|s| s.learned()).count(), "total_cards": cards.len(),
         "suspended": state.iter().filter(|(_, s)| s.suspended).map(|(k, _)| k.clone()).collect::<Vec<_>>(),
     }))
@@ -395,14 +410,17 @@ pub struct RateReq {
 
 /// Apply a rating. Idempotent per (card, take): repeating it changes nothing.
 pub fn rate(app: &App, req: RateReq) -> Result<Value> {
-    if !["again", "hard", "good", "easy", "ouch"].contains(&req.rating.as_str()) { bail!("unknown rating"); }
+    // "later" is "Not today" on a before-and-after.
+    if !["again", "hard", "good", "easy", "ouch", "later"].contains(&req.rating.as_str()) { bail!("unknown rating"); }
     let cards = all_cards(app);
-    // A before-and-after isn't a spaced card: it can only be reported as hurting (which pauses the plan).
+    // A before-and-after isn't a spaced card: it can only be put off ("later") or reported as hurting.
     let card = match cards.iter().find(|c| c.id == req.card_id) {
-        Some(c) => c.clone(),
+        Some(c) if req.rating != "later" => c.clone(),
+        Some(_) => bail!("only a before-and-after can be put off"),
         None => {
             let (today, _) = util::local_now(&app.profile().timezone);
-            before_after(app, &today).into_iter().map(|(c, _)| c).find(|c| c.id == req.card_id && req.rating == "ouch").ok_or_else(|| anyhow!("card not found"))?
+            before_after(app, &today).into_iter().map(|(c, _)| c)
+                .find(|c| c.id == req.card_id && (req.rating == "ouch" || req.rating == "later")).ok_or_else(|| anyhow!("card not found"))?
         }
     };
     if let Some(t) = &req.take_id { app.take(t).map_err(|_| anyhow!("take does not exist"))?; }
@@ -417,7 +435,8 @@ pub fn rate(app: &App, req: RateReq) -> Result<Value> {
     let mut all = load_state(app);
     let mut st = all.get(&card.id).cloned().unwrap_or_default();
     if st.ease == 0.0 { st.ease = START_EASE; }
-    if st.introduced_date.is_none() { st.introduced_date = Some(today.clone()); }
+    // A before-and-after isn't a new card, so it never uses up today's allowance.
+    if st.introduced_date.is_none() && card.level_id != "start-here" { st.introduced_date = Some(today.clone()); }
     let before = st.interval_days;
 
     if req.rating == "ouch" {
@@ -431,6 +450,9 @@ pub fn rate(app: &App, req: RateReq) -> Result<Value> {
                 app.write_plan(Plan { paused: true, author: "learner".into(), rationale: "Paused after you said a card hurt or felt strained. Rest, and resume when speaking feels comfortable.".into(), ..cur }, Some(v))?;
             }
         }
+    } else if req.rating == "later" {
+        st.due = Some((date(&today) + Duration::days(BEFORE_AFTER_SNOOZE_DAYS)).to_string());
+        st.last_rating = Some("later".into());
     } else if is_daily(app, &cards, &card.id) {
         // The reference and the pinned warm-up and cool-down aren't spaced; they're recorded each
         // day. Good or Easy still counts towards learning the warm-up chapter.

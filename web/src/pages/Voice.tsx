@@ -213,7 +213,8 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
           : doc === "start"
           ? profile && <StartDoc profile={profile} onProfile={setProfile} onRecording={setRecording} onTake={(t) => { setPractised((s) => new Set([...s, t.prompt_id])); setHistory((h) => [...h, t]); }} />
           : doc === "today"
-          ? <TodayDoc key={first ?? ""} first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          ? <TodayDoc key={first ?? ""} first={first ?? null} band={profile?.comfort_range_hz ?? null} onDeck={setDeck}
+            onUseRange={(lo, hi) => { if (profile) void api.saveProfile({ ...profile, comfort_range_hz: [lo, hi] }).then(setProfile); }} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : texts && level && profile && <ChapterDoc key={level.id} texts={texts} level={level} itemId={itemId} profile={profile} onProfile={setProfile} onRecording={setRecording}
               practised={practised} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />}
       </div>
@@ -1295,7 +1296,7 @@ function ChapterTake({ take, before, band, onUseRange, onUpdate }: { take: Take;
 
 /* ---------------------------------------------------------------- today: the voice deck */
 
-interface Result { item: DeckItem; rating: Rating | "saved"; median: number | null }
+interface Result { item: DeckItem; rating: Rating | "saved" | "later"; median: number | null }
 /** Cards that come every day (warm-up, reference, cool-down): no "Again", and no "next in…". */
 /** One label for "this hurts", before a take and after it. */
 const HURT = "It hurts or feels strained";
@@ -1377,8 +1378,9 @@ function ListenBack({ src }: { src: string }) {
   );
 }
 
-function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
+function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   first: string | null; band: [number, number] | null; onDeck: (d: Deck) => void; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
+  onUseRange: (lo: number, hi: number) => void;
 }) {
   const mic = useMic();
   const [deck, setDeck] = useState<Deck | null>(null);
@@ -1450,6 +1452,12 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   };
   const advance = (q: DeckItem[]) => { if (idx + 1 < q.length) { setIdx(idx + 1); setPhase({ k: "say", retryOf: null }); } else setPhase({ k: "end" }); };
   // A before-and-after isn't rated: its answers are kept with the take.
+  // "Not today" on a before-and-after: put it off a week and move on.
+  const notToday = () => void api.rateCard(item.card.id, null, "later").then((res) => {
+    setDeck(res.deck); onDeck(res.deck);
+    setResults((x) => [...x, { item, rating: "later", median: null }]);
+    advance(queue);
+  }, (e) => setErr(e.message));
   const beforeAfterDone = () => {
     setResults((x) => [...x, { item, rating: "saved", median: null }]);
     void api.deck().then((d) => { setDeck(d); onDeck(d); }, () => {});
@@ -1484,7 +1492,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   const earlier = deck.items.filter((i) => i.done_today && !results.some((r) => r.item.card.id === i.card.id));
   const total = earlier.length + results.length + (ended ? 0 : queue.length - idx);
   const doneCount = earlier.length + results.length;
-  const label = (r: Rating | "saved") => (r === "saved" ? "Saved" : RATINGS.find((x) => x.r === r)?.label ?? r);
+  const label = (r: Result["rating"]) => (r === "saved" ? "Saved" : r === "later" ? "Another day" : RATINGS.find((x) => x.r === r)?.label ?? r);
   const setFeel = async (c: string) => { setComfort(c); try { await api.patchSession(session.id, { comfort: { comfort: c }, complete: true }); } catch (e: any) { setErr(e.message); } };
   const meta: TakeMeta | null = item && phase.k === "say" ? {
     session_id: session.id,
@@ -1497,7 +1505,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
   const rateView = phase.k === "reveal" ? (
     <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={`r-${phase.take.id}`}>
       <p className="ve-ba-l">Here's what the pitch did. Did it match what you heard?</p>
-      <Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
+      <Measures key={phase.take.id} take={phase.take} band={band} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
       <div className="ve-rate-more"><button className="ve-next-go" onClick={() => advance(phase.q)}>Next card</button></div>
     </div>
   ) : phase.k === "rate" && item.kind === "before_after" ? (
@@ -1530,9 +1538,9 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
       </div>
       {item.eyes_off
         ? <p className="ve-small">An eyes-off take: rate it by what you heard. Lilt shows the pitch once you've rated it.</p>
-        : everyDay(item) && item.kind !== "daily"
+        : everyDay(item)
           ? <details className="ve-details"><summary>Pitch details</summary><Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} /></details>
-          : <Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
+          : <Measures key={phase.take.id} take={phase.take} band={band} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
     </div>
   );
   return (
@@ -1571,12 +1579,12 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                   </div>
                 </>
               )}
-              <p className="ve-small">Your takes are in <a href="#/history">your recordings</a>. Anything more today is a bonus: try a chapter on the left.</p>
+              <p className="ve-small">Your takes are in <a href="#/history">your recordings</a>. Anything more today is a bonus{deck.open_chapter ? <>: read the steps in <a href={`#/studio/${deck.open_chapter.id}`}>{deck.open_chapter.title}</a>, your newest chapter</> : ": try a chapter on the left"}.</p>
               <div className="ve-rate-more"><button className="ve-ghost" onClick={() => go("/")}>Back to the room</button></div>
             </div>
           ) : (
             <blockquote className="ve-how"><b>How to do it</b>
-              Say each card in your practice voice, listen back, then rate how it felt. Your rating decides when a card comes back; pitch numbers never do.</blockquote>
+              Say each card the way its note asks, listen back, then rate how it felt. Your rating decides when a card comes back; pitch numbers never do. The chapter name above a card opens its steps.</blockquote>
           )}
           <ol className="ve-items">
             {earlier.map((it) => (
@@ -1593,7 +1601,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
               return (
                 <li key={`q-${j}-${it.card.id}`} ref={on ? curRef : undefined} className={`ve-item${on ? " on" : ""}`} onClick={() => { if (!on) choose(j); }}>
                   <span className="ve-mk num" aria-hidden="true">{doneCount + k + 1}.</span>
-                  <p className="ve-kind">{deckName(it)}{KIND_TAG[it.kind] && it.card.deck_title !== KIND_TAG[it.kind] && <span className="ve-tag next">{KIND_TAG[it.kind]}</span>}
+                  <p className="ve-kind">{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{KIND_TAG[it.kind] && it.card.deck_title !== KIND_TAG[it.kind] && <span className="ve-tag next">{KIND_TAG[it.kind]}</span>}
                     {it.eyes_off && <span className="ve-tag">Eyes off</span>}
                     {!chosen && k === 0 && phase.k === "say" && <span className="ve-tag start">Start here</span>}</p>
                   {on && it.card.kind !== "exercise"
@@ -1607,6 +1615,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake }: {
                     <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k !== "say"} eyesOff={!!item.eyes_off && phase.k === "say"}
                       onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
                       idleHint={phase.k === "reveal" ? "Have a look, then carry on" : phase.k === "rate" ? (item.kind === "before_after" ? "Listen to both, then answer" : "Listen back, then rate how it felt") : "Press record and say the card"}>
+                      {phase.k === "say" && !recOn && item.kind === "before_after" && <button className="ve-link" onClick={notToday}>Not today</button>}
                       {phase.k === "say" && !recOn && <button className="ve-link ouch" onClick={ouchNow}>{HURT}</button>}
                     </Dock>
                   )}

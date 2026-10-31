@@ -13,13 +13,15 @@ written_by: Written for Lilt, from NHS Fife's progression activities. The reacti
 
 Now you start combining. Counting and lists are words you never have to think about, so all your attention can go to the voice.
 
-**Pick one cue.** Brightness, a light feel, or your note: just one per take. Trying to manage everything at once is how voices get stiff.
+**Pick one cue.** A cue is one thing you've practised: your note, the brighter "ee" space, or a light feel. Just one per take. Trying to manage everything at once is how voices get stiff.
 
-**Add a second cue.** Once one cue lasts from Monday to Sunday, keep it and add one more: brightness first, then lightness, then your note. If both fall apart, go back to one. That's how the separate skills turn into one voice.
+**Add a second cue.** Once one cue lasts from Monday to Sunday, keep it and add one more, in whatever order is easiest; many people find brightness easiest to hold. If both fall apart, go back to one. That's how the separate skills turn into one voice.
 
 **Say it, keep it going.** Run through the list with your cue. The hard part isn't the start; it's still having it at the end. Most voices drift back towards the old habit as the list goes on.
 
 **Reset as often as you like.** When you notice the drift, pause, hum your note or do a quick "ee", and carry on. Resetting often is the skill, not a failure.
+
+**Use it off the clock.** Exercises train the skill; using the voice makes it yours. Today, talk to yourself for two minutes in your practice voice while you make tea or tidy up. Each week, add a few minutes, as long as your voice still feels fresh in the evening.
 
 **Use it in words.** Finish with "Monday works for me. How about you?" or a line you actually say.
 
@@ -29,13 +31,13 @@ Now you start combining. Counting and lists are words you never have to think ab
 
 Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.
 
-> Your check-in: one cue, all week. Listen to Monday, then Sunday. Do they sound like the same voice?
+> Your check-in: pick one thing you've practised (your note, the brighter "ee" space, or a light feel) and keep it from Monday to Sunday. Listen to Monday, then Sunday: the same voice?
 
 ## one-to-ten
 
 One, two, three, four, five, six, seven, eight, nine, ten.
 
-> An easy pace, one cue. Then try that cue in "Hi, how are you?" straight after.
+> An easy pace, with one practised change (your note, brightness or lightness). Then try it in "Hi, how are you?" straight after.
 
 ## months-of-year
 
@@ -53,7 +55,7 @@ Fifty, fifty-one, fifty-two … all the way to seventy-five.
 
 A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z.
 
-> Every letter has a different vowel, so they won't all sound the same. Keep the one cue steady underneath.
+> Every letter has a different vowel, so they won't all sound the same. Keep your one practised change (your note, brightness or lightness) steady underneath.
 
 ## reactions
 

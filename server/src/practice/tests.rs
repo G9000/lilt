@@ -206,25 +206,51 @@ fn well_known_reviews_alternate_eyes_off() {
     assert!(!eyes("text.warmup.ng") && !eyes("text.warmup.zzz"));
 }
 
-/// Three weeks after your last "before" take, it comes back for a before-and-after; recording it
-/// today marks it done; nothing shows until you've recorded the first one.
+/// About six weeks after your first "before" take it comes back for a before-and-after, then every
+/// three weeks; recording it today marks it done; "Not today" puts it off a week; nothing shows until
+/// you've recorded the first one.
 #[test]
-fn before_texts_come_back_every_three_weeks() {
+fn before_texts_come_back_for_a_before_and_after() {
     let (_d, app) = app();
     let ba = |app: &App| queue_ids(app).into_iter().filter(|x| x.1 == "before_after").collect::<Vec<_>>();
     assert!(ba(&app).is_empty());
     let s = session(&app);
-    let old = upload(&app, &s.id, T { role: crate::recordings::model::TakeRole::Free, prompt: "text.start-here.baseline-read", exercise: None, ..Default::default() }, "harmonic_240.wav");
+    let t = T { role: crate::recordings::model::TakeRole::Free, prompt: "text.start-here.baseline-read", exercise: None, ..Default::default() };
+    let old = upload(&app, &s.id, t, "harmonic_240.wav");
     assert!(ba(&app).iter().any(|x| x.0 == "text.start-here.baseline-read" && x.2), "recorded today: shown as done");
-    let mut t = app.take(&old.id).unwrap();
-    t.created_utc = (chrono::Utc::now() - chrono::Duration::days(10)).to_rfc3339();
-    app.save_take(&t).unwrap();
-    assert!(ba(&app).is_empty(), "not yet: ten days");
-    t.created_utc = (chrono::Utc::now() - chrono::Duration::days(22)).to_rfc3339();
-    app.save_take(&t).unwrap();
-    assert_eq!(ba(&app), vec![("text.start-here.baseline-read".to_string(), "before_after".to_string(), false)]);
+    let age = |id: &str, days: i64| { let mut t = app.take(id).unwrap(); t.created_utc = (chrono::Utc::now() - chrono::Duration::days(days)).to_rfc3339(); app.save_take(&t).unwrap(); };
+    age(&old.id, 22);
+    assert!(ba(&app).is_empty(), "the first one waits about six weeks, not three");
+    age(&old.id, 43);
+    let due = vec![("text.start-here.baseline-read".to_string(), "before_after".to_string(), false)];
+    assert_eq!(ba(&app), due);
+    // Once it's been done, the next one is three weeks after the latest take.
+    let again = upload(&app, &s.id, T { role: crate::recordings::model::TakeRole::Free, prompt: "text.start-here.baseline-read", exercise: None, ..Default::default() }, "harmonic_240.wav");
+    age(&again.id, 10);
+    assert!(ba(&app).is_empty(), "ten days after the last one");
+    age(&again.id, 22);
+    assert_eq!(ba(&app), due);
+    // "Not today": done for today, doesn't use a new-card slot, and back after a week.
+    rate(&app, "text.start-here.baseline-read", None, "later");
+    assert!(ba(&app).iter().all(|x| x.2), "put off: done for today");
+    assert_eq!(queue_ids(&app).iter().filter(|x| x.1 == "new").count(), 2, "still two new cards");
+    assert!(cards::rate(&app, RateReq { card_id: "text.warmup.hum-to-hello".into(), take_id: None, rating: "later".into() }).is_err(), "only a before-and-after can be put off");
     // It isn't rated like a card, but "it hurts" still pauses the plan.
     assert!(cards::rate(&app, RateReq { card_id: "text.start-here.baseline-read".into(), take_id: None, rating: "good".into() }).is_err());
     rate(&app, "text.start-here.baseline-read", None, "ouch");
     assert!(app.current_plan().unwrap().paused);
+}
+
+/// When reviews would fill the day, one place is still kept for a new card.
+#[test]
+fn reviews_leave_room_for_a_new_card() {
+    let (_d, app) = app();
+    let mut state = BTreeMap::new();
+    for c in cards::all_cards(&app).iter().filter(|c| c.stage == 1 && c.id != "text.warmup.hum" && c.id != "text.warmup.cool-down").take(7) {
+        state.insert(c.id.clone(), CardState { due: Some("2020-01-01".into()), interval_days: 3, ease: 2.5, reps: 2, ..Default::default() });
+    }
+    store::write_json(&app.paths.root.join("cards/state.json"), &state).unwrap();
+    let q = queue_ids(&app);
+    assert!(cards::all_cards(&app).iter().filter(|c| c.stage == 1).count() > 9, "stage 1 still has unseen cards");
+    assert_eq!(q.iter().filter(|x| x.1 == "new").count(), 1, "{q:?}");
 }

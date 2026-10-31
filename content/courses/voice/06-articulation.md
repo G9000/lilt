@@ -7,7 +7,7 @@ kind: phrases
 area: lightness
 check_in: tip-teeth-lips
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lightenbrighten-articulation/
-written_by: Written for Lilt, from NHS Fife's "Shaping your voice: articulation" and its articulation tuning-in activity. "The tip of the tongue, the teeth, the lips" is a traditional diction exercise; the other texts are Lilt's own.
+written_by: Written for Lilt, from NHS Fife's "Shaping your voice: articulation" and its articulation tuning-in activity. "The tip of the tongue, the teeth, the lips" is a traditional diction exercise, and the pen (cork) exercise is a common articulation drill used in voice therapy; the other texts are Lilt's own.
 ---
 
 Articulation is how your lips, tongue and jaw shape sounds. Lighter, quicker contact with the tip of the tongue and the lips keeps speech at the front of the mouth, which can help it sound brighter and lighter, and clearer too. Listeners notice a crisp, forward s in particular.
@@ -16,7 +16,7 @@ Articulation is how your lips, tongue and jaw shape sounds. Lighter, quicker con
 
 **Lips that move.** "Pa ba ma": let your lips meet and spring apart. Keep your jaw loose; it doesn't need to do the work.
 
-**Crisp s.** Keep the tongue tip just behind your top teeth and the s short and bright, not slushy or lisped. Listeners notice it.
+**Crisp s.** Keep the s at the front with a narrow, hissy stream: the tongue close to (not touching) the ridge behind your top teeth, or the tip down behind your lower teeth if that's how you already make it. Not slushy or lisped. Listeners notice it.
 
 **Use it in words.** "Thanks, that's perfect, see you later!" with quick, light consonants. Clear doesn't mean slow or over-pronounced.
 
@@ -57,3 +57,9 @@ Ten tiny kittens sat on a little table.
 Can I take a quick look at the cake?
 
 > Quick and clear all the way through, with the vowels staying forward.
+
+## cork
+
+Take a little time to think it through.
+
+> Hold a clean pen lightly across your front teeth and read it slowly and clearly, then take the pen out and read it again. Do the consonants sound crisper the second time? Keep it gentle; stop if your jaw aches.

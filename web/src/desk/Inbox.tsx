@@ -27,12 +27,13 @@ function build(today: Today | null, deck: Deck | null, recovered: number): Note[
     });
   }
   if (deck && deck.open_stage > 1) {
-    out.push({ id: `stage-${deck.open_stage}`, kind: "stage", title: `Stage ${deck.open_stage} is open`, to: "/texts", when: "Today",
-      body: "New cards arrive a couple at a time, no rush." });
+    const ch = deck.open_chapter;
+    out.push({ id: `stage-${deck.open_stage}`, kind: "stage", title: ch ? `${ch.title} is open` : `Stage ${deck.open_stage} is open`, to: ch ? `/studio/${ch.id}` : "/studio", when: "Today",
+      body: ch ? "Read its steps when you have a minute. New cards arrive a couple at a time, no rush." : "New cards arrive a couple at a time, no rush." });
   }
   if (deck?.paused) {
-    out.push({ id: `rest-${date}`, kind: "rest", title: "Resting today", to: "/desk", when: "Today",
-      body: "Cards that hurt stay paused until you feel ready. Nothing is lost." });
+    out.push({ id: `rest-${date}`, kind: "rest", title: "Resting today", to: "/deck", when: "Today",
+      body: "Cards that hurt stay paused until you feel ready. Open Today to resume. Nothing is lost." });
   } else if (today?.reminder.due && deck && !deck.all_done) {
     const left = deck.items.filter((i) => !i.done_today).length;
     out.push({ id: `reminder-${date}`, kind: "reminder", title: "Your practice time", to: "/desk", when: today.reminder.time ?? "Today",

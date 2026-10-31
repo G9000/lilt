@@ -21,13 +21,15 @@ Hi, friend. Five minutes of setup, one "before" recording, and you're ready.
 
 **Check your level.** Count to ten below and play it back. You want it clear, with no loud warning. A gappy pitch line on its own doesn't mean you're too quiet: unvoiced sounds like s and h never draw a line.
 
-**Choose your goal.** Feminine, androgynous, just "more like me": all of these are real goals, and they can change. If you take oestrogen, it won't raise a voice that has already deepened, so practice like this is the main way to change it.
+**Choose your goal.** Feminine, androgynous, just "more like me": all of these are real goals, and they can change. Write yours in [Practice settings](#/studio/settings); it becomes the note on your wall. Going for androgynous? The middle is a real place to aim for, not a stop on the way: the overlap band on the pitch scale is a common home, and how far you take brightness and lightness is up to you. If you take oestrogen, it won't raise a voice that has already deepened, so practice like this is the main way to change it.
 
 **Record your "before".** Read the texts below in your everyday voice. Don't change anything yet. Future you will want this, trust me. You don't have to listen back to it until you want to.
 
 **How every chapter works.** The same small loop each time: hear an example or replay a take you like, try one change, record, listen back, then use it in a real phrase straight away. Five to ten minutes is plenty. Short and often beats long and rare.
 
 **Your ears decide.** Lilt shows your pitch and a rough read of your resonance, but numbers describe a take; they don't grade it. The questions that matter: did it feel easy, could I do it again, and do I like how it sounds? Inside your head your voice sounds lower and fuller than it does to anyone else; the recording is closer to what others hear. Listen back on headphones, not a laptop speaker.
+
+**Hard days.** Hearing your own recordings can sting, especially at first. You can rate a card by how it felt without listening back, and Home has people to talk to.
 
 **Be gentle with your voice.** It should never hurt: stop and rest if it strains. When to see a doctor is on Home and at the end of every chapter.
 

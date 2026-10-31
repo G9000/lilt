@@ -12,13 +12,17 @@ written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lot
 
 Practice in a quiet room is one thing; a noisy café or a phone call is another. This chapter rehearses the moments you'll actually meet, so they feel familiar when they come.
 
-**Climb a ladder.** A voice note to yourself, then one to a friend, then ordering something, then a phone call to a shop. Move up a rung when the one below feels ordinary, and step back down whenever you like. Rehearse each line here first, with the cues you can combine (see "Add a second cue" in Automatic speech). If your voice is tired or low by the evening, use it a little less tomorrow.
+**Climb a ladder.** A voice note to yourself, then one to a friend, then ordering something, then a phone call to a shop. Move up a rung when the one below feels ordinary, and step back down whenever you like. Rehearse each line here first, with the cues you can combine (see "Add a second cue" in Automatic speech). Count the minutes you use your practice voice off the clock (see Automatic speech) and let them grow slowly. If your voice is tired or low by the evening, use it a little less tomorrow.
 
 **Phones are harder.** The line is tinnier and there's no face to help, so voices often drop back. Start calls with a line you've rehearsed, and take your time.
 
 **When you're tired or upset.** Tiredness, stress and strong feelings pull voices back to old habits. That's normal. Practise a few lines with real feeling behind them, and on tired days let your voice be easier rather than forcing it.
 
 **Being heard.** In a noisy place, aim your words at the person and open your mouth a little more. Getting louder from your throat makes the voice heavier and tires it.
+
+**Borrow an ear.** Once a month, if you'd like, send someone you trust two unlabelled takes of the same line, an old one and a new one, and ask which sounds more like the voice you described. One opinion, not a verdict. Think twice before posting recordings on public forums: they can be saved and shared.
+
+**Keep it.** Clinical programmes run from a few months to longer, so give yourself time. When this is simply your voice, keep one check-in a week and your before-and-afters. If one drifts, spend a week back in that skill's chapter.
 
 **Come back after.** Record the line again, or just say how it went. Did it feel easy, and did it feel like you? Someone else's reaction is only one piece of information.
 

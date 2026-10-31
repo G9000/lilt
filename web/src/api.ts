@@ -216,6 +216,8 @@ export interface Profile {
   room_note?: string | null;
   /** The Warm-ups text that opens every day's cards (the cool-down closes them); "" for none. */
   warmup_card?: string;
+  /** Show the average man/woman pitch scale after each take (on unless turned off). */
+  show_pitch_scale?: boolean;
   updated_utc: string;
 }
 
@@ -291,7 +293,9 @@ export interface DeckItem {
 export interface Deck {
   local_date: string; paused: boolean; message?: string; items: DeckItem[]; all_done?: boolean;
   counts: { new: number; review: number; again: number };
-  open_stage: number; stages?: number; cap: number; next_due?: string | null; learned?: number; total_cards?: number;
+  open_stage: number; stages?: number; cap: number;
+  /** The chapter of the newest open stage. */
+  open_chapter?: { id: string; title: string } | null; next_due?: string | null; learned?: number; total_cards?: number;
   participation?: { days_this_week: number; dates_this_week: string[]; practised_today: boolean };
 }
 
@@ -336,7 +340,8 @@ export const api = {
   exercises: () => call<{ exercises: Exercise[]; capability_matrix: { area: string; capability: SkillCard["capability"] }[] }>("GET", "/api/exercises"),
   deck: () => call<Deck>("GET", "/api/deck/today"),
   deckSession: () => call<Session>("POST", "/api/deck/session"),
-  rateCard: (card_id: string, take_id: string | null, rating: Rating | "ouch") =>
+  /** "later" puts a before-and-after off for a week. */
+  rateCard: (card_id: string, take_id: string | null, rating: Rating | "ouch" | "later") =>
     call<{ card_id: string; next?: string; paused?: boolean; duplicate?: boolean; deck: Deck }>("POST", "/api/deck/review", { card_id, take_id, rating }),
   resumePlan: () => call<Plan>("POST", "/api/plan/resume"),
   choosePlan: (exercise_id: string) => call<Plan>("POST", "/api/plan/choose", { exercise_id }),

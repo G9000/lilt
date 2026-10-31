@@ -27,7 +27,7 @@ The lines you'll actually use this week. Practise them here and they're ready wh
 
 Hi, could I get a coffee, please?
 
-> Your check-in: a real, ordinary order. Play it next to last week's take.
+> Your check-in: a real, ordinary order. Next time, play it beside this one.
 
 ## black-coffee
 
@@ -58,3 +58,9 @@ Thank you so much, that's lovely.
 Hi, I'm Alex. It's really nice to meet you.
 
 > Use your own name. Is your voice there from "Hi", or does it arrive halfway through?
+
+## shadow-phrase
+
+See you tomorrow, then. Take care!
+
+> Record it once. Play that take back, mouth along silently, then say it again straight after, copying the whole tune, not just the note. Later, shadow your favourite take of any line.

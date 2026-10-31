@@ -16,13 +16,17 @@ written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shap
 
 Pitch is how high or low your voice sits. It matters, but less than people think: a voice pushed high while everything else stays the same tends to sound strained or cartoony. You're looking for a note that's a little higher, easy, and yours.
 
-**Find where you are now.** Say "mm-hm!" the way you'd agree with a friend. That little sound lands close to your natural speaking pitch. Watch where it sits on the pitch line: that's where you speak now.
+**How it fits together.** Your vocal folds make the sound: how fast they vibrate is pitch, and how thick and firmly they meet is weight. Your throat, mouth and nose then shape that sound: that's resonance. The next chapters take one each, so you can learn to change them separately.
+
+**Find where you are now.** Say "mm-hm!" the way you'd agree with a friend. That little sound lands close to an easy speaking pitch for you. Watch where it sits on the pitch line: that's where you speak now.
 
 **Explore upwards, gently.** Glide from where you speak now up and back down on a hum. About two to four semitones above it (two to four piano keys) there's usually a spot that still feels easy; Lilt shows semitones after each take. That's your note, a starting point rather than a ceiling. You don't need to reach the women's average shown after each take; many women speak below it. If you feel squeezing or strain, the sound turns breathy or hollow, or you couldn't keep it up for a chat, you've gone past it; come back down.
 
-**If your voice flips.** Near the top of your range the voice may flip into a lighter mode. That's normal. For everyday speaking, most people stay just below the flip; a speaking voice built above it is possible, but best learned with a coach. If the flipped sound is breathy or hollow, come back down.
+**If your voice flips.** Partway up a glide, usually well above any speaking pitch you'd aim for here, the voice may flip from its everyday register into a lighter, falsetto-like one. That's normal, and your range doesn't end there. For everyday speaking, most people stay below the flip; a speaking voice built above it is possible, but best learned with a coach. If the flipped sound is breathy or hollow, come back down.
 
 **Anchor it.** Hum your note, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
+
+**Move it up slowly.** After a week where your note felt easy every day, try it one semitone higher. Stop at the first squeeze. The weight and resonance chapters sometimes use a higher note just to find a feeling; that isn't your speaking note.
 
 **Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. A flat, held pitch sounds robotic.
 
@@ -32,7 +36,7 @@ Pitch is how high or low your voice sits. It matters, but less than people think
 
 mm-hm!
 
-> Agree with an imaginary friend. Say it a few times without thinking about it; where it lands is close to your everyday speaking pitch.
+> Agree with an imaginary friend. Say it a few times without thinking about it; where it lands is close to an easy speaking pitch for you.
 
 ## hum-speak
 
@@ -44,13 +48,13 @@ mmm
 
 mmm ↗ ↘
 
-> Slide up from where you speak now and back down. Notice where it still feels easy, and where it starts to squeeze or turn breathy. A flip partway up is normal.
+> Slide up from where you speak now and back down. The highest spot that still feels easy, often two to four piano keys up (the note name shows after each take), is your note: a starting point, not a ceiling. Squeezing, or a breathy or hollow sound, means you've gone past it. A flip partway up is normal.
 
 ## hum-target
 
 mmmmmm
 
-> Hum on your note for a few seconds. A small smile can help it feel lighter. If your throat tightens, take the note down a step.
+> Hum your note (the easy spot you found on the glide) for a few seconds. A small smile brightens the sound; it doesn't change the note. If your throat tightens, take it down a step. Happy with it? Save the range around it in Practice settings.
 
 ## hum-into-count
 

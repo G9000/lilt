@@ -18,7 +18,7 @@ Laughs, sighs, "um"s and "ow!"s happen before you can think about them, which is
 
 **Small reactions.** "Aww", "ow!", "oops" and a sigh are tiny, fast and emotional. Say them as if they're real, then listen to whether they match the rest of your speech.
 
-**Don't clear your throat.** Clearing hard is rough on your vocal folds. Swallow or take a sip of water instead.
+**Don't clear your throat.** Clearing hard is rough on your vocal folds. Swallow or take a sip of water instead. Coughs and sneezes are fine as they are; there's nothing to practise there.
 
 **Listen back.** Do the little sounds sound like the same person as your sentences? If one jumps out, practise just that one a few times.
 

@@ -18,6 +18,10 @@ function InsightNote({ analysis, band }: { analysis: any; band: [number, number]
 
 let reference: Promise<PitchReference | null> | null = null;
 const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_reference ?? null, () => null));
+// Whether you want the man/woman scale at all (Practice settings); a change there updates it straight away.
+let wantScale: Promise<boolean> | null = null;
+const scaleWanted = () => (wantScale ??= api.profile().then((p) => p.show_pitch_scale !== false, () => true));
+window.addEventListener("lilt:pitch-scale", (e) => { wantScale = Promise.resolve((e as CustomEvent<boolean>).detail); });
 
 /**
  * Where your middle pitch sits against the average man's and woman's speaking voices, on a scale, with one
@@ -26,8 +30,9 @@ const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_refe
  */
 export function PitchScale({ median, note = true }: { median: number; note?: boolean }) {
   const [ref, setRef] = useState<PitchReference | null>(null);
-  useEffect(() => { void pitchReference().then(setRef); }, []);
-  if (!ref) return null;
+  const [want, setWant] = useState<boolean | null>(null);
+  useEffect(() => { void pitchReference().then(setRef); void scaleWanted().then(setWant); }, []);
+  if (!ref || !want) return null;
   const LO = 80, HI = 280, at = (hz: number) => Math.max(0, Math.min(100, (Math.log(hz / LO) / Math.log(HI / LO)) * 100));
   const band = (lo: number, hi: number) => ({ left: `${at(lo)}%`, width: `${at(hi) - at(lo)}%` });
   const men: [number, number] = [ref.men_mean - ref.men_sd, ref.men_mean + ref.men_sd], women: [number, number] = [ref.women_mean - ref.women_sd, ref.women_mean + ref.women_sd];
@@ -48,7 +53,7 @@ export function PitchScale({ median, note = true }: { median: number; note?: boo
       </div>
       <figcaption>
         {placePitch(median, ref)}
-        {note && <span title={ref.source}>Pitch is one part of how a voice is heard; resonance and intonation matter as much. Averages from Leung et al. (2022).</span>}
+        {note && <span title={ref.source}>Pitch is one part of how a voice is heard; resonance matters about as much. Averages from Leung et al. (2022), reading aloud.</span>}
       </figcaption>
     </figure>
   );
@@ -126,7 +131,11 @@ export function TakeInsight({ take, band }: { take: Take; band: [number, number]
 const fmtHz = (hz: number | null | undefined) => (hz ? `${Math.round(hz)} Hz` : "–");
 
 /** What the analysis measured for a take, with last time on the same card when they're comparable. */
-export function TakeResult({ take: initial, band, onMeasured }: { take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void }) {
+export function TakeResult({ take: initial, band, onMeasured, onUseRange }: {
+  take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void;
+  /** Offered when no range is saved or the take sat above it: make this take's range your comfortable range. */
+  onUseRange?: (lo: number, hi: number) => void;
+}) {
   const [take, setTake] = useState(initial);
   const [analysis, setAnalysis] = useState<any>(null);
   const [prev, setPrev] = useState<{ take: Take; cmp: Comparison | null; analysis: any } | null>(null);
@@ -197,6 +206,9 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
               {voiced !== null && <span>Voice heard <b>{Math.round(voiced * 100)}%</b></span>}
               {prev && comparable && prevMedian && <span>Last time <b>{fmtHz(prevMedian)}</b> ({shift! >= 0 ? "+" : "−"}{Math.abs(shift!)} Hz)</span>}
             </p>
+            {onUseRange && p10 && p90 && (!band || median > band[1] * 1.03) && (
+              <button className="ve-ghost" onClick={() => onUseRange(Math.round(p10), Math.round(p90))}>Use this take's range as my comfortable range</button>
+            )}
           </section>
           <TakeChart src={take.audio_url} pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
           <ResonanceNote take={take} />

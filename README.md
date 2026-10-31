@@ -108,10 +108,15 @@ Then open <http://127.0.0.1:7878>.
    - **Eyes-off takes:** a review of a card you know well (three or more reviews) is eyes-off every
      other time. The live pitch line and numbers stay hidden while you record, you rate by ear, and
      then Lilt shows the pitch. Less feedback while practising helps the skill stick.
-   - **Before and after:** three weeks after your last take of a Start here "before" text, it comes
-     back in Today. Record it again, hear it beside your very first take, and answer three 1–5
+   - **Before and after:** about six weeks after your first take of a Start here "before" text, and
+     then three weeks after each time you redo it, it comes back in Today ("Not today" puts it off a
+     week). Record it again, hear it beside your very first take, and answer three 1–5
      questions (how happy you are with it, whether it sounds like you, how much effort it took),
      kept with the take.
+   - **The pitch scale** after each take places it against the average man's and woman's speaking
+     pitch, measured from the overlap between them. Turn it off in Practice settings if you'd rather
+     not see it. When a take sits above your saved range, Lilt suggests moving the range up instead
+     of telling you to come down.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.
@@ -152,7 +157,7 @@ Then open <http://127.0.0.1:7878>.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
-8. **Texts** has 91 texts across 13 chapters: setup, warm-ups, pitch, resonance, vocal weight,
+8. **Texts** has 98 texts across 13 chapters: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, and real life. Each chapter explains the technique in a few numbered steps (how to
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,

@@ -274,6 +274,11 @@ export function PracticeSettings() {
             </Row>
           )}
         </div>
+        <div className="sx-group">
+          <Row label="Pitch scale after each take" htmlFor="pscale" help="Where a take sits between the average man's and woman's speaking pitch. Turn it off if you'd rather not see it.">
+            <input id="pscale" type="checkbox" checked={p.show_pitch_scale !== false} onChange={(e) => { edit({ ...p, show_pitch_scale: e.target.checked }); window.dispatchEvent(new CustomEvent("lilt:pitch-scale", { detail: e.target.checked })); }} />
+          </Row>
+        </div>
         <p className="sx-note">Optional. A pitch range that feels comfortable and sounds like you, shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like.</p>
       </section>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}

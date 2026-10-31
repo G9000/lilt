@@ -307,7 +307,7 @@ impl App {
             focus_area: "resonance".into(),
             cue_id: Some(ex.primary_cue.id.clone()),
             ladder_step: None,
-            rationale: "Starting point for your goal of a lighter, more feminine voice: feeling resonance move up and forward. NHS Fife lists this under lightening and brightening a voice. There is no evidence about your voice yet; this is where the plan begins.".into(),
+            rationale: "Starting point for a lighter, brighter voice, whatever your goal: an easy hum that moves forward into the face. NHS Fife lists this under lightening and brightening a voice. There is no evidence about your voice yet; this is where the plan begins.".into(),
             evidence_refs: vec![],
             paused: false,
         };

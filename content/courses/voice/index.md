@@ -56,6 +56,9 @@ budget, with room to stop earlier:
   chapters before practising a greeting.
 - **Choose what to keep, about a minute.** Ask: was it comfortable, could I repeat it, and did I
   prefer the sound? Keep one useful cue for next time. "I'm not sure yet" is an honest answer.
+- **Off the clock, once you're combining cues.** Talk to yourself in your practice voice for a couple
+  of minutes while you do something else, and let those minutes grow slowly over the weeks. Using
+  the voice, not just practising it, is what makes it yours.
 
 These times are a way to organise a visit, not a required dose. Finish sooner if you want to.
 Two or three short visits in a day may suit you better than one long one; there's no exact
@@ -90,6 +93,8 @@ of pushing through. If symptoms persist, keep returning, or concern you, ask for
   these exercises, including whispering.
 - **Get checked before you start** if you already have a hoarse voice or reflux, smoke or vape,
   or use your voice a lot for work.
+- **Notice the early signs.** Before anything hurts, a tight neck or jaw, an ache or "lump" in the
+  throat, wanting to clear it, or a voice that's lower or rougher by the evening all mean: do less.
 - **Build up slowly.** Practice is only part of your day's talking. If your voice is tired, sore or
   lower by the evening, do less tomorrow. Skip practice when you have a cold or have lost your voice.
 - **Look after it.** Sip water through the day, keep the air from getting too dry, and go easy on
@@ -116,8 +121,9 @@ considering voice surgery, therapists usually recommend voice training before an
 ## What this course doesn't cover
 
 Singing, and communication beyond the voice (gesture, posture, word choice), aren't here yet.
-If you're deaf or hard of hearing, the pitch line and the resonance comparison can stand in for
-some of the listening; a therapist can help with the rest.
+If you're deaf or hard of hearing, the pitch line can show whether your pitch moved. The resonance
+comparison is rough and hasn't been tested on real voices, so it can't replace a listener; a
+therapist, or someone you trust who can hear, can help with the rest.
 
 ## Make it better
 

@@ -31,7 +31,7 @@ export function describeTake({ median, spanSt, band, pts }: InsightInput): Insig
   if (!median) return null;
   if (band && median > band[1] * 1.03) return {
     note: "This take sat above your comfortable range.",
-    cue: "Check it felt easy. If there was any strain at all, ease back down a little next time.",
+    cue: "If it felt easy and this is the note you've been working towards, move your range up to match it. If there was any strain, ease back down a little next time.",
   };
   const drop = endDropSt(pts);
   if (drop !== null && drop >= 2) return {
@@ -67,10 +67,13 @@ export function placePitch(hz: number, r: PitchRef): string {
     : hz > menHigh ? "between the average man's and woman's ranges"
     : hz >= r.men_mean - r.men_sd ? "within the average man's range"
     : "below the average man's range";
-  const gap = Math.round(st(r.women_mean, hz) * 2) / 2;
-  const relation = gap === 0 ? "right at the average woman's pitch"
-    : `about ${Math.abs(gap)} semitone${Math.abs(gap) === 1 ? "" : "s"} ${gap > 0 ? "below" : "above"} the average woman's pitch (${Math.round(r.women_mean)} Hz)`;
-  return `${Math.round(hz)} Hz sits ${zone}, ${relation}.`;
+  // Measured from the overlap, not from the average woman: the middle is a real place to aim for too.
+  const above = Math.round(st(hz, r.overlap_high) * 2) / 2, below = Math.round(st(r.overlap_low, hz) * 2) / 2;
+  const semis = (n: number) => `about ${n} semitone${n === 1 ? "" : "s"}`;
+  const relation = hz >= r.overlap_low && hz <= r.overlap_high ? null
+    : hz > r.overlap_high ? (above === 0 ? "just above the overlap" : `${semis(above)} above the overlap (${r.overlap_high} Hz)`)
+    : (below === 0 ? "just below the overlap" : `${semis(below)} below the overlap (${r.overlap_low} Hz)`);
+  return relation ? `${Math.round(hz)} Hz sits ${zone}, ${relation}.` : `${Math.round(hz)} Hz sits ${zone}.`;
 }
 
 /**
