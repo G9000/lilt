@@ -10,9 +10,9 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt. The texts are Lilt's own; swallowing or sipping water instead of clearing your throat is common voice-care advice.
 ---
 
-Laughs, sighs, "um"s and "ow!"s happen before you can think about them, which is why they're often the last thing to change. A big laugh in your old voice can stand out more than a whole sentence. A little practice makes them feel like yours.
+Laughs, sighs, "um"s and "ow!"s happen before you can think about them, which is why they're often the last thing to change. If yours don't match the voice you're building, a little practice helps them catch up. Keep any that already feel like you.
 
-**Laugh lighter.** Try a laugh that lives in your face and the front of your mouth instead of your chest: more "hee-hee" and "ha-ha" than "HA HA HA". It shouldn't feel forced; think of something actually funny.
+**Try a lighter laugh.** If you want your laugh to match a lighter voice, try one that lives in your face and the front of your mouth instead of your chest. It shouldn't feel forced; think of something actually funny. A big laugh is fine too, if it's yours.
 
 **Fill the pauses.** "Um", "hmm" and "uh" sit right on top of your voice. Practise them on your note so they stop pulling you back to the old one.
 

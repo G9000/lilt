@@ -7,7 +7,7 @@ kind: phrases
 area: carryover
 check_in: answer-phone
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/
-written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lothian's voice and communication therapy guides (2026). The across-the-room and caught-off-guard texts are Lilt's own choices.
+written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lothian's voice and communication therapy guides (2026). The voice-note, not-okay, across-the-room and caught-off-guard texts are Lilt's own choices.
 ---
 
 Practice in a quiet room is one thing; a noisy café or a phone call is another. This chapter rehearses the moments you'll actually meet, so they feel familiar when they come.
@@ -17,6 +17,8 @@ Practice in a quiet room is one thing; a noisy café or a phone call is another.
 **Pick a small step.** A voice note to yourself, a hello to someone you trust, ordering a drink. You choose when and where; there's no schedule and no test.
 
 **Phones are harder.** The line is tinnier and there's no face to help, so voices often drop back. Start calls with a line you've rehearsed, and take your time.
+
+**When you're tired or upset.** Tiredness, stress and strong feelings pull voices back to old habits. That's normal. Practise a few lines with real feeling behind them, and on tired days let your voice be easier rather than forcing it.
 
 **Being heard.** In a noisy place, aim your words at the person and open your mouth a little more. Getting louder from your throat makes the voice heavier and tires it.
 
@@ -57,6 +59,18 @@ Hey! I just wanted to hear your voice. Have you got a minute to chat?
 Thank you so much, you've been really helpful. Have a lovely day!
 
 > A warm goodbye. It's fine for "day" to fall.
+
+## voice-note
+
+Hey, it's me! Just a quick voice note to say I'll be there at seven.
+
+> Send it to yourself as a real voice note, then play it back on your phone's speaker. Phones squash the sound; does your voice still come through?
+
+## not-okay
+
+Honestly, I'm a bit frustrated. This is the third time I've asked.
+
+> Say it with real feeling, not shouting. Notice whether your voice holds or drops back, and keep it easy on your throat.
 
 ## across-the-room
 

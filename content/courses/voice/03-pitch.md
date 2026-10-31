@@ -18,11 +18,13 @@ Pitch is how high or low your voice sits. It matters, but less than people think
 
 **Find where you are now.** Say "mm-hm!" the way you'd agree with a friend. That little sound lands close to your natural speaking pitch. Watch where it sits on the pitch line.
 
-**Explore upwards, gently.** Glide from that note up and back down on a hum. Somewhere a few notes above your starting point there's usually a spot that still feels easy. That's your starting note, not a ceiling. If your voice flips, thins out or your throat tightens, you've gone past it; come back down.
+**Explore upwards, gently.** Glide from that note up and back down on a hum. Somewhere a few notes above your starting point there's usually a spot that still feels easy. That's your starting note, not a ceiling. You don't need to reach the women's average shown after each take; many women speak below it. If you feel squeezing or strain, the sound turns breathy or hollow, or you couldn't keep it up for a chat, you've gone past it; come back down.
+
+**If your voice flips.** Near the top of your range the voice may flip into a lighter mode (head voice). That's not a mistake, and lots of feminine voices use a mix of both. What to avoid for speaking is a breathy, hollow falsetto.
 
 **Anchor it.** Hum your note, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
 
-**Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. A flat, held pitch sounds more robotic than feminine.
+**Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. A flat, held pitch sounds robotic.
 
 **Listen back.** Does it sound like you, and could you talk like this for a few minutes? Once you know your note, save it as your [comfortable range](#/studio/settings) so the recorder shows it behind your pitch line.
 
@@ -54,7 +56,7 @@ mm-hm!
 
 mmm ↗ ↘
 
-> Slide up from home base and back down. Notice where it still feels easy, and where it starts to thin or squeeze.
+> Slide up from home base and back down. Notice where it still feels easy, and where it starts to squeeze or turn breathy. A flip partway up is normal.
 
 ## hum-target
 

@@ -19,7 +19,7 @@ The lines you'll actually use this week. Practise them here and they're ready wh
 
 **Start ready.** Real life doesn't give you a hum first. Try starting a phrase cold, with no warm-up sound, and see if your voice is there from the first word.
 
-**Try one out there.** When you feel like it, use one line for real: ordering a drink, a voice note to yourself, a hello to someone you trust. Rehearsing here counts too.
+**Try one out there.** When you feel like it, use one line for real: ordering a drink, a voice note to yourself, a hello to someone you trust. Rehearsing here counts too. Build up your outside use gradually; if your voice is tired or low by the evening, use it a little less tomorrow.
 
 **Listen back.** Which take do you like more, and could you say it like that again without preparing?
 

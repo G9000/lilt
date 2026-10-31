@@ -12,18 +12,18 @@
   "purpose": "Feel resonance move up and forward into your face and lips. The source presents this as part of lightening and brightening a voice.",
   "instructions": [
     "Breathe in through your nose, then hum gently on a comfortable pitch. Notice where you feel the vibration.",
-    "Hum again, aiming the sound forward. See if you can make your lips tingle.",
+    "Hum again, aiming the sound forward. Your lips may start to tingle; if they don't, that's fine.",
     "When that feels comfortable, keep smiling and move from the hum into a vowel: mmmee, mmmaa, mmmoo.",
     "Then say short words that start with m, holding the m a little longer at first: meet, many, maybe, Mary, magic."
   ],
   "primary_cue": {
     "id": "aim-forward",
-    "text": "Aim the hum forward until your lips tingle."
+    "text": "Aim the hum forward; your lips may tingle."
   },
   "cues": [
     {
       "id": "aim-forward",
-      "text": "Aim the hum forward until your lips tingle.",
+      "text": "Aim the hum forward; your lips may tingle.",
       "use_when": "default"
     },
     {
@@ -43,7 +43,7 @@
     },
     {
       "id": "quiet-build",
-      "text": "Smile and start with a quiet hum, then slowly get a little louder until you feel a tingle on your lips.",
+      "text": "Smile and start with a quiet hum, then slowly get a little louder, noticing whether your lips tingle.",
       "use_when": "target_not_met"
     }
   ],

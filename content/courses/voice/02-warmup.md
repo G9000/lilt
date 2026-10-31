@@ -19,9 +19,9 @@ Two minutes that make everything after them easier. Pick two or three of these; 
 
 **Breathe low.** Sit or stand tall with your shoulders loose. Put one hand on your belly and breathe in through your nose so the hand moves out and your shoulders stay still. Breathe out slowly on a quiet "sss". Three or four of those.
 
-**Let go of the tension.** Roll your shoulders back a few times. Rub your jaw muscles gently with your fingertips and let your mouth hang a little open. Finish with a big lazy yawn that turns into a sigh.
+**Let go of the tension.** Roll your shoulders back a few times. Rub your jaw muscles gently with your fingertips and let your mouth hang a little open. Finish with a big lazy yawn that turns into a sigh. (A yawn is a reset: it opens and lowers the throat, which is the opposite of the shape you'll speak from later.)
 
-**Get the voice buzzing.** Hum, trill your lips like a motorboat, or blow "ooo" through a straw. These keep your lips partly closed, which lets the voice switch on with almost no effort. That's why voice therapists love them.
+**Get the voice buzzing.** Hum, trill your lips like a motorboat, or say "ooo" into a straw. Partly closing the mouth builds a little air pressure behind the lips, which helps your vocal folds vibrate with less effort and less impact. That's why voice therapists love these.
 
 **Use it in words.** Let a hum open straight into "Hello, how are you?". Yes, on day one. You don't need to finish the later chapters before you're allowed to talk.
 
@@ -43,7 +43,7 @@ mmm… hello, how are you?
 
 haaah ↘
 
-> Start a yawn, then sigh it out on a voice that slides gently down. Let the throat feel wide and lazy. It's a great reset whenever things feel tight.
+> Start a yawn, then sigh it out on a voice that slides gently down. It's a reset for when things feel tight, not the shape you speak from.
 
 ## lip-trill
 
@@ -55,7 +55,7 @@ brrrrrrr
 
 ooo ↗ ↘
 
-> Hum "ooo" through a drinking straw, then slide it gently up and down. Most of the effort moves to your lips, so your throat gets an easy ride. No straw nearby? A small "ooo" with rounded lips works too.
+> Say a soft "ooo" into a drinking straw, then slide it gently up and down. The straw builds a little air pressure behind your lips that helps the voice run with less effort. No straw nearby? A small "ooo" through nearly closed lips works too.
 
 ## ng
 

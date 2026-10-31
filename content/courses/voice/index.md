@@ -3,7 +3,7 @@ title: Practice
 cover: images/cover.webp
 ---
 
-# Hey girlies, welcome in
+# Hey you, welcome in
 
 Pull up a chair. This is a small, quiet room for working on your voice: a few minutes a day, out
 loud, at your own pace. Nobody's listening but you (and the cat, who is asleep).
@@ -47,9 +47,10 @@ budget, with room to stop earlier:
 
 - **Settle and listen, about two minutes.** Try an easy warm-up, then hear one example or replay a
   take you like. Choose one thing to explore, such as a lighter sound or brighter resonance.
-- **Two short tries, about three minutes.** Record a familiar version, then one small change.
-  Listen to the pair. Which do you prefer, and was it comfortable? If you cannot hear a useful
-  difference, revisit the example or make the exercise easier.
+- **Lots of quick tries, about three minutes.** Record a familiar version, then five to ten short
+  tries of one small change, on different words if you can. Many quick repetitions teach your body
+  more than one careful one. Listen to a few: which do you prefer, and was it comfortable? If you
+  cannot hear a useful difference, revisit the example or make the exercise easier.
 - **Put it in words, about two minutes.** Try the same cue in "Hello, how are you?" or a phrase
   you actually use. This starts in the warm-up chapter; you don't have to unlock all the later
   chapters before practising a greeting.
@@ -57,6 +58,8 @@ budget, with room to stop earlier:
   prefer the sound? Keep one useful cue for next time. "I'm not sure yet" is an honest answer.
 
 These times are a way to organise a visit, not a required dose. Finish sooner if you want to.
+Two or three short visits in a day may suit you better than one long one; there's no exact
+evidence-backed amount, so let your voice tell you.
 Today still introduces new cards gradually; the chapters are also there to browse at your pace.
 Let meaning guide your melody: ordinary falls, rises and pauses all belong in speaking.
 
@@ -77,10 +80,40 @@ professional for help. Bigger movements and higher numbers are not a substitute 
 ## Be gentle with your voice
 
 It should never hurt. Stop if speaking hurts, feels strained or becomes hoarse, and rest instead
-of pushing through. If symptoms persist, keep returning, or concern you, contact a GP or speech
-and language therapist. Don't wait for a set number of days or weeks to ask for help. Keep the
-effort low, sip water and take breaks. Some days your voice won't cooperate; that's normal,
-not a step back. Lilt is a practice tool, and no clinician has reviewed this course.
+of pushing through. If symptoms persist, keep returning, or concern you, ask for help; don't wait.
+
+- **See a GP straight away** for hoarseness that hasn't cleared in about three weeks, sudden
+  voice loss, pain when you speak or swallow, or a lump in your neck. Coughing up blood or
+  trouble breathing is urgent. A GP can refer you to ENT, who can look at your vocal folds.
+- **Get checked before you start** if you already have a hoarse voice or reflux, smoke or vape,
+  or use your voice a lot for work.
+- **Build up slowly.** Practice is only part of your day's talking. If your voice is tired, sore or
+  lower by the evening, do less tomorrow. Skip practice when you have a cold or have lost your voice.
+- **Look after it.** Sip water through the day, keep the air from getting too dry, and go easy on
+  alcohol, smoking and vaping. Swallow or sip instead of clearing your throat.
+
+Some days your voice won't cooperate; that's normal, not a step back. Lilt is a practice tool, and
+no clinician has reviewed this course.
+
+## Hard days
+
+Hearing your own voice can be hard, especially at the start. You don't have to listen to your
+"before" recording until you want to. Plateaus and off days are part of it for everyone, and it's
+fine to pause for a while and come back. If things feel heavy, talk to someone you trust; in the US
+and Canada, [Trans Lifeline](https://translifeline.org) is run by and for trans people.
+
+## Working with a professional
+
+Lilt is practice, not therapy. A speech and language therapist who works with gender-affirming
+voice can hear what you can't, and many offer online sessions. In the UK, search
+[ASLTIP](https://asltip.com); in the US, [ASHA ProFind](https://www.asha.org/profind/). If you're
+considering voice surgery, therapists usually recommend voice training before and after it.
+
+## What this course doesn't cover
+
+Singing, and communication beyond the voice (gesture, posture, word choice), aren't here yet.
+If you're deaf or hard of hearing, the pitch line and the resonance comparison can stand in for
+some of the listening; a therapist can help with the rest.
 
 ## Make it better
 
@@ -96,7 +129,7 @@ The exercise instructions are written in Lilt's own words, from ideas in the gui
 can read the originals. The listening questions, early greeting cards and suggested daily loop are
 Lilt's teaching choices; they have not been validated as a training programme. The chapter video
 cards link to their named creators' demonstrations; their audio is not copied into Lilt.
-Voice-care and person-centred practice guidance rechecked on 29 October 2026.
+Voice-care guidance and the technique were checked against these sources again on 1 November 2026, by an AI, not a clinician.
 
 - NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
   (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"
@@ -113,10 +146,18 @@ Voice-care and person-centred practice guidance rechecked on 29 October 2026.
 - NIDCD, [Taking care of your voice](https://www.nidcd.nih.gov/health/taking-care-your-voice).
 - ASHA, [Gender affirming voice and communication](https://www.asha.org/practice-portal/professional-issues/gender-affirming-voice-and-communication/):
   self-chosen goals, listening to your own recordings and considering communication in everyday situations.
-- Research behind the "one skill at a time" order: Leung, Oates and Chan (2018), [a review of what
-  listeners use to hear a speaker's gender](https://pubmed.ncbi.nlm.nih.gov/29392290/) (pitch,
-  resonance, loudness, articulation and intonation all play a part), and Leung, Oates, Chan and Papp
-  (2021), [on resonance and pitch](https://pubmed.ncbi.nlm.nih.gov/34232704/).
+- Research on what listeners use to hear a speaker's gender: Leung, Oates and Chan (2018),
+  [a review](https://pubmed.ncbi.nlm.nih.gov/29392290/) (pitch, resonance, loudness, articulation and
+  intonation all play a part), and Leung, Oates, Chan and Papp (2021),
+  [on resonance and pitch](https://pubmed.ncbi.nlm.nih.gov/34232704/). Neither sets an order for
+  training; the chapter order is Lilt's choice.
+- When to see a GP about hoarseness: NHS Greater Glasgow and Clyde,
+  [ENT referral guidance for hoarseness](https://www.rightdecisions.scot.nhs.uk/ggc-primary-care/ear-nose-and-throat-ent/ear-nose-and-throat-ent-referral-guidance/throat-conditions/hoarseness).
+- How a straw helps: Ingo Titze, [straw phonation](https://www.vocology.utah.edu/_resources/documents/intro_a_video_straw_phonation_titze.pdf)
+  (National Center for Voice and Speech).
+- Community coaching for larynx height, brightness-only slides and vocal weight: the
+  [TransVoice wiki](https://totalchaos05.github.io/TransVoice-Wiki/wiki/pages/resonance/). Community
+  material, not clinical guidance.
 
 NHS Fife allows its material for private study and personal use. An AI checked each exercise against
 its source; no clinician has reviewed this course. If you're a speech and language therapist or a

@@ -45,7 +45,7 @@ Once upon a time, a tiny cat found a door that had never been opened before.
 
 I'm so sorry, the café is closed today, but they're open again tomorrow.
 
-> A bit of disappointing news, said kindly. Let "sorry" dip and "tomorrow" lift a little.
+> A bit of disappointing news, said kindly. Notice how "sorry" and "tomorrow" move when you mean them.
 
 ## question
 
