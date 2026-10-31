@@ -544,6 +544,8 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
   );
   return (
     <nav className="ve-side" aria-label="Practice">
+      {/* The list scrolls under a fixed top strip, so nothing slides beneath the sidebar toggle. */}
+      <div className="ve-side-scroll">
       {PLACES.map((p) => (
         <button key={p.id} className="ve-home" onClick={() => go(p.to)} disabled={locked} aria-current={current === p.id ? "page" : undefined}>
           <span className="ve-home-ic"><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
@@ -590,6 +592,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
         </Fragment>
         );
       })}
+      </div>
     </nav>
   );
 }

@@ -24,9 +24,10 @@
 /* sidebar as a file tree, like Obsidian, with its toggle at the top. Today and the
    chapters are folders (a chevron, the name, a count or a medal); their cards and texts are files
    under an indent guide, with a tick once practised and the open one highlighted. */
-.ve-side { overflow: auto; padding: 50px 8px 12px; display: flex; flex-direction: column; scrollbar-width: thin; font-size: 13px; }
-/* A long chapter list scrolls the sidebar; nothing in it gets squeezed to fit. */
-.ve-side > * { flex-shrink: 0; }
+.ve-side { overflow: hidden; padding-top: 44px; display: flex; flex-direction: column; font-size: 13px; }
+/* A long chapter list scrolls below the top strip (where the toggle sits); nothing gets squeezed to fit. */
+.ve-side-scroll { flex: 1; min-height: 0; overflow: auto; padding: 6px 8px 12px; display: flex; flex-direction: column; scrollbar-width: thin; }
+.ve-side-scroll > * { flex-shrink: 0; }
 .ve-side h6 { margin: 18px 10px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 600 12px var(--font); color: var(--ink-3); }
 .ve-side h6 span { font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
 /* A part of the course: a heading you can press to fold its chapters away */
@@ -566,8 +567,8 @@
 .ve-motion .ve { transition: grid-template-columns 0.34s var(--ease); }
 .ve-side { min-width: 0; overflow-x: hidden; }
 .ve-motion .ve-side { transition: opacity 0.22s ease, visibility 0s linear 0s; }
-.ve-side > * { min-width: calc(var(--ve-side-open, 272px) - 16px); }
-.ve-side > h6 { min-width: calc(var(--ve-side-open, 272px) - 36px); } /* its 10px side margins count too */
+.ve-side-scroll > * { min-width: calc(var(--ve-side-open, 272px) - 16px); }
+.ve-side-scroll > h6 { min-width: calc(var(--ve-side-open, 272px) - 36px); } /* its 10px side margins count too */
 .ve-side-hidden .ve-side { opacity: 0; visibility: hidden; pointer-events: none; }
 .ve-motion.ve-side-hidden .ve-side { transition: opacity 0.18s ease, visibility 0s linear 0.34s; }
 .ve-dragging .ve, .ve-dragging .ve .ve-side-toggle { transition: none !important; }
