@@ -131,14 +131,14 @@ function SettingsWidget() {
 
 /**
  * What's new: the version you're running, with a dot until you've opened its notes. A click opens
- * the release notes (whats-new.md) in their own window.
+ * the release notes (whats-new.md) as a page in Practice.
  */
 const SEEN_KEY = "lilt.news.seen";
 function NewsWidget() {
   const [seen, setSeen] = useState(() => { try { return localStorage.getItem(SEEN_KEY) === CURRENT.version; } catch { return true; } });
   const open = () => {
     if (!seen) { setSeen(true); try { localStorage.setItem(SEEN_KEY, CURRENT.version); } catch { /* private mode */ } }
-    go("/whats-new");
+    go("/studio/whats-new");
   };
   return (
     <button className="fl-news" onClick={open} aria-label={`What's new in Lilt ${CURRENT.version}${seen ? "" : ", not read yet"}`}>
