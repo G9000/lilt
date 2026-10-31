@@ -8,7 +8,7 @@ import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
 import { SettingsAppIcon } from "./icons";
 import { go } from "../App";
-import { CURRENT, shortVersion } from "../release";
+import { CURRENT } from "../release";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
@@ -130,46 +130,23 @@ function SettingsWidget() {
 
 
 /**
- * What's new: the version you're running and what came with it. Closed, a small card with a dot
- * until you've opened this version; open, the list, each linking to where it lives.
+ * What's new: the version you're running, with a dot until you've opened its notes. A click opens
+ * the release notes (whats-new.md) as a page in Practice.
  */
 const SEEN_KEY = "lilt.news.seen";
 function NewsWidget() {
-  const [open, setOpen] = useState(false);
   const [seen, setSeen] = useState(() => { try { return localStorage.getItem(SEEN_KEY) === CURRENT.version; } catch { return true; } });
-  const toggle = () => {
-    setOpen((o) => !o);
+  const open = () => {
     if (!seen) { setSeen(true); try { localStorage.setItem(SEEN_KEY, CURRENT.version); } catch { /* private mode */ } }
+    go("/studio/whats-new");
   };
-  // Clicking anywhere else, or Escape, closes it.
-  const box = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const away = (e: PointerEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false); };
-    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    document.addEventListener("pointerdown", away);
-    document.addEventListener("keydown", esc);
-    return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
-  }, [open]);
-  const date = new Date(`${CURRENT.date}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
   return (
-    <div className={`fl-news${open ? " open" : ""}`} ref={box}>
-      <button className="fl-news-head" onClick={toggle} aria-expanded={open} aria-controls="fl-news-list">
-        <span className="fl-news-ic" aria-hidden="true">✦</span>
-        <span className="fl-news-t"><b>What's new</b><small>Lilt {shortVersion(CURRENT.version)} · {date}</small></span>
-        {!seen && <i className="fl-news-dot" aria-label="New" />}
-        <svg className="fl-news-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5L6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      </button>
-      {open && (
-        <ul className="fl-news-list" id="fl-news-list">
-          {CURRENT.items.map((it) => (
-            <li key={it.title}>
-              {it.to ? <button onClick={() => go(it.to!)}><b>{it.title}</b><span>{it.body}</span></button> : <div><b>{it.title}</b><span>{it.body}</span></div>}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <button className="fl-news" onClick={open} aria-label={`What's new in Lilt ${CURRENT.version}${seen ? "" : ", not read yet"}`}>
+      <span className="fl-news-ic" aria-hidden="true">✦</span>
+      <span className="fl-news-t"><b>What's new</b><small>Lilt {CURRENT.version} · {CURRENT.date}</small></span>
+      {!seen && <i className="fl-news-dot" aria-hidden="true" />}
+      <svg className="fl-news-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 3L7.5 6 4.5 9" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </button>
   );
 }
 
