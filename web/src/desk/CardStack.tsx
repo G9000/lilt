@@ -57,20 +57,24 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   const grip = useDragControls();
   const self = useRef<HTMLElement>(null);
   const [moving, setMoving] = useState(false);
-  const onScreen = () => {
-    const r = self.current?.getBoundingClientRect();
-    if (!r) return { x: sx.get(), y: sy.get() };
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const dx = r.left < 6 ? 6 - r.left : r.right > vw - 6 ? vw - 6 - r.right : 0;
-    const dy = r.top < 40 ? 40 - r.top : r.bottom > vh - 6 ? vh - 6 - r.bottom : 0;
-    return { x: sx.get() + dx, y: sy.get() + dy };
+  /** Offset `p`, nudged so the pile is on screen (measured where it is now, then shifted to `p`; the
+   *  CSS `scale` on small windows scales the offset too, so `k` converts screen pixels to offset). */
+  const onScreen = (p = { x: sx.get(), y: sy.get() }) => {
+    const el = self.current, r = el?.getBoundingClientRect();
+    if (!el || !r) return p;
+    const vw = window.innerWidth, vh = window.innerHeight, k = r.width / (el.offsetWidth || r.width);
+    const ox = (p.x - sx.get()) * k, oy = (p.y - sy.get()) * k;
+    const L = r.left + ox, R = r.right + ox, T = r.top + oy, B = r.bottom + oy;
+    const dx = L < 6 ? 6 - L : R > vw - 6 ? vw - 6 - R : 0;
+    const dy = T < 40 ? 40 - T : B > vh - 6 ? vh - 6 - B : 0;
+    return { x: p.x + dx / k, y: p.y + dy / k };
   };
-  useEffect(() => { sx.set(saved?.x ?? 0); sy.set(saved?.y ?? 0); }, [saved?.x, saved?.y]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const fit = () => { const p = onScreen(); sx.set(p.x); sy.set(p.y); };
-    window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Always from where you put it, so a pile squeezed in on a narrow window goes back when it widens.
+  const spot = useRef(saved);
+  spot.current = saved;
+  const fit = () => { const p = onScreen({ x: spot.current?.x ?? 0, y: spot.current?.y ?? 0 }); sx.set(p.x); sy.set(p.y); };
+  useEffect(fit, [saved?.x, saved?.y]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { window.addEventListener("resize", fit); return () => window.removeEventListener("resize", fit); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const placed = () => {
     setMoving(false);
     const p = onScreen();

@@ -302,7 +302,11 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
   const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
+  let data: any = null;
+  try { data = text ? JSON.parse(text) : null; } catch {
+    // A proxy's HTML error page or a cut-off body: keep the status rather than a bare SyntaxError.
+    throw new ApiError(res.status, res.ok ? "The server sent a reply Lilt couldn't read." : res.statusText || `HTTP ${res.status}`);
+  }
   if (!res.ok) throw new ApiError(res.status, data?.error ?? res.statusText);
   return data as T;
 }

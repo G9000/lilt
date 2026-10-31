@@ -133,15 +133,18 @@ class Engine {
     }
   };
 
+  /** False (and silent) if the mic was claimed while the context woke up: the caller ducks instead. */
   async play() {
     if (!this.ctx) this.init();
     const ctx = this.ctx!;
     await ctx.resume();
+    if (micInUse()) { if (!this.playing) void ctx.suspend(); return false; }
     if (!this.timer) { this.next = ctx.currentTime + 0.08; this.timer = window.setInterval(this.tick, 25); }
     this.master.gain.cancelScheduledValues(ctx.currentTime);
     this.master.gain.setTargetAtTime(0.5 * this.volume, ctx.currentTime, 0.35);
     this.texture();
     this.playing = true;
+    return true;
   }
 
   pause() {
@@ -177,7 +180,7 @@ if (typeof window !== "undefined") {
   window.addEventListener("lilt:mic", async (e) => {
     const busy = (e as CustomEvent<boolean>).detail;
     if (busy && engine.playing) { ducked = true; engine.pause(); }
-    else if (!busy && ducked) { ducked = false; await engine.play(); }
+    else if (!busy && ducked) { ducked = false; if (!await engine.play()) ducked = true; }
     changed();
   });
 }
@@ -188,8 +191,7 @@ const snapshot = (): RadioState => ({ playing: engine.playing, ducked, mood: MOO
 export const radio = {
   async toggle() {
     if (engine.playing || ducked) { ducked = false; engine.pause(); }
-    else if (micInUse()) ducked = true; // it will start as soon as the mic is free
-    else await engine.play();
+    else if (micInUse() || !await engine.play()) ducked = true; // it will start as soon as the mic is free
     changed();
   },
   skip(d: number) { engine.skip(d); changed(); },

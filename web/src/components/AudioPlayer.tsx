@@ -8,7 +8,8 @@ const peakCache = new Map<string, Promise<Float32Array | null>>();
 const durCache = new Map<string, number>();
 
 export function loadPeaks(src: string, buckets = 600): Promise<Float32Array | null> {
-  let p = peakCache.get(src);
+  const key = `${src}|${buckets}`;
+  let p = peakCache.get(key);
   if (!p) {
     p = (async () => {
       try {
@@ -31,7 +32,7 @@ export function loadPeaks(src: string, buckets = 600): Promise<Float32Array | nu
         return null; // e.g. a format this browser can't decode; playback may still work
       }
     })();
-    peakCache.set(src, p);
+    peakCache.set(key, p);
   }
   return p;
 }
@@ -57,6 +58,7 @@ export interface PlayerProps {
 export function useTakePitch(takeId: string | undefined, ready = true): PitchPoint[] | null {
   const [pts, setPts] = useState<PitchPoint[] | null>(null);
   useEffect(() => {
+    setPts(null); // never show another take's line while this one loads
     if (!takeId || !ready) return;
     let live = true;
     fetch(`/api/takes/${takeId}/analysis`).then((r) => (r.ok ? r.json() : null)).then((a) => {

@@ -8,6 +8,7 @@ import { Desktop, RoomTop } from "./desk/Desk";
 import { NotificationCenter, useInbox } from "./desk/Inbox";
 import { MicProvider } from "./components/Recording";
 import { recoverPending } from "./recorder";
+import { micInUse } from "./micuse";
 import { TodayPage } from "./pages/Today";
 import { Room } from "./room/Room";
 import { PracticePage } from "./pages/Practice";
@@ -87,8 +88,11 @@ export function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
-      if (e.metaKey || e.ctrlKey || e.altKey || ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "A"].includes(el.tagName)) return;
-      if (e.key === "a" || e.key === "b") window.dispatchEvent(new CustomEvent("lilt:play-tag", { detail: e.key.toUpperCase() }));
+      // Not when something focused already handled the key (a sticky note, the pile), or takes typing.
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "A"].includes(el.tagName)
+        || el.isContentEditable || el.matches?.("[role=button], [role=textbox], [role=slider], [role=switch], [role=checkbox]")) return;
+      // A/B playback never during a take or a live pitch reading.
+      if ((e.key === "a" || e.key === "b") && !micInUse()) window.dispatchEvent(new CustomEvent("lilt:play-tag", { detail: e.key.toUpperCase() }));
       if (e.key === "Enter" && window.location.hash.replace(/^#/, "") in { "": 1, "/": 1 }) { e.preventDefault(); go("/deck"); }
     };
     window.addEventListener("keydown", onKey);

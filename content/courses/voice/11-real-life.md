@@ -6,7 +6,7 @@ kind: phrases
 area: carryover
 check_in: answer-phone
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/
-written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lothian's voice and communication therapy guides (2026).
+written_by: Written for Lilt, from NHS Fife's progression activities and NHS Lothian's voice and communication therapy guides (2026). The across-the-room and caught-off-guard texts are Lilt's own choices.
 ---
 
 Bring a familiar phrase into an everyday moment that you choose. Phone calls can wait until you want to try them.
@@ -56,3 +56,15 @@ Hey! I just wanted to hear your voice. Have you got a minute to chat?
 Thank you so much, you've been really helpful. Have a lovely day!
 
 > Let the thanks and goodbye sound natural to you. Listen for a comfortable finish, allowing the pitch to fall.
+
+## across-the-room
+
+Excuse me! Sorry, is this seat taken?
+
+> To be heard in a busy room, aim the words at the person and open your mouth a little more, rather than pushing from your throat or getting heavier. Keep it short, and stop if it starts to strain.
+
+## caught-off-guard
+
+Oh! Sorry, what was that?
+
+> Being surprised is a real test, because there's no time to prepare. Say it quickly, as if someone spoke to you from behind. Listen for whether your chosen quality was there from the first word; if not, that's useful to know, not a failure.

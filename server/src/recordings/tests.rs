@@ -95,3 +95,18 @@ fn owner_deletion_removes_derived_files_and_marks_dependents() {
     assert!(app.session(&s1.id).is_err());
     assert!(std::fs::read_to_string(app.paths.deletions_log()).unwrap().lines().count() == 2);
 }
+
+/// Out-of-range history windows and page cursors answer normally instead of panicking.
+#[tokio::test]
+async fn huge_history_window_and_cursor_do_not_panic() {
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode};
+    use tower::ServiceExt;
+    let (dir, app) = app();
+    session(&app);
+    let router = crate::build_router(app.clone(), &config(dir.path()));
+    for uri in ["/api/history?days=1000000000", "/api/history?days=-1000000000", &format!("/api/sessions?cursor={}", usize::MAX)] {
+        let req = Request::builder().uri(uri).header("host", "127.0.0.1:7878").body(Body::empty()).unwrap();
+        assert_eq!(router.clone().oneshot(req).await.unwrap().status(), StatusCode::OK, "{uri}");
+    }
+}

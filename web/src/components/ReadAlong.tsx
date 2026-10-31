@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFollower, notesFor, tokenize, Follower } from "../readalong";
 import { trackLive } from "../pitch";
+import { PRE_ROLL_S } from "../recorder";
 import { PitchPoint } from "./PianoRoll";
 
 interface Props {
@@ -42,7 +43,9 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
     });
     return () => {
       tr.stop();
-      startsCb.current?.([...f.starts()]);
+      // The saved file runs PRE_ROLL_S behind the live mic (the recorder's delay line), so word times
+      // move by that much to line up with the measured contour.
+      startsCb.current?.(f.starts().map((x) => (x === null ? null : x + PRE_ROLL_S)));
     };
   }, [active, stream, tokens]);
 

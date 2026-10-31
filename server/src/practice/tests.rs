@@ -138,3 +138,26 @@ fn chapters_set_their_own_cards_and_older_copies_fall_back() {
     assert!(all.iter().any(|c| c.id == "ex.nhsfife.forward-hum" && c.level_id == "warmup"));
     assert!(all.iter().any(|c| c.id == "text.warmup.hum" && c.area == "resonance"));
 }
+
+/// Recording the daily reference on day one doesn't use up a new-card slot.
+#[test]
+fn daily_reference_does_not_count_as_a_new_card() {
+    let (_d, app) = app();
+    rate(&app, cards::REFERENCE_CARD, None, "good");
+    let q = queue_ids(&app);
+    assert_eq!(q.iter().filter(|x| x.1 == "new").count(), 2, "still two new cards: {q:?}");
+}
+
+/// Two writers holding the same plan version: only one gets the next version.
+#[test]
+fn concurrent_plan_writes_get_one_version_each() {
+    let (_d, app) = app();
+    let p = app.ensure_plan().unwrap();
+    let oks = std::thread::scope(|s| {
+        let hs: Vec<_> = (0..8).map(|_| s.spawn(|| app.write_plan(p.clone(), Some(p.version)).is_ok())).collect();
+        hs.into_iter().map(|h| h.join().unwrap()).filter(|ok| *ok).count()
+    });
+    assert_eq!(oks, 1);
+    assert_eq!(app.current_plan().unwrap().version, p.version + 1);
+    assert_eq!(app.plan_history().len(), 2);
+}

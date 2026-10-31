@@ -11,7 +11,7 @@ video_image: images/video-1f9TBpHm2a0.jpg
 video_title: Trans Voice Vocal Warm-up: Do This Every Day
 video_by: Nicole Gress, speech-language pathologist
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf
-written_by: Written for Lilt, from NHS Lothian's "Where to start" (2026) and NHS Fife's tuning-in activities.
+written_by: Written for Lilt, from NHS Lothian's "Where to start" (2026) and NHS Fife's tuning-in activities. The easy-onset text is a common voice-care exercise, chosen by Lilt.
 ---
 
 A gentle start, then a few real words. You don't have to work through every sound on every visit.
@@ -61,3 +61,9 @@ zzzzzz · vvvvvv
 mmm ↗ ↘
 
 > Slide a little up and down within an easy range. Keep it small; stop if there is strain.
+
+## easy-onset
+
+I eat apples every evening, always.
+
+> Every word starts with a vowel. Let each one begin softly, as if a quiet h were just before it, rather than with a sudden click in the throat. Compare a soft start with your usual one and keep whichever feels easier.

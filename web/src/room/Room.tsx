@@ -67,6 +67,8 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   doneRef.current = done;
   const mouse = useRef({ x: 0, y: 0, sx: 0, sy: 0 });
   const reduced = typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  // With reduced motion there is no loop: this redraws the room once, on demand.
+  const redraw = useRef(() => {});
 
   // Fly the camera whenever we go in or out.
   useEffect(() => {
@@ -74,9 +76,10 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
     if (c.inside === inside) return;
     c.inside = inside;
     c.from = c.now; c.to = viewFor(inside); c.start = performance.now(); c.flying = !reduced;
-    if (reduced) c.now = c.to;
+    if (reduced) { c.now = c.to; redraw.current(); }
     if (inside) setHover(false);
   }, [inside, reduced]);
+  useEffect(() => { if (reduced) redraw.current(); }, [done, reduced]);
 
   useEffect(() => {
     const on = () => bump((x) => x + 1);
@@ -133,11 +136,13 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
       last = now;
     };
     if (reduced) {
-      step(performance.now());
-      const on = () => step(performance.now());
+      const on = redraw.current = () => step(performance.now());
+      on();
+      // the light of day still moves on, just without animation
+      const id = window.setInterval(() => { lastLight = -1e9; on(); }, 30000);
       listeners.add(on);
       window.addEventListener("resize", on);
-      return () => { listeners.delete(on); window.removeEventListener("resize", on); };
+      return () => { redraw.current = () => {}; window.clearInterval(id); listeners.delete(on); window.removeEventListener("resize", on); };
     }
     const loop = (now: number) => {
       if (cam.current.flying || now - last > (cam.current.inside ? 500 : 33)) step(now);

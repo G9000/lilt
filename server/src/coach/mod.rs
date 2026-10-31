@@ -507,7 +507,9 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
                 pointer_id: review.active_pointer.as_ref().map(|p| p.id.clone()),
             }];
             evidence_refs.dedup();
-            let paused = review.active_pointer.as_ref().map(|p| p.kind == PointerKind::Pause).unwrap_or(false);
+            // Only the learner lifts a pause ("until you choose to resume").
+            let paused = review.active_pointer.as_ref().map(|p| p.kind == PointerKind::Pause).unwrap_or(false)
+                || current.as_ref().is_some_and(|c| c.paused);
             let unchanged = current.as_ref().map(|c| {
                 c.exercise_id == pp.exercise_id && c.cue_id == pp.cue_id && c.ladder_step == pp.ladder_step && c.paused == paused
             }).unwrap_or(false);

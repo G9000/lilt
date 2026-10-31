@@ -23,8 +23,8 @@ async fn remote_apps_sign_in_with_a_pairing_code_and_only_reach_mcp() {
     } };
     let public = |method: &str, uri: &str, body: Body| Request::builder().method(method).uri(uri).header("host", "lilt.example.com").header("content-type", "application/x-www-form-urlencoded").body(body).unwrap();
 
-    // Before an address is saved: no sign-in metadata. Locally everything still works.
-    assert_eq!(send(public("GET", "/.well-known/oauth-authorization-server", Body::empty())).await.0, StatusCode::NOT_FOUND);
+    // Before an address is saved: no sign-in metadata; an unknown host name is refused outright.
+    assert_eq!(send(public("GET", "/.well-known/oauth-authorization-server", Body::empty())).await.0, StatusCode::FORBIDDEN);
     crate::ai::oauth::set_public_url(&app, "https://lilt.example.com/").unwrap();
     assert!(crate::ai::oauth::set_public_url(&app, "http://lilt.example.com").is_err());
 

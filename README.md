@@ -141,16 +141,18 @@ Then open <http://127.0.0.1:7878>.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
-8. **Texts** has 65 texts across 11 chapters: setup, warm-ups, pitch, resonance, vocal weight,
+8. **Texts** has 69 texts across 11 chapters: setup, warm-ups, pitch, resonance, vocal weight,
    intonation, automatic speech, everyday phrases, reading, your own words and real life.
    Each chapter follows a small loop: listen to an example or personal reference, try one cue,
    record, listen back, then use it in a real phrase. The second warm-up card is a greeting,
    available in a fresh Today deck on day one. The four setup texts stay outside Today's cards.
 
-   Instructions draw on the linked NHS Fife and NHS Lothian sources; the listening questions,
-   bridge phrases and suggested daily loop are Lilt's teaching choices. Existing video links
-   provide demonstrations. Dedicated A/B audio clips are still missing, and no clinician has
-   reviewed the course or its pacing. All 61 earlier exercise IDs and spoken texts are preserved.
+   Instructions draw on the linked NHS Fife and NHS Lothian sources; the listening questions, bridge
+   phrases and suggested daily loop are Lilt's teaching choices. Existing video links provide
+   demonstrations. Dedicated A/B audio clips are still missing, and no clinician has reviewed the
+   course or its pacing. All 61 earlier exercise IDs and spoken texts are preserved. Four later
+   texts fill common gaps: easy onsets (warm-ups), the little reactions like "mm-hm" and "oh no"
+   (automatic speech), and being heard across a busy room or caught off guard (real life).
 9. **Comfortable range (optional):** a pitch band you choose. Set it in Settings, or with "use this
    take's range" in a chapter. It is shown as a soft band and is never a gendered zone or a coaching
    target.
@@ -352,6 +354,9 @@ The default is loopback only. To record on your phone over your LAN:
    its own.
 3. Native: set `LILT_BIND=0.0.0.0:7878` only behind that proxy and firewall. Docker: change the port
    mapping deliberately.
+4. Tell Lilt the proxy's host name: `LILT_ALLOWED_HOSTS=lilt.example.ts.net` (comma-separated).
+   Lilt answers only on local names (localhost, 127.0.0.1), IP addresses and these names, so a web
+   page can't reach it through DNS rebinding.
 
 Lilt blocks cross-site browser requests (by checking the Origin header), but that is not
 authentication.

@@ -91,3 +91,47 @@ fn resonance_change_is_measured_between_takes_of_the_same_text() {
     let r = same.measures.iter().find(|m| m.name == "resonance_f2_f3_st").unwrap();
     assert!(r.delta.unwrap().abs() < 1e-9);
 }
+
+/// A take deleted while the helper runs doesn't get its analysis run (or job) written back.
+#[test]
+fn take_deleted_mid_analysis_leaves_no_run_behind() {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = tempfile::tempdir().unwrap();
+    let mut cfg = config(dir.path());
+    // The real helper, then the take goes away (as `delete_take` would) before the result is saved.
+    let script = dir.path().join("python-then-delete.sh");
+    std::fs::write(&script, format!(
+        "#!/bin/sh\n\"{}\" \"$@\"\nwhile [ $# -gt 0 ]; do [ \"$1\" = --input ] && rm -rf \"$(dirname \"$2\")\"; shift; done\n",
+        cfg.python
+    )).unwrap();
+    std::fs::set_permissions(&script, std::fs::Permissions::from_mode(0o755)).unwrap();
+    cfg.python = script.to_string_lossy().into();
+    let app = App::open(cfg).unwrap();
+    let s = session(&app);
+    let id = new_take(&app, &s.id, T::default(), "audio/webm;codecs=opus");
+    let bytes = fixture("harmonic_240.webm");
+    crate::recordings::put_chunk(&app, &id, 0, &bytes, None).unwrap();
+    crate::recordings::finalize(&app, &id, crate::recordings::FinalizeReq { chunk_count: 1, interrupted: false }).unwrap();
+    analysis::run_pending(&app);
+    assert!(app.take(&id).is_err());
+    assert!(store::list_files_with_ext(&app.paths.analyses_dir(&s.id), "json").is_empty(), "no analysis run recreated");
+    assert!(!app.paths.jobs().join(format!("analyze-{id}.json")).exists(), "no job left behind");
+}
+
+/// A helper that runs too long is killed and reaped, and its log doesn't stay in .tmp.
+#[test]
+fn timed_out_helper_is_reaped_and_its_log_removed() {
+    let dir = tempfile::tempdir().unwrap();
+    let log = dir.path().join("run.stderr.log");
+    let pid_file = dir.path().join("pid");
+    let mut cmd = std::process::Command::new("sh");
+    cmd.arg("-c").arg(format!("echo $$ > '{}'; exec sleep 30", pid_file.display()));
+    let start = std::time::Instant::now();
+    let err = analysis::run_with_timeout(cmd, &log, std::time::Duration::from_millis(300)).unwrap_err();
+    assert!(err.to_string().contains("timed out"));
+    assert!(start.elapsed() < std::time::Duration::from_secs(10));
+    assert!(!log.exists(), "log removed");
+    let pid = std::fs::read_to_string(&pid_file).unwrap();
+    let ps = std::process::Command::new("ps").args(["-o", "stat=", "-p", pid.trim()]).output().unwrap();
+    assert!(String::from_utf8_lossy(&ps.stdout).trim().is_empty(), "no zombie left: {:?}", String::from_utf8_lossy(&ps.stdout));
+}

@@ -81,7 +81,7 @@ export function ResonanceNote({ take }: { take: Take }) {
       const first = withF[0], last = withF[withF.length - 1];
       const [cf, cl] = await Promise.all([api.compare(first.id, take.id).catch(() => null), last !== first ? api.compare(last.id, take.id).catch(() => null) : null]);
       if (!live) return;
-      if (!cf || cf.outcome === "not_comparable" || shiftOf(cf) === null) setR({ k: "apart", reason: cf?.reasons[0] ?? "The takes couldn't be compared." });
+      if (!cf || cf.outcome === "not_comparable" || shiftOf(cf) === null) setR({ k: "apart", reason: cf?.reasons[0] ?? cf?.limitations.find((l) => l.startsWith("Resonance")) ?? "The takes couldn't be compared." });
       else setR({ k: "change", first: shiftOf(cf)!, last: cl && cl.outcome !== "not_comparable" ? shiftOf(cl) : null });
     })();
     return () => { live = false; };
@@ -136,7 +136,8 @@ export function TakeResult({ take: initial, band, onMeasured }: { take: Take; ba
     let live = true;
     const tick = async () => {
       const t = await api.take(initial.id).catch(() => null);
-      if (!live || !t) return;
+      if (!live) return;
+      if (!t) { window.setTimeout(tick, 3000); return; } // a dropped request isn't the end of measuring
       setTake(t);
       if (t.analysis_summary || t.analysis_error || t.status === "analysis_failed") {
         const a = t.analysis_summary ? await api.analysis(t.id).catch(() => null) : null;

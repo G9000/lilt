@@ -119,12 +119,13 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
   const [practised, setPractised] = useState<Set<string>>(new Set());
   const [history, setHistory] = useState<Take[]>([]);
   const [recording, setRecording] = useState(false);
+  const [loadErr, setLoadErr] = useState<string | null>(null);
   useEffect(() => {
     void Promise.all([api.texts(), api.deck(), api.profile(), api.history({ days: 3650 })]).then(([t, d, p, h]) => {
       setTexts(t); setDeck(d); setProfile(p);
       setPractised(new Set(h.takes.map((x) => x.prompt_id)));
       setHistory(h.takes);
-    });
+    }, (e: any) => setLoadErr(`Lilt couldn't load your practice: ${e.message}. Is the Lilt server running?`));
   }, []);
   // If the microphone is already allowed, open it on arrival: the first take then starts at once,
   // with its half-second pre-roll, instead of waiting for the mic to wake.
@@ -194,7 +195,9 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
             {texts.levels.map((l) => <button key={l.id} aria-current={doc === "chapter" && l.id === level?.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={recording}>{l.title}</button>)}
           </nav>
         )}
-        {doc === "recordings" || doc === "progress"
+        {loadErr && !texts
+          ? <div className="ve-page"><article className="ve-col"><p role="alert" className="ve-err">{loadErr}</p></article></div>
+          : doc === "recordings" || doc === "progress"
           ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressSoon />}</div></div>
           : doc === "updates"
           ? <div className="ve-page"><div className="ve-col ve-embed"><UpdatesDoc onTexts={setTexts} /></div></div>
@@ -712,7 +715,8 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   const stop = async () => {
     try { onSaved(await rec.current!.stop()); } catch (e: any) { setErr(e.message); }
   };
-  const canStart = !!meta && (state === "idle" || (allowRetake && state === "saved"));
+  // After an error a new take can start; audio held from the failed one is recovered separately.
+  const canStart = !!meta && (state === "idle" || state === "error" || (allowRetake && state === "saved"));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -797,7 +801,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
             </button>)}
       </div>
       {mic.error ? <MicHelp error={mic.error} onRetry={() => void mic.request()} /> : err && <p className="ve-err" role="alert">{err}</p>}
-      {state === "error" && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
+      {state === "error" && rec.current?.onServer && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
     </section>
   );
 }
@@ -1090,7 +1094,16 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   useEffect(() => {
     void api.studioSession().then((s) => { setSessionId(s.id); void api.session(s.id).then((d) => setTakes(d.takes.filter((x) => x.role === "free"))); });
   }, []);
-  useEffect(() => { void api.history({ prompt_id: promptId, days: 365 }).then((h) => setPrevious(h.takes.length ? h.takes[h.takes.length - 1] : null)); }, [promptId]);
+  useEffect(() => {
+    // Never show a take of another text as "before" while this one's history loads.
+    setPrevious(null);
+    let live = true;
+    void api.history({ prompt_id: promptId, days: 365 }).then((h) => {
+      const last = h.takes.filter((t) => t.prompt_id === promptId).at(-1) ?? null;
+      if (live) setPrevious(last);
+    }, () => undefined);
+    return () => { live = false; };
+  }, [promptId]);
   useEffect(() => { itemRefs.current[sel]?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [sel]);
 
   const choose = (i: number) => {

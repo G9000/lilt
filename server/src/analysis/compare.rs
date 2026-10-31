@@ -11,15 +11,23 @@ use serde_json::Value;
 pub const STABLE_MEDIAN_ST: f64 = 0.5;
 pub const STABLE_SPAN_ST: f64 = 1.0;
 /// The mean change of the F2 and F3 medians from a to b, in semitones: how much brighter (positive) or
-/// darker the resonance of b is. Only when both takes were measured with the same formant settings.
+/// darker the resonance of b is. Only when both takes were measured with the same formant settings and
+/// the same choice of frames.
 /// Synthetic vowels were misread by up to ~1 st at the extremes (analysis/EVALUATION.md), so the web
 /// words under 0.5 st as "about the same" and 0.5–1 st as "a little".
 pub fn resonance_shift(a: &Value, b: &Value) -> Option<f64> {
-    if a["method"]["formant_params"].is_null() || a["method"]["formant_params"] != b["method"]["formant_params"] {
+    if !same_resonance_method(a, b) {
         return None;
     }
     let st = |k: &str| Some(12.0 * (measure(b, k)? / measure(a, k)?).log2());
     Some((st("formant_f2_median_hz")? + st("formant_f3_median_hz")?) / 2.0)
+}
+
+fn same_resonance_method(a: &Value, b: &Value) -> bool {
+    let (ma, mb) = (&a["method"], &b["method"]);
+    !ma["formant_params"].is_null()
+        && ma["formant_params"] == mb["formant_params"]
+        && ma["formant_frames"] == mb["formant_frames"]
 }
 
 #[derive(Debug, Serialize)]
@@ -115,7 +123,7 @@ pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
     if capture_key(&a) != capture_key(&b) {
         limitations.push("Browser capture settings differ between the takes.".into());
     }
-    if a.original.as_ref().map(|o| &o.sha256) == b.original.as_ref().map(|o| &o.sha256) {
+    if a.original.is_some() && a.original.as_ref().map(|o| &o.sha256) == b.original.as_ref().map(|o| &o.sha256) {
         limitations.push("These are byte-identical recordings.".into());
     }
 
@@ -199,6 +207,12 @@ pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
                 unit: "semitones (b relative to a; a and b here are the F2 medians in Hz)".into(),
                 definition: "Mean change of the F2 and F3 medians, 12*log2(b/a) averaged; positive is brighter. Formants depend on the vowel, so this only means something between takes of the same text.".into(),
             });
+            if measure(x, "formant_f2_median_hz").is_some()
+                && measure(y, "formant_f2_median_hz").is_some()
+                && !same_resonance_method(x, y)
+            {
+                limitations.push("Resonance was measured with an older method on one take. Measure older takes again in Recordings to compare resonance.".into());
+            }
             if let (Some(p), Some(q)) = (ca, cb) {
                 if (p - q).abs() > 0.2 {
                     limitations.push("Voiced coverage differs a lot between the takes, so the summaries describe different amounts of material.".into());

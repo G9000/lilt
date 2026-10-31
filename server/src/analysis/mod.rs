@@ -34,7 +34,7 @@ pub const ANALYSIS_MAJOR: &str = "a1";
 const MAX_ATTEMPTS: u32 = 3;
 /// The analysis method the bundled helper reports (`method.method_version`). Takes measured with
 /// another version can be re-measured; `tests` checks this matches the helper.
-pub const ANALYSIS_METHOD: &str = "lilt-analysis/3";
+pub const ANALYSIS_METHOD: &str = "lilt-analysis/4";
 
 pub fn run_id_for(tid: &str) -> String {
     format!("run-{tid}-{ANALYSIS_MAJOR}")
@@ -221,6 +221,11 @@ fn run_job(app: &App, mut job: Job) -> Result<()> {
     store::write_json(&job_path(app, &job.take_id), &job)?;
 
     let result = run_analyzer(app, &t, &job.run_id);
+    if app.take(&t.id).is_err() {
+        // Take deleted while the helper ran; its result was discarded.
+        let _ = std::fs::remove_file(job_path(app, &job.take_id));
+        return Ok(());
+    }
     match result {
         Ok(()) => {
             job.status = "done".into();
@@ -281,11 +286,10 @@ fn run_analyzer(app: &App, t: &Take, run_id: &str) -> Result<()> {
         .arg(run_id)
         .env("PYTHONPATH", &app.config.analysis_dir);
     let log_path = app.paths.tmp().join(format!("{run_id}.stderr.log"));
-    let status = run_with_timeout(cmd, &log_path, Duration::from_secs(180))?;
-    let stderr = std::fs::read_to_string(&log_path).unwrap_or_default();
-    let _ = std::fs::remove_file(&log_path);
+    let ran = run_with_timeout(cmd, &log_path, Duration::from_secs(180));
     let helper: Option<Value> = store::read_json_opt(&helper_out).ok().flatten();
     let _ = std::fs::remove_file(&helper_out);
+    let (status, stderr) = ran?;
     let Some(mut v) = helper else {
         return Err(anyhow!(
             "analysis helper produced no output (exit {:?}): {}",
@@ -298,7 +302,14 @@ fn run_analyzer(app: &App, t: &Take, run_id: &str) -> Result<()> {
     v["session_id"] = json!(t.session_id);
     v["prompt_id"] = json!(t.prompt_id);
     let out_path = app.paths.analyses_dir(&t.session_id).join(format!("{run_id}.json"));
-    store::write_json(&out_path, &v)?;
+    {
+        // Under the lock deletion takes, so a take deleted meanwhile doesn't get its run back.
+        let _g = app.write_lock.lock().unwrap();
+        if app.take(&t.id).is_err() {
+            return Err(anyhow!("take deleted during analysis; result discarded"));
+        }
+        store::write_json(&out_path, &v)?;
+    }
     if v["status"] != "ok" {
         return Err(anyhow!(
             "analysis failed: {}",
@@ -308,28 +319,36 @@ fn run_analyzer(app: &App, t: &Take, run_id: &str) -> Result<()> {
     Ok(())
 }
 
+/// Run the helper with its stderr in `log_path`; returns the exit status and stderr, and removes
+/// the log either way.
 fn run_with_timeout(
     mut cmd: std::process::Command,
     log_path: &std::path::Path,
     limit: Duration,
-) -> Result<std::process::ExitStatus> {
+) -> Result<(std::process::ExitStatus, String)> {
     use std::process::Stdio;
     let log = std::fs::File::create(log_path)?;
-    let mut child = cmd
+    let spawned = cmd
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::from(log))
         .spawn()
-        .map_err(|e| anyhow!("could not start analysis helper ({e}); is the Python environment installed?"))?;
-    let start = std::time::Instant::now();
-    loop {
-        if let Some(status) = child.try_wait()? {
-            return Ok(status);
+        .map_err(|e| anyhow!("could not start analysis helper ({e}); is the Python environment installed?"));
+    let status = spawned.and_then(|mut child| {
+        let start = std::time::Instant::now();
+        loop {
+            if let Some(status) = child.try_wait()? {
+                return Ok(status);
+            }
+            if start.elapsed() > limit {
+                let _ = child.kill();
+                let _ = child.wait(); // reap it, so no zombie is left
+                return Err(anyhow!("analysis helper timed out"));
+            }
+            std::thread::sleep(Duration::from_millis(100));
         }
-        if start.elapsed() > limit {
-            let _ = child.kill();
-            return Err(anyhow!("analysis helper timed out"));
-        }
-        std::thread::sleep(Duration::from_millis(100));
-    }
+    });
+    let stderr = std::fs::read_to_string(log_path).unwrap_or_default();
+    let _ = std::fs::remove_file(log_path);
+    status.map(|s| (s, stderr))
 }

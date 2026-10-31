@@ -69,7 +69,7 @@ pub fn list_sessions_page(app: &Shared, q: &ListQuery) -> Value {
             })
         })
         .collect();
-    let next = if start + limit < all.len() { Some(start + limit) } else { None };
+    let next = if start.saturating_add(limit) < all.len() { Some(start + limit) } else { None };
     json!({"sessions": page, "next_cursor": next, "total": all.len()})
 }
 
@@ -191,7 +191,8 @@ struct HistoryQuery {
 
 async fn history(State(app): State<Shared>, Query(q): Query<HistoryQuery>) -> Json<Value> {
     let profile = app.profile();
-    let days = q.days.unwrap_or(profile.comparison_window_days as i64);
+    // Up to a century back, so the date arithmetic below can't overflow.
+    let days = q.days.unwrap_or(profile.comparison_window_days as i64).clamp(0, 36500);
     let (today, _) = util::local_now(&profile.timezone);
     let from = chrono::NaiveDate::parse_from_str(&today, "%Y-%m-%d").map(|d| (d - chrono::Duration::days(days)).to_string()).unwrap_or_default();
     let takes: Vec<Value> = app

@@ -23,30 +23,49 @@ export function MicProvider({ children }: { children: ReactNode }) {
     try { return localStorage.getItem("lilt.mic") ?? undefined; } catch { return undefined; }
   });
 
-  const request = useCallback(async (id?: string) => {
-    try {
-      if (stream) closeDelayLine(stream);
-      stream?.getTracks().forEach((t) => t.stop());
-      const s = await openMic(id ?? deviceId);
-      delayedStream(s); // start the half-second pre-roll now, so the first take has it too
-      setStream(s);
-      setError(null);
-      const chosen = s.getAudioTracks()[0]?.getSettings().deviceId;
-      if (chosen) { setDeviceId(chosen); try { localStorage.setItem("lilt.mic", chosen); } catch { /* ignore */ } }
-      const all = await navigator.mediaDevices.enumerateDevices();
-      setDevices(all.filter((d) => d.kind === "audioinput"));
-      return s;
-    } catch (e: any) {
-      const name = e?.name;
-      setError(
-        name === "NotAllowedError" ? "Microphone access was blocked. Allow the microphone for this page in your browser's site settings, then try again."
-        : name === "NotFoundError" || name === "OverconstrainedError" ? "No microphone was found. Connect one, or pick another input."
-        : name === "NotReadableError" ? "The microphone is busy in another app. Close it there and try again."
-        : e?.message ?? "Couldn't open the microphone."
-      );
-      return null;
+  // The open stream lives in a ref too, so overlapping requests (a click while the auto-open is
+  // pending, StrictMode's double effects) share one getUserMedia call and never orphan a stream.
+  const current = useRef<MediaStream | null>(null);
+  const pending = useRef<Promise<MediaStream | null> | null>(null);
+  const chosenId = useRef(deviceId);
+  chosenId.current = deviceId;
+
+  const request = useCallback(async (id?: string): Promise<MediaStream | null> => {
+    if (pending.current) {
+      if (id === undefined) return pending.current;
+      await pending.current;
     }
-  }, [stream, deviceId]);
+    const open = (async () => {
+      try {
+        const old = current.current;
+        if (old) { closeDelayLine(old); old.getTracks().forEach((t) => t.stop()); current.current = null; }
+        const s = await openMic(id ?? chosenId.current);
+        current.current = s;
+        delayedStream(s); // start the half-second pre-roll now, so the first take has it too
+        setStream(s);
+        setError(null);
+        const chosen = s.getAudioTracks()[0]?.getSettings().deviceId;
+        if (chosen) { setDeviceId(chosen); try { localStorage.setItem("lilt.mic", chosen); } catch { /* ignore */ } }
+        const all = await navigator.mediaDevices.enumerateDevices();
+        setDevices(all.filter((d) => d.kind === "audioinput"));
+        return s;
+      } catch (e: any) {
+        if (!current.current) setStream(null); // the old stream was already stopped above
+        const name = e?.name;
+        setError(
+          name === "NotAllowedError" ? "Microphone access was blocked. Allow the microphone for this page in your browser's site settings, then try again."
+          : name === "NotFoundError" || name === "OverconstrainedError" ? "No microphone was found. Connect one, or pick another input."
+          : name === "NotReadableError" ? "The microphone is busy in another app. Close it there and try again."
+          : e?.message ?? "Couldn't open the microphone."
+        );
+        return current.current;
+      } finally {
+        pending.current = null;
+      }
+    })();
+    pending.current = open;
+    return open;
+  }, []);
 
   // Any click or key wakes the pre-roll, so it's already filling when you press Record.
   useEffect(() => {
@@ -57,10 +76,11 @@ export function MicProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const release = useCallback(() => {
-    if (stream) closeDelayLine(stream);
-    stream?.getTracks().forEach((t) => t.stop());
+    const s = current.current;
+    if (s) { closeDelayLine(s); s.getTracks().forEach((t) => t.stop()); }
+    current.current = null;
     setStream(null);
-  }, [stream]);
+  }, []);
 
   return <Ctx.Provider value={{ stream, error, request, devices, deviceId, release }}>{children}</Ctx.Provider>;
 }
@@ -291,7 +311,7 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
         )}
       </div>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      {state === "error" && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
+      {state === "error" && rec.current?.onServer && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
     </div>
   );
 }

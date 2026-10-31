@@ -5,7 +5,7 @@
 
 import { claimMic } from "./micuse";
 import { api, Take } from "./api";
-import { acquireRecordingLock } from "./recordingLock";
+import { acquireRecordingLock, recordingInProgress } from "./recordingLock";
 
 const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "audio/ogg;codecs=opus"];
 
@@ -171,6 +171,8 @@ export class TakeRecorder {
   state: RecState = "idle";
   error: string | null = null;
   takeId = "";
+  /** The server has this take, so a failed save can be retried (not so when creating it failed). */
+  onServer = false;
   private rec: MediaRecorder | null = null;
   private seq = 0;
   private queue: Promise<void> = Promise.resolve();
@@ -213,6 +215,7 @@ export class TakeRecorder {
     const track = this.stream.getAudioTracks()[0];
     const settings = track?.getSettings?.() ?? {};
     this.takeId = crypto.randomUUID();
+    this.onServer = false;
     const rec = new MediaRecorder(delayedStream(this.stream), mime ? { mimeType: mime } : undefined);
     const releaseRecording = this.releaseRecording!;
     rec.addEventListener("stop", releaseRecording, { once: true });
@@ -238,7 +241,7 @@ export class TakeRecorder {
         user_agent: navigator.userAgent,
         pre_roll_s: PRE_ROLL_S,
       },
-    }).then(() => idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: false } satisfies PendingTake)));
+    }).then(() => { this.onServer = true; return idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: false } satisfies PendingTake)); });
     this.created = created.then(() => undefined);
     void this.created.catch(() => undefined); // The start failure is surfaced below; stop may never be called.
     this.queue = created.then(() => undefined, (e: any) => { this.uploadError = e instanceof Error ? e : new Error(String(e)); });
@@ -340,6 +343,8 @@ export class TakeRecorder {
 
 /** Upload anything left in IndexedDB from an interrupted page, then finalise it. */
 export async function recoverPending(): Promise<number> {
+  // A take recording in another tab sits in the same store; finalising it would cut it short.
+  if (await recordingInProgress().catch(() => true)) return 0;
   const pending = ((await idb<PendingTake[]>("takes", "readonly", (s) => s.getAll() as IDBRequest<PendingTake[]>)) ?? []);
   let recovered = 0;
   for (const p of pending) {
@@ -369,6 +374,7 @@ export function levelMeter(stream: MediaStream, onLevel: (rms: number, peak: num
   const an = ctx.createAnalyser();
   an.fftSize = 2048;
   src.connect(an);
+  if (ctx.state === "suspended") void ctx.resume(); // a suspended context would read as a silent mic
   const buf = new Float32Array(an.fftSize);
   let raf = 0;
   const tick = () => {

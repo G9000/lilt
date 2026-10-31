@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, AREA_LABEL, Deck, Today } from "../api";
 import { go } from "../App";
 
@@ -90,10 +90,13 @@ function greeting(h = new Date().getHours()) {
 /** Notification Center: slides in from the right edge, over the room or the desk. */
 export function NotificationCenter({ inbox }: { inbox: InboxState }) {
   const { open, notes, read } = inbox;
+  // The latest inbox, so closing marks as read the notes that arrived while it was open too.
+  const latest = useRef(inbox);
+  latest.current = inbox;
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: PointerEvent) => { if (!(e.target as HTMLElement).closest(".nc, .ib-btn")) inbox.toggle(); };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); inbox.toggle(); } };
+    const onDown = (e: PointerEvent) => { if (!(e.target as HTMLElement).closest(".nc, .ib-btn")) latest.current.toggle(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { e.stopPropagation(); latest.current.toggle(); } };
     window.addEventListener("pointerdown", onDown);
     window.addEventListener("keydown", onKey, true);
     return () => { window.removeEventListener("pointerdown", onDown); window.removeEventListener("keydown", onKey, true); };

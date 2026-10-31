@@ -70,6 +70,23 @@ fn pain_report_pauses_and_overrides_a_favourable_report() {
     assert_eq!(plan.exercise_id, "nhsfife.forward-hum");
 }
 
+/// An automatic plan change keeps a pause the learner set; only resuming lifts it.
+#[test]
+fn automatic_review_keeps_a_learners_pause() {
+    let (_d, app) = app();
+    let cur = app.ensure_plan().unwrap();
+    let v = cur.version;
+    app.write_plan(crate::practice::model::Plan { paused: true, author: "learner".into(), ..cur }, Some(v)).unwrap();
+    let s = session(&app);
+    let t = upload(&app, &s.id, T::default(), "mixed_voiced_unvoiced.webm");
+    report(&app, &t.id, "where_felt", "throat_chest");
+    comfort(&app, &s.id, Comfort::Comfortable, 3, false);
+    let r = coach::review_session(&app, &s.id).unwrap();
+    let plan = app.current_plan().unwrap();
+    assert_eq!(plan.cue_id, r.active_pointer.unwrap().next_action.unwrap().cue_id, "the change itself still applies");
+    assert!(plan.paused, "the learner's pause stays");
+}
+
 #[test]
 fn stable_and_next_context_need_repeated_sessions() {
     let (_d, app) = app();

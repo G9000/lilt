@@ -7,7 +7,7 @@ area: carryover
 check_in: week-days
 exercises: nhsfife.gentle-pitch-count
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/
-written_by: Written for Lilt, from NHS Fife's progression activities.
+written_by: Written for Lilt, from NHS Fife's progression activities. The reactions text is Lilt's own choice.
 ---
 
 Easy words free up some attention for the quality you are practising. Pick one cue for this visit; you don't have to manage every part of your voice at once.
@@ -51,3 +51,9 @@ Fifty, fifty-one, fifty-two … all the way to seventy-five.
 A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z.
 
 > Use an easy, clear sound. The letters have different vowels, so they will not all sound or feel identical; focus on one comfortable cue.
+
+## reactions
+
+Mm-hm. Yeah! Oh no. Oh, wow! Really? Sure, sounds good.
+
+> The little sounds you make without thinking are often where an old habit slips back. Say them as real reactions, with your one cue, then once more as if a friend had just told you some news.

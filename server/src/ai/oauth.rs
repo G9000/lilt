@@ -121,15 +121,28 @@ pub fn is_public(app: &App, headers: &HeaderMap) -> bool {
     public_url(app).is_some_and(|u| host.eq_ignore_ascii_case(host_of(&u)))
 }
 
-fn loopback(headers: &HeaderMap) -> bool {
+/// The Host header's name, without the port or IPv6 brackets.
+fn host_name(headers: &HeaderMap) -> &str {
     let host = headers.get(header::HOST).and_then(|v| v.to_str().ok()).unwrap_or_default();
-    let name = if host.starts_with('[') { host.split(']').next().map(|h| &h[1..]).unwrap_or(host) } else { host.split(':').next().unwrap_or(host) };
+    if host.starts_with('[') { host.split(']').next().map(|h| &h[1..]).unwrap_or(host) } else { host.split(':').next().unwrap_or(host) }
+}
+
+fn loopback(headers: &HeaderMap) -> bool {
+    let name = host_name(headers);
     matches!(name, "localhost" | "127.0.0.1" | "::1") || name.ends_with(".localhost")
+}
+
+/// Names a web page can't point at this computer by DNS rebinding: local ones, IP addresses, and
+/// the names in `LILT_ALLOWED_HOSTS` (a proxy's, for using Lilt from another device).
+fn local_host(app: &App, headers: &HeaderMap) -> bool {
+    let name = host_name(headers);
+    loopback(headers) || name.parse::<std::net::IpAddr>().is_ok() || app.config.allowed_hosts.iter().any(|h| h.eq_ignore_ascii_case(name))
 }
 
 /// Through the tunnel only MCP and sign-in are reachable, and MCP needs a signed-in app. From this
 /// computer everything works as before (MCP with `LILT_MCP_TOKEN` if set), but MCP only answers
-/// local host names, so a web page can't reach it by DNS rebinding.
+/// local host names, so a web page can't reach it by DNS rebinding; the rest of the app answers
+/// only on names such a page can't use either (see `local_host`).
 pub async fn gate(State(app): State<Shared>, req: axum::extract::Request, next: axum::middleware::Next) -> Response {
     let p = req.uri().path().to_string();
     let mcp = p == "/mcp" || p.starts_with("/mcp/");
@@ -145,6 +158,9 @@ pub async fn gate(State(app): State<Shared>, req: axum::extract::Request, next: 
             }
         }
         return next.run(req).await;
+    }
+    if !local_host(&app, req.headers()) {
+        return (StatusCode::FORBIDDEN, "Lilt answers only on this computer's addresses (localhost, 127.0.0.1), or on host names listed in LILT_ALLOWED_HOSTS.").into_response();
     }
     if mcp {
         if !loopback(req.headers()) {

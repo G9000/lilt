@@ -81,10 +81,10 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
     if p.timezone.parse::<chrono_tz::Tz>().is_err() {
         return Err(anyhow::anyhow!("unknown timezone").into());
     }
-    if let Some(t) = &p.reminder_time {
-        if chrono::NaiveTime::parse_from_str(t, "%H:%M").is_err() {
-            return Err(anyhow::anyhow!("reminder time must be HH:MM").into());
-        }
+    if let Some(t) = &mut p.reminder_time {
+        // Stored as HH:MM ("9:05" becomes "09:05"): Today compares it with the clock as text.
+        let parsed = chrono::NaiveTime::parse_from_str(t, "%H:%M").map_err(|_| anyhow::anyhow!("reminder time must be HH:MM"))?;
+        *t = parsed.format("%H:%M").to_string();
     }
     if let Some([lo, hi]) = p.comfort_range_hz {
         if !(60.0..=700.0).contains(&lo) || !(60.0..=700.0).contains(&hi) || lo >= hi {
@@ -162,5 +162,46 @@ mod tests {
         }
         let cross = Request::builder().method("POST").uri("/api/studio/session").header("host", "127.0.0.1:7878").header("origin", "http://evil.example").body(Body::empty()).unwrap();
         assert_eq!(router.clone().oneshot(cross).await.unwrap().status(), StatusCode::FORBIDDEN);
+    }
+
+    /// DNS rebinding: a page at attacker.example resolved to 127.0.0.1 is same-origin with itself,
+    /// so the Host name has to be one such a page can't use: local, an IP, or one you allowed.
+    #[tokio::test]
+    async fn rebound_host_names_are_refused() {
+        use axum::body::Body;
+        use axum::http::{Request, StatusCode};
+        use tower::ServiceExt;
+        let dir = tempfile::tempdir().unwrap();
+        let mut cfg = config(dir.path());
+        cfg.allowed_hosts = vec!["lilt.tailnet.ts.net".into()];
+        let app = crate::app::App::open(cfg.clone()).unwrap();
+        let router = crate::build_router(app, &cfg);
+        let send = |method: &str, uri: &str, host: &str| {
+            let origin = format!("http://{host}");
+            let req = Request::builder().method(method).uri(uri).header("host", host).header("origin", origin).body(Body::empty()).unwrap();
+            let r = router.clone();
+            async move { r.oneshot(req).await.unwrap().status() }
+        };
+        assert_eq!(send("POST", "/api/connect/code", "attacker.example:7878").await, StatusCode::FORBIDDEN);
+        assert_eq!(send("GET", "/api/export", "attacker.example:7878").await, StatusCode::FORBIDDEN);
+        for host in ["localhost:7878", "127.0.0.1:7878", "[::1]:7878", "192.168.1.20:7878", "lilt.tailnet.ts.net"] {
+            assert_eq!(send("GET", "/api/profile", host).await, StatusCode::OK, "{host}");
+        }
+    }
+
+    /// A reminder typed as "9:05" is kept as "09:05", the form Today compares with the clock.
+    #[tokio::test]
+    async fn reminder_time_is_stored_as_hh_mm() {
+        use axum::body::Body;
+        use axum::http::{Request, StatusCode};
+        use tower::ServiceExt;
+        let (dir, app) = app();
+        let router = crate::build_router(app.clone(), &config(dir.path()));
+        let mut p = serde_json::to_value(app.profile()).unwrap();
+        p["reminder_time"] = serde_json::json!("9:05");
+        let req = Request::builder().method("PUT").uri("/api/profile").header("host", "127.0.0.1:7878").header("content-type", "application/json")
+            .body(Body::from(p.to_string())).unwrap();
+        assert_eq!(router.oneshot(req).await.unwrap().status(), StatusCode::OK);
+        assert_eq!(app.profile().reminder_time.as_deref(), Some("09:05"));
     }
 }

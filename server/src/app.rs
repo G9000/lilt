@@ -22,6 +22,8 @@ pub struct Config {
     pub python: String,
     pub analysis_dir: PathBuf,
     pub mcp_token: Option<String>,
+    /// Extra host names the app answers on besides local ones, such as a LAN proxy's.
+    pub allowed_hosts: Vec<String>,
 }
 
 impl Config {
@@ -36,6 +38,7 @@ impl Config {
             python: env("LILT_PYTHON", "analysis/.venv/bin/python"),
             analysis_dir: env("LILT_ANALYSIS_DIR", "analysis").into(),
             mcp_token: std::env::var("LILT_MCP_TOKEN").ok().filter(|s| !s.is_empty()),
+            allowed_hosts: env("LILT_ALLOWED_HOSTS", "").split(',').map(|h| h.trim().to_ascii_lowercase()).filter(|h| !h.is_empty()).collect(),
         }
     }
 }
@@ -58,6 +61,8 @@ pub struct App {
     take_index: RwLock<HashMap<String, String>>,
     /// Serialises read-modify-write of JSON records.
     pub write_lock: Mutex<()>,
+    /// Serialises plan versions (`write_plan`); separate from `write_lock`, which callers may hold.
+    plan_lock: Mutex<()>,
     pub job_notify: Notify,
 }
 
@@ -83,6 +88,7 @@ impl App {
             prompts,
             take_index: RwLock::new(HashMap::new()),
             write_lock: Mutex::new(()),
+            plan_lock: Mutex::new(()),
             job_notify: Notify::new(),
         });
         crate::courses::migrate(&app).context("moving your copy of the voice course")?;
@@ -256,6 +262,7 @@ impl App {
 
     /// Install a new plan version. `expected` guards against stale writers.
     pub fn write_plan(&self, mut plan: Plan, expected: Option<u32>) -> Result<Plan> {
+        let _g = self.plan_lock.lock().unwrap();
         let current = self.current_plan();
         let cur_v = current.as_ref().map(|p| p.version);
         if let Some(exp) = expected {

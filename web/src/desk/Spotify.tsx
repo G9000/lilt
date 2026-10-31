@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { micInUse } from "../micuse";
 import { accessToken, clientId, redirectUri, setClientId, signedIn, signIn, signOut, spotify } from "./spotifyAuth";
 
 /**
@@ -51,14 +52,15 @@ function Player({ uri }: { uri: string }) {
       host.current.replaceChildren(el);
       IFrameAPI.createController(el, { uri, width: "100%", height: 80 }, (c: Controller) => {
         ctl = c;
-        c.addListener("playback_update", (e: any) => { playing = !e?.data?.isPaused; });
+        // Started while the mic is on (from the player, or a resume racing a new take): wait for it.
+        c.addListener("playback_update", (e: any) => { playing = !e?.data?.isPaused; if (playing && micInUse()) { ducked = true; playing = false; c.pause(); } });
       });
     });
     // Out of the way while you record or listen, back afterwards.
     const onMic = (e: Event) => {
       const busy = (e as CustomEvent<boolean>).detail;
       if (busy && playing) { ducked = true; ctl?.pause(); }
-      else if (!busy && ducked) { ducked = false; ctl?.resume(); }
+      else if (!busy && ducked) { ducked = false; playing = true; ctl?.resume(); }
     };
     window.addEventListener("lilt:mic", onMic);
     return () => { live = false; window.removeEventListener("lilt:mic", onMic); ctl?.destroy(); };
@@ -91,16 +93,19 @@ function MySpotify() {
   const [picking, setPicking] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [me, setMe] = useState<string | null>(null);
+  // Paused for the mic: true to resume, or a playlist you picked meanwhile, to start once the mic is free.
+  const ducked = useRef<boolean | string>(false);
+  const later = useRef<(uri: string) => void>(() => {});
 
   useEffect(() => {
-    let live = true, ducked = false;
+    let live = true;
     void spotify<{ display_name: string }>("/me").then((u) => live && setMe(u?.display_name ?? null), (e) => live && setErr(e.message));
     void spotify<{ items: any[] }>("/me/playlists?limit=50").then((r) => live && setLists((r?.items ?? []).filter(Boolean).map((p) => ({
       id: p.id, name: p.name, uri: p.uri, image: p.images?.[p.images.length - 1]?.url ?? p.images?.[0]?.url ?? null, count: p.tracks?.total ?? 0,
     })))).catch(() => live && setLists([]));
     void playbackSdk().then((Spotify) => {
       if (!live) return;
-      const p = new Spotify.Player({ name: "Lilt", volume: 0.6, getOAuthToken: (cb: (t: string) => void) => { void accessToken().then((t) => t && cb(t)); } });
+      const p = new Spotify.Player({ name: "Lilt", volume: 0.6, getOAuthToken: (cb: (t: string) => void) => { void accessToken().then((t) => t && cb(t), () => {}); } });
       player.current = p;
       p.addListener("ready", ({ device_id }: { device_id: string }) => live && setDevice(device_id));
       p.addListener("not_ready", () => live && setDevice(null));
@@ -109,6 +114,7 @@ function MySpotify() {
       p.addListener("initialization_error", ({ message }: { message: string }) => live && setErr(message));
       p.addListener("player_state_changed", (st: any) => {
         if (!live || !st) return;
+        if (!st.paused && micInUse()) { ducked.current = true; void p.pause(); }
         const t = st.track_window?.current_track;
         setTrack(t ? { name: t.name, artists: t.artists.map((a: any) => a.name).join(", "), art: t.album?.images?.[0]?.url ?? null, paused: st.paused } : null);
       });
@@ -116,12 +122,10 @@ function MySpotify() {
     });
     // Out of the way while you record or listen, back afterwards.
     const onMic = (e: Event) => {
-      const busy = (e as CustomEvent<boolean>).detail, p = player.current;
+      const busy = (e as CustomEvent<boolean>).detail, p = player.current, d = ducked.current;
       if (!p) return;
-      void p.getCurrentState().then((st: any) => {
-        if (busy && st && !st.paused) { ducked = true; void p.pause(); }
-        else if (!busy && ducked) { ducked = false; void p.resume(); }
-      });
+      if (!busy && d) { ducked.current = false; if (d === true) void p.resume(); else later.current(d); }
+      else if (busy) void p.getCurrentState().then((st: any) => { if (st && !st.paused && micInUse()) { ducked.current = true; void p.pause(); } });
     };
     window.addEventListener("lilt:mic", onMic);
     return () => { live = false; window.removeEventListener("lilt:mic", onMic); player.current?.disconnect(); player.current = null; };
@@ -131,10 +135,13 @@ function MySpotify() {
     if (!device) return;
     setPicking(false); setErr(null);
     try { localStorage.setItem(LAST, uri); } catch { /* private mode */ }
+    if (micInUse()) { ducked.current = uri; return; }
     try { await spotify(`/me/player/play?device_id=${device}`, { method: "PUT", body: JSON.stringify({ context_uri: uri }) }); }
     catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
   };
+  later.current = (uri) => void play(uri);
   const toggle = async () => {
+    if (track && track.paused && micInUse()) { ducked.current = !ducked.current; return; } // starts (or not) once the mic is free
     if (track) return void player.current?.togglePlay();
     const last = (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() ?? lists?.[0]?.uri;
     if (last) await play(last); else setPicking(true);

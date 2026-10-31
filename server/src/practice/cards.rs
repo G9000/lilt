@@ -231,7 +231,8 @@ pub fn today_queue(app: &App) -> Result<Value> {
 
     let today_logs: Vec<&ReviewLog> = logs.iter().filter(|l| l.local_date == today).collect();
     let rated_today = |id: &str| today_logs.iter().rev().find(|l| l.card_id == id).map(|l| l.rating.clone());
-    let introduced_today = state.values().filter(|s| s.introduced_date.as_deref() == Some(today.as_str())).count();
+    // The daily reference isn't a new card, so it doesn't use up today's allowance.
+    let introduced_today = state.iter().filter(|(id, s)| id.as_str() != REFERENCE_CARD && s.introduced_date.as_deref() == Some(today.as_str())).count();
 
     // Which stages are open: stage 1 always; each next one once the previous is mostly learned.
     let max_stage = cards.iter().map(|c| c.stage).max().unwrap_or(1);

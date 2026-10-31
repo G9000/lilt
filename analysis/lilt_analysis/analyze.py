@@ -79,6 +79,16 @@ FORMANT_PARAMS = {
     "pre_emphasis_from": 50.0,
 }
 
+# Formants are read only where the take is close to its loudest: voiced frames within this many dB of
+# the 90th-percentile intensity of the voiced frames. That keeps vowels and drops nasals, voiced
+# consonants and quiet onsets/tails, whose F2/F3 are the least reliable. On TTS speech resynthesised
+# with known formant and pitch changes it lowered the median shift error from 0.23 to 0.20 st and the
+# worst from 3.3 to 2.8 st (see EVALUATION.md).
+FORMANT_INTENSITY_WINDOW_DB = 10.0
+FORMANT_MIN_S = 0.25  # at least this much selected material for a formant median
+INTENSITY_PARAMS = {"praat_command": "To Intensity", "minimum_pitch": 100.0, "time_step": TIME_STEP,
+                    "subtract_mean": True}
+
 OCTAVE_JUMP_RATIO = 1.8  # adjacent voiced frames with ratio > 1.8 or < 1/1.8 (0.556)
 TRACKING_ERROR_FRACTION = 0.02  # flag if suspected jumps exceed 2 % of voiced frames
 CLIP_THRESHOLD = 0.999  # |x| >= threshold counts as clipped
@@ -156,7 +166,7 @@ def method_block() -> dict:
     return {
         "name": "lilt-analysis",
         "version": "1",
-        "method_version": "lilt-analysis/3",
+        "method_version": "lilt-analysis/4",
         "praat_version": parselmouth.PRAAT_VERSION,
         "praat_version_date": parselmouth.PRAAT_VERSION_DATE,
         "parselmouth_version": parselmouth.__version__,
@@ -164,7 +174,11 @@ def method_block() -> dict:
         "pitch_algorithm_note": algo["selection_note"],
         "params": algo["params"],
         "formant_params": dict(FORMANT_PARAMS),
-        "formant_frames": "pitch-voiced frames only, at the pitch frame times; Praat's undefined values skipped",
+        "formant_frames": (f"pitch-voiced frames within {FORMANT_INTENSITY_WINDOW_DB:g} dB of the 90th-percentile "
+                           "intensity of the voiced frames, at the pitch frame times; Praat's undefined values skipped"),
+        "formant_intensity_window_db": FORMANT_INTENSITY_WINDOW_DB,
+        "intensity_params": dict(INTENSITY_PARAMS),
+        "formant_min_s": FORMANT_MIN_S,
         "octave_jump_ratio": OCTAVE_JUMP_RATIO,
         "tracking_error_fraction": TRACKING_ERROR_FRACTION,
         "clip_threshold": CLIP_THRESHOLD,
@@ -213,6 +227,21 @@ def _f0_stat(value, n, reason):
             "unavailable_reason": None if value is not None else reason, "n_frames": int(n)}
 
 
+def _vowel_frames(sound: parselmouth.Sound, times: np.ndarray) -> np.ndarray:
+    """Which of the voiced `times` are within FORMANT_INTENSITY_WINDOW_DB of the loud voiced frames."""
+    p = INTENSITY_PARAMS
+    try:
+        inten = sound.to_intensity(minimum_pitch=p["minimum_pitch"], time_step=p["time_step"],
+                                   subtract_mean=p["subtract_mean"])
+    except parselmouth.PraatError:  # too short for an intensity window: keep every voiced frame
+        return np.ones(times.size, dtype=bool)
+    db = np.array([inten.get_value(float(t)) for t in times], dtype=np.float64)
+    known = ~np.isnan(db)
+    if not known.any():
+        return np.ones(times.size, dtype=bool)
+    return known & (db >= np.percentile(db[known], 90) - FORMANT_INTENSITY_WINDOW_DB)
+
+
 def _formants(sound: parselmouth.Sound, times: np.ndarray) -> list[np.ndarray]:
     """F1, F2, F3 (Hz) at each of `times`; NaN where Praat has no value."""
     p = FORMANT_PARAMS
@@ -224,7 +253,7 @@ def _formants(sound: parselmouth.Sound, times: np.ndarray) -> list[np.ndarray]:
 
 def _formant_stat(values: np.ndarray, k: int, reason: str | None) -> dict:
     v = values[~np.isnan(values)]
-    ok = reason is None and v.size * TIME_STEP >= MIN_VOICED_S
+    ok = reason is None and v.size * TIME_STEP >= FORMANT_MIN_S
     notes = {
         1: "F1 follows the harmonics when pitch is high, so it is reported but not used for comparisons.",
         2: "With F3, the basis of resonance comparisons between takes of the same text.",
@@ -234,7 +263,8 @@ def _formant_stat(values: np.ndarray, k: int, reason: str | None) -> dict:
         "value": _r(float(np.median(v)), 2) if ok else None, "unit": "Hz",
         "unavailable_reason": None if ok else (reason or "insufficient_voiced_material"),
         "n_frames": int(v.size),
-        "definition": f"median F{k} over pitch-voiced frames (Praat Burg, fixed {FORMANT_PARAMS['maximum_formant']:g} Hz ceiling)",
+        "definition": (f"median F{k} over pitch-voiced frames within {FORMANT_INTENSITY_WINDOW_DB:g} dB of the take's "
+                       f"loud voiced frames (Praat Burg, fixed {FORMANT_PARAMS['maximum_formant']:g} Hz ceiling)"),
         "note": notes[k] + " Formants depend on the vowel, so only takes of the same text are compared.",
     }
 
@@ -292,7 +322,8 @@ def analyze(samples: np.ndarray, sr: int) -> dict:
 
     # ---- resonance: formants over the voiced frames ----
     if enough:
-        f1, f2, f3 = _formants(sound, times[voiced])
+        vt = times[voiced]
+        f1, f2, f3 = _formants(sound, vt[_vowel_frames(sound, vt)])
         formant_reason = None
     else:
         f1 = f2 = f3 = np.zeros(0)

@@ -32,7 +32,7 @@ function inline(src: string): ReactNode[] {
 
 export function Markdown({ src, className }: { src: string; className?: string }) {
   const blocks: ReactNode[] = [];
-  const lines = src.split("\n");
+  const lines = src.replace(/\r\n?/g, "\n").split("\n");
   let i = 0;
   const joinWhile = (test: (l: string) => boolean, strip: (l: string) => string) => {
     const parts: string[] = [];
@@ -66,6 +66,7 @@ export function Markdown({ src, className }: { src: string; className?: string }
     } else {
       const k = i;
       blocks.push(<p key={k}>{inline(joinWhile((l) => !!l.trim() && !/^(#{1,3}\s|>|\s*([-*]|\d+\.)\s)/.test(l), (l) => l))}</p>);
+      if (i === k) i++; // a line no block takes is skipped, never read forever
     }
   }
   return <div className={className}>{blocks}</div>;

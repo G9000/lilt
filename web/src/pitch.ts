@@ -123,6 +123,8 @@ export function trackLive(stream: MediaStream, onFrame: (t: number, f: PitchFram
   const an = ctx.createAnalyser();
   an.fftSize = 2048;
   src.connect(an);
+  // Safari (and Chrome without a recent click) can create a suspended context, which reads silence.
+  if (ctx.state === "suspended") void ctx.resume();
   const buf = new Float32Array(an.fftSize);
   const t0 = performance.now();
   const releaseMic = claimMic();

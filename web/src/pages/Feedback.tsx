@@ -81,6 +81,7 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
 }) {
   const [takes, setTakes] = useState<Record<string, Take>>({});
   const [hearSignal, setHearSignal] = useState(0);
+  const firstMarked = pointer.evidence.findIndex((e) => e.segment);
   const [mode, setMode] = useState<"view" | "retry" | "compare">("view");
   const [retryTake, setRetryTake] = useState<Take | null>(null);
   const [retrySession, setRetrySession] = useState<string | null>(null);
@@ -121,6 +122,7 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
       <section className="card fb-step" aria-labelledby="hear-h">
         <h2 id="hear-h">1 · Hear the moment</h2>
         {pointer.evidence.length === 0 && <p className="fb-text">There's no recording behind this observation yet.</p>}
+        {/* One moment plays at a time: the first marked one. The take it's compared with plays on its own (B). */}
         {pointer.evidence.map((e, i) => (
           <div key={i} className="fb-ev">
             <p className="fb-ev-desc"><span className="badge">{CLASS_LABEL[e.class]}</span> {e.description}</p>
@@ -129,13 +131,13 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
               <>
                 <AudioPlayer src={takes[e.take_id].audio_url} tag={e.comparison_take_id ? "A" : undefined}
                   label={`${takes[e.take_id].prompt_text.slice(0, 60)}`}
-                  segment={e.segment} segmentLabel="evidence" playSegmentSignal={hearSignal} knownDuration={takes[e.take_id].analysis_summary?.duration_s} />
+                  segment={e.segment} segmentLabel="evidence" playSegmentSignal={i === firstMarked ? hearSignal : undefined} knownDuration={takes[e.take_id].analysis_summary?.duration_s} />
                 {!e.segment && <p className="dv-cap">This is based on the whole recording{e.class === "self_reported" ? " and your own answer" : ""}, so no moment is marked.</p>}
               </>
             )}
             {e.take_id && !takes[e.take_id] && review.evidence_deleted.includes(e.take_id) && <p className="dv-cap">This recording was deleted.</p>}
             {e.comparison_take_id && takes[e.comparison_take_id] && (
-              <AudioPlayer src={takes[e.comparison_take_id].audio_url} tag="B" label="Compared with" segment={e.comparison_segment} segmentLabel="evidence" playSegmentSignal={hearSignal} knownDuration={takes[e.comparison_take_id].analysis_summary?.duration_s} />
+              <AudioPlayer src={takes[e.comparison_take_id].audio_url} tag="B" label="Compared with" segment={e.comparison_segment} segmentLabel="evidence" knownDuration={takes[e.comparison_take_id].analysis_summary?.duration_s} />
             )}
           </div>
         ))}
@@ -211,21 +213,31 @@ function RetryCompare({ original, retry, exercise, pointer, onSaved }: { origina
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState(retry);
+  const [err, setErr] = useState<string | null>(null);
+  const settled = status.status === "review_ready" || status.status === "analysis_failed";
   useEffect(() => {
-    const id = setInterval(async () => { const t = await api.take(retry.id); setStatus(t); }, 1500);
+    if (settled) return;
+    const id = setInterval(() => { api.take(retry.id).then(setStatus, () => undefined); }, 1500);
     return () => clearInterval(id);
-  }, [retry.id]);
+  }, [retry.id, settled]);
 
   const save = async () => {
     setBusy(true);
-    const prefNote = pref === "retry" ? "Preferred the retry over the original." : pref === "original" ? "Preferred the original." : pref === "same" ? "No preference between original and retry." : "";
-    await api.patchTake(retry.id, {
-      self_report: Object.keys(answers).length ? answers : undefined,
-      note: [prefNote, note].filter(Boolean).join(" ") || undefined,
-      favourite: pref === "retry" ? true : undefined,
-    });
-    if (pref === "original") await api.patchTake(original.id, { favourite: true });
-    await onSaved(retry.session_id);
+    setErr(null);
+    try {
+      const prefNote = pref === "retry" ? "Preferred the retry over the original." : pref === "original" ? "Preferred the original." : pref === "same" ? "No preference between original and retry." : "";
+      await api.patchTake(retry.id, {
+        self_report: Object.keys(answers).length ? answers : undefined,
+        note: [prefNote, note].filter(Boolean).join(" ") || undefined,
+        favourite: pref === "retry" ? true : undefined,
+      });
+      if (pref === "original") await api.patchTake(original.id, { favourite: true });
+      await onSaved(retry.session_id);
+    } catch (e: any) {
+      setErr(`Not saved: ${e.message}`);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -254,6 +266,7 @@ function RetryCompare({ original, retry, exercise, pointer, onSaved }: { origina
       </div>
       <p className="dv-cap">If anything felt strained or painful, say so in your next comfort check. Lilt will pause the activity.</p>
       <div><button className="btn-primary" disabled={busy} onClick={() => void save()}>Save and see what's next</button></div>
+      {err && <Callout kind="warn" icon="!"><p role="alert">{err}</p></Callout>}
     </div>
   );
 }

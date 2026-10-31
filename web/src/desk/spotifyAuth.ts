@@ -41,7 +41,7 @@ export function signOut() { set(TOKENS, null); changed(); }
 async function tokenRequest(body: Record<string, string>): Promise<Tokens> {
   const r = await fetch("https://accounts.spotify.com/api/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams(body) });
   const j = await r.json();
-  if (!r.ok) throw new Error(j.error_description || j.error || "Spotify sign-in failed");
+  if (!r.ok) throw Object.assign(new Error(j.error_description || j.error || "Spotify sign-in failed"), { status: r.status });
   const old = readTokens();
   const t = { access: j.access_token, refresh: j.refresh_token ?? old?.refresh ?? "", expires: Date.now() + (j.expires_in - 60) * 1000 };
   set(TOKENS, JSON.stringify(t));
@@ -59,21 +59,25 @@ export async function finishSignIn(): Promise<string | null> {
   if (!err && code && verifier && id) {
     try { await tokenRequest({ client_id: id, grant_type: "authorization_code", code, redirect_uri: redirectUri(), code_verifier: verifier }); }
     catch (e) { err = e instanceof Error ? e.message : String(e); }
-  }
+  } else if (!err) err = !code ? "Spotify sent no sign-in code. Try again." : !id ? "Add your Spotify Client ID first."
+    : "Signing in began at another address or in another browser. Sign in again from here.";
   set(VERIFIER, null);
   try { localStorage.setItem("lilt.radio.source", "spotify"); } catch { /* private mode */ }
   history.replaceState(null, "", "/#/");
   return err;
 }
 
-/** A fresh access token (refreshed when it's about to run out), or null if you're signed out. */
+let refreshing: Promise<string | null> | null = null;
+/** A fresh access token (refreshed when it's about to run out), or null if you're signed out. One refresh
+ *  at a time; only Spotify refusing the refresh token signs you out (offline or a 5xx throws, tokens kept). */
 export async function accessToken(): Promise<string | null> {
   const t = readTokens(), id = clientId();
   if (!t) return null;
   if (Date.now() < t.expires) return t.access;
   if (!id || !t.refresh) { signOut(); return null; }
-  try { return (await tokenRequest({ client_id: id, grant_type: "refresh_token", refresh_token: t.refresh })).access; }
-  catch { signOut(); return null; }
+  return (refreshing ??= tokenRequest({ client_id: id, grant_type: "refresh_token", refresh_token: t.refresh })
+    .then((n) => n.access, (e) => { if (e?.status === 400 || e?.status === 401) { signOut(); return null; } throw e; })
+    .finally(() => { refreshing = null; }));
 }
 
 /** Calls the Spotify Web API as you. */

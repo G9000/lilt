@@ -362,3 +362,14 @@ def test_formants_abstain_without_voice(wavdir, tmp_path):
     for k in (1, 2, 3):
         assert m[f"formant_f{k}_median_hz"]["value"] is None
         assert m[f"formant_f{k}_median_hz"]["unavailable_reason"] == "insufficient_voiced_material"
+
+
+def test_formants_come_from_the_loud_vowel_not_a_quiet_hum():
+    """A loud /a/ followed by a longer, 20 dB quieter voiced sound with /u/ formants (like a soft nasal or
+    tail): F2 is read from the vowel, where every voiced frame would have put it on the quiet part."""
+    from lilt_analysis import analyze as A
+    a = M.vowel(200, M.VOWELS["a"] + M.HIGHER_FORMANTS, dur=0.8, amp=0.5)
+    quiet = M.vowel(200, M.VOWELS["u"] + M.HIGHER_FORMANTS, dur=1.2, amp=0.05)
+    m = A.analyze(np.concatenate([a, quiet]), M.SR)["measures"]
+    f2 = m["formant_f2_median_hz"]["value"]
+    assert abs(f2 / M.VOWELS["a"][1] - 1) <= TOLERANCES["formant_f2_f3_rel_err"], f2

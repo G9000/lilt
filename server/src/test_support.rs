@@ -27,6 +27,7 @@ pub fn config(data: &std::path::Path) -> Config {
         python: root().join("analysis/.venv/bin/python").to_string_lossy().into(),
         analysis_dir: root().join("analysis"),
         mcp_token: None,
+        allowed_hosts: vec![],
     }
 }
 

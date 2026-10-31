@@ -23,7 +23,7 @@ Resonance helps shape whether a voice sounds brighter or darker. Here you explor
 
 **Listen back.** Is one take brighter to your ear without becoming squeezed or uncomfortable? A lip buzz is one possible sensation, not proof of success. If the difference is unclear, return to the demonstration rather than making the movement bigger.
 
-**Keep comparisons fair.** For the held-vowel check-ins, use the same vowel, mic and distance, with a similar easy pitch and loudness. Lilt's formant comparison is a rough description; it cannot establish that only resonance changed or choose the better-sounding take.
+**Keep comparisons fair.** For the held-vowel check-ins, use the same vowel, mic and distance, with a similar easy pitch and loudness. Lilt's formant comparison is a rough description: it reads the loud vowel parts of a take, a higher pitch on its own barely moves it, and it tends to understate a real change a little. It cannot establish that only resonance changed or choose the better-sounding take.
 
 **Ready for more?** You can repeat the preferred sound in the vowel and a short greeting with low effort. Come back to the vowel when a longer phrase gets difficult.
 
