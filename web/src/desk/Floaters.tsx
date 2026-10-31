@@ -7,12 +7,15 @@ import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
 import { SettingsAppIcon } from "./icons";
+import { go } from "../App";
+import { CURRENT, shortVersion } from "../release";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
  * radio over the speaker, a note on the wall of photos, a clock in the window, the plant (the
- * days you practised this week) by the potted plant, and Settings (theme, AI connection and
- * everything else, over the room) on the window beside the clock. Drag them anywhere; each remembers its
+ * days you practised this week) by the potted plant, Settings (theme, AI connection and
+ * everything else, over the room) on the window beside the clock, and What's new (this version and
+ * what came with it, from release.ts) up by the hanging lights. Drag them anywhere; each remembers its
  * spot in the painting (in this browser), so it rides the room's camera. One near the edge slides
  * inward to stay on screen; one left at home that would cover today's cards steps out of the way.
  */
@@ -20,7 +23,7 @@ import { SettingsAppIcon } from "./icons";
 type Spot = { x: number; y: number };
 // Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
 // 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 } };
+const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -126,6 +129,50 @@ function SettingsWidget() {
 }
 
 
+/**
+ * What's new: the version you're running and what came with it. Closed, a small card with a dot
+ * until you've opened this version; open, the list, each linking to where it lives.
+ */
+const SEEN_KEY = "lilt.news.seen";
+function NewsWidget() {
+  const [open, setOpen] = useState(false);
+  const [seen, setSeen] = useState(() => { try { return localStorage.getItem(SEEN_KEY) === CURRENT.version; } catch { return true; } });
+  const toggle = () => {
+    setOpen((o) => !o);
+    if (!seen) { setSeen(true); try { localStorage.setItem(SEEN_KEY, CURRENT.version); } catch { /* private mode */ } }
+  };
+  // Clicking anywhere else, or Escape, closes it.
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: PointerEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("pointerdown", away);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  const date = new Date(`${CURRENT.date}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+  return (
+    <div className={`fl-news${open ? " open" : ""}`} ref={box}>
+      <button className="fl-news-head" onClick={toggle} aria-expanded={open} aria-controls="fl-news-list">
+        <span className="fl-news-ic" aria-hidden="true">✦</span>
+        <span className="fl-news-t"><b>What's new</b><small>Lilt {shortVersion(CURRENT.version)} · {date}</small></span>
+        {!seen && <i className="fl-news-dot" aria-label="New" />}
+        <svg className="fl-news-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5L6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      {open && (
+        <ul className="fl-news-list" id="fl-news-list">
+          {CURRENT.items.map((it) => (
+            <li key={it.title}>
+              {it.to ? <button onClick={() => go(it.to!)}><b>{it.title}</b><span>{it.body}</span></button> : <div><b>{it.title}</b><span>{it.body}</span></div>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();
   // The radio plays Lilt's own lo-fi, or your Spotify; the choice is kept in this browser.
@@ -207,6 +254,9 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
           </div>
         </div>
         )}
+      </Widget>
+      <Widget id="news" delay={-0.6} label="What's new">
+        <NewsWidget />
       </Widget>
       <Widget id="settings" delay={-1.8} label="Settings">
         <SettingsWidget />

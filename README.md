@@ -59,7 +59,10 @@ Then open <http://127.0.0.1:7878>.
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: the lo-fi radio over the speaker, a
-     clock in the window, the plant by the potted plant, and a sticky note taped to the photo wall.
+     clock in the window, the plant by the potted plant, a sticky note taped to the photo wall, and
+     **What's new**: the version you're running (now 0.2) and what came with it, with a dot until
+     you've opened it; each item opens the feature. New releases go at the top of
+     `web/src/release.ts`.
      The note starts as your goal; click it to write anything (up to 280 characters), click away to keep it. It's saved on
      the server (`room_note` in the profile). **Drag either one anywhere**; it remembers its spot
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
