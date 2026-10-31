@@ -27,6 +27,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   history: { title: "Recordings", width: 780, full: true },
   settings: { title: "Settings", width: 640 },
   courses: { title: "Courses", width: 860 },
+  "whats-new": { title: "What's new", width: 720 },
 };
 
 const LIGHT_NAME: Record<Light, string> = { morning: "Morning", day: "Afternoon", sunset: "Sunset", night: "Night" };

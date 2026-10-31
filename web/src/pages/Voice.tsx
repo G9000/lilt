@@ -8,7 +8,7 @@ import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
 import { byPart, isLong, passageTitle, readingTime, textLabel } from "../chapters";
-import { CURRENT, WHATS_NEW } from "../release";
+import { CURRENT } from "../release";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 
@@ -114,7 +114,7 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "recordings" | "progress" | "free" | "news"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -182,7 +182,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <RemixPanel />
-      <Sidebar onNewChapter={() => void newChapter()} texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" || doc === "news" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
+      <Sidebar onNewChapter={() => void newChapter()} texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
       <div className={`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "mixtape" || doc === "settings" ? " solo" : ""}`} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
@@ -205,8 +205,6 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
           ? <div className="ve-page"><div className="ve-col ve-embed"><UpdatesDoc onTexts={setTexts} /></div></div>
           : doc === "settings"
           ? <div className="ve-page"><div className="ve-col ve-embed"><PracticeSettings /></div></div>
-          : doc === "news"
-          ? <div className="ve-page"><article className="ve-col"><Markdown src={WHATS_NEW} className="ve-md ve-news" /></article></div>
           : doc === "mixtape"
           ? <div className="ve-page"><div className="ve-col ve-embed"><MixtapeDoc onTexts={setTexts} /></div></div>
           : doc === "free"
@@ -940,7 +938,7 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
               </p>
             )}
             {/* Also in the room as a widget; this is the way in on a phone, where the room's widgets hide. */}
-            <p className="ve-edition"><a href="#/studio/whats-new">What's new in Lilt {CURRENT.version} →</a></p>
+            <p className="ve-edition"><a href="#/whats-new">What's new in Lilt {CURRENT.version} →</a></p>
           </section>
         </article>
       </div>
