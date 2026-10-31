@@ -184,7 +184,7 @@
 .ve .ci-link.quiet { color: var(--ink-3); font-weight: 500; }
 .ci-link span { color: var(--ink-3); font-weight: 500; }
 .ve .ci-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-.ve .ci-vrow { width: 100%; display: flex; align-items: center; gap: 14px; margin-top: 16px; padding: 8px; border: 0; border-radius: 14px; background: var(--fill); color: var(--ink); text-align: left; cursor: pointer; transition: background-color 0.15s ease; }
+.ve .ci-vrow { width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 14px; margin-top: 16px; padding: 8px; border: 0; border-radius: 14px; background: var(--fill); color: var(--ink); text-align: left; cursor: pointer; transition: background-color 0.15s ease; }
 .ve .ci-vrow:hover { background: var(--fill-2); }
 .ci-thumb { position: relative; flex: none; width: 128px; aspect-ratio: 16 / 9; border-radius: 9px; overflow: hidden; background: #111; }
 .ci-thumb.plain { background: linear-gradient(135deg, #2b2233, #4a2a2a); }
