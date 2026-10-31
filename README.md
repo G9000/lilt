@@ -72,7 +72,7 @@ Then open <http://127.0.0.1:7878>.
      things to read, and the recorder docked at the bottom. Click any card further down to do it next.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Recordings**
-   and **Courses** in the dock, Settings and the light/dark switch in the menu bar. **Leave desk**
+   and **Courses** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
    (or the door in the dock) walks you back out to the room. Until you've recorded your "before",
    sitting down opens Start here instead of Today.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them

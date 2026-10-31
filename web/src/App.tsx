@@ -36,9 +36,14 @@ export function useRoute(): [string, URLSearchParams] {
 export const go = (path: string) => { window.location.hash = path; };
 
 export type Theme = "light" | "dark";
-function readTheme(): Theme {
-  try { return localStorage.getItem("lilt.mode") === "dark" ? "dark" : "light"; } catch { return "light"; }
+/** What you chose: a fixed theme, or "auto" to follow your computer's light or dark setting (the default). */
+export type ThemeMode = Theme | "auto";
+export function readThemeMode(): ThemeMode {
+  // A new key: the old "lilt.mode" was written on every visit, so it can't tell a choice from a default.
+  try { const v = localStorage.getItem("lilt.theme"); return v === "light" || v === "dark" ? v : "auto"; } catch { return "auto"; }
 }
+const systemDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+const resolveTheme = (m: ThemeMode): Theme => (m === "auto" ? (systemDark() ? "dark" : "light") : m);
 /** How big text is across Lilt's pages, kept in this browser. */
 export type TextSize = "smaller" | "default" | "larger" | "largest";
 export const TEXT_SIZES: { id: TextSize; label: string }[] = [
@@ -57,15 +62,17 @@ applyTextSize(readTextSize());
 export function applyTheme(t: Theme) {
   if (t === "light") document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme", t);
-  try { localStorage.setItem("lilt.mode", t); } catch { /* ignore */ }
 }
+// Before the first render, so a dark computer never flashes the light theme.
+applyTheme(resolveTheme(readThemeMode()));
 
 const SECTIONS = new Set(["deck", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses"]);
 
 export function App() {
   const [path, params] = useRoute();
   const [recovered, setRecovered] = useState(0);
-  const [theme, setTheme] = useState<Theme>(readTheme);
+  const [mode, setMode] = useState<ThemeMode>(readThemeMode);
+  const [theme, setTheme] = useState<Theme>(() => resolveTheme(mode));
   const seg = path.split("/").filter(Boolean);
   const inside = seg.length > 0;
   // Opening straight onto a desktop route skips the walk to the desk.
@@ -73,11 +80,26 @@ export function App() {
   const [deck, setDeck] = useState<Deck | null>(null);
 
   useEffect(() => { applyTheme(theme); }, [theme]);
+  // Remember the choice; on Auto, follow the computer as it switches between light and dark.
+  useEffect(() => {
+    try { localStorage.removeItem("lilt.mode"); if (mode === "auto") localStorage.removeItem("lilt.theme"); else localStorage.setItem("lilt.theme", mode); } catch { /* private mode: auto next time */ }
+    window.dispatchEvent(new CustomEvent("lilt:theme-mode", { detail: mode }));
+    setTheme(resolveTheme(mode));
+    if (mode !== "auto") return;
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const on = () => setTheme(mq.matches ? "dark" : "light");
+    // The change event covers a switch while you watch; coming back to the tab catches one made away.
+    const back = () => { if (document.visibilityState === "visible") on(); };
+    mq.addEventListener("change", on);
+    window.addEventListener("focus", on);
+    document.addEventListener("visibilitychange", back);
+    return () => { mq.removeEventListener("change", on); window.removeEventListener("focus", on); document.removeEventListener("visibilitychange", back); };
+  }, [mode]);
   // A link to #/settings or #/settings/ai (where ChatGPT sign-in returns) opens Settings over the room.
   useEffect(() => { if (seg[0] === "settings") { window.location.replace("#/"); openSettings(seg[1] === "ai" ? "ai" : undefined); } }, [seg[0], seg[1]]); // eslint-disable-line react-hooks/exhaustive-deps
   // Settings changes the theme too.
   useEffect(() => {
-    const on = (e: Event) => setTheme((e as CustomEvent<Theme>).detail);
+    const on = (e: Event) => setMode((e as CustomEvent<ThemeMode>).detail);
     window.addEventListener("lilt:theme", on);
     return () => window.removeEventListener("lilt:theme", on);
   }, []);
@@ -137,7 +159,7 @@ export function App() {
         <p className="ds-hint">Click the computer to sit down <kbd>↵</kbd></p>
       </div>
       <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}
-        onTheme={() => setTheme(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox} />
+        onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox} />
       <NotificationCenter inbox={inbox} />
       <SettingsSheet />
     </MicProvider>

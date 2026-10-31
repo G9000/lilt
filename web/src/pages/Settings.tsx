@@ -3,25 +3,24 @@ import "../styles/settings.css";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Profile, TextItem } from "../api";
 import { idLabel } from "../chapters";
-import { applyTextSize, readTextSize, TEXT_SIZES, type TextSize, type Theme } from "../App";
+import { applyTextSize, readTextSize, readThemeMode, TEXT_SIZES, type TextSize, type ThemeMode } from "../App";
 import { Callout } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
 
 const ZONES = ["Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Jakarta", "Asia/Bangkok", "Asia/Tokyo", "Australia/Sydney", "Europe/London", "Europe/Berlin", "America/New_York", "America/Los_Angeles", "UTC"];
 
-/** Light or dark, kept in step with the menu bar's button. */
+/** Auto (follow the computer), light or dark, kept in step with the menu bar's button. */
 function ThemeChoice() {
-  const read = (): Theme => (document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
-  const [t, setT] = useState<Theme>(read);
+  const [m, setM] = useState<ThemeMode>(readThemeMode);
   useEffect(() => {
-    const m = new MutationObserver(() => setT(read()));
-    m.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => m.disconnect();
+    const on = (e: Event) => setM((e as CustomEvent<ThemeMode>).detail);
+    window.addEventListener("lilt:theme-mode", on);
+    return () => window.removeEventListener("lilt:theme-mode", on);
   }, []);
   return (
     <div className="segmented" role="group" aria-label="Theme">
-      {(["light", "dark"] as const).map((x) => (
-        <button key={x} aria-pressed={t === x} onClick={() => window.dispatchEvent(new CustomEvent("lilt:theme", { detail: x }))}>{x === "light" ? "Light" : "Dark"}</button>
+      {(["auto", "light", "dark"] as const).map((x) => (
+        <button key={x} aria-pressed={m === x} onClick={() => window.dispatchEvent(new CustomEvent("lilt:theme", { detail: x }))}>{x === "auto" ? "Auto" : x === "light" ? "Light" : "Dark"}</button>
       ))}
     </div>
   );
@@ -120,7 +119,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
   const content = (id: PaneId): ReactNode => {
     if (id === "appearance") return (
       <div className="sx-group">
-        <Row label="Theme" help="Also the sun or moon button in the desk's menu bar." stack><ThemeChoice /></Row>
+        <Row label="Theme" help="Auto follows your computer's light or dark setting. The sun or moon button in the menu bar picks one." stack><ThemeChoice /></Row>
         <Row label="Text size" help="For the practice texts, your recordings and these pages." stack><TextSizeChoice /></Row>
       </div>
     );
