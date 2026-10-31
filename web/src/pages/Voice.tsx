@@ -346,6 +346,9 @@ function Folder({ id, label, extra, current, open, onToggle, onOpen, locked, chi
   );
 }
 
+/** Where the sidebar keeps which parts of the course are folded. */
+const FOLDED_KEY = "lilt.sidebar.folded";
+
 /** The places above the tree: Home, your recordings and your progress. */
 const PLACES = [
   { id: "home", label: "Home", to: "/studio", icon: "M2.8 7.2L8 2.8l5.2 4.4V13a.8.8 0 01-.8.8H9.6V10H6.4v3.8H3.6a.8.8 0 01-.8-.8z" },
@@ -519,6 +522,18 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
   const left = deck ? deck.items.filter((i) => !i.done_today).length : 0;
   const total = deck?.items.length ?? 0;
   const next = texts && nextChapter(texts, practised);
+  // Parts of the course you've folded away, kept in this browser. Going to a chapter unfolds its part.
+  const [folded, setFolded] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(FOLDED_KEY) ?? "[]")); } catch { return new Set(); }
+  });
+  const fold = (part: string, on: boolean) => setFolded((f) => {
+    const n = new Set(f); if (on) n.add(part); else n.delete(part);
+    try { localStorage.setItem(FOLDED_KEY, JSON.stringify([...n])); } catch { /* private window: folds just aren't kept */ }
+    return n;
+  });
+  const here = texts?.levels.find((l) => l.id === current);
+  const currentPart = here ? here.part?.trim() || "Chapters" : null;
+  useEffect(() => { if (currentPart && folded.has(currentPart)) fold(currentPart, false); }, [current]); // eslint-disable-line react-hooks/exhaustive-deps
   const file = (key: string, label: string, done: boolean, on: boolean, to: string, disabled = false) => (
     <li key={key}>
       <button className={`ve-file${done ? " done" : ""}`} onClick={() => go(to)} disabled={locked || disabled} aria-current={on ? "page" : undefined} title={label}>
@@ -546,10 +561,20 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
       </ul>
       {/* Each part of the course is a heading of its own, with how many of its chapters are done; a
           course without parts keeps one "Chapters" heading. */}
-      {texts && byPart(texts.levels).map((g, gi, groups) => (
+      {texts && byPart(texts.levels).map((g, gi, groups) => {
+        const name = g.part ?? "Chapters", shut = folded.has(name), inPart = g.part ? g.levels : texts.levels;
+        return (
         <Fragment key={`${gi}-${g.part ?? ""}`}>
-          {(g.part || gi === 0) && <h6>{g.part ?? "Chapters"}<span>{(g.part ? g.levels : texts.levels).filter((l) => chapterDone(l, practised)).length} of {(g.part ? g.levels : texts.levels).length}</span></h6>}
-          <ul className="ve-tree">
+          {(g.part || gi === 0) && (
+            <h6 className="ve-part">
+              <button onClick={() => fold(name, !shut)} aria-expanded={!shut}>
+                <span className="t">{name}</span>
+                <span className="c">{inPart.filter((l) => chapterDone(l, practised)).length} of {inPart.length}</span>
+                <Chevron open={!shut} />
+              </button>
+            </h6>
+          )}
+          {!shut && <ul className="ve-tree">
             {g.levels.map((l) => {
               const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
               return (
@@ -560,9 +585,10 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
               );
             })}
             {gi === groups.length - 1 && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
-          </ul>
+          </ul>}
         </Fragment>
-      ))}
+        );
+      })}
     </nav>
   );
 }
