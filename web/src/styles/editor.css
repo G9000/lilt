@@ -30,7 +30,9 @@
 .ve-side h6 { margin: 18px 10px 4px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font: 600 12px var(--font); color: var(--ink-3); }
 .ve-side h6 span { font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
 /* A part of the course: a heading you can press to fold its chapters away */
-.ve-side h6.ve-part { margin: 16px 0 2px; }
+/* folded parts stack tight; an open list of chapters gets room before the next heading */
+.ve-side h6.ve-part { margin: 1px 0 0; }
+.ve-side .ve-tree + h6.ve-part { margin-top: 14px; }
 .ve .ve-part button { width: 100%; height: 26px; min-height: 0; display: flex; align-items: center; justify-content: flex-start; gap: 6px; padding: 0 8px 0 10px; border-radius: 7px; color: var(--ink-2); font: 650 11px var(--font); letter-spacing: 0.06em; text-transform: uppercase; text-align: left; transition: background-color 0.12s ease, color 0.12s ease; }
 .ve-part .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ve-part .c { font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink-3); font-variant-numeric: tabular-nums; }
