@@ -14,6 +14,7 @@ import { openRemix, RemixPanel } from "../components/RemixPanel";
 /** The course Practice shows. */
 const COURSE = DEFAULT_COURSE;
 import { HistoryPage } from "./History";
+import { TextHistory } from "./TextHistory";
 import { setRoom } from "../room/Room";
 import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
@@ -114,7 +115,9 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null }) {
+export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null;
+  /** Recordings narrowed to one text over time (`#/history?text=…`). */
+  text?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [deck, setDeck] = useState<Deck | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -200,7 +203,7 @@ export function VoicePage({ doc, levelId, itemId, first }: { doc: "home" | "star
         {loadErr && !texts
           ? <div className="ve-page"><article className="ve-col"><p role="alert" className="ve-err">{loadErr}</p></article></div>
           : doc === "recordings" || doc === "progress"
-          ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? <HistoryPage /> : <ProgressSoon />}</div></div>
+          ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? (text ? <TextHistory key={text} promptId={text} /> : <HistoryPage />) : <ProgressSoon />}</div></div>
           : doc === "updates"
           ? <div className="ve-page"><div className="ve-col ve-embed"><UpdatesDoc onTexts={setTexts} /></div></div>
           : doc === "settings"
@@ -1168,7 +1171,9 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
     return () => window.clearTimeout(t);
   }, [level]);
   const [takes, setTakes] = useState<Take[]>([]);
-  const [previous, setPrevious] = useState<Take | null>(null);
+  // Every earlier take of the selected text (oldest first), and which one plays as A beside your latest.
+  const [earlier, setEarlier] = useState<Take[]>([]);
+  const [aPick, setAPick] = useState<APick>("last");
   const [recording, setRec] = useState(false);
   const starts = useRef<(number | null)[] | null>(null);
   const [toast, setToast] = useToast();
@@ -1188,11 +1193,11 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   }, []);
   useEffect(() => {
     // Never show a take of another text as "before" while this one's history loads.
-    setPrevious(null);
+    setEarlier([]);
+    setAPick("last");
     let live = true;
-    void api.history({ prompt_id: promptId, days: 365 }).then((h) => {
-      const last = h.takes.filter((t) => t.prompt_id === promptId).at(-1) ?? null;
-      if (live) setPrevious(last);
+    void api.history({ prompt_id: promptId, days: 3650 }).then((h) => {
+      if (live) setEarlier(h.takes.filter((t) => t.prompt_id === promptId));
     }, () => undefined);
     return () => { live = false; };
   }, [promptId]);
@@ -1222,7 +1227,12 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
 
   const forText = useMemo(() => takes.filter((t) => t.prompt_id === promptId), [takes, promptId]);
   const latest = forText[forText.length - 1] ?? null;
-  const before = forText.length >= 2 ? forText[forText.length - 2] : previous && previous.id !== latest?.id ? previous : null;
+  // What can play as A: every take of this text but the latest, oldest first.
+  const choices = useMemo(() => {
+    const seen = new Map([...earlier, ...forText].map((t) => [t.id, t]));
+    return [...seen.values()].filter((t) => t.id !== latest?.id && t.status !== "recording").sort((a, b) => a.created_utc.localeCompare(b.created_utc));
+  }, [earlier, forText, latest?.id]);
+  const before = aPick === "first" ? choices[0] ?? null : aPick === "last" ? choices.at(-1) ?? null : choices.find((t) => t.id === aPick) ?? choices.at(-1) ?? null;
   const latestPitch = useTakePitch(latest?.id, latest?.status === "review_ready");
 
   const onSaved = async (t: Take) => {
@@ -1246,7 +1256,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   // The recorder sits under the text it records.
   const recorder = (
     <Dock key={promptId} meta={sessionId ? { session_id: sessionId, ...FREE, ...(item && { prompt_id: promptId, prompt_text: item.text }) } : null}
-            band={band} allowRetake retake={!!(latest || previous)} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
+            band={band} allowRetake retake={!!(latest || earlier.length)} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
             idleHint={item ? "Press record and read the highlighted text" : FREE_HINT}>
             <button className="ve-icon" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1} aria-label={item ? "Next text" : "Start with text 1"} title={`${item ? "Next text" : "Start with text 1"} (↓)`}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -1295,7 +1305,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && recorder}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
-                  {on && latest && <ChapterTake take={latest} before={before} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
+                  {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
                 </li>
               );
             })}
@@ -1310,15 +1320,36 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
 
 const Star = ({ on }: { on: boolean }) => <svg viewBox="0 0 16 16" aria-hidden="true" fill={on ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"><path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" /></svg>;
 
-function ChapterTake({ take, before, band, card, onUseRange, onUpdate }: { take: Take; before: Take | null; band: [number, number] | null; card: CardKind; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void }) {
+/** Which earlier take plays as A: the one just before (the default), your first, or one you picked. */
+type APick = "last" | "first" | string;
+const takeDate = (t: Take) => new Date(t.created_utc).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+
+function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card, onUseRange, onUpdate }: {
+  take: Take; before: Take | null; choices: Take[]; pick: APick; onPick: (p: APick) => void; promptId: string;
+  band: [number, number] | null; card: CardKind; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void;
+}) {
   useTakeStatus(take, onUpdate);
   const ready = take.status === "review_ready";
   return (
     <section className="ve-take" aria-label="Your take" onClick={(e) => e.stopPropagation()}>
       <div className="ve-take-head"><b>Your take</b><StatusBadge status={take.status} /><TakeFlags take={take} /></div>
       <TakeInsight take={take} band={band} card={card} />
+      {before && (
+        <div className="ve-ab-pick" role="group" aria-label="Play as A">
+          <span>Compare with</span>
+          <button aria-pressed={pick === "last"} onClick={() => onPick("last")}>Last time</button>
+          {choices.length > 1 && <button aria-pressed={pick === "first"} onClick={() => onPick("first")}>First take</button>}
+          {choices.length > 2 && (
+            <select aria-label="Another take" value={pick === "last" || pick === "first" ? "" : pick} onChange={(e) => onPick(e.target.value || "last")}>
+              <option value="">Another day…</option>
+              {[...choices].reverse().map((t) => <option key={t.id} value={t.id}>{takeDate(t)}, {new Date(t.created_utc).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</option>)}
+            </select>
+          )}
+          <a className="ve-ab-all" href={`#/history?text=${encodeURIComponent(promptId)}`}>All {choices.length + 1} takes</a>
+        </div>
+      )}
       <div className={before ? "ab" : ""}>
-        {before && <AudioPlayer src={before.audio_url} tag="A" label={`before · ${before.local_date ?? new Date(before.created_utc).toLocaleDateString()}`} knownDuration={before.analysis_summary?.duration_s} pitchTakeId={before.id} band={band} compact />}
+        {before && <AudioPlayer key={before.id} src={before.audio_url} tag="A" label={`${before.id === choices[0]?.id && choices.length > 1 ? "first take" : before.id === choices.at(-1)?.id ? "last time" : "then"} · ${takeDate(before)}`} knownDuration={before.analysis_summary?.duration_s} pitchTakeId={before.id} band={band} compact />}
         <AudioPlayer key={`${take.id}-${ready}`} src={take.audio_url} tag={before ? "B" : undefined} label="this take" knownDuration={take.analysis_summary?.duration_s} pitchTakeId={ready ? take.id : undefined} band={band} compact={!!before} />
       </div>
       {!ready && take.status === "analysis_pending" && <p className="ve-small">Measuring your pitch line…</p>}

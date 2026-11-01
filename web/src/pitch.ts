@@ -231,9 +231,9 @@ export const SLIP_ST = 5;
  */
 function dropEdgeSlips(pts: ContourPoint[], fixed: (number | null)[], starts: number[], ends: number[]) {
   const n = pts.length, st = fixed.map((v) => v === null ? null : hzToMidi(v));
-  const brief = (a: number, b: number) => {
+  const brief = (a: number, b: number, limit = 0.2) => {
     const step = b - a > 1 ? (pts[b - 1].t - pts[a].t) / (b - a - 1) : 0.01;
-    return pts[b - 1].t - pts[a].t + step <= 0.2 + 1e-9;
+    return pts[b - 1].t - pts[a].t + step <= limit + 1e-9;
   };
   const praat = (a: number, b: number) => pts.slice(a, b).every((p) => p.c === undefined);
   const drop = (a: number, b: number) => { for (let k = a; k < b; k++) fixed[k] = null; };
@@ -258,6 +258,34 @@ function dropEdgeSlips(pts: ContourPoint[], fixed: (number | null)[], starts: nu
     for (let j = e; j < n && pts[j].t - pts[e - 1].t <= 0.5; j++) if (st[j] !== null) near.push(st[j]!);
     if (near.length < 5) continue;
     if (med(near) - pieces[0].m >= SLIP_ST) drop(s, e);
+  }
+  dropFarBelow(pts, fixed, ends, brief, praat, drop);
+}
+
+/** How far under the take's middle a brief stretch has to sit to be a misread rather than your voice. */
+const FAR_ST = 10;
+
+/**
+ * What the slip rule misses: a halved onset longer than 0.2 s (0.25 s at C2 before a word at C3), or creak
+ * at the start of a take, low readings beside other low readings (62–70 Hz under 130 Hz speech). Any
+ * stretch of at most 0.3 s, FAR_ST or more below the middle of the whole take, goes. Needs half a second
+ * of voice to know the middle; a take that sits low throughout has its middle down there, so stays.
+ */
+function dropFarBelow(pts: ContourPoint[], fixed: (number | null)[], ends: number[],
+  brief: (a: number, b: number, limit?: number) => boolean, praat: (a: number, b: number) => boolean, drop: (a: number, b: number) => void) {
+  const st = fixed.map((v) => v === null ? null : hzToMidi(v));
+  const voiced = st.filter((v): v is number => v !== null);
+  if (voiced.length < 50) return;
+  const middle = med(voiced);
+  for (let s = 0; s < pts.length; s = ends[s]) {
+    if (st[s] === null) continue;
+    const cuts = [s];
+    for (let j = s + 1; j < ends[s]; j++) if (st[j] === null || st[j - 1] === null || Math.abs(st[j]! - st[j - 1]!) >= SLIP_ST) cuts.push(j);
+    cuts.push(ends[s]);
+    for (let k = 1; k < cuts.length; k++) {
+      const a = cuts[k - 1], b = cuts[k], piece = st.slice(a, b).filter((v): v is number => v !== null);
+      if (piece.length && brief(a, b, 0.3) && praat(a, b) && middle - med(piece) >= FAR_ST) drop(a, b);
+    }
   }
 }
 

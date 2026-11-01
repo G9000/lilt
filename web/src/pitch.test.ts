@@ -201,3 +201,15 @@ test("cleaning: Praat's octave drops at word ends and starts go; a scooped onset
   const higher = cleanContour(frames((i) => (i < 40 || i >= 70 ? 65 : i >= 50 && i < 65 ? 145 + i - 50 : null), 110));
   assert.ok(higher.slice(52, 63).every((p) => p.hz !== null), "a brief phrase above low readings is kept");
 });
+
+test("cleaning: a halved onset over 0.2 s and creak far under the take go; a real low dip stays", () => {
+  // From real takes at about 130 Hz: a word starting a whole octave down for 0.25 s, and creak at 65 Hz
+  // beside more creak before the first word. A dip of a few semitones is ordinary intonation.
+  const hz = (i: number) =>
+    i < 18 ? 65 : i < 25 ? null : i < 31 ? 68 : i < 40 ? null : i < 100 ? 130 : i < 110 ? null
+    : i < 135 ? 65 : i < 150 ? 130 : i < 160 ? null : i < 180 ? 105 : i < 220 ? 130 : null;
+  const out = cleanContour(frames(hz, 230));
+  assert.ok(out.slice(0, 31).every((p) => p.hz === null), "creak before the first word is hidden");
+  assert.ok(out.slice(110, 135).every((p) => p.hz === null), "the halved onset is hidden");
+  assert.ok(out.slice(136, 149).every((p) => p.hz !== null) && out.slice(161, 179).every((p) => p.hz !== null), "the word and a real dip stay");
+});

@@ -136,7 +136,7 @@ export function App() {
     case "studio": page = seg[1] === "start" ? <VoicePage doc="start" /> : seg[1] === "updates" ? <VoicePage doc="updates" /> : seg[1] === "mixtape" ? <VoicePage doc="mixtape" /> : seg[1] === "settings" ? <VoicePage doc="settings" /> : seg[1] === "free" ? <VoicePage doc="free" /> : seg[1] ? <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} /> : <VoicePage doc="home" />; break;
     case "texts": page = <TextsPage />; break;
     case "progress": page = <VoicePage doc="progress" />; break;
-    case "history": page = <VoicePage doc="recordings" />; break;
+    case "history": page = <VoicePage doc="recordings" text={params.get("text")} />; break;
     case "library": page = <LibraryPage />; break;
     case "courses": page = <CoursesPage id={seg[1]} view={seg[2]} />; break;
     case "settings": page = null; break;
