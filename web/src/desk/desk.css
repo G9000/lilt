@@ -101,7 +101,15 @@
 .ds-clock::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.45), transparent 55%), linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent 30%); }
 .ds-clock-top { position: absolute; z-index: 1; left: 14px; top: 13px; display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); }
 .ds-clock-top svg { width: 16px; height: 16px; }
-.ds-clock-time { position: absolute; z-index: 1; left: 13px; bottom: 8px; font-size: 44px; font-weight: 300; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35); }
+.ds-clock-img { animation: ds-clock-in 0.45s ease-out; }
+@keyframes ds-clock-in { from { opacity: 0.2; } }
+.ds-clock-next { position: absolute; inset: 0; z-index: 2; padding: 0; border: 0; background: none; cursor: pointer; border-radius: inherit; }
+.ds-clock-next:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+.ds-clock-dots { position: absolute; z-index: 2; right: 13px; top: 18px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s ease-out; pointer-events: none; }
+.ds-clock-dots i { width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); }
+.ds-clock-dots i.on { background: #fff; }
+.ds-clock:hover .ds-clock-dots, .ds-clock:has(:focus-visible) .ds-clock-dots { opacity: 1; }
+.ds-clock-time {position: absolute; z-index: 1; left: 13px; bottom: 8px; font-size: 44px; font-weight: 300; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35); }
 
 .ds-plant { background: linear-gradient(180deg, #fbf6ee, #f1e7da); padding: 8px 14px 12px; display: flex; flex-direction: column; }
 .ds-plant svg { width: 100%; height: 104px; }

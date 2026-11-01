@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { CSSProperties, MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
 import { go } from "../App";
 import { Icon } from "../components/bits";
@@ -187,13 +187,36 @@ export function PlantWidget({ days }: { days: number }) {
   );
 }
 
-/** A window onto the room at this hour, with the time. */
+/** What the clock shows behind the time; click it for the next one. The room ones follow the hour. */
+const PICTURES: { name: string; url: (l: Light) => string; style?: CSSProperties }[] = [
+  { name: "The room", url: (l) => `room/room-${l}.webp` },
+  { name: "The cat on the screen", url: (l) => `room/room-${l}.webp`, style: { backgroundSize: "1000% auto", backgroundPosition: "82% 48%" } },
+  { name: "The window", url: () => "pictures/window.webp", style: { backgroundSize: "cover", backgroundPosition: "center" } },
+  { name: "The desk", url: () => "pictures/desk.webp", style: { backgroundSize: "cover", backgroundPosition: "45% 40%" } },
+];
+const PICTURE_KEY = "lilt.clock.picture";
+
+/** A window onto the room at this hour (or another picture), with the time. */
 export function ClockWidget() {
   const now = useNow();
   const light = currentLight();
+  const [pic, setPic] = useState(() => { try { return (Number(localStorage.getItem(PICTURE_KEY)) || 0) % PICTURES.length; } catch { return 0; } });
+  // The widget drags from anywhere, so a press that moved isn't a click.
+  const down = useRef<{ x: number; y: number } | null>(null);
+  const next = (e: MouseEvent) => {
+    const d = down.current;
+    if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 4) return;
+    const n = (pic + 1) % PICTURES.length;
+    setPic(n);
+    try { localStorage.setItem(PICTURE_KEY, String(n)); } catch { /* private mode: forget on reload */ }
+  };
+  const p = PICTURES[pic];
   return (
     <article className="ds-w ds-clock" aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
-      <div className="ds-clock-img" style={{ backgroundImage: `url(room/room-${light}.webp)` }} />
+      <div className="ds-clock-img" key={pic} style={{ backgroundImage: `url(${p.url(light)})`, ...p.style }} />
+      <button className="ds-clock-next" onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }} onClick={next}
+        aria-label={`Picture: ${p.name}. Show the next one`} title="Next picture" />
+      <span className="ds-clock-dots" aria-hidden="true">{PICTURES.map((_, i) => <i key={i} className={i === pic ? "on" : ""} />)}</span>
       <div className="ds-clock-top">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M2 11h12M4 11a4 4 0 018 0M8 3v1.5M3.2 5.5l1 1M12.8 5.5l-1 1" /></svg>
         {LIGHT_NAME[light]}
