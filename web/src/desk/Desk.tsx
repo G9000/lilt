@@ -1,4 +1,4 @@
-import { CSSProperties, MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
 import { go } from "../App";
 import { Icon } from "../components/bits";
@@ -6,6 +6,7 @@ import { currentLight, Light } from "../room/scene";
 import { radio, useRadio } from "./lofi";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
+import { PICTURES } from "./pictures";
 import { SettingsButton } from "./SettingsSheet";
 import { CoursesIcon, LeaveIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
 
@@ -187,21 +188,9 @@ export function PlantWidget({ days }: { days: number }) {
   );
 }
 
-/** What the clock shows behind the time; click it for the next one. The room ones follow the hour. */
-const PICTURES: { name: string; url: (l: Light) => string; style?: CSSProperties }[] = [
-  { name: "The room", url: (l) => `room/room-${l}.webp` },
-  { name: "The cat on the screen", url: (l) => `room/room-${l}.webp`, style: { backgroundSize: "1000% auto", backgroundPosition: "82% 48%" } },
-  { name: "Cat napping by the window", url: () => "pictures/cat-window-nap.webp", style: { backgroundSize: "cover" } },
-  { name: "Cat on a blanket", url: () => "pictures/cat-blanket.webp", style: { backgroundSize: "cover" } },
-  { name: "Cat asleep on the keyboard", url: () => "pictures/cat-keyboard.webp", style: { backgroundSize: "cover" } },
-  { name: "Kitten, paws up", url: () => "pictures/cat-kitten.webp", style: { backgroundSize: "cover" } },
-  { name: "Orange fluff", url: () => "pictures/cat-fluff.webp", style: { backgroundSize: "cover" } },
-  { name: "The window", url: () => "pictures/window.webp", style: { backgroundSize: "cover", backgroundPosition: "center" } },
-  { name: "The desk", url: () => "pictures/desk.webp", style: { backgroundSize: "cover", backgroundPosition: "45% 40%" } },
-];
 const PICTURE_KEY = "lilt.clock.picture";
 
-/** A window onto the room at this hour (or another picture), with the time. */
+/** A window onto the room at this hour (or another picture: click for the next one), with the time. */
 export function ClockWidget() {
   const now = useNow();
   const light = currentLight();
@@ -218,7 +207,7 @@ export function ClockWidget() {
   const p = PICTURES[pic];
   return (
     <article className="ds-w ds-clock" aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
-      <div className="ds-clock-img" key={pic} style={{ backgroundImage: `url(${p.url(light)})`, ...p.style }} />
+      <div className="ds-clock-img" key={pic} style={{ backgroundImage: `url(${p.url(light)})`, ...p.clock }} />
       <button className="ds-clock-next" onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }} onClick={next}
         aria-label={`Picture: ${p.name}. Show the next one`} title="Next picture" />
       <span className="ds-clock-dots" aria-hidden="true">{PICTURES.map((_, i) => <i key={i} className={i === pic ? "on" : ""} />)}</span>

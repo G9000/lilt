@@ -1,8 +1,9 @@
 import { animate, AnimatePresence, motion, type PanInfo, useDragControls, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Deck, DeckItem } from "../api";
-import { currentLight } from "../room/scene";
+import { currentLight, type Light } from "../room/scene";
 import { setSpot, useLayoutStore } from "./Floaters";
+import { cardPicture, picture, type Picture } from "./pictures";
 
 /**
  * Today's cards on the room, as a pile: one card per practice card left. Swipe the top card
@@ -11,7 +12,6 @@ import { setSpot, useLayoutStore } from "./Floaters";
 
 const KIND: Record<DeckItem["kind"], string> = { warmup: "Warm-up", daily: "Daily", before_after: "Before and after", new: "New", review: "Review", again: "Again", cooldown: "Cool-down" };
 const SUB: Record<string, string> = { reference: "The same every day", exercise: "Exercise", text: "Read aloud" };
-const CROPS = ["65% 42%", "8% 30%", "92% 20%", "30% 70%", "70% 60%"];
 const SHAPE = "M0 18 Q0 0 18 0 L160 0 Q172 0 181 8 L197 23 Q205 30 217 30 L282 30 Q300 30 300 48 L300 146 L0 146 Z";
 
 /** Where a card rests at depth d (0 = top): each one higher, a touch smaller, fanned alternately. */
@@ -89,14 +89,14 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
       onDragStart={() => setMoving(true)} onDragEnd={placed}>
       <div className="cs-cards">
         {!deck || done || deck.paused ? (
-          <StaticCard light={light} title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
+          <StaticCard light={light} pic={picture(!deck ? "room" : deck.paused ? "cat-blanket" : "cat-kitten")} title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
             sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : "The lights are on. Nice work."} onStart={() => onStart(null)} />
         ) : (
           <AnimatePresence initial>
             {pile.slice(0, 4).map((id, d) => {
               const it = byId.get(id)!, i = items.indexOf(it);
               return (
-                <StackCard key={id} item={it} depth={d} index={i} count={n} light={light} crop={CROPS[i % CROPS.length]}
+                <StackCard key={id} item={it} depth={d} index={i} count={n} light={light} pic={cardPicture(i)}
                   first={i === 0} delay={dealt ? 0 : 0.3 + (Math.min(n, 4) - 1 - d) * 0.12} onSwipe={cycle} onStart={() => onStart(id)} />
               );
             })}
@@ -115,8 +115,8 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   );
 }
 
-function StackCard({ item, depth, index, count, light, crop, first, delay, onSwipe, onStart }: {
-  item: DeckItem; depth: number; index: number; count: number; light: string; crop: string; first: boolean; delay: number;
+function StackCard({ item, depth, index, count, light, pic, first, delay, onSwipe, onStart }: {
+  item: DeckItem; depth: number; index: number; count: number; light: Light; pic: Picture; first: boolean; delay: number;
   onSwipe: (dir: 1 | -1) => void; onStart: () => void;
 }) {
   const top = depth === 0;
@@ -173,7 +173,7 @@ function StackCard({ item, depth, index, count, light, crop, first, delay, onSwi
       whileTap={top ? { scale: 0.985 } : undefined}
      >
       <div className="cs-in">
-        <div className="cs-img" style={{ backgroundImage: `url(room/room-${light}.webp)`, backgroundPosition: crop }} />
+        <div className="cs-img" style={{ backgroundImage: `url(${pic.url(light)})`, ...pic.card }} />
         <span className={`cs-chip${first ? " next" : ""}`}>{first ? "Up next" : KIND[item.kind]}</span>
         <svg className="cs-shape" viewBox="0 0 300 146" preserveAspectRatio="none" aria-hidden="true"><path d={SHAPE} /></svg>
         <div className="cs-body">
@@ -192,13 +192,13 @@ function StackCard({ item, depth, index, count, light, crop, first, delay, onSwi
   );
 }
 
-function StaticCard({ light, title, sub, onStart }: { light: string; title: string; sub: string; onStart: () => void }) {
+function StaticCard({ light, pic, title, sub, onStart }: { light: Light; pic: Picture; title: string; sub: string; onStart: () => void }) {
   return (
     <motion.article className="cs-card top" onTap={onStart} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING} whileTap={{ scale: 0.985 }}>
       {/* The same dark frame and white text as the live cards */}
       <div className="cs-drag">
       <div className="cs-in">
-        <div className="cs-img" style={{ backgroundImage: `url(room/room-${light}.webp)`, backgroundPosition: CROPS[0] }} />
+        <div className="cs-img" style={{ backgroundImage: `url(${pic.url(light)})`, ...pic.card }} />
         <svg className="cs-shape" viewBox="0 0 300 146" preserveAspectRatio="none" aria-hidden="true"><path d={SHAPE} /></svg>
         <div className="cs-body">
           <div className="cs-title">Today's practice</div>
