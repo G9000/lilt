@@ -658,12 +658,14 @@ function useHeld(value: number | null, run: boolean, smooth = false): { v: numbe
 }
 
 /** The recorder at the bottom: one button, the waveform with the pitch line on it, and the numbers. */
-function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false, retake = false, eyesOff = false }: {
+function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false, retake = false, eyesOff = false, foldChart = false }: {
   meta: TakeMeta | null; band: [number, number] | null; allowRetake: boolean; quiet?: boolean;
   /** An eyes-off take: no live pitch line or numbers, so you listen to yourself instead. */
   eyesOff?: boolean;
   /** Offer "Show my pitch live" (Studio); a text's recorder only records. */
   liveButton?: boolean;
+  /** The live chart stays up between takes (Studio): fold it once a take is saved, with a toggle. */
+  foldChart?: boolean;
   /** You've recorded this text before: the button says "Record again". */
   retake?: boolean;
   onSaved: (t: Take) => void; onRecording: (on: boolean) => void; children?: ReactNode; idleHint: string;
@@ -805,9 +807,14 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
   // Until the microphone is in use, the right half is just the room's window and the record button.
   const idle = !recording && !listening && state !== "saving" && state !== "error";
   const showResult = idle && !!result;
+  // Each new take folds the chart again once it's saved.
+  const [chartOpen, setChartOpen] = useState(false);
+  useEffect(() => { if (recording) setChartOpen(false); }, [recording]);
+  const canFold = foldChart && idle && state === "saved";
+  const folded = canFold && !chartOpen;
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   return (
-    <section ref={box} className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}`} aria-label="Recorder">
+    <section ref={box} className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}${folded ? " folded" : ""}`} aria-label="Recorder">
       {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
       <div className="ve-now" aria-live="off">
         <div className={`ve-now-read${nowHeld.held ? " held" : ""}`}>
@@ -821,7 +828,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
           levels={amps.current} compact={narrow} height="100%" label="Your pitch, live, over the last eight seconds" />
         {!active && <span className="ve-scope-idle">{idleHint}</span>}
         {eyesOff && active && <span className="ve-eyes">Eyes off: listen to yourself, not the line</span>}
-        {inBand !== null && <span className={`ve-pill${inBand ? " ok" : ""}`}>{inBand ? "In your range" : "Outside your range"}</span>}
+        {inBand !== null && <span className={`ve-inrange${inBand ? " ok" : ""}`}>{inBand ? "In your range" : "Outside your range"}</span>}
       </div>
       <div className="ve-stats" aria-live="off" title="Live estimate. Saved takes are measured with Praat.">
         <div className="ve-stat"><span>Middle</span><b>{mid ? <>{Math.round(mid)}<small>Hz</small></> : dash}</b><i>{mid ? noteName(mid) : ""}</i></div>
@@ -844,6 +851,7 @@ function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHin
             : state === "saving" ? "Saving to your computer…" : ""}
         </span>
         {children}
+        {canFold && <button className="ve-ghost" aria-expanded={!folded} onClick={() => setChartOpen(!chartOpen)}>{folded ? "Show pitch line" : "Hide pitch line"}</button>}
         <span className="ve-sp" />
         {liveButton && !recording && !quiet && (listening
           ? <button className="ve-ghost" aria-pressed="true" onClick={() => setListening(false)}>Stop listening</button>
@@ -875,12 +883,37 @@ function MicHelp({ error, onRetry }: { error: string; onRetry: () => void }) {
 const FREE = { role: "free" as const, prompt_id: "free", prompt_text: "Free recording" };
 const FREE_HINT = "Press the wave to watch your pitch, or Record to keep a take";
 
+const RESULTS_OPEN = "lilt.results.open";
+
+/**
+ * A take's measured details, folded to one line (its middle pitch and whether that's in your range)
+ * so the page stays short; open them for the rest. Whether you keep them open is remembered.
+ */
+function FoldedMeasures({ take, band, card, onUseRange, onMeasured }: {
+  take: Take; band: [number, number] | null; card?: CardKind | null;
+  onUseRange?: (lo: number, hi: number) => void; onMeasured?: (m: Measured) => void;
+}) {
+  const [open, setOpen] = useState(() => { try { return localStorage.getItem(RESULTS_OPEN) === "1"; } catch { return false; } });
+  const [median, setMedian] = useState<number | null | undefined>(undefined);
+  const toggle = (on: boolean) => { setOpen(on); try { localStorage.setItem(RESULTS_OPEN, on ? "1" : "0"); } catch { /* private mode: forget on reload */ } };
+  const inBand = median && band ? median >= band[0] && median <= band[1] : null;
+  return (
+    <details className="ve-details" open={open} onToggle={(e) => { if (e.currentTarget.open !== open) toggle(e.currentTarget.open); }}>
+      <summary>Pitch details
+        <span className="ve-sum">{median === undefined ? "Measuring…" : median === null ? "No clear pitch"
+          : <>{Math.round(median)} Hz · {noteName(median)}{inBand !== null && (inBand ? " · in your range" : " · outside your range")}</>}</span>
+      </summary>
+      <Measures take={take} band={band} card={card} onUseRange={onUseRange} onMeasured={(m) => { setMedian(m.median); onMeasured?.(m); }} />
+    </details>
+  );
+}
+
 /** A free take's summary: listen back, then the measured pitch line and numbers once analysis lands. */
 function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void }) {
   return (
     <div className="prc ve-result" key={take.id}>
       <ListenBack src={take.audio_url} />
-      <Measures take={take} band={band} onMeasured={onMeasured} />
+      <FoldedMeasures take={take} band={band} onMeasured={onMeasured} />
     </div>
   );
 }
@@ -958,7 +991,7 @@ function StudioDoc({ band, onRecording, onTake }: { band: [number, number] | nul
         <article className="ve-col">
           <header className="ve-head"><h1>Studio</h1><p className="ve-subtitle">Free talk. No script, nothing to finish.</p></header>
           <div className="ve-studio-rec">
-            <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake liveButton
+            <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake liveButton foldChart
               onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} />
           </div>
           <p className="ci-lede-plain">Talk, hum, sing, try things. Record a take to play back, or press the wave to just watch your pitch. Nothing here counts toward the course; takes are kept in <a href="#/history">Recordings</a>.</p>
@@ -1519,7 +1552,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   ) : phase.k === "rate" && (
     <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={phase.take.id}>
       <ListenBack src={phase.take.audio_url} />
-      {/* Rate straight after listening; the measured details follow (folded for the daily warm-ups). */}
+      {/* Rate straight after listening; the measured details follow, folded to one line. */}
       <div className="ve-rate-box">
         <p className="ve-q" id="feel-q">How did that feel?</p>
         <div className="vc-rate ve-rate" role="group" aria-labelledby="feel-q">
@@ -1544,9 +1577,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
       </div>
       {item.eyes_off
         ? <p className="ve-small">An eyes-off take: rate it by what you heard. Lilt shows the pitch once you've rated it.</p>
-        : everyDay(item)
-          ? <details className="ve-details"><summary>Pitch details</summary><Measures key={phase.take.id} take={phase.take} band={band} card={item?.card} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} /></details>
-          : <Measures key={phase.take.id} take={phase.take} band={band} card={item?.card} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
+        : <FoldedMeasures key={phase.take.id} take={phase.take} band={band} card={item.card} onUseRange={everyDay(item) ? undefined : onUseRange}
+            onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
     </div>
   );
   return (

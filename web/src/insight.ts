@@ -13,8 +13,6 @@ export interface InsightInput {
   pts: { t: number; hz: number | null }[];
   /** What the card asked for (`takeStyle`); unset when the take isn't from a card. */
   style?: TakeStyle;
-  /** Share of the take with a voice in it, 0–1. */
-  voiced?: number | null;
   /** The analysis's quality flags (clipping, low signal, ...): any of them and there's no suggestion. */
   flags?: string[];
 }
@@ -35,8 +33,18 @@ export function takeStyle(card: CardKind | null | undefined): TakeStyle {
   return ["phrases", "sentences", "passage", "prompt"].includes(card.text_kind) ? "speech" : null;
 }
 
-/** Below this much voice the contour is too patchy to describe. */
-const MIN_VOICED = 0.4;
+/**
+ * Under this many seconds of clear pitch the contour is too patchy to describe. Seconds, not a share of
+ * the take: speech is only 25–60% voiced (pauses, consonants), so a share would silence ordinary takes.
+ */
+const MIN_VOICED_S = 1;
+
+/** Seconds of the take with a pitch, from the frames' own spacing. */
+function voicedSeconds(pts: InsightInput["pts"]): number {
+  if (pts.length < 2) return 0;
+  const step = (pts[pts.length - 1].t - pts[0].t) / (pts.length - 1);
+  return pts.filter((p) => p.hz).length * step;
+}
 
 const st = (a: number, b: number) => 12 * Math.log2(a / b);
 const mid = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[s.length >> 1] : null; };
@@ -50,8 +58,8 @@ export function endDropSt(pts: InsightInput["pts"]): number | null {
   return head && tail ? st(head, tail) : null;
 }
 
-export function describeTake({ median, spanSt, band, pts, style = null, voiced = null, flags = [] }: InsightInput): Insight | null {
-  if (!median || flags.length > 0 || (voiced !== null && voiced < MIN_VOICED)) return null;
+export function describeTake({ median, spanSt, band, pts, style = null, flags = [] }: InsightInput): Insight | null {
+  if (!median || flags.length > 0 || voicedSeconds(pts) < MIN_VOICED_S) return null;
   if (band && median > band[1] * 1.03) return {
     note: "This take sat above your comfortable range.",
     cue: "If it felt easy and this is the note you've been working towards, move your range up to match it. If there was any strain, ease back down a little next time.",

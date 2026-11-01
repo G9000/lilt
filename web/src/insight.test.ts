@@ -31,9 +31,10 @@ test("nothing to say without a pitch, or with too little voice", () => {
 
 test("no suggestion when the measurement is shaky", () => {
   const ok = { median: 200, spanSt: 5, band: [180, 230] as [number, number], pts: line(() => 200) };
-  assert.equal(describeTake({ ...ok, voiced: 0.3 }), null);
+  // 0.6 s of pitch in a 2 s take (every third frame): too little to describe
+  assert.equal(describeTake({ ...ok, pts: line((i) => (i % 3 === 0 ? 200 : null) as number) }), null);
   assert.equal(describeTake({ ...ok, flags: ["clipping"] }), null);
-  assert.ok(describeTake({ ...ok, voiced: 0.8, flags: [] }));
+  assert.ok(describeTake({ ...ok, flags: [] }));
 });
 
 test("a level pitch is praised on a hum, nudged in speech, and hedged when unknown", () => {

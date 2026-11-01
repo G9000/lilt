@@ -16,7 +16,7 @@ function InsightNote({ analysis, band, card }: { analysis: any; band: [number, n
   const m = analysis?.measures ?? {};
   const said = describeTake({
     median: m.f0_median_hz?.value ?? null, spanSt: m.f0_p10_p90_span_st?.value ?? null, band, pts: contourPoints(analysis),
-    style: takeStyle(card), voiced: m.voiced_frame_coverage?.value ?? null, flags: (analysis?.quality_flags ?? []).map((f: { code: string }) => f.code),
+    style: takeStyle(card), flags: (analysis?.quality_flags ?? []).map((f: { code: string }) => f.code),
   });
   if (!said) return null;
   return <div className="prc-insight"><span className="t">Suggestion</span><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
