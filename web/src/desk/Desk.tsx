@@ -191,6 +191,11 @@ export function PlantWidget({ days }: { days: number }) {
 const PICTURES: { name: string; url: (l: Light) => string; style?: CSSProperties }[] = [
   { name: "The room", url: (l) => `room/room-${l}.webp` },
   { name: "The cat on the screen", url: (l) => `room/room-${l}.webp`, style: { backgroundSize: "1000% auto", backgroundPosition: "82% 48%" } },
+  { name: "Cat napping by the window", url: () => "pictures/cat-window-nap.webp", style: { backgroundSize: "cover" } },
+  { name: "Cat on a blanket", url: () => "pictures/cat-blanket.webp", style: { backgroundSize: "cover" } },
+  { name: "Cat asleep on the keyboard", url: () => "pictures/cat-keyboard.webp", style: { backgroundSize: "cover" } },
+  { name: "Kitten, paws up", url: () => "pictures/cat-kitten.webp", style: { backgroundSize: "cover" } },
+  { name: "Orange fluff", url: () => "pictures/cat-fluff.webp", style: { backgroundSize: "cover" } },
   { name: "The window", url: () => "pictures/window.webp", style: { backgroundSize: "cover", backgroundPosition: "center" } },
   { name: "The desk", url: () => "pictures/desk.webp", style: { backgroundSize: "cover", backgroundPosition: "45% 40%" } },
 ];
