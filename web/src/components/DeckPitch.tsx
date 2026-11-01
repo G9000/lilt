@@ -202,7 +202,7 @@ export function TakeResult({ take: initial, band, onMeasured, onUseRange }: {
             <p className="tr-head">Your middle pitch <b>{fmtHz(median)}</b><span>{noteName(median)}</span></p>
             <PitchScale median={median} note={false} />
             <p className="tr-facts">
-              {p10 && p90 && <span>Usual range <b>{Math.round(p10)}–{Math.round(p90)} Hz</b></span>}
+              {p10 && p90 && <span title="Where most of this take sat (10th to 90th percentile)">Most of this take <b>{Math.round(p10)}–{Math.round(p90)} Hz</b></span>}
               {voiced !== null && <span>Voice heard <b>{Math.round(voiced * 100)}%</b></span>}
               {prev && comparable && prevMedian && <span>Last time <b>{fmtHz(prevMedian)}</b> ({shift! >= 0 ? "+" : "−"}{Math.abs(shift!)} Hz)</span>}
             </p>
@@ -236,7 +236,7 @@ function TakeChart({ src, pts, prev, median, band }: { src: string; pts: PitchPo
         <span><i className="prc-k now" />this take</span>
         {prev && <span><i className="prc-k prev" />last time</span>}
         <span><i className="prc-k mid" />middle</span>
-        {band && <span><i className="prc-k band" />your range</span>}
+        {band && <span><i className="prc-k band" />your comfortable range, {Math.round(band[0])}–{Math.round(band[1])} Hz</span>}
         <span className="tr-hint">Click the line to hear that moment</span>
       </figcaption>
     </figure>

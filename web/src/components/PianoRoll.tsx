@@ -29,11 +29,9 @@ interface Props {
   label: string;
 }
 
-const NATURAL = new Set([0, 2, 4, 5, 7, 9, 11]);
-
 /**
  * The pitch chart, the same everywhere (live while recording, after a take, in a chapter): notes
- * up the side on a semitone grid, your comfortable range shaded, every cleaned reading a faint
+ * up the side at an even step, your comfortable range shaded, every cleaned reading a faint
  * dot, and a smooth line through them (see `cleanContour`: octave slips, single-frame misreads
  * and clicks are taken out first). After a take, a playhead follows playback; click to play from there.
  */
@@ -98,28 +96,30 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
       const y1 = yHz(band[1]), y0 = yHz(band[0]);
       g.fillRect(padL, y1, w - padL, y0 - y1);
     }
-    // Semitone grid: C strongest, other naturals light, sharps faintest; naturals labelled when there's room.
+    // Note grid at an even step: every 1, 2, 3, 4, 6 or 12 semitones, the smallest that leaves room for a
+    // label on each line. Counted from C, so every C is on it (drawn strongest); semitones in between faintly.
     g.font = `500 11px ${v("--font", "system-ui, sans-serif")}`;
     g.textBaseline = "middle";
-    let lastLabelY = Infinity;
-    const step = h / (hi - lo) < 5 ? 2 : 1;
+    g.textAlign = "right";
+    const perSt = (h - 10) / (hi - lo);
+    const step = [1, 2, 3, 4, 6, 12].find((s) => s * perSt >= 18) ?? 12;
     for (let m = Math.ceil(lo); m <= hi; m++) {
-      const pc = ((m % 12) + 12) % 12;
-      if (step === 2 && !NATURAL.has(pc)) continue;
+      const pc = ((m % 12) + 12) % 12, major = pc % step === 0;
+      if (!major && perSt < 5) continue;
       const y = Math.round(Y(m)) + 0.5;
       g.strokeStyle = grid;
-      g.globalAlpha = pc === 0 ? 0.32 : NATURAL.has(pc) ? 0.13 : 0.06;
+      g.globalAlpha = pc === 0 ? 0.32 : major ? 0.16 : 0.05;
       g.lineWidth = 1;
       g.beginPath(); g.moveTo(padL, y); g.lineTo(w, y); g.stroke();
       g.globalAlpha = 1;
-      if (!compact && NATURAL.has(pc) && (lastLabelY - y >= 14 || (pc === 0 && lastLabelY - y >= 9))) {
+      if (!compact && major && y > 6 && y < h - 6) {
         g.fillStyle = pc === 0 ? ink : muted;
         g.globalAlpha = pc === 0 ? 0.8 : 0.7;
-        g.fillText(noteName(midiToHz(m)), 4, y);
+        g.fillText(noteName(midiToHz(m)), padL - 8, y);
         g.globalAlpha = 1;
-        lastLabelY = y;
       }
     }
+    g.textAlign = "left";
     // Loudness, live: one thin bar every 6 px, faint.
     if (levels?.length) {
       const lEnd = levels[levels.length - 1].t, lStart = Math.max(levels[0].t, lEnd - windowS);

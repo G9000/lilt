@@ -187,3 +187,17 @@ test("cleaning: duration safeguards also protect the slower live tracker", () =>
   const isolated = frames((i) => i >= 30 && i < 35 ? 300 : null, 80, 0.025);
   assert.ok(cleanContour(isolated).slice(30, 35).every((p) => p.hz === 300));
 });
+
+test("cleaning: Praat's octave drops at word ends and starts go; a scooped onset and a higher phrase stay", () => {
+  // From a real take: 160 Hz speech, halved to 80 Hz for 12 frames as a word ends, an 8-frame blip at 80 Hz
+  // in the pause, the next word starting halved for 5 frames; then a word scooping up from 115 Hz.
+  const hz = (i: number) =>
+    i < 40 ? 160 : i < 52 ? 80 : i < 58 ? null : i < 66 ? 80 : i < 70 ? null : i < 75 ? 80 : i < 120 ? 161
+    : i < 125 ? null : i < 140 ? 115 + (i - 125) * 3 : i < 180 ? 160 : null;
+  const out = cleanContour(frames(hz, 190));
+  assert.ok(out.slice(40, 75).every((p) => p.hz === null), "the drops and the blip are hidden");
+  assert.ok(out.slice(5, 38).every((p) => p.hz !== null) && out.slice(77, 118).every((p) => p.hz !== null), "the words around them stay");
+  assert.ok(out.slice(126, 138).every((p) => p.hz !== null && p.hz < 158), "a glide into a word is real movement");
+  const higher = cleanContour(frames((i) => (i < 40 || i >= 70 ? 65 : i >= 50 && i < 65 ? 145 + i - 50 : null), 110));
+  assert.ok(higher.slice(52, 63).every((p) => p.hz !== null), "a brief phrase above low readings is kept");
+});

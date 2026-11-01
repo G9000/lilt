@@ -217,6 +217,50 @@ export interface CleanPoint { t: number; hz: number | null; line: number | null 
 
 const med = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return s[s.length >> 1]; };
 
+/** A one-frame step this big (semitones) is the tracker changing its mind, not a voice moving: glides take longer. */
+export const SLIP_ST = 5;
+
+/**
+ * Praat (no clarity) often halves or thirds its reading as a voice starts or stops, or catches the
+ * creak there: a drop of an octave or so within one frame, a brief stretch down there, then the next
+ * word starting low. In 15 real takes these were 2–16 frames, 8 to 19 semitones down. A stretch is
+ * dropped when it's at most 0.2 s, and it sits SLIP_ST or more below the voice beside it, set off by a
+ * one-frame jump (or, alone between pauses, below the voice within half a second). Only drops: in a
+ * take the tracker reads low throughout, the higher stretches are the real voice. Glides never jump,
+ * so real movement is untouched; live readings (with clarity) are left to the rules above.
+ */
+function dropEdgeSlips(pts: ContourPoint[], fixed: (number | null)[], starts: number[], ends: number[]) {
+  const n = pts.length, st = fixed.map((v) => v === null ? null : hzToMidi(v));
+  const brief = (a: number, b: number) => {
+    const step = b - a > 1 ? (pts[b - 1].t - pts[a].t) / (b - a - 1) : 0.01;
+    return pts[b - 1].t - pts[a].t + step <= 0.2 + 1e-9;
+  };
+  const praat = (a: number, b: number) => pts.slice(a, b).every((p) => p.c === undefined);
+  const drop = (a: number, b: number) => { for (let k = a; k < b; k++) fixed[k] = null; };
+  for (let s = 0; s < n; s = ends[s]) {
+    const e = ends[s];
+    if (st[s] === null) continue;
+    const cuts = [s];
+    for (let j = s + 1; j < e; j++) if (Math.abs(st[j]! - st[j - 1]!) >= SLIP_ST) cuts.push(j);
+    cuts.push(e);
+    const pieces = cuts.slice(1).map((b, k) => ({ a: cuts[k], b, m: med(st.slice(cuts[k], b) as number[]) }));
+    if (pieces.length > 1) {
+      const gone = pieces.map((p, k) => {
+        const beside = [pieces[k - 1], pieces[k + 1]].filter(Boolean);
+        return brief(p.a, p.b) && praat(p.a, p.b) && beside.every((q) => q.m - p.m >= SLIP_ST);
+      });
+      pieces.forEach((p, k) => { if (gone[k]) drop(p.a, p.b); });
+      continue;
+    }
+    if (!brief(s, e) || !praat(s, e)) continue;
+    const near: number[] = [];
+    for (let j = s - 1; j >= 0 && pts[s].t - pts[j].t <= 0.5; j--) if (st[j] !== null) near.push(st[j]!);
+    for (let j = e; j < n && pts[j].t - pts[e - 1].t <= 0.5; j++) if (st[j] !== null) near.push(st[j]!);
+    if (near.length < 5) continue;
+    if (med(near) - pieces[0].m >= SLIP_ST) drop(s, e);
+  }
+}
+
 /**
  * A reading's pitch, plus what the live tracker knows about it: `c`, its clarity (YIN, 0..1), and
  * `v`, its loudness (RMS). Praat's contour has neither, so those steps are skipped for it.
@@ -283,6 +327,7 @@ export function cleanContour(pts: ContourPoint[], minRun = 6): CleanPoint[] {
     if (Math.abs(candidate - centre) <= 2 && Math.abs(x - centre) - Math.abs(candidate - centre) >= 5) octave[i] = shift;
   }
   applyBrief(octave.map((v) => v !== null), (i) => { fixed[i] = hz[i]! * 2 ** octave[i]!; });
+  dropEdgeSlips(pts, fixed, starts, ends);
 
   const st = fixed.map((v) => v === null ? null : hzToMidi(v));
   const candidates = new Array<boolean>(n).fill(false);
