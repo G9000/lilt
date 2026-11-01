@@ -1,7 +1,7 @@
 // node --test src/insight.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { describeResonance, describeTake, endDropSt, placePitch } from "./insight.ts";
+import { describeResonance, describeTake, endDropSt, placePitch, takeStyle } from "./insight.ts";
 
 const line = (hz: (i: number) => number, n = 100) => Array.from({ length: n }, (_, i) => ({ t: i / 50, hz: hz(i) }));
 
@@ -27,6 +27,31 @@ test("below the range, level, lively and steady", () => {
 test("nothing to say without a pitch, or with too little voice", () => {
   assert.equal(describeTake({ median: null, spanSt: null, band: null, pts: [] }), null);
   assert.equal(endDropSt(line(() => 200, 10)), null);
+});
+
+test("no suggestion when the measurement is shaky", () => {
+  const ok = { median: 200, spanSt: 5, band: [180, 230] as [number, number], pts: line(() => 200) };
+  assert.equal(describeTake({ ...ok, voiced: 0.3 }), null);
+  assert.equal(describeTake({ ...ok, flags: ["clipping"] }), null);
+  assert.ok(describeTake({ ...ok, voiced: 0.8, flags: [] }));
+});
+
+test("a level pitch is praised on a hum, nudged in speech, and hedged when unknown", () => {
+  const level = { median: 200, spanSt: 1.6, band: [180, 230] as [number, number], pts: line(() => 200) };
+  assert.match(describeTake({ ...level, style: "steady" })!.note, /what this one asks for/);
+  assert.match(describeTake({ ...level, style: "speech" })!.cue, /^Let it rise and fall/);
+  assert.match(describeTake({ ...level })!.cue, /hum or a held note/);
+  assert.match(describeTake({ ...level, spanSt: 12, style: "steady" })!.note, /steady exercise/);
+});
+
+test("the card says what it asks for", () => {
+  const card = (kind: string, text_kind: string, front = "") => ({ kind, text_kind, front });
+  assert.equal(takeStyle(card("text", "hum")), "steady");
+  assert.equal(takeStyle(card("reference", "automatic")), "steady");
+  assert.equal(takeStyle(card("text", "passage")), "speech");
+  assert.equal(takeStyle(card("exercise", "phrases", "Hum forward, then say: mmmee")), "steady");
+  assert.equal(takeStyle(card("exercise", "phrases", "Black coffee, please.")), "speech");
+  assert.equal(takeStyle(null), null);
 });
 
 const REF = { men_mean: 115, men_sd: 21, women_mean: 199, women_sd: 28, overlap_low: 145, overlap_high: 165 };

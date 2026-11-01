@@ -11,9 +11,32 @@ export interface InsightInput {
   band: [number, number] | null;
   /** The measured pitch over time (null where unvoiced). */
   pts: { t: number; hz: number | null }[];
+  /** What the card asked for (`takeStyle`); unset when the take isn't from a card. */
+  style?: TakeStyle;
+  /** Share of the take with a voice in it, 0–1. */
+  voiced?: number | null;
+  /** The analysis's quality flags (clipping, low signal, ...): any of them and there's no suggestion. */
+  flags?: string[];
 }
 
 export interface Insight { note: string; cue: string }
+
+/**
+ * What a card asks of the voice: "steady" for hums and counting, where a level pitch is the point;
+ * "speech" for phrases, sentences, passages and your own words, where pitch should move. Null: unknown.
+ */
+export type TakeStyle = "steady" | "speech" | null;
+/** What `takeStyle` reads from a card (a deck card, or a chapter text described the same way). */
+export interface CardKind { kind: string; text_kind: string; front: string }
+export function takeStyle(card: CardKind | null | undefined): TakeStyle {
+  if (!card) return null;
+  if (card.kind === "exercise") return /^hum\b/i.test(card.front) ? "steady" : "speech";
+  if (card.text_kind === "hum" || card.text_kind === "automatic") return "steady";
+  return ["phrases", "sentences", "passage", "prompt"].includes(card.text_kind) ? "speech" : null;
+}
+
+/** Below this much voice the contour is too patchy to describe. */
+const MIN_VOICED = 0.4;
 
 const st = (a: number, b: number) => 12 * Math.log2(a / b);
 const mid = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[s.length >> 1] : null; };
@@ -27,8 +50,8 @@ export function endDropSt(pts: InsightInput["pts"]): number | null {
   return head && tail ? st(head, tail) : null;
 }
 
-export function describeTake({ median, spanSt, band, pts }: InsightInput): Insight | null {
-  if (!median) return null;
+export function describeTake({ median, spanSt, band, pts, style = null, voiced = null, flags = [] }: InsightInput): Insight | null {
+  if (!median || flags.length > 0 || (voiced !== null && voiced < MIN_VOICED)) return null;
   if (band && median > band[1] * 1.03) return {
     note: "This take sat above your comfortable range.",
     cue: "If it felt easy and this is the note you've been working towards, move your range up to match it. If there was any strain, ease back down a little next time.",
@@ -42,11 +65,24 @@ export function describeTake({ median, spanSt, band, pts }: InsightInput): Insig
     note: "This take sat a little below your comfortable range.",
     cue: "If it felt natural, that's fine. To lift it, start with a short hum on your comfortable note.",
   };
-  if (spanSt !== null && spanSt < 3) return {
+  if (style === "steady") {
+    if (spanSt !== null && spanSt > 10) return {
+      note: "Your pitch moved around quite a bit for a steady exercise.",
+      cue: "Settle on one comfortable note and stay there, gently.",
+    };
+    if (spanSt !== null && spanSt < 3) return {
+      note: "Nice and steady, which is what this one asks for.",
+      cue: "Keep the note easy and light, and notice how it feels so you can find it again.",
+    };
+  }
+  if (spanSt !== null && spanSt < 3) return style === "speech" ? {
     note: "Your pitch stayed quite level the whole way through.",
     cue: "Let it rise and fall a little more, the way it would if you were telling a friend.",
+  } : {
+    note: "Your pitch stayed quite level the whole way through.",
+    cue: "For a hum or a held note, that's just right. If it was something you'd say out loud, let it rise and fall a little more.",
   };
-  if (spanSt !== null && spanSt > 10) return {
+  if (style !== "steady" && spanSt !== null && spanSt > 10) return {
     note: "There's a lot of movement in this one.",
     cue: "Lovely and expressive. If it felt effortful anywhere, smooth out the biggest jumps.",
   };

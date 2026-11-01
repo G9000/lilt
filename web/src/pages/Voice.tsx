@@ -19,6 +19,7 @@ import { currentLight } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
 import { Measured, ResonanceNote, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
+import type { CardKind } from "../insight";
 import { useLivePitch } from "../components/LivePitch";
 import { PianoRoll, PitchPoint } from "../components/PianoRoll";
 import { useTakeAudio } from "../components/takeAudio";
@@ -1261,7 +1262,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && recorder}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
-                  {on && latest && <ChapterTake take={latest} before={before} band={band} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
+                  {on && latest && <ChapterTake take={latest} before={before} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
                 </li>
               );
             })}
@@ -1276,13 +1277,13 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
 
 const Star = ({ on }: { on: boolean }) => <svg viewBox="0 0 16 16" aria-hidden="true" fill={on ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"><path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" /></svg>;
 
-function ChapterTake({ take, before, band, onUseRange, onUpdate }: { take: Take; before: Take | null; band: [number, number] | null; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void }) {
+function ChapterTake({ take, before, band, card, onUseRange, onUpdate }: { take: Take; before: Take | null; band: [number, number] | null; card: CardKind; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void }) {
   useTakeStatus(take, onUpdate);
   const ready = take.status === "review_ready";
   return (
     <section className="ve-take" aria-label="Your take" onClick={(e) => e.stopPropagation()}>
       <div className="ve-take-head"><b>Your take</b><StatusBadge status={take.status} /><TakeFlags take={take} /></div>
-      <TakeInsight take={take} band={band} />
+      <TakeInsight take={take} band={band} card={card} />
       <div className={before ? "ab" : ""}>
         {before && <AudioPlayer src={before.audio_url} tag="A" label={`before · ${before.local_date ?? new Date(before.created_utc).toLocaleDateString()}`} knownDuration={before.analysis_summary?.duration_s} pitchTakeId={before.id} band={band} compact />}
         <AudioPlayer key={`${take.id}-${ready}`} src={take.audio_url} tag={before ? "B" : undefined} label="this take" knownDuration={take.analysis_summary?.duration_s} pitchTakeId={ready ? take.id : undefined} band={band} compact={!!before} />
@@ -1510,7 +1511,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   const rateView = phase.k === "reveal" ? (
     <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={`r-${phase.take.id}`}>
       <p className="ve-ba-l">Here's what the pitch did. Did it match what you heard?</p>
-      <Measures key={phase.take.id} take={phase.take} band={band} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
+      <Measures key={phase.take.id} take={phase.take} band={band} card={item?.card} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
       <div className="ve-rate-more"><button className="ve-next-go" onClick={() => advance(phase.q)}>Next card</button></div>
     </div>
   ) : phase.k === "rate" && item.kind === "before_after" ? (
@@ -1544,8 +1545,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
       {item.eyes_off
         ? <p className="ve-small">An eyes-off take: rate it by what you heard. Lilt shows the pitch once you've rated it.</p>
         : everyDay(item)
-          ? <details className="ve-details"><summary>Pitch details</summary><Measures key={phase.take.id} take={phase.take} band={band} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} /></details>
-          : <Measures key={phase.take.id} take={phase.take} band={band} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
+          ? <details className="ve-details"><summary>Pitch details</summary><Measures key={phase.take.id} take={phase.take} band={band} card={item?.card} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} /></details>
+          : <Measures key={phase.take.id} take={phase.take} band={band} card={item?.card} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
     </div>
   );
   return (

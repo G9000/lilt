@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
-import { describeResonance, describeTake, placePitch } from "../insight";
+import { CardKind, describeResonance, describeTake, placePitch, takeStyle } from "../insight";
 import { noteName } from "../pitch";
 import { contourPoints, PianoRoll, PitchPoint } from "./PianoRoll";
 import { useTakeAudio } from "./takeAudio";
@@ -8,12 +8,18 @@ import { useTakeAudio } from "./takeAudio";
 
 export interface Measured { median: number | null; take: Take }
 
-/** One observation and one thing to try, in words, above the numbers. */
-function InsightNote({ analysis, band }: { analysis: any; band: [number, number] | null }) {
+/**
+ * One observation and one thing to try, in words, above the numbers: a suggestion drawn from them, for
+ * what the card asked (`card`, when the take came from one). None when the measurement is shaky.
+ */
+function InsightNote({ analysis, band, card }: { analysis: any; band: [number, number] | null; card?: CardKind | null }) {
   const m = analysis?.measures ?? {};
-  const said = describeTake({ median: m.f0_median_hz?.value ?? null, spanSt: m.f0_p10_p90_span_st?.value ?? null, band, pts: contourPoints(analysis) });
+  const said = describeTake({
+    median: m.f0_median_hz?.value ?? null, spanSt: m.f0_p10_p90_span_st?.value ?? null, band, pts: contourPoints(analysis),
+    style: takeStyle(card), voiced: m.voiced_frame_coverage?.value ?? null, flags: (analysis?.quality_flags ?? []).map((f: { code: string }) => f.code),
+  });
   if (!said) return null;
-  return <div className="prc-insight"><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
+  return <div className="prc-insight"><span className="t">Suggestion</span><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
 }
 
 let reference: Promise<PitchReference | null> | null = null;
@@ -115,7 +121,7 @@ export function ResonanceNote({ take }: { take: Take }) {
 }
 
 /** The note for a take that's shown elsewhere (a chapter's players): loads its analysis once ready. */
-export function TakeInsight({ take, band }: { take: Take; band: [number, number] | null }) {
+export function TakeInsight({ take, band, card }: { take: Take; band: [number, number] | null; card?: CardKind | null }) {
   const [analysis, setAnalysis] = useState<any>(null);
   const ready = take.status === "review_ready";
   useEffect(() => {
@@ -125,14 +131,16 @@ export function TakeInsight({ take, band }: { take: Take; band: [number, number]
     return () => { live = false; };
   }, [take.id, ready]);
   const median: number | null = analysis?.measures?.f0_median_hz?.value ?? null;
-  return analysis ? <><InsightNote analysis={analysis} band={band} />{median && <PitchScale median={median} />}</> : null;
+  return analysis ? <><InsightNote analysis={analysis} band={band} card={card} />{median && <PitchScale median={median} />}</> : null;
 }
 
 const fmtHz = (hz: number | null | undefined) => (hz ? `${Math.round(hz)} Hz` : "–");
 
 /** What the analysis measured for a take, with last time on the same card when they're comparable. */
-export function TakeResult({ take: initial, band, onMeasured, onUseRange }: {
+export function TakeResult({ take: initial, band, card, onMeasured, onUseRange }: {
   take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void;
+  /** The card the take was for, so the suggestion fits what it asked (a hum is meant to be level). */
+  card?: CardKind | null;
   /** Offered when no range is saved or the take sat above it: make this take's range your comfortable range. */
   onUseRange?: (lo: number, hi: number) => void;
 }) {
@@ -196,7 +204,7 @@ export function TakeResult({ take: initial, band, onMeasured, onUseRange }: {
         <p className="prc-wait">No clear pitch in this take (it may have been very quiet, whispered or noisy). That's fine, it's still saved.</p>
       ) : (
         <>
-          <InsightNote analysis={analysis} band={band} />
+          <InsightNote analysis={analysis} band={band} card={card} />
           {/* Your pitch: the number once, where it sits, then the other facts in one quiet line. */}
           <section className="tr-pitch" aria-label="Your pitch">
             <p className="tr-head">Your middle pitch <b>{fmtHz(median)}</b><span>{noteName(median)}</span></p>

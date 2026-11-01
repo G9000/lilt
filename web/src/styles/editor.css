@@ -280,8 +280,12 @@
 /* scrolled into view after a take, with a little room above */
 .ve-result, .ve-take { scroll-margin-top: 24px; }
 /* the warm-up's measured details, folded under the rating */
-.ve-details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--ink-3); }
-.ve-details[open] summary { margin-bottom: 10px; }
+/* a quiet toggle, no surface: the insight and resonance cards inside are surfaces of their own */
+.ve-details { background: none; }
+.ve-details > summary { min-height: 0; padding: 4px 0; width: fit-content; font-size: 13px; font-weight: 600; color: var(--ink-3); }
+.ve-details > summary:hover { color: var(--ink-2); }
+.ve-details[open] > summary { margin-bottom: 10px; }
+.ve-details > .prc-result { margin-top: 0; }
 .ve .ve-ghost { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--ink-2); background: var(--fill); white-space: nowrap; }
 .ve .ve-ghost:hover:not(:disabled) { background: var(--fill-2); color: var(--ink); }
 .ve .ve-ghost[aria-pressed="true"] { color: var(--accent-ink); background: var(--accent-soft); }
@@ -476,6 +480,7 @@
 
 /* after a take: one observation and one thing to try, in words, before any numbers */
 .prc-insight { padding: 14px 16px; border-radius: 14px; background: var(--accent-soft); display: grid; gap: 4px; }
+.prc-insight .t { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); opacity: 0.8; }
 .prc-insight .n { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
 .prc-insight .c { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
 .prc-insight .c b { color: var(--accent-ink); font-weight: 600; margin-right: 4px; }
