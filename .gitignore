@@ -10,3 +10,8 @@ __pycache__/
 # Runtime data (sessions, recordings) never belongs in git.
 data/
 *.tsbuildinfo
+
+# The Mac app build (desktop/build.sh)
+desktop/runtime/
+desktop/dist/
+desktop/gen/

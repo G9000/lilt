@@ -22,7 +22,10 @@ comes back on a schedule you set, and every recording stays on your computer.
 
 ## Quick start
 
-macOS, with Rust, Node + pnpm and [uv](https://docs.astral.sh/uv/) installed:
+**Mac app:** build `Lilt.dmg` with `desktop/build.sh`, open it and drag Lilt to Applications. It
+needs nothing else installed. See [the Mac app](docs/guide.md#the-mac-app) for the first open.
+
+From the repo, on macOS, with Rust, Node + pnpm and [uv](https://docs.astral.sh/uv/) installed:
 
 ```bash
 ./lilt.sh

@@ -8,7 +8,12 @@ export function ChatGPTAccount() {
   const [notice, setNotice] = useState("");
   const local = window.location.hostname === "127.0.0.1" && window.location.protocol === "http:";
   useEffect(() => {
-    if (local) void api.chatgptStatus().then((s) => setConnected(s.connected), (e) => setNotice(e.message));
+    if (!local) return;
+    const check = () => void api.chatgptStatus().then((s) => { setConnected(s.connected); setBusy(false); }, (e) => setNotice(e.message));
+    check();
+    // In the Mac app the sign-in happens in your browser; coming back to Lilt picks up the result.
+    window.addEventListener("focus", check);
+    return () => window.removeEventListener("focus", check);
   }, [local]);
   const login = async () => {
     setBusy(true); setNotice("");

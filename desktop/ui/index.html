@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Lilt</title>
+<style>
+  :root { color-scheme: light dark; --bg: #f6efe9; --ink: #2b2230; --soft: #7a6c78; --accent: #c13d6b; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #17131b; --ink: #f2e9ee; --soft: #a99aa6; } }
+  html, body { height: 100%; margin: 0; }
+  body { display: grid; place-items: center; background: var(--bg); color: var(--ink); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-user-select: none; user-select: none; }
+  main { display: grid; justify-items: center; gap: 14px; max-width: 420px; padding: 0 24px; text-align: center; }
+  svg { width: 72px; height: 72px; }
+  .wave { stroke-dasharray: 60; animation: draw 1.6s ease-in-out infinite alternate; }
+  @keyframes draw { from { stroke-dashoffset: 60; } to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) { .wave { animation: none; } }
+  p { margin: 0; color: var(--soft); }
+  h1 { margin: 0; font-size: 17px; font-weight: 600; }
+  code { font: 12px ui-monospace, Menlo, monospace; -webkit-user-select: text; user-select: text; word-break: break-all; }
+  .err { display: none; }
+  body.failed .err { display: grid; gap: 8px; }
+  body.failed .wait { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#c13d6b"/><path class="wave" d="M7 19c3-8 6-8 9 0s6 8 9 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+  <div class="wait"><h1>Opening Lilt…</h1><p>Getting your desk ready.</p></div>
+  <div class="err" role="alert">
+    <h1>Lilt couldn't start</h1>
+    <p id="why"></p>
+    <p>What happened is written to <code id="log"></code>. Quit Lilt and open it again; if it keeps happening, send that file along.</p>
+  </div>
+</main>
+<script>
+  // The app calls this when the Lilt server doesn't come up.
+  window.liltFailed = (why, log) => {
+    document.getElementById("why").textContent = why;
+    document.getElementById("log").textContent = log;
+    document.body.classList.add("failed");
+  };
+</script>
+</body>
+</html>

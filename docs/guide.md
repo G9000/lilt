@@ -3,6 +3,28 @@
 Everything the [README](../README.md) leaves out: how each part works, your data, connecting an
 agent, other devices, settings, development and troubleshooting.
 
+## The Mac app
+
+`desktop/` wraps Lilt in a Mac app (Tauri), so nobody needs Rust, Node, uv or a terminal to use it.
+Lilt.app carries the server, the web app, the courses, and its own Python with the measuring
+helper (`Contents/Resources/runtime`). Opening it starts the server on this Mac and shows Lilt in
+its own window; quitting stops the server.
+
+- **Build it:** `desktop/build.sh` (needs what `./lilt.sh` needs). It makes `desktop/dist/Lilt.app`
+  and `desktop/dist/Lilt-<version>-<arch>.dmg` for this Mac's chip (arm64 or x86_64; build on each
+  for both). The `.dmg` is about 56 MB, the installed app about 140 MB.
+- **First open:** the app is signed ad hoc, not with an Apple Developer ID, so macOS blocks the first
+  open of a downloaded copy. Open it once, then System Settings → Privacy & Security → **Open
+  Anyway**. After that it opens normally. (Signing and notarising with a Developer ID removes this.)
+- **Your data:** `~/Lilt/data`, the same folder `./lilt.sh` uses, so both share one desk. If a Lilt
+  is already running on port 7878, the app opens that one instead of starting a second. Otherwise
+  it runs on 7878, or any free port when 7878 is taken. With `LILT_DATA_DIR` set it always runs its
+  own server on that folder. The server's log is `~/Lilt/logs/lilt-app.log`.
+- **In the window:** macOS asks once for the microphone. Links to other sites open in your browser.
+  Export all saves to Downloads and shows it in Finder. Continue with ChatGPT signs in in your
+  browser; come back to Lilt and Settings shows you connected. Spotify playback needs a browser
+  that plays protected audio, which the app's window doesn't, so play Spotify from Lilt in a browser.
+
 ## Running in Docker
 
 - **Where your data lives:** in `./lilt-data` on the host, bind-mounted to `/data`. Recordings live on
