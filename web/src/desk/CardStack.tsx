@@ -4,6 +4,7 @@ import { Deck, DeckItem } from "../api";
 import { currentLight, type Light } from "../room/scene";
 import { setSpot, useLayoutStore } from "./Floaters";
 import { cardPicture, picture, type Picture } from "./pictures";
+import { usePhotos } from "./photos";
 
 /**
  * Today's cards on the room, as a pile: one card per practice card left. Swipe the top card
@@ -32,6 +33,8 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   useEffect(() => { if (!items.length || dealt) return; const id = window.setTimeout(() => setDealt(true), 1300); return () => window.clearTimeout(id); }, [items.length]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new deck (or a finished card) resets the pile to today's order.
   useEffect(() => { setOrder(items.map((i) => i.card.id)); }, [ids]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The cards wear the photos from Photos (yours too), not the room again.
+  const { pictures: photos } = usePhotos();
   const light = currentLight();
   const byId = new Map(items.map((i) => [i.card.id, i]));
   const pile = order.filter((id) => byId.has(id));
@@ -88,14 +91,14 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
       onDragStart={() => setMoving(true)} onDragEnd={placed}>
       <div className="cs-cards">
         {!deck || done || deck.paused ? (
-          <StaticCard light={light} pic={picture(!deck ? "room" : deck.paused ? "cat-blanket" : "cat-kitten")} title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
+          <StaticCard light={light} pic={picture(!deck ? "cat-window-nap" : deck.paused ? "cat-blanket" : "cat-kitten")} title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
             sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : "The lights are on. Nice work."} onStart={() => onStart(null)} />
         ) : (
           <AnimatePresence initial>
             {pile.slice(0, 4).map((id, d) => {
               const it = byId.get(id)!, i = items.indexOf(it);
               return (
-                <StackCard key={id} item={it} depth={d} index={i} count={n} light={light} pic={cardPicture(i)}
+                <StackCard key={id} item={it} depth={d} index={i} count={n} light={light} pic={cardPicture(i, photos)}
                   first={i === 0} delay={dealt ? 0 : 0.3 + (Math.min(n, 4) - 1 - d) * 0.12} onSwipe={cycle} onStart={() => onStart(id)} />
               );
             })}

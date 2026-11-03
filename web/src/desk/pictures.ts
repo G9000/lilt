@@ -37,8 +37,9 @@ export const PICTURES: Picture[] = [
 
 export const picture = (id: string) => PICTURES.find((p) => p.id === id) ?? PICTURES[0];
 
-/** The picture for today's i-th card: consecutive cards differ, and the set moves on each day. */
-export function cardPicture(i: number, now = new Date()): Picture {
+/** The picture for today's i-th card, from `list` (the photos): consecutive cards differ, and the set moves on each day. */
+export function cardPicture(i: number, list: Picture[], now = new Date()): Picture {
   const day = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
-  return PICTURES[(day + i) % PICTURES.length];
+  const from = list.length ? list : PICTURES.filter((p) => p.photo);
+  return from[(day + i) % from.length];
 }
