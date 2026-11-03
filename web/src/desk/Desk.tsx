@@ -8,7 +8,7 @@ import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
 import { PICTURES } from "./pictures";
 import { SettingsButton } from "./SettingsSheet";
-import { CoursesIcon, LeaveIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
+import { CoursesIcon, FlashcardsIcon, LeaveIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
 
 /**
  * The small Mac inside the room's monitor: wallpaper, menu bar, widgets, one app window, a dock.
@@ -23,6 +23,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   compare: { title: "Compare", width: 820 },
   studio: { title: "Practice", width: 1120, full: true },
   texts: { title: "Practice texts", width: 760 },
+  flashcards: { title: "Flashcards", width: 720 },
   library: { title: "Exercises", width: 760 },
   progress: { title: "Progress", width: 840, full: true },
   history: { title: "Recordings", width: 780, full: true },
@@ -107,6 +108,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
             apps until they offer more than the chapters (and Progress has something to show). */}
         {dockApp("/deck", "Today", <TodayIcon date={now} />, !page || section === "deck" || section === "guided" || section === "practice" || section === "review")}
         {dockApp("/studio", "Practice", <StudioIcon />, section === "studio" || section === "texts" || section === "library")}
+        {dockApp("/flashcards", "Flashcards", <FlashcardsIcon />, section === "flashcards")}
         {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
         <span className="ds-sep" />

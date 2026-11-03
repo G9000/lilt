@@ -132,6 +132,19 @@ export function SettingsAppIcon() {
 }
 
 /** Courses: three books on a shelf, on violet. */
+export const FlashcardsIcon = () => (
+  <svg viewBox="0 0 52 52" aria-hidden="true">
+    <defs>
+      <linearGradient id="di-flash" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffb38a" /><stop offset="1" stopColor="#e0643c" /></linearGradient>
+    </defs>
+    <rect width="52" height="52" rx="12" fill="url(#di-flash)" />
+    <rect x="13" y="12" width="22" height="29" rx="4" fill="#fff" opacity=".55" transform="rotate(-10 24 26.5)" />
+    <rect x="16" y="11" width="22" height="29" rx="4" fill="#fff" transform="rotate(6 27 25.5)" />
+    <path d="M22.5 22.5l3.2 3.2 6.3-7" fill="none" stroke="#e0643c" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" transform="rotate(6 27 25.5)" />
+    <path d="M21 31h11M21 34.5h7" stroke="#f3b49b" strokeWidth="1.6" strokeLinecap="round" transform="rotate(6 27 25.5)" />
+  </svg>
+);
+
 export const CoursesIcon = () => (
   <svg viewBox="0 0 52 52" aria-hidden="true">
     <defs>

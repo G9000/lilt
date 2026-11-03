@@ -1,4 +1,26 @@
 // How Practice names and groups a course's chapters and texts.
+import { introductionSteps } from "./markdown.ts";
+
+/** A chapter's intro without the "NHS Fife:" or "Lilt's choice:" it used to start with. */
+export const howTo = (basis: string) => { const s = basis.replace(/^(NHS Fife( progression)?|Lilt's choice):\s*/i, ""); return s.charAt(0).toUpperCase() + s.slice(1); };
+
+/** Voice care steps ("Be gentle", "Take care…") are tinted with a heart. */
+export const isCare = (label: string) => /gentle|care/i.test(label);
+
+/**
+ * A chapter's intro as its opening line and its **Label.** steps, labels tidied ("On track when"
+ * reads "Signs it's working"). Null when the intro isn't written as steps.
+ */
+export function chapterSteps(basis: string): { lede: string; tips: { label: string; body: string }[] } | null {
+  const steps = introductionSteps(howTo(basis));
+  if (!steps) return null;
+  return {
+    lede: steps.lede,
+    tips: steps.tips.map(({ label, body }) => /^on track when$/i.test(label.trim())
+      ? { label: "Signs it's working", body: body.charAt(0).toUpperCase() + body.slice(1) }
+      : { label: label.replace(/[.:]$/, ""), body }),
+  };
+}
 
 /** A word you'd read: three or more letters once repeats are collapsed ("hello" yes; "mmmee", "brrrr", "ng" no). */
 const hasWord = (text: string) => (text.match(/\p{L}+/gu) ?? []).some((w) => w.toLowerCase().replace(/(\p{L})\1+/gu, "$1").length >= 3);

@@ -5,10 +5,9 @@ import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useSt
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
-import { introductionSteps } from "../markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
-import { byPart, isLong, passageTitle, readingTime, textLabel } from "../chapters";
+import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, textLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 
@@ -48,8 +47,6 @@ const friendlyDate = (d: string, today: string) => {
   return days <= 1 ? "tomorrow" : `in ${days} days`;
 };
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const howTo = (basis: string) => cap(basis.replace(/^(NHS Fife( progression)?|Lilt's choice):\s*/i, ""));
 
 /* ---------------------------------------------------------------- layout: sidebar and split sizes */
 
@@ -241,13 +238,12 @@ function Medal({ className }: { className?: string }) {
 }
 /** Voice care keeps its heart; every other tip is a numbered step. */
 const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z";
-const isCare = (label: string) => /gentle|care/i.test(label);
 
 /**
  * A chapter's video. Until you press play it is only a card drawn here (no request to YouTube, so
  * nothing about you leaves this computer); then YouTube's no-cookie player loads in its place.
  */
-function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
+export function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
   const [on, setOn] = useState(false);
   const watch = `https://www.youtube.com/watch?v=${video.id}`;
   if (on) return (
@@ -281,11 +277,8 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
   const [open, setOpen] = useState(!started);
   const [sources, setSources] = useState(false);
   const basis = howTo(level.basis);
-  const steps = introductionSteps(basis);
-  const tips = (steps?.tips ?? []).map(({ label, body }) => {
-    if (/^on track when$/i.test(label.trim())) return { label: "Signs it's working", body: body.charAt(0).toUpperCase() + body.slice(1) };
-    return { label: label.replace(/[.:]$/, ""), body };
-  });
+  const steps = chapterSteps(level.basis);
+  const tips = steps?.tips ?? [];
   return (
     <section className="ci" aria-label="About this chapter">
       <Markdown src={steps?.lede ?? basis} className={steps ? "ci-lede" : "ci-body"} headingOffset={1} />
@@ -1431,7 +1424,7 @@ function BeforeAfter({ take, item, onDone, onAgain, onHurt }: { take: Take; item
 
 const PlayIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>;
 const PauseIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /><rect x="7.1" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /></svg>;
-function ListenBack({ src }: { src: string }) {
+export function ListenBack({ src }: { src: string }) {
   const play = useTakeAudio(src);
   const [bars, setBars] = useState<number[]>([]);
   useEffect(() => {

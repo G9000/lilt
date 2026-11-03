@@ -38,8 +38,8 @@ agent, other devices, settings, development and troubleshooting.
      full screen, laid out like a writing app: chapters in a sidebar, the chapter as a page of
      things to read, and the recorder docked at the bottom. Click any card further down to do it next.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
-   of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Recordings**
-   and **Courses** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
+   of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Flashcards**,
+   **Recordings** and **Courses** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
    (or the door in the dock) walks you back out to the room. Until you've recorded your "before",
    sitting down opens Start here instead of Today.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
@@ -124,6 +124,15 @@ agent, other devices, settings, development and troubleshooting.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
+   - **Flashcards** (`#/flashcards`, in the dock, or the Flashcards widget beside the plant in the
+     room, which shows the chapter you're on and how far through it you are) deals a chapter out as
+     cards, one at a time: its opening, each step of the how-to, its video, then each text. Swipe
+     right (or <kbd>→</kbd>, or Got it) when you've got a card, left (<kbd>←</kbd>, Again later) to
+     see it again at the back of the pile; Undo puts the last one back. **A text's card won't swipe
+     until you've recorded it there**: record, listen back on the card, then swipe. Takes are saved
+     like any chapter take, so they show in Recordings and the chapter's progress. **Open the full
+     chapter** on any card opens it in Practice at that text. Flashcards is apart from Today: nothing
+     is rated or scheduled, and where you are in each chapter is kept in this browser.
 8. **Texts** has 131 texts across 16 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, and real life. Each chapter explains the technique in a few numbered steps (how to
@@ -383,6 +392,8 @@ cd web && pnpm dev                          # UI on :5173, proxies to a server o
 # Browser end-to-end with Chrome's fake microphone (server running on :7979 with a scratch data dir):
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flow.mjs /tmp/shots   # MOBILE=1 for phone size
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # the Practice window; needs a fresh data dir
+cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flashcards.mjs   # Flashcards: widget, swipes, a text locked until recorded
+cd web && node --test src/flashcards.test.ts   # a chapter dealt as cards, and a run through them
 ```
 
 ## Troubleshooting

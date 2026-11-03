@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "Flashcards", body: "A chapter as a pile of cards: swipe through the steps, and record each text before it swipes away.", to: "/flashcards" },
       { title: "A new voice course", body: "Thirteen chapters in three parts, with real technique, checked against clinical guidance and coaching practice.", to: "/studio" },
       { title: "Extras to read aloud", body: "A Reading room, short Stories told in parts, and Articles to read like a presenter.", to: "/studio/reading-room" },
       { title: "Warm-up first, cool-down last", body: "Your chosen warm-up opens Today every day, and the cool-down closes it.", to: "/deck" },

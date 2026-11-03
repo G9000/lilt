@@ -41,6 +41,8 @@ each:
 
 - **Practice** (`web/src/pages/Voice.tsx`) loads the app's course; its sidebar, home page and
   chapters are voice's.
+- **Flashcards** (`web/src/pages/Flashcards.tsx`, cards from `web/src/flashcards.ts`) deals the app's
+  course; the cards come from any chapter's intro and texts, so another course would only need its id.
 - **Today's cards** (`server/src/practice/cards.rs`) are built from the app's course, plus the voice
   exercises and the reference phrase.
 - **Recordings** names a take by its chapter only for the app's course.

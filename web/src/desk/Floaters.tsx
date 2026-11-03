@@ -1,12 +1,13 @@
 import { motion, useDragControls, useMotionValue } from "motion/react";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { api, Deck } from "../api";
+import { api, Deck, Texts } from "../api";
 import { radio, useRadio } from "./lofi";
 import { SpotifyRadio } from "./Spotify";
 import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
-import { SettingsAppIcon } from "./icons";
+import { FlashcardsIcon, SettingsAppIcon } from "./icons";
+import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
 
@@ -15,7 +16,8 @@ import { CURRENT, shortVersion } from "../release";
  * radio over the speaker, a note on the wall of photos, a clock in the window, the plant (the
  * days you practised this week) by the potted plant, Settings (theme, AI connection and
  * everything else, over the room) on the window beside the clock, and What's new (this version and
- * what came with it, from release.ts) up by the hanging lights. Drag them anywhere; each remembers its
+ * what came with it, from release.ts) up by the hanging lights, and Flashcards (the chapter you're
+ * going through, a card at a time) beside the plant. Drag them anywhere; each remembers its
  * spot in the painting (in this browser), so it rides the room's camera. One near the edge slides
  * inward to stay on screen; one left at home that would cover today's cards steps out of the way.
  */
@@ -23,7 +25,7 @@ import { CURRENT, shortVersion } from "../release";
 type Spot = { x: number; y: number };
 // Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
 // 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 } };
+const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -173,6 +175,28 @@ function NewsWidget() {
   );
 }
 
+/** Flashcards, in the room: the chapter you're on and how far through it you are. A click opens it. */
+function FlashcardsWidget({ texts }: { texts: Texts }) {
+  const { last, runs } = loadRuns();
+  // The chapter you were last on, else the first one you haven't finished.
+  const level = texts.levels.find((l) => l.id === last)
+    ?? texts.levels.find((l) => { const c = chapterCards(l); return progress(c, runs[l.id] ?? EMPTY).got < c.length; })
+    ?? texts.levels[0];
+  if (!level) return null;
+  const { got, total } = progress(chapterCards(level), runs[level.id] ?? EMPTY);
+  return (
+    <button className="fl-cards" onClick={() => go(`/flashcards/${level.id}`)} aria-label={`Flashcards: ${level.title}, ${got} of ${total} cards done`}>
+      <span className="fl-cards-ic" aria-hidden="true"><FlashcardsIcon /></span>
+      <span className="fl-cards-t">
+        <small>Flashcards</small>
+        <b>{level.title}</b>
+        <span className="fl-cards-bar" aria-hidden="true"><i style={{ width: `${total ? (got / total) * 100 : 0}%` }} /></span>
+        <small>{got === total ? "Done, go again any time" : `${got} of ${total} cards`}</small>
+      </span>
+    </button>
+  );
+}
+
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();
   // The radio plays Lilt's own lo-fi, or your Spotify; the choice is kept in this browser.
@@ -183,6 +207,9 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
     if (s === "spotify" && (r.playing || r.ducked)) void radio.toggle();
   };
   const [note, setNote] = useState<string | null>(null);
+  const [texts, setTexts] = useState<Texts | null>(null);
+  // Read again each time you come back to the room, so the widget shows where you got to.
+  useEffect(() => { if (!inside) void api.texts().then(setTexts, () => setTexts(null)); }, [inside]);
   const [writing, setWriting] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const store = useLayoutStore();
@@ -267,6 +294,11 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
       {deck && (
         <Widget id="plant" delay={-3.4} label="This week">
           <PlantWidget days={deck.participation?.days_this_week ?? 0} />
+        </Widget>
+      )}
+      {texts && (
+        <Widget id="flashcards" delay={-4.2} label="Flashcards">
+          <FlashcardsWidget texts={texts} />
         </Widget>
       )}
       {note !== null && (
