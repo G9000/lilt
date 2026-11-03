@@ -8,7 +8,7 @@
 .fc-err { margin: 0; color: var(--rec); font-size: 13.5px; }
 
 /* ---------- the top bar: close, the chapter (a menu), progress, the full chapter ---------- */
-.fc-top { position: relative; z-index: 8; display: flex; align-items: center; gap: 14px; padding: 12px 20px; border-bottom: 1px solid var(--hair); background: var(--fc-bar); }
+.fc-top { position: relative; z-index: 8; display: flex; align-items: center; gap: 14px; padding: 14px 20px 0; }
 .fc-close { flex: none; width: 34px; height: 34px; min-height: 0; padding: 0; display: grid; place-items: center; border-radius: 50%; background: var(--fill); color: var(--ink-2); }
 .fc-close svg { width: 14px; height: 14px; }
 .fc-close:hover { background: var(--fill-2); color: var(--ink); }
@@ -43,7 +43,7 @@
 .fc-full:hover { background: var(--fill-2); color: var(--ink); }
 
 /* ---------- the stage: Again, the pile, Got it ---------- */
-.fc-stage { position: relative; min-height: 0; display: grid; place-items: center; padding: 34px 24px 20px; overflow: hidden; }
+.fc-stage { position: relative; min-height: 0; display: grid; place-items: center; padding: 40px 24px 64px; overflow: hidden; }
 .fc-table { width: 100%; height: 100%; max-height: 600px; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr); grid-template-columns: auto minmax(0, 560px) auto; justify-content: center; align-items: center; gap: 36px; }
 .fc-pile { position: relative; height: 100%; min-height: 0; display: grid; grid-template: minmax(0, 1fr) / minmax(0, 1fr); }
 
@@ -58,14 +58,17 @@
 .fc-card.top:active { cursor: grabbing; }
 .fc-card.under, .fc-card.leaving { pointer-events: none; }
 .fc-card.under { transform-origin: 50% 0%; }
-.fc-card.under { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 -8px 22px -10px rgba(0, 0, 0, 0.6); }
-.fc-card.under::after { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.25); }
+/* the cards underneath are plain card backs: just their top edges show, a shade lighter each */
+.fc-card.under { background: #2a2a31; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 -6px 18px -12px rgba(0, 0, 0, 0.6); }
+.fc-card.under + .fc-card.under { background: #34343c; }
 .fc-card.end { width: min(100%, 520px); max-height: 100%; }
 
-.fc-head { position: relative; flex: none; height: 188px; }
-.fc-art { position: absolute; inset: 0; background-repeat: no-repeat; background-size: 300% auto; }
-.fc-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.35)); }
-.fc-shape { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 34px; fill: #1c1c21; }
+/* the picture fills the top of the card and melts into it: no edge where it ends */
+.fc-head { position: relative; flex: none; height: 176px; }
+.fc-art { position: absolute; inset: 0 0 -70px; background-repeat: no-repeat; background-size: 300% auto;
+  -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent); mask-image: linear-gradient(to bottom, #000 40%, transparent); }
+.fc-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(28, 28, 33, 0) 30%, rgba(28, 28, 33, 0.55)); }
+.fc-body { position: relative; }
 .fc-chip { position: absolute; left: 18px; top: 16px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 99px; font-size: 12px; font-weight: 600; color: #fff;
   background: rgba(15, 15, 22, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .fc-card.top .fc-chip { background: #e0643c; }
@@ -118,7 +121,7 @@
 .fc-side:active:not(:disabled) .fc-side-ic { transform: scale(0.95); }
 .fc-side[aria-disabled="true"], .fc-side:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.fc-undo { position: absolute; left: 50%; bottom: 14px; z-index: 10; translate: -50% 0; display: inline-flex; align-items: center; gap: 12px; padding: 7px 7px 7px 16px; border-radius: 99px;
+.fc-undo { position: absolute; left: 50%; bottom: calc(100% + 12px); z-index: 10; translate: -50% 0; display: inline-flex; align-items: center; gap: 12px; padding: 7px 7px 7px 16px; border-radius: 99px;
   background: var(--ink); color: var(--page); font-size: 13px; font-weight: 500; box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.5); animation: fc-pop 0.2s var(--ease); }
 .fc-undo button { min-height: 28px; padding: 0 12px; border-radius: 99px; background: color-mix(in srgb, var(--page) 18%, transparent); color: inherit; font-size: 12.5px; font-weight: 600; }
 
@@ -127,9 +130,8 @@
 .fc-ghost { min-height: 42px; padding: 0 16px; border-radius: 99px; background: rgba(255, 255, 255, 0.1); color: #fff; font-weight: 500; }
 
 /* ---------- the recorder, docked below: Practice's, with the live pitch line ---------- */
-.fc-dock { position: relative; z-index: 4; border-top: 1px solid var(--hair); background: var(--fc-bar); }
-.fc-dock:empty { display: none; }
-.fc-ve { display: block; max-width: 760px; margin: 0 auto; padding: 14px 24px 16px; }
+.fc-dock { position: relative; z-index: 4; }
+.fc-ve { display: block; max-width: 640px; margin: 0 auto 16px; padding: 12px 20px; border-radius: 22px; background: var(--fc-bar); box-shadow: 0 0 0 1px var(--hair), 0 18px 40px -24px rgba(0, 0, 0, 0.5); }
 .fc-ve::before { display: none; }
 .fc-ve .ve-dock { margin: 0; }
 .fc-ve .ve-dock.idle { justify-content: center; grid-template-columns: auto auto; }

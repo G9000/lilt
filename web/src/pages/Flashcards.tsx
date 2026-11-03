@@ -24,8 +24,6 @@ import { ChapterVideo, Dock, FoldedMeasures, ListenBack } from "./Voice";
 
 const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z";
 const HURT = "It hurts or feels strained";
-/** The room card's outline: a strip for the picture, then the body with a tab rising on the right. */
-const SHAPE = "M0 18 Q0 0 18 0 L160 0 Q172 0 181 8 L197 23 Q205 30 217 30 L282 30 Q300 30 300 48 L300 146 L0 146 Z";
 type Pic = (typeof PICTURES)[number];
 
 export function FlashcardsPage({ chapter }: { chapter?: string }) {
@@ -134,22 +132,21 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
                   : <motion.article key={c.id} className="fc-card under" aria-hidden="true"
                       initial={false} animate={{ y: -d * 16, scale: 1 - d * 0.05, rotate: d % 2 ? -1.2 : 1 }} exit={{ opacity: 0 }}
                       transition={{ type: "spring", stiffness: 320, damping: 30 }} style={{ zIndex: 5 - d }}>
-                      <CardArt pic={pic(c)} chip={kicker(c, false)} />
                     </motion.article>)}
               </AnimatePresence>
             </div>
             <SideButton dir="got" locked={locked} disabled={recording} onClick={() => move("got")} />
           </div>
         )}
+      </main>
+
+      <footer className="fc-dock">
         {undo && (
           <div className="fc-undo" role="status">
             {undo.label}
             <button onClick={() => { setRun(undo.run); setUndo(null); }}>Undo</button>
           </div>
         )}
-      </main>
-
-      <footer className="fc-dock">
         {!hurt && top?.kind === "text" ? (
           <div className="ve fc-ve">
             <Dock key={top.id} band={band} allowRetake retake={!!takes[top.id]}
@@ -267,12 +264,11 @@ function TopCard({ dir, locked, nudge, recording, onSwipe, label, children }: {
   );
 }
 
-/** The picture strip at the top of a card, as on the room's cards, with its chip. */
+/** The picture at the top of a card, fading into it, with its chip. */
 function CardArt({ pic, chip, care }: { pic: Pic; chip: string; care?: boolean }) {
   return (
     <div className="fc-head">
       <div className="fc-art" style={{ backgroundImage: `url(${pic.url(currentLight())})`, ...pic.card }} />
-      <svg className="fc-shape" viewBox="0 0 300 48" preserveAspectRatio="none" aria-hidden="true"><path d={SHAPE} /></svg>
       <span className={`fc-chip${care ? " care" : ""}`}>
         {care && <svg viewBox="0 0 16 16" aria-hidden="true"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>}
         {chip}
