@@ -35,14 +35,15 @@ use std::path::Path;
 
 /// `key: value` lines between `---` fences, and the text after them.
 pub(crate) fn front_matter(src: &str) -> Result<(Map<String, Value>, &str)> {
-    let rest = src.strip_prefix("---\n").ok_or_else(|| anyhow!("must start with a --- front matter block"))?;
+    let rest = src.strip_prefix("---\n").or_else(|| src.strip_prefix("---\r\n"))
+        .ok_or_else(|| anyhow!("must start with a --- front matter block"))?;
     let end = rest.find("\n---").ok_or_else(|| anyhow!("front matter is not closed with ---"))?;
     let mut meta = Map::new();
     for line in rest[..end].lines().filter(|l| !l.trim().is_empty()) {
         let (k, v) = line.split_once(':').ok_or_else(|| anyhow!("front matter line has no `key: value`: {line}"))?;
         meta.insert(k.trim().into(), Value::String(v.trim().into()));
     }
-    let body = rest[end + 4..].trim_start_matches(|c| c != '\n').trim_start_matches('\n');
+    let body = rest[end + 4..].trim_start_matches(|c| c != '\n').trim_start_matches(['\r', '\n']);
     Ok((meta, body))
 }
 
@@ -55,6 +56,13 @@ fn joined<'a>(lines: impl Iterator<Item = &'a str>) -> String {
 }
 
 pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
+    let normalized;
+    let src = if src.contains("\r\n") {
+        normalized = src.replace("\r\n", "\n");
+        normalized.as_str()
+    } else {
+        src
+    };
     let (mut meta, body) = front_matter(src)?;
     for key in ["id", "title", "kind"] {
         if meta.get(key).and_then(Value::as_str).unwrap_or("").is_empty() {
@@ -205,6 +213,15 @@ mod tests {
     use super::*;
 
     const WARMUP: &str = "---\nid: warmup\ntitle: Warm-ups\nsubtitle: Hums\nkind: hum\nsource_url: https://example.org/a:b\nwritten_by: Lilt.\n---\n\nHum gently,\non a comfortable pitch.\n\n## hum\n\nmmmmmmm\n\n> Notice where\n> you feel it.\n\nexample: audio/hum.mp3\n\n## glide\n\nmmm ↗ ↘\n\n> Easy.\n";
+
+    #[test]
+    fn parses_windows_line_endings() {
+        let windows = WARMUP.replace('\n', "\r\n");
+        let (meta, body) = front_matter(&windows).unwrap();
+        assert_eq!(meta["id"], "warmup");
+        assert!(body.starts_with("Hum gently"));
+        assert_eq!(chapter(&windows, 3).unwrap(), chapter(WARMUP, 3).unwrap());
+    }
 
     #[test]
     fn parses_a_chapter() {
