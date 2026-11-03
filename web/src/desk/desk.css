@@ -398,7 +398,7 @@
 .ds-shuffle { min-height: 0; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 0; border-radius: 99px; background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.75); font-size: 12px; font-weight: 600; cursor: pointer; }
 .ds-shuffle svg { width: 14px; height: 14px; }
 .ds-shuffle.on { background: #e0643c; color: #fff; }
-.ds-photos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ds-photos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: min(360px, 52vh); overflow: auto; margin: 0 -4px; padding: 4px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.25) transparent; }
 .ds-photos-grid button { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 0; border: 0; background: none; color: rgba(255, 255, 255, 0.7); cursor: pointer; text-align: left; }
 .ds-photos-grid span { display: block; width: 100%; aspect-ratio: 1; border-radius: 12px; background-repeat: no-repeat; background-position: 70% 30%; background-size: 420% auto; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   transition: transform 0.2s var(--ease), box-shadow 0.2s ease; }

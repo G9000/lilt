@@ -23,6 +23,12 @@ export const PICTURES: Picture[] = [
   photo("cat-keyboard", "Cat asleep on the keyboard", "72%"),
   photo("cat-kitten", "Kitten, paws up", "47%"),
   photo("cat-fluff", "Orange fluff", "16%"),
+  photo("galaxy-whirlpool", "The Whirlpool Galaxy", "50%"),
+  photo("nebula-pillars", "Pillars of Creation", "40%"),
+  photo("nebula-cliffs", "Cosmic Cliffs", "45%"),
+  photo("plant-succulents", "Succulents by the window", "45%"),
+  photo("plant-office", "A succulent on the table", "55%"),
+  photo("plant-fern", "Fern in the shade", "40%"),
   { id: "window", name: "The window", url: () => "pictures/window.webp", clock: { backgroundSize: "cover", backgroundPosition: "center" }, card: { backgroundSize: "cover", backgroundPosition: "center 40%" } },
   { id: "desk", name: "The desk", url: () => "pictures/desk.webp", clock: { backgroundSize: "cover", backgroundPosition: "45% 40%" }, card: { backgroundSize: "cover", backgroundPosition: "center 35%" } },
 ];
