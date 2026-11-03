@@ -406,7 +406,9 @@
 .ds-photos-grid button:hover span { transform: scale(1.04); }
 .ds-photos-grid button.on span { box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(224, 100, 60, 0.9); }
 .ds-photos-grid button.on small { color: #fff; }
-.ds-photos > p { margin: 10px 2px 0; font-size: 11.5px; color: rgba(255, 255, 255, 0.55); }
+.ds-photos footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 2px 0; }
+.ds-photos footer p { margin: 0; font-size: 11.5px; line-height: 1.35; color: rgba(255, 255, 255, 0.55); }
+.ds-photos-app { flex: none; min-height: 0; padding: 6px 11px; border: 0; border-radius: 99px; background: #fff; color: #17171d; font-size: 12px; font-weight: 600; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .ds-photos { animation: none; } .ds-photos-grid span { transition: none; } }
 
 /* Settings, in the room: the app's icon, like one on a Mac desktop */

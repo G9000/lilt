@@ -6,9 +6,10 @@ import { currentLight, Light } from "../room/scene";
 import { radio, useRadio } from "./lofi";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
-import { picture, Picture, PICTURES } from "./pictures";
+import { PICTURES } from "./pictures";
+import { pinnedPicture, pinPicture, shufflePicture, usePhotos, visiblePictures } from "./photos";
 import { SettingsButton } from "./SettingsSheet";
-import { CoursesIcon, FlashcardsIcon, LeaveIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
+import { CoursesIcon, FlashcardsIcon, LeaveIcon, PhotosIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
 
 /**
  * The small Mac inside the room's monitor: wallpaper, menu bar, widgets, one app window, a dock.
@@ -24,6 +25,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   studio: { title: "Practice", width: 1120, full: true },
   texts: { title: "Practice texts", width: 760 },
   flashcards: { title: "Flashcards", width: 1120, full: true },
+  photos: { title: "Photos", width: 960 },
   library: { title: "Exercises", width: 760 },
   progress: { title: "Progress", width: 840, full: true },
   history: { title: "Recordings", width: 780, full: true },
@@ -111,6 +113,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         {dockApp("/flashcards", "Flashcards", <FlashcardsIcon />, section === "flashcards")}
         {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
+        {dockApp("/photos", "Photos", <PhotosIcon />, section === "photos")}
         <span className="ds-sep" />
         {dockApp("/", "Back to the room", <LeaveIcon />, false)}
       </nav>
@@ -190,27 +193,25 @@ export function PlantWidget({ days }: { days: number }) {
   );
 }
 
-/** Which picture the clock shows: "shuffle" (the default: a different photo each time), or one you picked. */
-const PICTURE_KEY = "lilt.clock.picture.v2";
-/** The photo it showed last, so shuffling never shows the same one twice running. */
-const LAST_KEY = "lilt.clock.last";
-const read = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
-const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private mode: forget on reload */ } };
-/** A photo to shuffle to: any but the room's own views, and not the last one shown. */
-function shuffled(): Picture {
-  const pool = PICTURES.filter((p) => p.photo && p.id !== read(LAST_KEY));
-  const p = pool[Math.floor(Math.random() * pool.length)] ?? PICTURES[0];
-  write(LAST_KEY, p.id);
-  return p;
-}
-
-/** The time over a picture: a different photo each time you come in, or the one you picked in Photos (click it). */
+/** The time over a picture: a different photo each time you come in, or the one you picked. Click for Photos. */
 export function ClockWidget() {
   const now = useNow();
   const light = currentLight();
-  const [pinned, setPinned] = useState<string | null>(() => { const v = read(PICTURE_KEY); return v && v !== "shuffle" && PICTURES.some((p) => p.id === v) ? v : null; });
-  const [shown, setShown] = useState<Picture>(() => (pinned ? picture(pinned) : shuffled()));
+  const { pictures: list, loaded } = usePhotos();
+  const [pinned, setPinned] = useState(pinnedPicture);
+  const [shownId, setShownId] = useState(() => pinned ?? shufflePicture(list));
   const [open, setOpen] = useState(false);
+  // Picked or shuffled in Photos (here or in the app): follow it.
+  useEffect(() => {
+    const on = () => { const p = pinnedPicture(); setPinned(p); setShownId(p ?? shufflePicture(visiblePictures())); };
+    window.addEventListener("lilt:clock-picture", on);
+    return () => window.removeEventListener("lilt:clock-picture", on);
+  }, []);
+  // Once your photos are in, a picture that's gone (hidden or deleted) gives way to another.
+  useEffect(() => {
+    if (loaded && !list.some((p) => p.id === shownId)) setShownId(pinned && list.some((p) => p.id === pinned) ? pinned : shufflePicture(list));
+  }, [loaded, list.map((p) => p.id).join()]); // eslint-disable-line react-hooks/exhaustive-deps
+  const shown = list.find((p) => p.id === shownId) ?? list[0] ?? PICTURES[0];
   // The widget drags from anywhere, so a press that moved isn't a click.
   const down = useRef<{ x: number; y: number } | null>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -228,8 +229,6 @@ export function ClockWidget() {
     document.addEventListener("keydown", esc);
     return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
   }, [open]);
-  const pick = (p: Picture) => { setPinned(p.id); setShown(p); write(PICTURE_KEY, p.id); };
-  const shuffle = () => { setPinned(null); setShown(shuffled()); write(PICTURE_KEY, "shuffle"); };
   return (
     <div className={`ds-clockbox${open ? " open" : ""}`} ref={box}>
       <article className="ds-w ds-clock" aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
@@ -246,26 +245,32 @@ export function ClockWidget() {
         <section className="ds-photos" id="ds-photos" aria-label="Photos" onPointerDown={(e) => e.stopPropagation()}>
           <header>
             <b>Photos</b>
-            <button className={`ds-shuffle${pinned ? "" : " on"}`} aria-pressed={!pinned} onClick={shuffle}
+            <button className={`ds-shuffle${pinned ? "" : " on"}`} aria-pressed={!pinned} onClick={() => pinPicture(null)}
               title="A different photo each time you come in">
-              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4.5h2.2c1.6 0 2.6.8 3.6 2.4l1.4 2.2c1 1.6 2 2.4 3.6 2.4H14M2 11.5h2.2c1 0 1.8-.3 2.5-1M9.3 5.8c.7-.8 1.5-1.3 2.5-1.3H14M12 2.5l2 2-2 2M12 9.5l2 2-2 2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              Shuffle
+              <ShuffleIcon />Shuffle
             </button>
           </header>
           <div className="ds-photos-grid">
-            {PICTURES.map((p) => (
-              <button key={p.id} className={p.id === shown.id ? "on" : undefined} onClick={() => pick(p)} aria-pressed={p.id === pinned} title={p.name}>
+            {list.map((p) => (
+              <button key={p.id} className={p.id === shown.id ? "on" : undefined} onClick={() => pinPicture(p.id)} aria-pressed={p.id === pinned} title={p.name}>
                 <span style={{ backgroundImage: `url(${p.url(light)})`, ...p.clock }} />
                 <small>{p.name}</small>
               </button>
             ))}
           </div>
-          <p>{pinned ? `Showing ${shown.name.toLowerCase()} every time.` : "A different photo each time you come in."}</p>
+          <footer>
+            <p>{pinned ? `Showing ${shown.name.toLowerCase()} every time.` : "A different photo each time you come in."}</p>
+            <button className="ds-photos-app" onClick={() => go("/photos")}>Open Photos</button>
+          </footer>
         </section>
       )}
     </div>
   );
 }
+
+export const ShuffleIcon = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4.5h2.2c1.6 0 2.6.8 3.6 2.4l1.4 2.2c1 1.6 2 2.4 3.6 2.4H14M2 11.5h2.2c1 0 1.8-.3 2.5-1M9.3 5.8c.7-.8 1.5-1.3 2.5-1.3H14M12 2.5l2 2-2 2M12 9.5l2 2-2 2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
 
 /** The room's menu bar, the same as the desk's: the mark, what's playing, notifications, date and time. */
 export function RoomTop({ inbox }: { inbox: InboxState }) {

@@ -8,7 +8,9 @@ import { roomUrl, type Light } from "../room/scene";
  */
 export interface Picture { id: string; name: string; url: (l: Light) => string; clock?: CSSProperties; card?: CSSProperties;
   /** A photo of its own (not a view of the room): the clock shuffles through these. */
-  photo?: boolean }
+  photo?: boolean;
+  /** One you added in Photos (it can be deleted, not just hidden). */
+  mine?: boolean }
 
 const photo = (id: string, name: string, cardY: string): Picture =>
   ({ id, name, url: () => `pictures/${id}.webp`, clock: { backgroundSize: "cover" }, card: { backgroundSize: "cover", backgroundPosition: `center ${cardY}` }, photo: true });

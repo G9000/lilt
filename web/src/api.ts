@@ -321,6 +321,9 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
   return data as T;
 }
 
+/** Photos you added (for the clock and the Photos app), and which of Lilt's own pictures you hid. */
+export interface PhotoIndex { uploaded: { id: string; name: string; file: string; mime: string; added_utc: string }[]; hidden: string[] }
+
 export const api = {
   /** Remix a course (or one chapter) with your connected ChatGPT, into your mixtape. */
   remix: (request: string, chapter?: string, course?: string, history: { role: "user" | "assistant"; content: string }[] = []) =>
@@ -335,6 +338,17 @@ export const api = {
   /** A course's texts (the Practice course when none is named). */
   texts: (course?: string) => call<Texts>("GET", `/api/texts${course ? `?course=${encodeURIComponent(course)}` : ""}`),
   studioSession: () => call<Session>("POST", "/api/studio/session"),
+  photos: () => call<PhotoIndex>("GET", "/api/photos"),
+  /** Add a photo: the image itself is the request body. */
+  addPhoto: async (image: Blob, name: string) => {
+    const res = await fetch(`/api/photos?name=${encodeURIComponent(name)}`, { method: "POST", headers: { "content-type": image.type || "application/octet-stream" }, body: image });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new ApiError(res.status, data?.error ?? res.statusText);
+    return data as PhotoIndex["uploaded"][number];
+  },
+  /** Delete a photo you added, or hide one of Lilt's own. */
+  deletePhoto: (id: string) => call<PhotoIndex>("DELETE", `/api/photos/${encodeURIComponent(id)}`),
+  restorePhotos: () => call<PhotoIndex>("POST", "/api/photos/restore", {}),
   profile: () => call<Profile>("GET", "/api/profile"),
   saveProfile: (p: Profile) => call<Profile>("PUT", "/api/profile", p),
   exercises: () => call<{ exercises: Exercise[]; capability_matrix: { area: string; capability: SkillCard["capability"] }[] }>("GET", "/api/exercises"),

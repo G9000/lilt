@@ -1,0 +1,75 @@
+/* Photos: a grid of every picture the clock can show, with Add photos, a viewer, and delete. */
+.ph { position: relative; display: grid; gap: 16px; padding-top: 6px; min-height: 100%; }
+.ph-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.ph-head h1 { margin: 0; font-size: 24px; font-weight: 650; letter-spacing: -0.02em; }
+.ph-head p { margin: 2px 0 0; max-width: 52ch; color: var(--ink-3); font-size: 13.5px; }
+.ph-actions { display: flex; gap: 8px; }
+.ph-shuffle, .ph-add { min-height: 36px; display: inline-flex; align-items: center; gap: 7px; padding: 0 14px; border-radius: 99px; font-size: 13px; font-weight: 600; }
+.ph-shuffle { background: var(--fill); color: var(--ink-2); }
+.ph-shuffle.on { background: var(--accent-soft); color: var(--accent-ink); }
+.ph-add { background: var(--ink); color: var(--page); }
+.ph-shuffle svg, .ph-add svg { width: 15px; height: 15px; }
+
+.ph-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.ph-tile { position: relative; display: grid; gap: 6px; min-width: 0; }
+.ph-img { display: block; width: 100%; min-height: 0; padding: 0; border: 0; border-radius: 16px; overflow: hidden; background: var(--fill); cursor: zoom-in; }
+.ph-img span { display: block; width: 100%; aspect-ratio: 1; background-repeat: no-repeat; background-position: 70% 30%; background-size: 420% auto; transition: transform 0.35s var(--ease); }
+.ph-img:hover span { transform: scale(1.04); }
+.ph-tile.pinned .ph-img { box-shadow: 0 0 0 2px var(--page), 0 0 0 4px var(--accent); }
+.ph-meta { display: grid; min-width: 0; padding: 0 2px; }
+.ph-meta b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-meta small { font-size: 11.5px; color: var(--ink-3); }
+.ph-tile.pinned .ph-meta small { color: var(--accent-ink); font-weight: 600; }
+
+/* the clock and delete buttons float on the photo, shown on hover (always on touch) */
+.ph-tools { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; opacity: 0; transition: opacity 0.15s ease; }
+.ph-tile:hover .ph-tools, .ph-tile:focus-within .ph-tools { opacity: 1; }
+@media (hover: none) { .ph-tools { opacity: 1; } }
+.ph-tools button { width: 30px; height: 30px; min-height: 0; padding: 0; display: grid; place-items: center; border-radius: 50%; background: rgba(20, 20, 26, 0.6); color: #fff; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.ph-tools button:hover:not(:disabled) { background: rgba(20, 20, 26, 0.85); }
+.ph-tools button:disabled { opacity: 0.45; }
+.ph-tools svg { width: 15px; height: 15px; }
+.ph-confirm { position: absolute; inset: 0 0 auto; aspect-ratio: 1; display: grid; place-content: center; gap: 10px; padding: 12px; border-radius: 16px; text-align: center;
+  background: rgba(20, 20, 26, 0.82); color: #fff; font-size: 12.5px; line-height: 1.35; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.ph-confirm div { display: flex; gap: 6px; justify-content: center; }
+.ph-confirm button { min-height: 30px; padding: 0 12px; border-radius: 99px; background: rgba(255, 255, 255, 0.14); color: #fff; font-size: 12.5px; font-weight: 600; }
+.ph-confirm .ph-danger { background: var(--rec); }
+
+.ph-drop button { width: 100%; aspect-ratio: 1; min-height: 0; display: grid; place-content: center; justify-items: center; gap: 4px; padding: 12px; border: 1.5px dashed var(--line-strong); border-radius: 16px;
+  background: none; color: var(--ink-3); text-align: center; }
+.ph-drop button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+.ph-drop svg { width: 28px; height: 28px; }
+.ph-drop b { font-size: 13px; color: var(--ink-2); }
+.ph-drop small { font-size: 11.5px; }
+
+.ph-quiet { margin: 0; color: var(--ink-3); font-size: 13px; }
+.ph-small { font-size: 12px; }
+.ph-link { min-height: 0; padding: 0; background: none; color: var(--accent-ink); font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.ph-note { position: sticky; bottom: 0; justify-self: center; z-index: 5; margin: 0; padding: 9px 16px; border-radius: 99px; background: var(--ink); color: var(--page); font-size: 13px; font-weight: 500; box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.5); }
+.ph-note.bad { background: var(--rec); color: #fff; }
+
+.ph-dropzone { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; border: 2px dashed var(--accent); border-radius: 18px; background: color-mix(in srgb, var(--accent) 12%, transparent); pointer-events: none; }
+.ph-dropzone span { padding: 10px 18px; border-radius: 99px; background: var(--accent); color: #fff; font-weight: 600; }
+
+/* the viewer covers the screen: the photo, ‹ and ›, and a bar of what you can do */
+.ph-viewer { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 56px 72px 96px; background: rgba(8, 8, 12, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: ph-in 0.2s ease-out; }
+@keyframes ph-in { from { opacity: 0; } }
+.ph-viewer img { max-width: 100%; max-height: 100%; border-radius: 14px; box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.9); }
+.ph-nav { position: absolute; top: 50%; translate: 0 -50%; width: 46px; height: 46px; min-height: 0; padding: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.12); color: #fff; font-size: 28px; line-height: 1; }
+.ph-nav:hover { background: rgba(255, 255, 255, 0.22); }
+.ph-nav.prev { left: 16px; }
+.ph-nav.next { right: 16px; }
+.ph-viewer-bar { position: absolute; left: 50%; bottom: 24px; translate: -50% 0; display: flex; align-items: center; gap: 10px; max-width: calc(100% - 32px); padding: 8px 8px 8px 18px; border-radius: 99px;
+  background: rgba(30, 30, 38, 0.9); color: #fff; font-size: 13px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1); }
+.ph-viewer-bar b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-viewer-bar span { color: rgba(255, 255, 255, 0.55); white-space: nowrap; }
+.ph-viewer-bar button { min-height: 32px; padding: 0 13px; border-radius: 99px; background: rgba(255, 255, 255, 0.12); color: #fff; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ph-viewer-bar button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.22); }
+.ph-viewer-bar button:disabled { background: var(--accent); opacity: 1; }
+@media (max-width: 640px) {
+  .ph-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .ph-viewer { padding: 48px 12px 120px; }
+  .ph-viewer-bar { flex-wrap: wrap; justify-content: center; border-radius: 18px; padding: 10px; }
+  .ph-nav { top: auto; bottom: 150px; }
+}
+@media (prefers-reduced-motion: reduce) { .ph-viewer { animation: none; } .ph-img span { transition: none; } }

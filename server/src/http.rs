@@ -3,7 +3,7 @@
 
 use crate::app::Shared;
 use crate::practice::model::Profile;
-use crate::{ai, analysis, coach, courses, practice, recordings, store, util};
+use crate::{ai, analysis, coach, courses, photos, practice, recordings, store, util};
 use axum::{
     Json, Router,
     body::Body,
@@ -51,6 +51,7 @@ pub fn router(app: Shared) -> Router {
         .merge(coach::routes::router())
         .merge(courses::routes::router())
         .merge(ai::routes::router())
+        .merge(photos::routes::router())
         .layer(middleware::from_fn(same_origin_only))
         .with_state(app)
 }

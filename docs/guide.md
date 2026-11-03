@@ -27,6 +27,14 @@ agent, other devices, settings, development and troubleshooting.
      **What's new**: the version you're running (now 0.2) and what came with it, with a dot until
      you've opened it; each item opens the feature. New releases go at the top of
      `web/src/release.ts`.
+     The clock shows a different photo each time you come in (cats, galaxies, plants, and any you
+     added). Click it for Photos: pick one to keep on the clock, or Shuffle. **Open Photos** there,
+     or Photos in the dock, opens the **Photos app**: every picture full size (<kbd>←</kbd>
+     <kbd>→</kbd>, <kbd>Esc</kbd>), **Add photos** (or drop them in), Show on the clock, and delete.
+     A photo you add is shrunk to at most 1600 pixels before it's sent, which also drops the
+     camera's hidden details such as location, and is kept in `<data>/photos`; deleting it removes
+     the file (and logs it in `deletions.jsonl`). Deleting one of Lilt's own only hides it, until
+     Restore.
      The note starts as your goal; click it to write anything (up to 280 characters), click away to keep it. It's saved on
      the server (`room_note` in the profile). **Drag either one anywhere**; it remembers its spot
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
@@ -39,7 +47,7 @@ agent, other devices, settings, development and troubleshooting.
      things to read, and the recorder docked at the bottom. Click any card further down to do it next.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Flashcards**,
-   **Recordings** and **Courses** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
+   **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
    (or the door in the dock) walks you back out to the room. Until you've recorded your "before",
    sitting down opens Start here instead of Today.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
@@ -202,6 +210,7 @@ it persists or keeps coming back, see a voice professional.
 <data>/sessions/<session>/reviews/<review>.{json,md,responses.jsonl}
 <data>/plans/current.json, plans/history/vNNNNN.json
 <data>/jobs/*.json, deletions.jsonl
+<data>/photos/photos.json, photos/<id>.{webp,jpg,png,gif}
 ```
 
 Everything is plain files. There is no database, and the folder alone is enough to rebuild your
@@ -397,6 +406,7 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flow.mjs /tmp/shots   # MOBILE
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # the Practice window; needs a fresh data dir
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flashcards.mjs   # Flashcards: widget, swipes, a text locked until recorded
 cd web && node --test src/flashcards.test.ts   # a chapter dealt as cards, and a run through them
+cd web && LILT_URL=http://127.0.0.1:7979 node e2e/photos.mjs   # Photos: add, show on the clock, delete, hide and restore
 ```
 
 ## Troubleshooting

@@ -145,6 +145,18 @@ export const FlashcardsIcon = () => (
   </svg>
 );
 
+/** Photos: a flower of six soft petals on white, like a photo library's. */
+export const PhotosIcon = () => (
+  <svg viewBox="0 0 52 52" aria-hidden="true">
+    <rect width="52" height="52" rx="12" fill="#fff" />
+    <g transform="translate(26 26)" style={{ mixBlendMode: "multiply" }}>
+      {["#ff9f43", "#ffd23f", "#7ed957", "#4fc3f7", "#9b7bff", "#ff6b8b"].map((c, i) => (
+        <ellipse key={c} cx="0" cy="-9" rx="6.2" ry="9.5" fill={c} opacity=".85" transform={`rotate(${i * 60})`} />
+      ))}
+    </g>
+  </svg>
+);
+
 export const CoursesIcon = () => (
   <svg viewBox="0 0 52 52" aria-hidden="true">
     <defs>
