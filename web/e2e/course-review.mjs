@@ -109,7 +109,12 @@ try {
     cue: Number(getComputedStyle(document.querySelector(".room-peek")).opacity),
   }));
   assert.ok(invitation.glow >= 2, "the screen has a glow drawn along its actual corners");
-  assert.equal(invitation.cue, 1, "the click cue must be visible before hovering");
+  // A calm room: the "Click the screen" label waits until you point at the screen (touch always shows it).
+  assert.equal(invitation.cue, 0, "the click cue stays hidden until you point at the screen");
+  const hit = await page.locator(".room-hit").boundingBox();
+  await page.mouse.move(hit.x + hit.width / 2, hit.y + hit.height / 2);
+  await page.waitForFunction(() => Number(getComputedStyle(document.querySelector(".room-peek")).opacity) === 1, null, { timeout: 3000 })
+    .catch(() => assert.fail("pointing at the screen shows the click cue"));
   if (shots) await page.screenshot({ path: path.join(shots, "room-invitation-desktop.png") });
   await page.locator(".room-hit").focus();
   await page.keyboard.press("Enter");

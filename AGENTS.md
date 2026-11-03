@@ -71,9 +71,16 @@ server on :7979. Most suites take a screenshot folder:
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/results-extras.mjs /tmp/shots
 ```
 
-`e2e/flow.mjs` and `e2e/practice.mjs` are out of date (they stop at the card stack's arrow keys and
-the first-take range offer on any server); the newer suites (`flashcards`, `photos`,
-`recorder-extras`, `results-extras`, `yarn`) pass.
+Every suite passes on a fresh data folder (4 November 2026). Most need nothing else; three differ:
+
+- `deck-extras.mjs` also needs `LILT_DATA_DIR` set to the server's folder, and that folder's
+  `cards/state.json` must hold `text.warmup.lip-trill` as a due review with `"reps": 3` (it's the
+  eyes-off card).
+- `markdown.mjs` and `feedback.mjs` start their own Vite server with a stubbed API: no `LILT_URL`.
+- `recording-lock.mjs` runs with `node --test` against `pnpm dev` on :5173, and stubs every API call.
+
+When the app's flow changes on purpose (what sitting down opens, which details fold away, labels),
+update the suites in the same change.
 
 ## Conventions
 

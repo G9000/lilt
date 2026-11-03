@@ -53,9 +53,15 @@ async function main() {
   const second = await topText();
   const nTop = await page.locator(".cs-dots i").count();
   await page.keyboard.press("ArrowLeft"); await page.waitForTimeout(700);
-  check("Arrow keys flip through the stack and back", /one, two, three/i.test(first) && nTop >= 2 && (await topText()) === first, `${first.slice(0, 20)} → ${second.slice(0, 20)}`);
+  // Your warm-up opens the day; the reference phrase comes next.
+  check("Arrow keys flip through the stack and back, warm-up first and the reference next",
+    second !== first && /one, two, three/i.test(second) && nTop >= 2 && (await topText()) === first, `${first.slice(0, 20)} → ${second.slice(0, 20)}`);
   await snap("00-room");
+  // The first time you sit down, before any starting recording, the computer opens Start here.
   await page.getByRole("button", { name: /^Sit down at the computer/ }).click();
+  await page.waitForFunction(() => location.hash === "#/studio/start-here", null, { timeout: 8000 });
+  check("Sitting down the first time opens Start here", true);
+  await page.goto(`${BASE}/#/deck`);
   await page.locator(".ve-item .readtext").first().waitFor();
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);
   const listed = await page.locator(".ve-item").count();
@@ -63,10 +69,11 @@ async function main() {
   // Opened from the computer, the first card is up straight away: Record always records a card.
   const firstUp = await page.locator(".ve-item").first().evaluate((e) => e.classList.contains("on"));
   await page.locator(".ve-item.on .readtext").waitFor();
-  check("The computer opens Practice full screen with the first card up, today's cards (reference first) and the chapters",
-    firstUp && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item.on .readtext").innerText()), `${listed} cards, ${chapters} chapters`);
+  check("Today opens with the first card up, today's cards (warm-up, then the reference) and the chapters",
+    firstUp && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item").nth(1).locator(".readtext").innerText()), `${listed} cards, ${chapters} chapters`);
   await snap("00-deck");
-  const ratings = ["good", "again", "good", "good", "good", "good"];
+  // "Again" on a new card (the third: after the warm-up and the reference, which come once a day).
+  const ratings = ["good", "good", "again", "good", "good", "good", "good"];
   let rated = 0;
   for (let i = 0; i < 8; i++) {
     const end = await page.getByRole("heading", { name: /That's today's deck/ }).count();
@@ -76,7 +83,8 @@ async function main() {
     await page.waitForTimeout(1800);
     await page.getByRole("button", { name: "Stop recording" }).click();
     await page.getByText("How did that feel?").waitFor({ timeout: 15000 });
-    if (i === 0) {
+    // The warm-up and the reference come once a day, so the third card (a new one) shows all four.
+    if (i === 2) {
       const prev = await page.locator(".vc-rate button").allInnerTexts();
       check("Rating buttons show when each card comes back", prev.length === 4 && /tomorrow/.test(prev[2]), prev.map((x) => x.replace(/\n/g, " ")).join(" | "));
       await snap("00b-rate");
@@ -130,9 +138,9 @@ async function main() {
   const firstFieldset = page.locator("fieldset").first();
   const opts = firstFieldset.locator("label.choice");
   const n = await opts.count();
-  // Pick the option that signals target_not_met where possible (throat/chest, the usual take, no, too flat…)
+  // Pick the option that signals target_not_met where possible (effort, the usual take, no, too flat…)
   const labels = await opts.allInnerTexts();
-  const notMetIdx = labels.findIndex((l) => /throat|usual|^no|too flat/i.test(l));
+  const notMetIdx = labels.findIndex((l) => /effort|usual|^no|too flat/i.test(l));
   await opts.nth(notMetIdx >= 0 ? notMetIdx : n - 1).click();
   await snap("05-check");
   await page.getByRole("button", { name: "Save and continue" }).click();
@@ -194,18 +202,18 @@ async function main() {
   // Answer the recheck as met and save
   const rq = page.locator("fieldset").first().locator("label.choice");
   const rl = await rq.allInnerTexts();
-  const metIdx = rl.findIndex((l) => /lips|smiling|^yes|fits/i.test(l));
+  const metIdx = rl.findIndex((l) => /brighter, and easy|smiling|^yes|fits/i.test(l));
   await rq.nth(metIdx >= 0 ? metIdx : 0).click();
   await page.locator("label.choice", { hasText: "B, the retry" }).click();
   await page.getByRole("button", { name: "Save and see what's next" }).click();
-  await page.getByText(/This time you answered “lips, face or nose”/).first().waitFor({ timeout: 15000 });
+  await page.getByText(/This time you answered “brighter, and easy”/i).first().waitFor({ timeout: 15000 });
   const after = await page.locator("main").innerText();
   check("Updated review reflects the retry's own self-check", /Another session will show whether it repeats/.test(after), after.split("\n").slice(1, 3).join(" | "));
   await snap("10-after-retry");
 
   // 9. Disagreement is kept
   await page.getByRole("button", { name: "Doesn't match what I hear or feel" }).click();
-  await page.locator("#dis-note").fill("I felt it in my lips this time");
+  await page.locator("#dis-note").fill("It sounded brighter to me this time");
   await page.getByRole("button", { name: "Save note" }).click();
   await page.getByText("That's kept for the next assessment").waitFor();
   check("Disagreement saved alongside the review", true);
@@ -217,7 +225,8 @@ async function main() {
   check("Progress says it's coming soon and points at what already works", /Coming soon/.test(prog) && /Then and now/.test(prog) && !/overall score/i.test(prog));
   await snap("11-progress");
   await page.keyboard.press("Tab");
-  const focused = await page.evaluate(() => document.activeElement?.textContent ?? "");
+  // An icon button's name is its aria-label, not its text.
+  const focused = await page.evaluate(() => { const a = document.activeElement; return a && a !== document.body ? (a.getAttribute("aria-label") || a.textContent || "").trim() : ""; });
   check("Keyboard focus reaches controls", focused.length > 0, focused.slice(0, 40));
 
   // 11. Texts → a chapter: live pitch, takes, measured line, before/after
@@ -260,14 +269,14 @@ async function main() {
   const sketches = await page.locator(".wpitch").count().catch(() => 0);
   check("Measured pitch drawn under the words", sketches > 0, `${sketches} words`);
   await record(page, 2.5);
-  await page.getByText(/^before ·/i).first().waitFor({ timeout: 10000 });
+  await page.getByText(/^last time ·/i).first().waitFor({ timeout: 10000 });
   check("Second take shows a before/after A/B pair", true);
   await page.waitForTimeout(3000);
   await page.getByRole("button", { name: "Use this take's range as my comfortable range" }).click();
   await page.getByText(/Your range is now \d+–\d+ Hz/).waitFor();
   check("A take's range can become the comfortable range", true);
-  // The open chapter folder in the tree (the second list; the first holds Today).
-  check("The chapter counts the practised text", /^1\/\d+$/.test(await page.locator(".ve-tree").nth(1).locator(".ve-folder.open .ve-open .c").first().textContent()));
+  // The open chapter folder in the sidebar (the tree is split by part of the course).
+  check("The chapter counts the practised text", /^1\/\d+$/.test(await page.locator(".ve-folder.open").filter({ hasText: "Everyday phrases" }).locator(".ve-open .c").first().textContent()));
   await snap("14-studio-result");
   await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
@@ -278,6 +287,8 @@ async function main() {
   // Theme toggle
   const before = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));
   await page.getByRole("button", { name: /Switch theme/ }).click();
+  // The theme is applied after React's render, not in the click itself.
+  await page.waitForFunction(() => document.documentElement.getAttribute("data-theme") === "dark", null, { timeout: 3000 }).catch(() => {});
   const themed = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));
   check("Theme toggle switches between light and dark", before === null && themed === "dark", `${before} → ${themed}`);
   await snap("15-dark");

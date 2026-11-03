@@ -56,8 +56,8 @@ async function main() {
   await page.getByRole("button", { name: "Find my starting voice" }).click();
   await page.getByRole("heading", { name: "Find your starting voice" }).waitFor();
   await record(page, 3);
-  await page.locator(".prc-insight").first().waitFor({ timeout: 60000 });
-  check("starting-voice take gets a note in words", (await page.locator(".prc-insight .n").first().innerText()).length > 0);
+  await page.locator(".ve-start-done").waitFor({ timeout: 60000 });
+  check("starting-voice take shows its pitch", /\d+ Hz/.test(await page.locator(".ve-result").first().innerText()));
   await page.getByRole("button", { name: "Use it for now" }).click();
   await page.getByText("You're all set.").waitFor();
   const profile = await page.evaluate(() => fetch("/api/profile").then((r) => r.json()));
@@ -77,7 +77,8 @@ async function main() {
   await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("heading", { name: "Studio" }).waitFor();
   await record(page);
-  await page.locator(".ve-free .prc-insight").waitFor({ timeout: 60000 });
+  // A free take folds its details: the summary line shows the pitch, the note is one click away.
+  await page.locator(".ve-free .ve-sum").filter({ hasText: /\d+ Hz/ }).waitFor({ timeout: 60000 });
   check("a free take's summary shows in the page", true);
   check("the recorder sits in the page, not floating over it", await page.locator(".ve-dock").evaluate((e) => getComputedStyle(e).position !== "absolute"));
   await shot(page, "2-free");
@@ -128,7 +129,9 @@ async function main() {
   await page.locator(".ve-item.on").waitFor();
   await record(page);
   await page.getByText("How did that feel?").waitFor({ timeout: 15000 });
-  await page.locator(".ve-item.on .tr-pitch").waitFor({ timeout: 60000 });
+  // The pitch line is folded under "Pitch details", whose summary line shows once the take is measured.
+  await page.locator(".ve-item.on .ve-sum").filter({ hasText: /\d+ Hz/ }).click({ timeout: 60000 });
+  await page.locator(".ve-item.on .tr-pitch").waitFor();
   await page.locator(".ve-item.on .tr-pitch").scrollIntoViewIfNeeded();
   await shot(page, "3b-rate");
   check("the take's pitch line shows, ready to play", await page.locator(".ve-item.on .tr-chart canvas").isVisible());
