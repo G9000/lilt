@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "Resonance, rewritten", body: "The chapter now teaches the biggest lever: a smaller space for your voice, found by sound, step by step, and never by squeezing.", to: "/studio/resonance" },
       { title: "Ball of yarn", body: "A calm game: lift a ball of yarn with your voice, humming or speaking, in your own range. No scores.", to: "/yarn" },
       { title: "Play my note", body: "The recorder plays the middle of your range, to hum along to before you start." },
       { title: "Brighter or darker", body: "In Resonance, a live strip shows whether a steady sound is brighter or darker than when you started.", to: "/studio/resonance" },

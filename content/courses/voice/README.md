@@ -65,6 +65,12 @@ positions, props in the mouth, and treating creak or a falling pitch as proof of
 Chapter/text ids and check-in words were kept stable. Edition 3 is unchanged so personal copies
 can review these corrections piece by piece instead of replacing the whole course.
 
+The 4 November rewrite of Resonance centres it on making the space smaller (a higher larynx, a
+forward tongue, spread lips), found through sounds: the big-dog/small-dog pant, the whisper siren
+and the toy-dog "wa" are now the main route, no longer optional. It keeps the review's rules: no
+held swallow, no pushing on the throat, and smaller never means tighter. Text ids and the check-in
+words are unchanged.
+
 Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
 review by a voice-specialist speech and language therapist; and real-user checks of comfort,
 understanding and everyday carryover. Automated software tests do not establish training efficacy.
