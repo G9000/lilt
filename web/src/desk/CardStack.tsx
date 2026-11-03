@@ -12,7 +12,6 @@ import { cardPicture, picture, type Picture } from "./pictures";
 
 const KIND: Record<DeckItem["kind"], string> = { warmup: "Warm-up", daily: "Daily", before_after: "Before and after", new: "New", review: "Review", again: "Again", cooldown: "Cool-down" };
 const SUB: Record<string, string> = { reference: "The same every day", exercise: "Exercise", text: "Read aloud" };
-const SHAPE = "M0 18 Q0 0 18 0 L160 0 Q172 0 181 8 L197 23 Q205 30 217 30 L282 30 Q300 30 300 48 L300 146 L0 146 Z";
 
 /** Where a card rests at depth d (0 = top): each one higher, a touch smaller, fanned alternately. */
 const rest = (d: number) => ({
@@ -175,7 +174,6 @@ function StackCard({ item, depth, index, count, light, pic, first, delay, onSwip
       <div className="cs-in">
         <div className="cs-img" style={{ backgroundImage: `url(${pic.url(light)})`, ...pic.card }} />
         <span className={`cs-chip${first ? " next" : ""}`}>{first ? "Up next" : KIND[item.kind]}</span>
-        <svg className="cs-shape" viewBox="0 0 300 146" preserveAspectRatio="none" aria-hidden="true"><path d={SHAPE} /></svg>
         <div className="cs-body">
           <div className="cs-title">Today's practice</div>
           <div className="cs-phrase">{item.card.front}</div>
@@ -199,7 +197,6 @@ function StaticCard({ light, pic, title, sub, onStart }: { light: Light; pic: Pi
       <div className="cs-drag">
       <div className="cs-in">
         <div className="cs-img" style={{ backgroundImage: `url(${pic.url(light)})`, ...pic.card }} />
-        <svg className="cs-shape" viewBox="0 0 300 146" preserveAspectRatio="none" aria-hidden="true"><path d={SHAPE} /></svg>
         <div className="cs-body">
           <div className="cs-title">Today's practice</div>
           <div className="cs-phrase">{title}</div>
