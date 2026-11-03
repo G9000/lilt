@@ -15,6 +15,9 @@ export const SIDE_SCREEN: Quad = [[1172, 348], [1415, 354], [1413, 520], [1172, 
 /** Where the camera looks on the home screen, and the cat (for its speech bubble). */
 export const DESK_FOCUS = { x: 960, y: 430 };
 export const CAT_SPOT = { x: 345, y: 735 };
+/** The iced coffee on the desk, which opens Buy Me a Coffee. */
+export const COFFEE = { x: 1150, y: 455, w: 56, h: 120 };
+export const COFFEE_URL = "https://buymeacoffee.com/animaos";
 
 export const roomUrl = (l: Light) => `room/room-${l}.webp`;
 const catUrl = (part: string, l: Light) => `room/cat-${part}-${l}.webp`;

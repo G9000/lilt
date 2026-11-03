@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
-  CAT_SPOT, catHit, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
+  CAT_SPOT, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
   quadMatrix, roomUrl, W, weights,
 } from "./scene";
 
@@ -223,6 +223,10 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
           <b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5v10l3-3 2.5 4 2-1.2-2.5-4H13Z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg><span className="room-click">Click the screen</span><span className="room-tap">Tap the screen</span></b>
           <span>{cards === null ? "Your desk is ready" : cards === 0 ? "All done · your desk is still open" : `${cards} card${cards === 1 ? "" : "s"} today`}</span>
         </div>
+        <a className="room-coffee" href={COFFEE_URL} target="_blank" rel="noopener noreferrer" tabIndex={inside ? -1 : 0}
+          style={{ left: COFFEE.x, top: COFFEE.y, width: COFFEE.w, height: COFFEE.h }} onPointerDown={(e) => e.stopPropagation()}>
+          <span>Buy me a coffee</span>
+        </a>
         {children}
       </div>
       <div className="room-shade" />

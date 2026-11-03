@@ -70,9 +70,11 @@ agent, other devices, settings, development and troubleshooting.
      downloaded or sent anywhere. The record spins while it plays, and the track shows in the menu
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live
      pitch), so music never reaches a take or a pitch reading, then picks up again.
+   - **The iced coffee** on the desk opens Buy Me a Coffee (`COFFEE_URL` in
+     `web/src/room/scene.ts`) in a new tab; pointing at it says "Buy me a coffee".
    - The artwork lives in `web/public/room/` (WebP files: four room lights, and the cat's body,
      tail and ear in each light). Swap them for other art of the same size, then re-measure the
-     screen corners in `web/src/room/scene.ts`. The look is documented in `DESIGN.md`.
+     screen corners and the coffee's box in `web/src/room/scene.ts`. The look is documented in `DESIGN.md`.
 2. **Today** is your **voice deck**: Anki-style spaced repetition, but for your voice. The deck
    holds the daily reference phrase, any cards due for review, and a couple of new cards (2 a day
    by default, `new_cards_per_day` in the profile). **Start** opens the Practice window: say the
