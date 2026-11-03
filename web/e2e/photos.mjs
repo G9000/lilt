@@ -28,6 +28,8 @@ async function main() {
   await tiles().first().waitFor();
   const builtIn = await tiles().count();
   check("Photos opens as an app with Lilt's photos", builtIn >= 10, `${builtIn} photos`);
+  const names = await tiles().locator(".ph-meta b").allInnerTexts();
+  check("…but not the views of the room", !names.some((n) => /^The (room|cat on the screen|window|desk)$/.test(n)), names.join(", "));
   const box = await tiles().first().locator(".ph-img span").boundingBox();
   check("…each shown as a square", box && box.width > 100 && Math.abs(box.width - box.height) < 2, box && `${Math.round(box.width)}×${Math.round(box.height)}`);
   check("it has a place in the dock", await page.getByRole("button", { name: "Photos" }).count() > 0);

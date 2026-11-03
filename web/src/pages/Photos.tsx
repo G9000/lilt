@@ -1,6 +1,6 @@
 import "../styles/photos.css";
 import { DragEvent, useEffect, useRef, useState } from "react";
-import { api } from "../api";
+import { api, ApiError } from "../api";
 import { ShuffleIcon } from "../desk/Desk";
 import { pinnedPicture, pinPicture, refreshPhotos, setPhotoIndex, usePhotos } from "../desk/photos";
 import type { Picture } from "../desk/pictures";
@@ -53,7 +53,12 @@ export function PhotosPage() {
     let done = 0;
     for (const f of images) {
       setBusy(`Adding ${images.length > 1 ? `${done + 1} of ${images.length}` : "your photo"}…`);
-      try { await api.addPhoto(await prepare(f), nameOf(f)); done++; } catch (e: any) { setNote({ text: `${f.name}: ${e.message}`, bad: true }); }
+      try { await api.addPhoto(await prepare(f), nameOf(f)); done++; } catch (e: any) {
+        // A Lilt started before Photos existed has no way to take photos: say so, rather than its HTTP error.
+        const old = e instanceof ApiError && (e.status === 404 || e.status === 405);
+        setNote({ text: old ? "Restart Lilt to add photos: the Lilt running now is older than this page." : `${f.name}: ${e.message}`, bad: true });
+        if (old) break;
+      }
     }
     setBusy(null);
     await refreshPhotos();
@@ -104,7 +109,7 @@ export function PhotosPage() {
             </button>
             <div className="ph-meta">
               <b title={p.name}>{p.name}</b>
-              <small>{p.id === pinned ? "On the clock" : p.mine ? "Yours" : p.photo ? "Lilt's" : "A view of the room"}</small>
+              <small>{p.id === pinned ? "On the clock" : p.mine ? "Yours" : "Lilt's"}</small>
             </div>
             {confirm === p.id ? (
               <div className="ph-confirm" role="group" aria-label={`Delete ${p.name}?`}>

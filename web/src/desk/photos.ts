@@ -3,8 +3,9 @@ import { api, PhotoIndex } from "../api";
 import { Picture, PICTURES } from "./pictures";
 
 /**
- * The pictures you can see in Photos and on the clock: Lilt's own, less any you hid, then the ones
- * you added (kept by the server in <data>/photos). One copy, shared by every widget and window, and
+ * The pictures you can see in Photos and on the clock: Lilt's own photos (not the views of the room,
+ * which only Today's cards use), less any you hid, then the ones you added (kept by the server in
+ * <data>/photos). One copy, shared by every widget and window, and
  * which picture the clock shows (one you picked, or a new photo each time you come in).
  */
 
@@ -27,7 +28,7 @@ const yours = (p: PhotoIndex["uploaded"][number]): Picture => ({
 
 export function visiblePictures(): Picture[] {
   const hidden = new Set(index?.hidden ?? []);
-  return [...PICTURES.filter((p) => !hidden.has(p.id)), ...(index?.uploaded ?? []).map(yours)];
+  return [...PICTURES.filter((p) => p.photo && !hidden.has(p.id)), ...(index?.uploaded ?? []).map(yours)];
 }
 
 export function usePhotos() {
@@ -56,11 +57,10 @@ export function pinPicture(id: string | null) {
   write(PICTURE_KEY, id ?? "shuffle");
   window.dispatchEvent(new Event("lilt:clock-picture"));
 }
-/** A photo to shuffle to: any but the room's own views, and not the last one shown. */
+/** A photo to shuffle to: any but the last one shown. */
 export function shufflePicture(list: Picture[]): string {
-  const photos = list.filter((p) => p.photo);
-  const fresh = photos.filter((p) => p.id !== read(LAST_KEY));
-  const from = fresh.length ? fresh : photos.length ? photos : list;
+  const fresh = list.filter((p) => p.id !== read(LAST_KEY));
+  const from = fresh.length ? fresh : list;
   const p = from[Math.floor(Math.random() * from.length)] ?? PICTURES[0];
   write(LAST_KEY, p.id);
   return p.id;
