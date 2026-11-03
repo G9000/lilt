@@ -333,9 +333,11 @@
 .fl-cards-back.b2 { background: #34343c; translate: 6px -12px; rotate: 5deg; scale: 0.92; }
 .fl-cards-back.b1 { translate: -3px -6px; rotate: -6deg; scale: 0.96; }
 .fl-cards-card { overflow: hidden; rotate: -2.5deg; background: #1c1c21; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 20px 34px -16px rgba(0, 0, 0, 0.85); }
-.fl-cards-art { position: absolute; inset: 0 0 30%; background-repeat: no-repeat; background-size: 300% auto;
-  -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent); mask-image: linear-gradient(to bottom, #000 35%, transparent); }
-.fl-cards-chip { position: absolute; left: 10px; top: 10px; padding: 2px 8px; border-radius: 99px; background: #e0643c; font-size: 10.5px; font-weight: 600; }
+/* a warm coral wash with the book drawn on it, fading into the card */
+.fl-cards-art { position: absolute; inset: 0 0 34%; display: grid; place-items: end center; padding-bottom: 2px;
+  background: radial-gradient(120% 90% at 50% 0%, #ffb38a 0%, #e0643c 55%, #1c1c21 100%); }
+.fl-cards-art svg { width: 100%; height: 100%; }
+.fl-cards-chip { position: absolute; left: 10px; top: 10px; padding: 2px 8px; border-radius: 99px; background: rgba(28, 28, 33, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); font-size: 10.5px; font-weight: 600; }
 .fl-cards-body { position: absolute; inset: auto 0 0; display: grid; gap: 5px; padding: 0 14px 13px; }
 .fl-cards-body b { font-size: 16px; font-weight: 650; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5); }
 .fl-cards-segs { display: flex; gap: 2px; }
