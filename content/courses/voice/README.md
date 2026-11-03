@@ -71,6 +71,12 @@ and the toy-dog "wa" are now the main route, no longer optional. It keeps the re
 held swallow, no pushing on the throat, and smaller never means tighter. Text ids and the check-in
 words are unchanged.
 
+Vocal weight had the same rewrite: it now says plainly what weight is (thick, buzzy contact against
+thin, clear edges) and teaches one route: hear "HEY" against "aww", borrow a light little sound,
+slide up until the sound thins and carry it back down, then words, with "light, not breathy" as its
+own step. It never treats creak or a falling pitch as proof of heavier weight. Ids and the check-in
+words are unchanged.
+
 Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
 review by a voice-specialist speech and language therapist; and real-user checks of comfort,
 understanding and everyday carryover. Automated software tests do not establish training efficacy.
