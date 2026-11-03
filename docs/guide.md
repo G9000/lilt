@@ -125,13 +125,16 @@ agent, other devices, settings, development and troubleshooting.
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
    - **Flashcards** (`#/flashcards`, in the dock, or the Flashcards widget beside the plant in the
-     room, which shows the chapter you're on and how far through it you are) deals a chapter out as
-     cards, one at a time: its opening, each step of the how-to, its video, then each text. Swipe
-     right (or <kbd>→</kbd>, or Got it) when you've got a card, left (<kbd>←</kbd>, Again later) to
-     see it again at the back of the pile; Undo puts the last one back. **A text's card won't swipe
-     until you've recorded it there**: record, listen back on the card, then swipe. Takes are saved
-     like any chapter take, so they show in Recordings and the chapter's progress. **Open the full
-     chapter** on any card opens it in Practice at that text. Flashcards is apart from Today: nothing
+     room, which shows the chapter you're on and how far through it you are) opens full screen and
+     deals a chapter out as the room's illustrated cards, one at a time: its opening, each step of
+     the how-to, its video, then each text. The chapter's name at the top is a menu of every chapter
+     with how far through each you are. Swipe right (or <kbd>→</kbd>, or Got it beside the card) when
+     you've got a card, left (<kbd>←</kbd>, Again) to see it again at the back of the pile; Undo puts
+     the last one back. **A text's card won't swipe until you've recorded it** with Practice's
+     recorder, docked below with the live pitch line: then your take is on the card to play, with
+     its pitch details, and it swipes. **Tips** on a text's card opens the chapter's steps right
+     there. Takes are saved like any chapter take, so they show in Recordings and the chapter's
+     progress. **Full chapter** opens it in Practice at that text; <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
      is rated or scheduled, and where you are in each chapter is kept in this browser.
 8. **Texts** has 131 texts across 16 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and

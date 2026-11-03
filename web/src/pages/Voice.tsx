@@ -654,7 +654,7 @@ function useHeld(value: number | null, run: boolean, smooth = false): { v: numbe
 }
 
 /** The recorder at the bottom: one button, the waveform with the pitch line on it, and the numbers. */
-function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false, retake = false, eyesOff = false, foldChart = false }: {
+export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false, retake = false, eyesOff = false, foldChart = false }: {
   meta: TakeMeta | null; band: [number, number] | null; allowRetake: boolean; quiet?: boolean;
   /** An eyes-off take: no live pitch line or numbers, so you listen to yourself instead. */
   eyesOff?: boolean;
@@ -885,7 +885,7 @@ const RESULTS_OPEN = "lilt.results.open";
  * A take's measured details, folded to one line (its middle pitch and whether that's in your range)
  * so the page stays short; open them for the rest. Whether you keep them open is remembered.
  */
-function FoldedMeasures({ take, band, card, onUseRange, onMeasured }: {
+export function FoldedMeasures({ take, band, card, onUseRange, onMeasured }: {
   take: Take; band: [number, number] | null; card?: CardKind | null;
   onUseRange?: (lo: number, hi: number) => void; onMeasured?: (m: Measured) => void;
 }) {

@@ -23,7 +23,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   compare: { title: "Compare", width: 820 },
   studio: { title: "Practice", width: 1120, full: true },
   texts: { title: "Practice texts", width: 760 },
-  flashcards: { title: "Flashcards", width: 720 },
+  flashcards: { title: "Flashcards", width: 1120, full: true },
   library: { title: "Exercises", width: 760 },
   progress: { title: "Progress", width: 840, full: true },
   history: { title: "Recordings", width: 780, full: true },
