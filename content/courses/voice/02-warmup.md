@@ -19,7 +19,7 @@ Two minutes that make everything after them easier. Pick two or three of these; 
 
 **Breathe low.** Sit or stand tall with your shoulders loose. Put one hand on your belly and breathe in through your nose so the hand moves out and your shoulders stay still. Breathe out slowly on a quiet "sss". Three or four of those.
 
-**Let go of the tension.** Roll your shoulders back a few times. Rub your jaw muscles gently with your fingertips and let your mouth hang a little open. Finish with the start of a yawn, sighed out gently. (A yawn is a reset: it lowers the larynx and opens the throat, the opposite of the shape you'll speak from later.)
+**Let go of the tension.** Let your shoulders and jaw relax. If it feels good, try a small, easy yawn-sigh as a reset. You do not need to stretch your mouth wide or hold a throat position for speaking.
 
 **Get the voice buzzing.** Hum, trill your lips like a motorboat, or say "ooo" into a straw. Narrowing the way out (your lips, a straw, or a hum through your nose) raises the air pressure just above your vocal folds, so they vibrate with less effort and less impact. That's why voice therapists love these.
 
@@ -45,7 +45,7 @@ mmm… hello, how are you?
 
 haaah ↘
 
-> Start a yawn, then sigh it out on a voice that slides gently down. It's a reset for when things feel tight, not the shape you speak from.
+> If it feels easy, let a small yawn turn into a gentle downward sigh. It is an optional reset, not a position to hold.
 
 ## lip-trill
 

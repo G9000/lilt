@@ -1,4 +1,114 @@
-# Lilt: validation report (first release, 26 Oct 2026)
+# Lilt: validation report
+
+## 3 November 2026: width controls removed
+
+Removed the experimental section width/column controls, document grouping and expanded-layout
+styles at the owner's request. Guide and chapter documents use the standard reading column again;
+old saved width preferences are ignored. The monitor glow and exercise-number spacing fixes remain.
+
+Verified: production build, all 60 remaining frontend tests, the course browser check across six
+widths (including old saved preferences), and the Markdown matrix across five widths, both themes
+and normal/largest text. The restored desktop reading layout was visually inspected.
+
+## Earlier 3 November 2026 pass: section layouts (removed above) and corrected monitor glow
+
+Replaced the global Wide view toolbar with floating controls for individual guide/chapter sections:
+Normal width, Full width and Two columns. Preferences are independent and survive reloads.
+Numbered instructions form paired rows on wide screens and stack on phones. The monitor's static
+glow now follows its actual painted polygon, avoiding distortion from the transformed click target.
+
+The production build and all 63 frontend tests pass. The built-app browser check verifies section
+independence, persistence, real two-column placement, mobile stacking, menu keyboard dismissal,
+reference/footnote links, and overflow across six widths with normal/largest text. The Markdown
+matrix and feedback regression also pass. Desktop columns and the new monitor glow were visually
+inspected. Checks used Chrome on Windows and emulated touch; physical phones and Safari remain
+untested. The existing large-bundle build advisory remains.
+
+## Earlier 3 November 2026 pass: monitor invitation and reading width (superseded above)
+
+The room's middle monitor now has a resting glow and a visible click/tap cue. The halo strengthens
+on hover/focus; reduced motion preserves the static invitation. Entry hides the cue. Added a saved
+Wide view preference for Home, chapter and update documents on larger screens. Wide blocks use
+more space while prose and footnotes keep a bounded width; exercise numbers remain inside the page.
+
+The production build, 60 frontend tests, Markdown browser matrix and feedback regression pass.
+The built-app check additionally verifies mouse, keyboard and emulated-touch entry, the reduced-motion
+cue, width changes and reload persistence, and wide layouts at 320/390/768/1024/1440/1920 px with
+normal and largest text. Desktop/phone room previews and a wide document preview were inspected.
+Checks used Chrome on Windows; physical mobile devices and Safari were not tested. The existing
+large-bundle build advisory remains.
+
+## 3 November 2026: shared UI and Markdown
+
+The shared Markdown renderer now uses CommonMark and GFM, with nested lists, all heading levels,
+tables, task lists, code blocks and footnotes. HTML execution and unsafe URL schemes remain blocked.
+Images preserve their proportions. Tables/code scroll within the document, and document links and
+keyboard scrolling do not trigger app navigation or practice shortcuts. Home and rich chapter
+introductions keep complete Markdown together, so references and multiline blocks survive.
+
+The shared layout has a clearer heading scale, consistent prose spacing, wider reading columns,
+flowing chapter actions, larger mobile navigation targets, and responsive settings/rating controls.
+Home prioritizes actions and the chapter catalog; the full authored guide is expandable.
+
+Verified on Windows/Chrome with isolated test data and no microphone:
+
+- `node --test src/*.test.ts src/room/*.test.ts`: 60 frontend tests pass.
+- TypeScript and the production web build pass; the existing large-bundle advisory remains.
+- `node e2e/markdown.mjs`: subject-neutral content at 320, 390, 768, 1024 and 1440 px,
+  both themes and normal/largest text. Checks Markdown structure, safe links, footnotes,
+  image proportions, title/action overlap, nested tip layout and horizontal overflow.
+- `node e2e/course-review.mjs`: seven real app screens at 320, 768 and 1440 px in both
+  themes/text sizes, plus a synthetic general-interest course testing complete Markdown documents,
+  reference links, next-chapter routing and keyboard scrolling in code/footnotes.
+- `node e2e/feedback.mjs`: recording-feedback regression check still passes.
+- Desktop/mobile screenshots were inspected. Safari and physical mobile devices were not tested.
+
+## 3 November 2026: syllabus and feedback review
+
+The general MtF learning route and resource list were clarified; pitch, resonance, weight,
+articulation and intonation wording was revised against accessible ASHA and NHS Fife guidance.
+External YouTube link titles/creator credits were checked, not the full video instruction.
+The NHS Lothian PDF was unavailable during this review. No clinician review or human voice-outcome
+validation is claimed. See `content/courses/voice/README.md` for the remaining teaching work.
+
+Verified on Windows in this pass:
+
+- All 57 frontend unit tests passed; TypeScript and production web build passed (existing large-bundle warning).
+- All 23 course tests passed. All 131 text ids/spoken texts and 16 check-ins remain unchanged.
+- `web/e2e/feedback.mjs`: reproduced and fixed stale pitch/suggestion/resonance when changing takes,
+  and the pitch-scale setting failing to update mounted views. Uses synthetic analysis, no microphone.
+- `web/e2e/course-review.mjs`: actual built app with isolated temporary data; course navigation,
+  revised guidance, 16 chapters, desktop and 390 px phone layouts, light/dark screenshots inspected.
+- Native server build passed. POSIX-only analysis tests are now Unix-gated so the Windows test
+  binary compiles. A stale filename-only validation-error assertion was corrected.
+
+### Follow-up: audio failures, formatting and lint resolved
+
+The eight analysis-dependent Rust failures came from a missing analysis environment and a Unix-only
+interpreter path. Installed the existing locked Python 3.12 dependencies with `uv sync --locked`;
+the dependency lockfile did not change. The app and tests now share a platform-specific default:
+`analysis/.venv/Scripts/python.exe` on Windows, `analysis/.venv/bin/python` elsewhere. The app still
+honours `LILT_PYTHON` overrides. Setup instructions are in `docs/guide.md`.
+
+Rechecked on Windows:
+
+- `cargo test --offline --all-targets --all-features`: **66 passed, zero failures**, including all
+  eight previously failing analysis, coaching and recording cases with the real Python helper.
+- `uv run --locked pytest -q`: **47 passed, one skipped**. The skipped case requires macOS `say`.
+  Two POSIX-specific Rust process tests are Unix-gated and were not run on Windows.
+- `cargo fmt --all -- --check`: passed after applying standard formatting across the Rust sources.
+- `cargo clippy --offline --all-targets --all-features -- -D warnings`: passed, with no lint
+  suppressions added. Mechanical suggestions were reviewed separately from formatting; complex
+  tuple types were named, and a constant invariant is now asserted at compile time.
+- Native server build, all 57 frontend tests, TypeScript, web build and both browser checks above
+  passed again. The web build retains its existing non-blocking large-bundle advisory.
+
+An independent code review found no actionable regressions. These are software and synthetic-audio
+checks; they do not validate natural-voice accuracy or voice-training outcomes.
+
+The original report below is historical; its counts and feature-gap lists describe the first release.
+
+## First release, 26 October 2026
 
 This report keeps four questions apart, as PRD §14 requires: does the **software** work, are the
 **measurements** accurate, is the **coaching** valid, and do **long-term voice outcomes** improve?

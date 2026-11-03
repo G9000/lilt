@@ -8,6 +8,30 @@ cover: images/cover.webp
 Pull up a chair. This is a small, quiet room for working on your voice: a few minutes a day, out
 loud, at your own pace. Nobody's listening but you (and the cat, who is asleep).
 
+## Your route through voice feminization
+
+This is a general MtF guide for trans women and other people exploring a more feminine voice.
+There is no single feminine sound to copy. Start with a sound you would enjoy using, in your own
+accent and language. You can adapt the English practice phrases to words you actually say.
+
+- **Start with ease.** [Set up and save a baseline](#/studio/start-here), then choose one
+  [warm-up](#/studio/warmup) and the hum-to-hello greeting. You do not need to finish every drill.
+- **Learn to hear a change.** Explore [resonance](#/studio/resonance), [vocal weight](#/studio/weight)
+  and [pitch](#/studio/pitch), one at a time. Watch a demonstration, try a small contrast, and
+  listen back. You can visit these in the order that makes sense to you.
+- **Combine what works.** Bring one comfortable change into a greeting. Add a second only when
+  you can repeat the first without bracing or running out of breath. Higher or brighter is not
+  automatically better.
+- **Make it speech.** Explore [melody](#/studio/intonation) and [clear articulation](#/studio/articulation),
+  then [phrases](#/studio/phrases), [reading](#/studio/reading), [your own words](#/studio/own-words)
+  and [real situations](#/studio/real-life). Keep expression and personality in the voice.
+- **Decide the next step.** If a short phrase feels easy, is repeatable and sounds closer to your
+  goal, try a slightly longer phrase or one new situation. If not, shorten it or change the cue.
+  Rest for strain or hoarseness. There is no required pitch increase or deadline.
+
+This route is Lilt's learning structure, not a clinically validated protocol. A voice-specialist
+speech and language therapist can tailor it when you are stuck, uncomfortable, or unsure what you hear.
+
 ## Why this exists
 
 I built Lilt for myself, because I'm terrible at discipline. The good stuff is all out there:
@@ -71,6 +95,23 @@ Today still introduces new cards gradually; the chapters are also there to brows
 Let meaning guide your melody: ordinary falls, rises and pauses all belong in speaking.
 
 ## Listening examples
+
+Use this short viewing list alongside the lessons. Pick one demonstration per visit:
+
+- [Getting started — TransVoiceLessons](https://www.youtube.com/watch?v=BfCS01MkbIY): an overview
+  to accompany Start here. Choose one quality to explore rather than copying a whole voice.
+- [Gentle warm-up — Nicole Gress](https://www.youtube.com/watch?v=1f9TBpHm2a0): pair with Warm-ups;
+  use only the parts that feel easy.
+- [Resonance — TransVoiceLessons](https://www.youtube.com/watch?v=BW8X2nXexQs): listen for changes
+  in sound colour. Treat physical imagery as optional cues, not positions to force.
+- [Vocal weight for beginners — TransVoiceLessons](https://www.youtube.com/watch?v=a0PpzrWsTUE):
+  compare heavier and lighter examples; return to the weight chapter for a short phrase.
+- [Low-pitched feminine voice — TransVoiceLessons](https://www.youtube.com/watch?v=5OyfNLWf3UM):
+  explore the idea that feminine voices need not all be high. Use your own comfortable range.
+
+These are external teaching resources, not clinical approval of every exercise or a promise of
+results. The links and creator credits were checked on 3 November 2026; the videos have not had a
+full clinical review by Lilt. NHS and ASHA guidance below informs the course's goals and voice care.
 
 The early skill chapters link to demonstrations by voice teachers, and NHS Fife has a
 [warm-up demonstration](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/how-to-take-care-of-your-voice/).
@@ -143,7 +184,7 @@ The exercise instructions are written in Lilt's own words, from ideas in the gui
 can read the originals. The listening questions, early greeting cards and suggested daily loop are
 Lilt's teaching choices; they have not been validated as a training programme. The chapter video
 cards link to their named creators' demonstrations; their audio is not copied into Lilt.
-Voice-care guidance and the technique were checked against these sources again on 1 November 2026, by an AI, not a clinician.
+Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, by an AI, not a clinician. This does not mean every resource below was re-reviewed; the NHS Lothian PDF could not be retrieved during that check.
 
 - NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
   (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"

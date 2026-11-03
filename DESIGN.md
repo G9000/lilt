@@ -10,7 +10,9 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   bottom-right as a swipeable stack (folder-style cards, one per practice card, Motion springs);
   tapping the top card starts it. A few small widgets float in the painting (radio, note), riding
   the camera and draggable (Motion); they step aside rather than cover the stack. The
-  computer itself is the other way in (the middle monitor glows on hover).
+  computer itself is the other way in: its middle monitor has a steady glow following its painted edges,
+  and a visible "Click the screen" cue ("Tap" on touch devices). Hover and keyboard focus make the
+  edge clearer. The glow does not pulse. The glow and cue hide when entering.
 - **The move**: the camera pushes into the painted monitor (about 1.1 s, ease in-out). As the
   screen fills the view, the desktop fades up out of a blur. Leaving reverses it. No rectangles
   are drawn over the painting during the move.
@@ -65,10 +67,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   **Progress** says "Coming soon" (with a Soon tag in the sidebar) and points at Then and now and
   Recordings, until it can be trusted. While Practice fills the screen, the desk's widgets are hidden
   so nothing shows through the glass.
-  **Home** (`#/studio`, the dock's Chapters app) is the Practice index, read like a Notion page:
-  a full-width cover (`cover:` in `content/courses/voice/index.md`), then the owner's words and pictures
-  from that file (why it exists, an honest note, how it's laid out, looking after your voice, how to
-  contribute, sources), then the chapters with progress, generated. When an agent has rewritten the syllabus for you, one quiet
+  **Home** (`#/studio`, the dock's Chapters app) puts practice actions and the chapter catalog first:
+  a full-width course cover, a "Your practice" heading, the current practice state, and shortcuts to
+  the first/next chapter, Today, and the catalog. The owner's complete Markdown introduction is in
+  the expandable **Course guide**, preserving references and code blocks across sections. The
+  guide and chapter introductions use one centred reading column, fitting smaller screens.
+  Width controls and section columns are removed for now. Previously saved width choices have
+  no effect. References and footnotes stay within the same parsed Markdown document. The
+  chapter catalog is generated with progress. When an agent has rewritten the syllabus for you, one quiet
 line under the chapters says you're using your own version, with how many changes, and that your AI
 assistant can show the differences, undo, or go back to Lilt's original; when Lilt's original has changed
 since, a coral link adds "Lilt's original has N updates for you →". **Updates from Lilt**

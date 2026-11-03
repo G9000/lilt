@@ -1,73 +1,60 @@
-import { ReactNode } from "react";
+import ReactMarkdown, { defaultUrlTransform, type Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useId, useMemo, type KeyboardEvent } from "react";
+import "../styles/markdown.css";
 
-/**
- * A small Markdown renderer for content written by the owner (content/courses/voice/index.md): headings,
- * paragraphs, lists, quotes, **bold**, _italic_, `code`, [links](url) and ![pictures](images/x.webp).
- * It builds React elements, never HTML, so nothing in the file can inject markup. Picture paths are
- * relative to content/courses/voice, as Obsidian reads them, and served at /texts/images.
- */
+/** Course-local images use the existing media endpoint; arbitrary local paths stay blocked. */
+export const picture = (src: string) => (/^https?:\/\//i.test(src) ? src : /^images\/[\w.-]+$/.test(src) ? `/texts/${src}` : undefined);
 
-/** A picture path from the texts' Markdown (`images/x.webp` or a web address) as a URL to load. */
-export const picture = (src: string) => (/^https?:\/\//.test(src) ? src : /^images\/[\w.-]+$/.test(src) ? `/texts/${src}` : undefined);
-
-function inline(src: string): ReactNode[] {
-  const out: ReactNode[] = [];
-  const re = /!\[(.*?)\]\((\S+?)\)|\*\*(.+?)\*\*|_(.+?)_|`(.+?)`|\[(.+?)\]\((\S+?)\)/g;
-  let last = 0, m: RegExpExecArray | null, k = 0;
-  while ((m = re.exec(src))) {
-    if (m.index > last) out.push(src.slice(last, m.index));
-    if (m[2] !== undefined) out.push(<img key={k++} src={picture(m[2])} alt={m[1]} loading="lazy" />);
-    else if (m[3] !== undefined) out.push(<strong key={k++}>{inline(m[3])}</strong>);
-    else if (m[4] !== undefined) out.push(<em key={k++}>{inline(m[4])}</em>);
-    else if (m[5] !== undefined) out.push(<code key={k++}>{m[5]}</code>);
-    else {
-      const href = /^(https?:|#|mailto:)/.test(m[7]) ? m[7] : undefined;
-      out.push(<a key={k++} href={href} target={href?.startsWith("http") ? "_blank" : undefined} rel="noreferrer">{inline(m[6])}</a>);
-    }
-    last = re.lastIndex;
-  }
-  if (last < src.length) out.push(src.slice(last));
-  return out;
+// Keyboard scrolling inside a document must not trigger exercise/recording shortcuts.
+function readingKeys(event: KeyboardEvent<HTMLElement>) {
+  if (!event.metaKey && !event.ctrlKey && !event.altKey) event.stopPropagation();
 }
 
-export function Markdown({ src, className }: { src: string; className?: string }) {
-  const blocks: ReactNode[] = [];
-  const lines = src.replace(/\r\n?/g, "\n").split("\n");
-  let i = 0;
-  const joinWhile = (test: (l: string) => boolean, strip: (l: string) => string) => {
-    const parts: string[] = [];
-    while (i < lines.length && test(lines[i])) parts.push(strip(lines[i++]).trim());
-    return parts.join(" ");
-  };
-  while (i < lines.length) {
-    const line = lines[i];
-    const h = /^(#{1,3})\s+(.*)$/.exec(line);
-    const pic = /^!\[(.*?)\]\((\S+?)\)\s*$/.exec(line.trim());
-    if (!line.trim()) { i++; continue; }
-    if (pic) {
-      blocks.push(<figure key={i}><img src={picture(pic[2])} alt={pic[1]} /></figure>);
-      i++;
-    } else if (h) {
-      const Tag = (["h1", "h2", "h3"] as const)[h[1].length - 1];
-      blocks.push(<Tag key={i}>{inline(h[2])}</Tag>);
-      i++;
-    } else if (/^\s*[-*]\s+/.test(line) || /^\s*\d+\.\s+/.test(line)) {
-      const ordered = /^\s*\d+\./.test(line), items: string[] = [];
-      while (i < lines.length && lines[i].trim() && !/^#/.test(lines[i])) {
-        if (/^\s*([-*]|\d+\.)\s+/.test(lines[i])) items.push(lines[i].replace(/^\s*([-*]|\d+\.)\s+/, ""));
-        else items[items.length - 1] += " " + lines[i].trim();
-        i++;
+const components: Components = {
+  a: ({ node: _node, href, children, ...props }) => (
+    <a {...props} href={href || undefined} target={/^https?:/i.test(href ?? "") ? "_blank" : undefined} rel="noreferrer" onClick={(event) => {
+      // Document fragments (including footnotes) must not enter the app's hash router.
+      if (!href?.startsWith("#") || href.startsWith("#/")) return;
+      event.preventDefault();
+      let id = href.slice(1);
+      try { id = decodeURIComponent(id); } catch { /* Keep a literal malformed fragment harmless. */ }
+      const document = event.currentTarget.closest<HTMLElement>(".md");
+      const target = id ? document?.querySelector<HTMLElement>(`#${CSS.escape(id)}`) : document;
+      if (target) {
+        if (!target.hasAttribute("tabindex")) target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ block: "nearest", behavior: "instant" });
       }
-      const List = ordered ? "ol" : "ul";
-      blocks.push(<List key={i}>{items.map((t, j) => <li key={j}>{inline(t)}</li>)}</List>);
-    } else if (line.startsWith(">")) {
-      const k = i;
-      blocks.push(<blockquote key={k}>{inline(joinWhile((l) => l.startsWith(">"), (l) => l.replace(/^>\s?/, "")))}</blockquote>);
-    } else {
-      const k = i;
-      blocks.push(<p key={k}>{inline(joinWhile((l) => !!l.trim() && !/^(#{1,3}\s|>|\s*([-*]|\d+\.)\s)/.test(l), (l) => l))}</p>);
-      if (i === k) i++; // a line no block takes is skipped, never read forever
-    }
-  }
-  return <div className={className}>{blocks}</div>;
+    }}>{children}</a>
+  ),
+  img: ({ node: _node, src, alt, ...props }) => src
+    ? <img {...props} src={src} alt={alt ?? ""} loading="lazy" />
+    : <span className="md-image-fallback">{alt}</span>,
+  table: ({ node: _node, ...props }) => (
+    <div className="md-table" role="region" aria-label="Scrollable table" tabIndex={0}><table {...props} /></div>
+  ),
+  pre: ({ node: _node, ...props }) => <pre {...props} tabIndex={0} aria-label="Code block" />,
+};
+
+/** One safe, shared reading surface for any course. Raw HTML is never executed. */
+export function Markdown({ src, className, headingOffset = 0 }: { src: string; className?: string; headingOffset?: 0 | 1 | 2 }) {
+  const id = useId();
+  const renderers = useMemo<Components>(() => ({ ...components,
+    ...(headingOffset ? Object.fromEntries([1, 2, 3, 4, 5, 6].map(level => [`h${level}`, `h${Math.min(6, level + headingOffset)}`])) : {}),
+  }), [headingOffset]);
+  return (
+    <div className={["md", className].filter(Boolean).join(" ")} onKeyDown={readingKeys}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        remarkRehypeOptions={{ clobberPrefix: `md-${id}-` }}
+        components={renderers}
+        skipHtml
+        urlTransform={(url, key) => {
+          if (key === "src") return picture(url);
+          return /^(https?:|#|mailto:)/i.test(url) ? defaultUrlTransform(url) : undefined;
+        }}
+      >{src}</ReactMarkdown>
+    </div>
+  );
 }

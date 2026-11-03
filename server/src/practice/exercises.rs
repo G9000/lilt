@@ -115,7 +115,10 @@ impl Registry {
         self.by_id.get(id)?.values().next_back()
     }
     pub fn all_latest(&self) -> Vec<&Exercise> {
-        self.by_id.values().filter_map(|v| v.values().next_back()).collect()
+        self.by_id
+            .values()
+            .filter_map(|v| v.values().next_back())
+            .collect()
     }
     /// Eligible for assignment: present in the registry with a non-draft review status.
     pub fn eligible(&self, id: &str, version: u32) -> Result<&Exercise> {
@@ -139,8 +142,13 @@ fn parse(raw: Value) -> Result<Exercise> {
 pub fn seed_and_load(paths: &Paths, content_dir: &Path) -> Result<Registry> {
     for file in store::list_files_with_ext(content_dir, "json") {
         let raw: Value = store::read_json(&file)?;
-        let id = raw["id"].as_str().context("exercise without id")?.to_string();
-        let version = raw["version"].as_u64().context("exercise without version")?;
+        let id = raw["id"]
+            .as_str()
+            .context("exercise without id")?
+            .to_string();
+        let version = raw["version"]
+            .as_u64()
+            .context("exercise without version")?;
         store::check_id(&id)?;
         let target = paths.exercises().join(&id).join(format!("v{version}.json"));
         if !target.exists() {
@@ -152,7 +160,12 @@ pub fn seed_and_load(paths: &Paths, content_dir: &Path) -> Result<Registry> {
 
 /// An exercise version as the web UI and MCP see it, or null if that version is unknown.
 pub fn json(app: &App, id: &str, version: u32) -> Value {
-    app.registry.read().unwrap().get(id, version).map(|e| e.raw.clone()).unwrap_or(Value::Null)
+    app.registry
+        .read()
+        .unwrap()
+        .get(id, version)
+        .map(|e| e.raw.clone())
+        .unwrap_or(Value::Null)
 }
 
 pub fn load(paths: &Paths) -> Result<Registry> {

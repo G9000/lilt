@@ -37,7 +37,14 @@ window.addEventListener("lilt:pitch-scale", (e) => { wantScale = Promise.resolve
 export function PitchScale({ median, note = true }: { median: number; note?: boolean }) {
   const [ref, setRef] = useState<PitchReference | null>(null);
   const [want, setWant] = useState<boolean | null>(null);
-  useEffect(() => { void pitchReference().then(setRef); void scaleWanted().then(setWant); }, []);
+  useEffect(() => {
+    let live = true, changed = false;
+    const update = (e: Event) => { changed = true; setWant((e as CustomEvent<boolean>).detail); };
+    window.addEventListener("lilt:pitch-scale", update);
+    void pitchReference().then((value) => { if (live) setRef(value); });
+    void scaleWanted().then((value) => { if (live && !changed) setWant(value); });
+    return () => { live = false; window.removeEventListener("lilt:pitch-scale", update); };
+  }, []);
   if (!ref || !want) return null;
   const LO = 80, HI = 280, at = (hz: number) => Math.max(0, Math.min(100, (Math.log(hz / LO) / Math.log(HI / LO)) * 100));
   const band = (lo: number, hi: number) => ({ left: `${at(lo)}%`, width: `${at(hi) - at(lo)}%` });
@@ -59,7 +66,7 @@ export function PitchScale({ median, note = true }: { median: number; note?: boo
       </div>
       <figcaption>
         {placePitch(median, ref)}
-        {note && <span title={ref.source}>Pitch is one part of how a voice is heard; resonance matters about as much. Averages from Leung et al. (2022), reading aloud.</span>}
+        {note && <span title={ref.source}>Population references, not targets or a gender test. Pitch, resonance and voice quality work together. Averages from Leung et al. (2022), reading aloud.</span>}
       </figcaption>
     </figure>
   );
@@ -78,6 +85,10 @@ const shiftOf = (c: Comparison | null) => c?.measures.find((m) => m.name === "re
  * same text are compared, and only with the same microphone (the comparison says when not).
  */
 export function ResonanceNote({ take }: { take: Take }) {
+  return <ResonanceForTake key={`${take.id}:${take.analysis_run ?? take.status}`} take={take} />;
+}
+
+function ResonanceForTake({ take }: { take: Take }) {
   const [r, setR] = useState<Resonance | null>(null);
   const measured = take.status === "review_ready" && !!take.analysis_summary?.formant_f2_median_hz;
   useEffect(() => {
@@ -121,7 +132,11 @@ export function ResonanceNote({ take }: { take: Take }) {
 }
 
 /** The note for a take that's shown elsewhere (a chapter's players): loads its analysis once ready. */
-export function TakeInsight({ take, band, card }: { take: Take; band: [number, number] | null; card?: CardKind | null }) {
+export function TakeInsight(props: Parameters<typeof InsightForTake>[0]) {
+  return <InsightForTake key={`${props.take.id}:${props.take.analysis_run ?? props.take.status}`} {...props} />;
+}
+
+function InsightForTake({ take, band, card }: { take: Take; band: [number, number] | null; card?: CardKind | null }) {
   const [analysis, setAnalysis] = useState<any>(null);
   const ready = take.status === "review_ready";
   useEffect(() => {
@@ -137,7 +152,11 @@ export function TakeInsight({ take, band, card }: { take: Take; band: [number, n
 const fmtHz = (hz: number | null | undefined) => (hz ? `${Math.round(hz)} Hz` : "–");
 
 /** What the analysis measured for a take, with last time on the same card when they're comparable. */
-export function TakeResult({ take: initial, band, card, onMeasured, onUseRange }: {
+export function TakeResult(props: Parameters<typeof ResultForTake>[0]) {
+  return <ResultForTake key={props.take.id} {...props} />;
+}
+
+function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
   take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void;
   /** The card the take was for, so the suggestion fits what it asked (a hum is meant to be level). */
   card?: CardKind | null;
@@ -151,10 +170,11 @@ export function TakeResult({ take: initial, band, card, onMeasured, onUseRange }
   // Analysis runs in the background; poll until it lands.
   useEffect(() => {
     let live = true;
+    let timer: number | undefined;
     const tick = async () => {
       const t = await api.take(initial.id).catch(() => null);
       if (!live) return;
-      if (!t) { window.setTimeout(tick, 3000); return; } // a dropped request isn't the end of measuring
+      if (!t) { timer = window.setTimeout(tick, 3000); return; } // a dropped request isn't the end of measuring
       setTake(t);
       if (t.analysis_summary || t.analysis_error || t.status === "analysis_failed") {
         const a = t.analysis_summary ? await api.analysis(t.id).catch(() => null) : null;
@@ -163,10 +183,10 @@ export function TakeResult({ take: initial, band, card, onMeasured, onUseRange }
         onMeasured?.({ median: a?.measures?.f0_median_hz?.value ?? null, take: t });
         return;
       }
-      window.setTimeout(tick, 1200);
+      timer = window.setTimeout(tick, 1200);
     };
     void tick();
-    return () => { live = false; };
+    return () => { live = false; window.clearTimeout(timer); };
   }, [initial.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Last time on this card (same prompt), if any.
@@ -178,7 +198,7 @@ export function TakeResult({ take: initial, band, card, onMeasured, onUseRange }
       if (!earlier || !live) return;
       const [cmp, a] = await Promise.all([api.compare(earlier.id, take.id).catch(() => null), api.analysis(earlier.id).catch(() => null)]);
       if (live) setPrev({ take: earlier, cmp, analysis: a });
-    });
+    }).catch(() => undefined);
     return () => { live = false; };
   }, [analysis, take.id]); // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -6,7 +6,8 @@ use std::path::{Path, PathBuf};
 
 /// Zip the data root (skipping the scratch `.tmp` folder) into a temp file.
 pub fn write_zip(app: &App) -> Result<PathBuf> {
-    let out = std::env::temp_dir().join(format!("lilt-export-{}.zip", uuid::Uuid::new_v4().simple()));
+    let out =
+        std::env::temp_dir().join(format!("lilt-export-{}.zip", uuid::Uuid::new_v4().simple()));
     let mut zip = zip::ZipWriter::new(File::create(&out)?);
     let opts = zip::write::SimpleFileOptions::default()
         .compression_method(zip::CompressionMethod::Deflated);

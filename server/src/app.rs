@@ -13,6 +13,13 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex, RwLock};
 use tokio::sync::Notify;
 
+/// Interpreter created by `uv sync` in the bundled analysis project.
+pub(crate) const DEFAULT_PYTHON: &str = if cfg!(windows) {
+    "analysis/.venv/Scripts/python.exe"
+} else {
+    "analysis/.venv/bin/python"
+};
+
 #[derive(Clone, Debug)]
 pub struct Config {
     pub data_dir: PathBuf,
@@ -35,10 +42,16 @@ impl Config {
             content_dir: env("LILT_CONTENT_DIR", "content").into(),
             web_dir: env("LILT_WEB_DIR", "web/dist").into(),
             bind: env("LILT_BIND", "127.0.0.1:7878"),
-            python: env("LILT_PYTHON", "analysis/.venv/bin/python"),
+            python: env("LILT_PYTHON", DEFAULT_PYTHON),
             analysis_dir: env("LILT_ANALYSIS_DIR", "analysis").into(),
-            mcp_token: std::env::var("LILT_MCP_TOKEN").ok().filter(|s| !s.is_empty()),
-            allowed_hosts: env("LILT_ALLOWED_HOSTS", "").split(',').map(|h| h.trim().to_ascii_lowercase()).filter(|h| !h.is_empty()).collect(),
+            mcp_token: std::env::var("LILT_MCP_TOKEN")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            allowed_hosts: env("LILT_ALLOWED_HOSTS", "")
+                .split(',')
+                .map(|h| h.trim().to_ascii_lowercase())
+                .filter(|h| !h.is_empty())
+                .collect(),
         }
     }
 }
@@ -72,8 +85,10 @@ impl App {
     pub fn open(config: Config) -> Result<Shared> {
         let paths = Paths::new(&config.data_dir);
         paths.ensure_layout()?;
-        let registry =
-            crate::practice::exercises::seed_and_load(&paths, &config.content_dir.join("exercises"))?;
+        let registry = crate::practice::exercises::seed_and_load(
+            &paths,
+            &config.content_dir.join("exercises"),
+        )?;
         let prompts: Value = store::read_json(&config.content_dir.join("prompts/prompts.json"))
             .context("loading content/prompts/prompts.json")?;
         let app = Arc::new(App {
@@ -149,7 +164,9 @@ impl App {
 
     pub fn take_path(&self, tid: &str) -> Result<PathBuf> {
         store::check_id(tid)?;
-        let sid = self.session_of_take(tid).ok_or_else(|| anyhow!("take not found"))?;
+        let sid = self
+            .session_of_take(tid)
+            .ok_or_else(|| anyhow!("take not found"))?;
         Ok(self.paths.take_dir(&sid, tid))
     }
 
@@ -159,7 +176,10 @@ impl App {
     }
 
     pub fn save_take(&self, t: &Take) -> Result<()> {
-        store::write_json(&self.paths.take_dir(&t.session_id, &t.id).join("take.json"), t)
+        store::write_json(
+            &self.paths.take_dir(&t.session_id, &t.id).join("take.json"),
+            t,
+        )
     }
 
     pub fn takes_in(&self, sid: &str) -> Vec<Take> {
@@ -192,7 +212,10 @@ impl App {
     pub fn analysis_by_run(&self, run_id: &str) -> Result<(String, Value)> {
         store::check_id(run_id)?;
         for s in self.sessions() {
-            let p = self.paths.analyses_dir(&s.id).join(format!("{run_id}.json"));
+            let p = self
+                .paths
+                .analyses_dir(&s.id)
+                .join(format!("{run_id}.json"));
             if p.exists() {
                 return Ok((s.id.clone(), store::read_json(&p)?));
             }
@@ -265,13 +288,13 @@ impl App {
         let _g = self.plan_lock.lock().unwrap();
         let current = self.current_plan();
         let cur_v = current.as_ref().map(|p| p.version);
-        if let Some(exp) = expected {
-            if Some(exp) != cur_v {
-                return Err(anyhow!(
-                    "stale plan version: expected {exp}, current is {}",
-                    cur_v.map(|v| v.to_string()).unwrap_or("none".into())
-                ));
-            }
+        if let Some(exp) = expected
+            && Some(exp) != cur_v
+        {
+            return Err(anyhow!(
+                "stale plan version: expected {exp}, current is {}",
+                cur_v.map(|v| v.to_string()).unwrap_or("none".into())
+            ));
         }
         plan.version = cur_v.unwrap_or(0) + 1;
         plan.created_utc = util::now_utc();

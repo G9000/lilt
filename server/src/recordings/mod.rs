@@ -41,19 +41,39 @@ pub struct NewSession {
 /// Today's Studio session, created on first use.
 pub fn studio_session(app: &App) -> Result<Session> {
     let (today, _) = util::local_now(&app.profile().timezone);
-    if let Some(s) = app.sessions().into_iter().rev().find(|s| s.kind == SessionKind::Studio && s.local_date == today) {
+    if let Some(s) = app
+        .sessions()
+        .into_iter()
+        .rev()
+        .find(|s| s.kind == SessionKind::Studio && s.local_date == today)
+    {
         return Ok(s);
     }
-    create_session(app, NewSession { kind: SessionKind::Studio })
+    create_session(
+        app,
+        NewSession {
+            kind: SessionKind::Studio,
+        },
+    )
 }
 
 /// Today's deck session, created on first use.
 pub fn deck_session(app: &App) -> Result<Session> {
     let (today, _) = util::local_now(&app.profile().timezone);
-    if let Some(s) = app.sessions().into_iter().rev().find(|s| s.kind == SessionKind::Deck && s.local_date == today) {
+    if let Some(s) = app
+        .sessions()
+        .into_iter()
+        .rev()
+        .find(|s| s.kind == SessionKind::Deck && s.local_date == today)
+    {
         return Ok(s);
     }
-    create_session(app, NewSession { kind: SessionKind::Deck })
+    create_session(
+        app,
+        NewSession {
+            kind: SessionKind::Deck,
+        },
+    )
 }
 
 pub fn create_session(app: &App, req: NewSession) -> Result<Session> {
@@ -116,7 +136,10 @@ pub fn ext_for_mime(mime: &str) -> &'static str {
         "m4a"
     } else if m.starts_with("audio/ogg") {
         "ogg"
-    } else if m.starts_with("audio/wav") || m.starts_with("audio/x-wav") || m.starts_with("audio/wave") {
+    } else if m.starts_with("audio/wav")
+        || m.starts_with("audio/x-wav")
+        || m.starts_with("audio/wave")
+    {
         "wav"
     } else {
         "bin"
@@ -135,7 +158,8 @@ pub fn create_take(app: &App, req: NewTake) -> Result<Take> {
     }
     let session = app.session(&req.session_id)?;
     if let Some(r) = &req.retry_of {
-        app.take(r).map_err(|_| anyhow!("retry_of refers to an unknown take"))?;
+        app.take(r)
+            .map_err(|_| anyhow!("retry_of refers to an unknown take"))?;
     }
     if let (Some(id), Some(v)) = (&req.exercise_id, req.exercise_version) {
         app.registry.read().unwrap().eligible(id, v)?;
@@ -193,10 +217,10 @@ pub fn put_chunk(
 ) -> Result<ChunkOutcome, UploadError> {
     let t = app.take(tid)?;
     let actual = store::sha256_hex(bytes);
-    if let Some(c) = claimed_sha {
-        if !c.eq_ignore_ascii_case(&actual) {
-            return Err(UploadError::BadChecksum(seq));
-        }
+    if let Some(c) = claimed_sha
+        && !c.eq_ignore_ascii_case(&actual)
+    {
+        return Err(UploadError::BadChecksum(seq));
     }
     let path = chunk_path(app, &t, seq);
     if path.exists() {
@@ -258,7 +282,10 @@ pub fn finalize(app: &App, tid: &str, req: FinalizeReq) -> Result<Take> {
     }
     let sha = store::sha256_file(&orig_path)?;
     let bytes = fs::metadata(&orig_path)?.len();
-    store::write_atomic(&dir.join("original.sha256"), format!("{sha}  {orig_name}\n").as_bytes())?;
+    store::write_atomic(
+        &dir.join("original.sha256"),
+        format!("{sha}  {orig_name}\n").as_bytes(),
+    )?;
 
     t.completeness = Some(if present < req.chunk_count {
         Completeness::MissingTail
@@ -294,7 +321,14 @@ pub fn reconcile_interrupted(app: &App) -> Result<u32> {
                 let count = fs::read_dir(app.paths.take_dir(&t.session_id, &t.id).join("chunks"))
                     .map(|d| d.count() as u32)
                     .unwrap_or(0);
-                finalize(app, &t.id, FinalizeReq { chunk_count: count, interrupted: true })?;
+                finalize(
+                    app,
+                    &t.id,
+                    FinalizeReq {
+                        chunk_count: count,
+                        interrupted: true,
+                    },
+                )?;
                 n += 1;
             }
         }
@@ -321,8 +355,18 @@ pub fn update_take(app: &App, tid: &str, upd: TakeUpdate) -> Result<Take> {
         t.note = if n.trim().is_empty() { None } else { Some(n) };
     }
     if let Some(ra) = upd.read_along {
-        let starts = ra.get("starts").and_then(|s| s.as_array()).ok_or_else(|| anyhow!("read_along.starts must be an array"))?;
-        if starts.len() > 5000 || !starts.iter().all(|v| v.is_null() || v.as_f64().map(|x| (0.0..=36_000.0).contains(&x)).unwrap_or(false)) {
+        let starts = ra
+            .get("starts")
+            .and_then(|s| s.as_array())
+            .ok_or_else(|| anyhow!("read_along.starts must be an array"))?;
+        if starts.len() > 5000
+            || !starts.iter().all(|v| {
+                v.is_null()
+                    || v.as_f64()
+                        .map(|x| (0.0..=36_000.0).contains(&x))
+                        .unwrap_or(false)
+            })
+        {
             bail!("read_along.starts must be up to 5000 times in seconds (or null)");
         }
         t.read_along = Some(json!({
@@ -371,10 +415,10 @@ pub fn update_session(app: &App, sid: &str, upd: SessionUpdate) -> Result<Sessio
     let _g = app.write_lock.lock().unwrap();
     let mut s = app.session(sid)?;
     if let Some(c) = upd.comfort {
-        if let Some(e) = c.effort {
-            if !(1..=5).contains(&e) {
-                bail!("effort must be 1-5");
-            }
+        if let Some(e) = c.effort
+            && !(1..=5).contains(&e)
+        {
+            bail!("effort must be 1-5");
         }
         s.comfort = Some(ComfortReport {
             comfort: c.comfort,
@@ -428,11 +472,11 @@ pub fn delete_take(app: &App, tid: &str, delete_reviews: bool) -> Result<Value> 
     let deps = dependent_reviews(app, tid);
     let mut removed_runs = vec![];
     for p in store::list_files_with_ext(&app.paths.analyses_dir(&t.session_id), "json") {
-        if let Ok(v) = store::read_json::<Value>(&p) {
-            if v["take_id"].as_str() == Some(tid) {
-                fs::remove_file(&p)?;
-                removed_runs.push(p.file_stem().unwrap().to_string_lossy().into_owned());
-            }
+        if let Ok(v) = store::read_json::<Value>(&p)
+            && v["take_id"].as_str() == Some(tid)
+        {
+            fs::remove_file(&p)?;
+            removed_runs.push(p.file_stem().unwrap().to_string_lossy().into_owned());
         }
     }
     fs::remove_dir_all(app.paths.take_dir(&t.session_id, tid))?;

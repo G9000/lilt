@@ -23,7 +23,7 @@ Intonation is the melody of speech: where your pitch goes up and down, which wor
 
 **Endings can fall.** Not every question needs to rise and not every statement needs to fall. Let the meaning choose. A confident falling ending is fine.
 
-**Don't let endings crackle.** As a sentence ends, pitch sinks and voices often drop into a creak (vocal fry), which brings the old weight back. Finish the sentence a breath earlier, with voice to spare. A jumpy or broken pitch line on a creak may be the measurement struggling, not you.
+**Choose your endings.** Falling pitch and occasional creak are not automatic failures or proof that your voice became heavier. If you want a clearer ending, try a shorter phrase with an easy breath. A jumpy pitch line cannot tell you whether the sound is feminine or comfortable; listen and notice how it feels.
 
 **Listen back.** Does it sound like what you meant? Does the pitch line move, or is it a straight ruler? A wavier line isn't automatically better; it just shouldn't be stuck.
 
@@ -73,4 +73,4 @@ Could I get a coffee, please? Thank you so much!
 
 That sounds really good to me.
 
-> Keep voice in "to me" right to the end, with breath to spare. If the last word crackles, take a breath earlier and try again.
+> Let the sentence land naturally. If you prefer a clearer last word, try an easy breath before the phrase. Keep the ending you like; an occasional creak is not a failed take.

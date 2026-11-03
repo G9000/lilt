@@ -36,7 +36,11 @@ pub fn has_mine(app: &App, c: &Course) -> bool {
 
 /// The folder a course is read from: your version once there is one, else the original.
 pub fn active_dir(app: &App, c: &Course) -> PathBuf {
-    if has_mine(app, c) { mine(app, c) } else { c.dir.clone() }
+    if has_mine(app, c) {
+        mine(app, c)
+    } else {
+        c.dir.clone()
+    }
 }
 
 fn using(app: &App, c: &Course) -> &'static str {
@@ -46,7 +50,11 @@ fn using(app: &App, c: &Course) -> &'static str {
 pub fn load_active(app: &App, c: &Course) -> Result<Value> {
     let dir = active_dir(app, c);
     let mut t = texts::load(&dir).with_context(|| format!("loading {}", dir.display()))?;
-    let updates = if has_mine(app, c) { crate::courses::updates::waiting(app, c) } else { 0 };
+    let updates = if has_mine(app, c) {
+        crate::courses::updates::waiting(app, c)
+    } else {
+        0
+    };
     t["edition"] = json!({ "course": c.id, "title": c.title, "mine": has_mine(app, c), "changes": change_count(app, c), "updates": updates });
     Ok(t)
 }
@@ -60,14 +68,24 @@ fn editable(name: &str) -> bool {
     if matches!(name, "index.md" | "_about.md" | "_pitch.md") {
         return true;
     }
-    let Some(stem) = name.strip_suffix(".md") else { return false };
+    let Some(stem) = name.strip_suffix(".md") else {
+        return false;
+    };
     let b = stem.as_bytes();
-    b.len() > 3 && b[0].is_ascii_digit() && b[1].is_ascii_digit() && b[2] == b'-'
-        && stem[3..].bytes().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-')
+    b.len() > 3
+        && b[0].is_ascii_digit()
+        && b[1].is_ascii_digit()
+        && b[2] == b'-'
+        && stem[3..]
+            .bytes()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-')
 }
 
 fn check_name(name: &str) -> Result<()> {
-    ensure!(editable(name), "`{name}` isn't a syllabus file: use index.md, _about.md, _pitch.md or a chapter named like 09-my-chapter.md");
+    ensure!(
+        editable(name),
+        "`{name}` isn't a syllabus file: use index.md, _about.md, _pitch.md or a chapter named like 09-my-chapter.md"
+    );
     Ok(())
 }
 
@@ -86,10 +104,15 @@ pub fn base_files(app: &App, c: &Course) -> Files {
 
 /// The editable Markdown files in a folder, by name.
 fn files(dir: &Path) -> Files {
-    std::fs::read_dir(dir).into_iter().flatten().filter_map(|e| e.ok())
+    std::fs::read_dir(dir)
+        .into_iter()
+        .flatten()
+        .filter_map(|e| e.ok())
         .filter_map(|e| {
             let name = e.file_name().to_str()?.to_string();
-            editable(&name).then(|| std::fs::read_to_string(e.path()).ok().map(|s| (name, s))).flatten()
+            editable(&name)
+                .then(|| std::fs::read_to_string(e.path()).ok().map(|s| (name, s)))
+                .flatten()
         })
         .collect()
 }
@@ -110,7 +133,10 @@ fn history_dir(app: &App, c: &Course) -> PathBuf {
 }
 
 fn history_ids(app: &App, c: &Course) -> Vec<String> {
-    store::list_dirs(&history_dir(app, c)).into_iter().filter(|d| d.len() == 4 && d.bytes().all(|c| c.is_ascii_digit())).collect()
+    store::list_dirs(&history_dir(app, c))
+        .into_iter()
+        .filter(|d| d.len() == 4 && d.bytes().all(|c| c.is_ascii_digit()))
+        .collect()
 }
 
 /// A section's text, from its `## ` heading to the next one, spacing ignored.
@@ -121,14 +147,27 @@ fn section(src: &str, heading: &str) -> Option<String> {
     Some(rest[..end].split_whitespace().collect::<Vec<_>>().join(" "))
 }
 
+/// Each text id maps to its spoken text and hint.
+type TextAndHintById = BTreeMap<String, (String, String)>;
+
 /// Ids, texts and hints of a chapter file, or None for files that aren't chapters.
-fn chapter_texts(name: &str, src: &str) -> Option<(String, BTreeMap<String, (String, String)>)> {
+fn chapter_texts(name: &str, src: &str) -> Option<(String, TextAndHintById)> {
     if !name.starts_with(|c: char| c.is_ascii_digit()) {
         return None;
     }
     let c = texts::chapter(src, 0).ok()?;
-    let items = c["items"].as_array()?.iter()
-        .map(|i| (i["id"].as_str().unwrap_or_default().to_string(), (i["text"].as_str().unwrap_or_default().to_string(), i["hint"].as_str().unwrap_or_default().to_string())))
+    let items = c["items"]
+        .as_array()?
+        .iter()
+        .map(|i| {
+            (
+                i["id"].as_str().unwrap_or_default().to_string(),
+                (
+                    i["text"].as_str().unwrap_or_default().to_string(),
+                    i["hint"].as_str().unwrap_or_default().to_string(),
+                ),
+            )
+        })
         .collect();
     Some((c["id"].as_str().unwrap_or_default().to_string(), items))
 }
@@ -142,36 +181,66 @@ fn diff_file(name: &str, old: Option<&String>, new: Option<&String>) -> Value {
         _ => "changed",
     };
     let mut out = json!({ "file": name, "status": status });
-    if status == "changed" {
-        if let (Some((_, a)), Some((_, b))) = (chapter_texts(name, old.unwrap()), chapter_texts(name, new.unwrap())) {
-            out["texts_added"] = json!(b.keys().filter(|k| !a.contains_key(*k)).collect::<Vec<_>>());
-            out["texts_removed"] = json!(a.keys().filter(|k| !b.contains_key(*k)).collect::<Vec<_>>());
-            out["texts_changed"] = json!(a.iter().filter(|(k, v)| b.get(*k).is_some_and(|w| w != *v)).map(|(k, _)| k).collect::<Vec<_>>());
-        }
+    if status == "changed"
+        && let (Some((_, a)), Some((_, b))) = (
+            chapter_texts(name, old.unwrap()),
+            chapter_texts(name, new.unwrap()),
+        )
+    {
+        out["texts_added"] = json!(b.keys().filter(|k| !a.contains_key(*k)).collect::<Vec<_>>());
+        out["texts_removed"] = json!(a.keys().filter(|k| !b.contains_key(*k)).collect::<Vec<_>>());
+        out["texts_changed"] = json!(
+            a.iter()
+                .filter(|(k, v)| b.get(*k).is_some_and(|w| w != *v))
+                .map(|(k, _)| k)
+                .collect::<Vec<_>>()
+        );
     }
     out
 }
 
 fn diff(old: &Files, new: &Files) -> Vec<Value> {
     let names: std::collections::BTreeSet<_> = old.keys().chain(new.keys()).collect();
-    names.into_iter().map(|n| diff_file(n, old.get(n), new.get(n))).collect()
+    names
+        .into_iter()
+        .map(|n| diff_file(n, old.get(n), new.get(n)))
+        .collect()
 }
 
 /// Every file in your version (or the original, if you have none yet) and how it differs from the original.
 pub fn list(app: &App, c: &Course) -> Value {
     let orig = files(&c.dir);
     let active = files(&active_dir(app, c));
-    let rows: Vec<Value> = diff(&orig, &active).into_iter().filter(|d| d["status"] != "removed").map(|mut d| {
-        let name = d["file"].as_str().unwrap_or_default().to_string();
-        if let Some(c) = active.get(&name).and_then(|s| texts::chapter(s, 0).ok()) {
-            d["chapter_id"] = c["id"].clone();
-            d["title"] = c["title"].clone();
-            d["texts"] = json!(c["items"].as_array().map_or(0, Vec::len));
-        }
-        d
-    }).collect();
-    let removed: Vec<Value> = orig.keys().filter(|n| !active.contains_key(*n)).map(|n| json!(n)).collect();
-    let locked = if c.locked.is_empty() { String::new() } else { format!(" These sections can't be changed: {}.", c.locked.iter().map(|h| format!("\"{h}\"")).collect::<Vec<_>>().join(", ")) };
+    let rows: Vec<Value> = diff(&orig, &active)
+        .into_iter()
+        .filter(|d| d["status"] != "removed")
+        .map(|mut d| {
+            let name = d["file"].as_str().unwrap_or_default().to_string();
+            if let Some(c) = active.get(&name).and_then(|s| texts::chapter(s, 0).ok()) {
+                d["chapter_id"] = c["id"].clone();
+                d["title"] = c["title"].clone();
+                d["texts"] = json!(c["items"].as_array().map_or(0, Vec::len));
+            }
+            d
+        })
+        .collect();
+    let removed: Vec<Value> = orig
+        .keys()
+        .filter(|n| !active.contains_key(*n))
+        .map(|n| json!(n))
+        .collect();
+    let locked = if c.locked.is_empty() {
+        String::new()
+    } else {
+        format!(
+            " These sections can't be changed: {}.",
+            c.locked
+                .iter()
+                .map(|h| format!("\"{h}\""))
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    };
     json!({
         "course": c.id,
         "title": c.title,
@@ -191,8 +260,11 @@ pub fn read(app: &App, c: &Course, name: &str, which: &str) -> Result<Value> {
         "original" => c.dir.clone(),
         _ => bail!("`from` is \"mine\" or \"original\""),
     };
-    let src = std::fs::read_to_string(dir.join(name)).map_err(|_| anyhow!("there is no {name} in {which}"))?;
-    Ok(json!({ "course": c.id, "file": name, "from": if dir == c.dir { "original" } else { "mine" }, "markdown": src }))
+    let src = std::fs::read_to_string(dir.join(name))
+        .map_err(|_| anyhow!("there is no {name} in {which}"))?;
+    Ok(
+        json!({ "course": c.id, "file": name, "from": if dir == c.dir { "original" } else { "mine" }, "markdown": src }),
+    )
 }
 
 pub fn compare(app: &App, c: &Course, name: Option<&str>) -> Result<Value> {
@@ -200,8 +272,10 @@ pub fn compare(app: &App, c: &Course, name: Option<&str>) -> Result<Value> {
         check_name(n)?;
     }
     let (orig, active) = (files(&c.dir), files(&active_dir(app, c)));
-    let rows: Vec<Value> = diff(&orig, &active).into_iter()
-        .filter(|d| name.map_or(d["status"] != "same", |n| d["file"] == n)).collect();
+    let rows: Vec<Value> = diff(&orig, &active)
+        .into_iter()
+        .filter(|d| name.map_or(d["status"] != "same", |n| d["file"] == n))
+        .collect();
     Ok(json!({ "course": c.id, "using": using(app, c), "differences_from_original": rows }))
 }
 
@@ -211,18 +285,32 @@ fn check_locked(app: &App, c: &Course, next: &Files) -> Result<()> {
     let (orig, base) = (files(&c.dir), base_files(app, c));
     for heading in &c.locked {
         for name in orig.keys().chain(base.keys()) {
-            let allowed: Vec<String> = [&orig, &base].iter().filter_map(|f| f.get(name).and_then(|s| section(s, heading))).collect();
+            let allowed: Vec<String> = [&orig, &base]
+                .iter()
+                .filter_map(|f| f.get(name).and_then(|s| section(s, heading)))
+                .collect();
             if allowed.is_empty() {
                 continue;
             }
-            ensure!(next.get(name).and_then(|s| section(s, heading)).is_some_and(|s| allowed.contains(&s)),
-                "the \"{heading}\" section of {name} must stay exactly as it is, so nothing was saved");
+            ensure!(
+                next.get(name)
+                    .and_then(|s| section(s, heading))
+                    .is_some_and(|s| allowed.contains(&s)),
+                "the \"{heading}\" section of {name} must stay exactly as it is, so nothing was saved"
+            );
         }
     }
     Ok(())
 }
 
-fn commit(app: &App, c: &Course, next: Files, action: &str, file: &str, note: &str) -> Result<Value> {
+fn commit(
+    app: &App,
+    c: &Course,
+    next: Files,
+    action: &str,
+    file: &str,
+    note: &str,
+) -> Result<Value> {
     commit_with_base(app, c, next, action, file, note, None)
 }
 
@@ -235,11 +323,26 @@ pub fn set_base(app: &App, c: &Course, base: &Files) -> Result<()> {
     write_files(&mine(app, c).join(".base"), base)
 }
 
-pub fn commit_with_base(app: &App, c: &Course, next: Files, action: &str, file: &str, note: &str, new_base: Option<Files>) -> Result<Value> {
-    ensure!(note.trim().len() >= 3, "say in a few words what this change is (`note`)");
+pub fn commit_with_base(
+    app: &App,
+    c: &Course,
+    next: Files,
+    action: &str,
+    file: &str,
+    note: &str,
+    new_base: Option<Files>,
+) -> Result<Value> {
+    ensure!(
+        note.trim().len() >= 3,
+        "say in a few words what this change is (`note`)"
+    );
     let _g = app.write_lock.lock().unwrap();
     let fresh = !has_mine(app, c);
-    let current = if fresh { files(&c.dir) } else { files(&mine(app, c)) };
+    let current = if fresh {
+        files(&c.dir)
+    } else {
+        files(&mine(app, c))
+    };
     if current == next {
         bail!("nothing changed");
     }
@@ -255,11 +358,25 @@ pub fn commit_with_base(app: &App, c: &Course, next: Files, action: &str, file: 
     }
     check_locked(app, c, &next)?;
 
-    let n = history_ids(app, c).last().and_then(|s| s.parse::<u32>().ok()).unwrap_or(0) + 1;
+    let n = history_ids(app, c)
+        .last()
+        .and_then(|s| s.parse::<u32>().ok())
+        .unwrap_or(0)
+        + 1;
     let snap = history_dir(app, c).join(format!("{n:04}"));
-    write_files(&snap, &if fresh { BTreeMap::new() } else { current.clone() })?;
-    store::write_json(&snap.join("change.json"), &json!({
-        "time": crate::util::now_utc(), "action": action, "file": file, "note": note.trim(), "first_change": fresh }))?;
+    write_files(
+        &snap,
+        &if fresh {
+            BTreeMap::new()
+        } else {
+            current.clone()
+        },
+    )?;
+    store::write_json(
+        &snap.join("change.json"),
+        &json!({
+        "time": crate::util::now_utc(), "action": action, "file": file, "note": note.trim(), "first_change": fresh }),
+    )?;
     if fresh {
         write_files(&mine(app, c).join(".base"), &current)?;
     }
@@ -269,7 +386,9 @@ pub fn commit_with_base(app: &App, c: &Course, next: Files, action: &str, file: 
     }
     write_files(&mine(app, c), &next)?;
     reload_course(app, c)?;
-    Ok(json!({ "course": c.id, "saved": true, "change": n, "using": "mine", "differences_from_before": diff(&current, &next).into_iter().filter(|d| d["status"] != "same").collect::<Vec<_>>() }))
+    Ok(
+        json!({ "course": c.id, "saved": true, "change": n, "using": "mine", "differences_from_before": diff(&current, &next).into_iter().filter(|d| d["status"] != "same").collect::<Vec<_>>() }),
+    )
 }
 
 /// Read the app's course (Practice) again from disk.
@@ -283,31 +402,51 @@ pub fn reload(app: &App) -> Result<()> {
 
 /// After a change: the app's course is kept loaded; other courses are read when asked for.
 fn reload_course(app: &App, c: &Course) -> Result<()> {
-    if c.id == courses::DEFAULT { reload(app) } else { Ok(()) }
+    if c.id == courses::DEFAULT {
+        reload(app)
+    } else {
+        Ok(())
+    }
 }
 
 /// When your version last changed on disk (its folder and its history).
 fn stamp(app: &App, c: &Course) -> String {
-    let m = |p: PathBuf| std::fs::metadata(p).and_then(|m| m.modified()).map(|t| format!("{t:?}")).unwrap_or_default();
-    format!("{}|{}|{}", has_mine(app, c), m(mine(app, c)), m(history_dir(app, c)))
+    let m = |p: PathBuf| {
+        std::fs::metadata(p)
+            .and_then(|m| m.modified())
+            .map(|t| format!("{t:?}"))
+            .unwrap_or_default()
+    };
+    format!(
+        "{}|{}|{}",
+        has_mine(app, c),
+        m(mine(app, c)),
+        m(history_dir(app, c))
+    )
 }
 
 /// The app's course as Practice shows it, read again if another process (an agent over `lilt
 /// mcp-stdio`) changed your version since it was loaded.
 pub fn texts(app: &App) -> Value {
-    let Ok(c) = courses::get(app, courses::DEFAULT) else { return app.texts.read().unwrap().clone() };
-    if *app.texts_stamp.lock().unwrap() != stamp(app, &c) {
-        if let Err(e) = reload(app) {
-            tracing::warn!("keeping the loaded texts: {e:#}");
-            *app.texts_stamp.lock().unwrap() = stamp(app, &c);
-        }
+    let Ok(c) = courses::get(app, courses::DEFAULT) else {
+        return app.texts.read().unwrap().clone();
+    };
+    // Release the stamp guard before reload takes it again.
+    let changed = *app.texts_stamp.lock().unwrap() != stamp(app, &c);
+    if changed && let Err(e) = reload(app) {
+        tracing::warn!("keeping the loaded texts: {e:#}");
+        *app.texts_stamp.lock().unwrap() = stamp(app, &c);
     }
     app.texts.read().unwrap().clone()
 }
 
 /// Any course's texts as the app would show them: the app's own is kept loaded, others are read now.
 pub fn course_texts(app: &App, c: &Course) -> Result<Value> {
-    if c.id == courses::DEFAULT { Ok(texts(app)) } else { load_active(app, c) }
+    if c.id == courses::DEFAULT {
+        Ok(texts(app))
+    } else {
+        load_active(app, c)
+    }
 }
 
 fn current(app: &App, c: &Course) -> Files {
@@ -316,7 +455,10 @@ fn current(app: &App, c: &Course) -> Files {
 
 pub fn write(app: &App, c: &Course, name: &str, markdown: &str, note: &str) -> Result<Value> {
     check_name(name)?;
-    ensure!(markdown.len() <= MAX_FILE, "{name} is too long (over {MAX_FILE} bytes)");
+    ensure!(
+        markdown.len() <= MAX_FILE,
+        "{name} is too long (over {MAX_FILE} bytes)"
+    );
     let mut next = current(app, c);
     next.insert(name.to_string(), format!("{}\n", markdown.trim_end()));
     commit(app, c, next, "write", name, note)
@@ -328,11 +470,19 @@ pub fn active_files(app: &App, c: &Course) -> Files {
 }
 
 /// Create or replace several files as one change (a remix): one entry in the history, one undo.
-pub fn write_many(app: &App, c: &Course, changed: Vec<(String, String)>, note: &str) -> Result<Value> {
+pub fn write_many(
+    app: &App,
+    c: &Course,
+    changed: Vec<(String, String)>,
+    note: &str,
+) -> Result<Value> {
     let mut next = current(app, c);
     for (name, markdown) in &changed {
         check_name(name)?;
-        ensure!(markdown.len() <= MAX_FILE, "{name} is too long (over {MAX_FILE} bytes)");
+        ensure!(
+            markdown.len() <= MAX_FILE,
+            "{name} is too long (over {MAX_FILE} bytes)"
+        );
         next.insert(name.clone(), format!("{}\n", markdown.trim_end()));
     }
     let names: Vec<&str> = changed.iter().map(|(n, _)| n.as_str()).collect();
@@ -341,9 +491,15 @@ pub fn write_many(app: &App, c: &Course, changed: Vec<(String, String)>, note: &
 
 pub fn delete(app: &App, c: &Course, name: &str, note: &str) -> Result<Value> {
     check_name(name)?;
-    ensure!(name.starts_with(|ch: char| ch.is_ascii_digit()), "only chapters can be removed, not {name}");
+    ensure!(
+        name.starts_with(|ch: char| ch.is_ascii_digit()),
+        "only chapters can be removed, not {name}"
+    );
     let mut next = current(app, c);
-    ensure!(next.remove(name).is_some(), "there is no {name} in your version");
+    ensure!(
+        next.remove(name).is_some(),
+        "there is no {name} in your version"
+    );
     commit(app, c, next, "delete", name, note)
 }
 
@@ -358,7 +514,9 @@ pub fn history(app: &App, c: &Course) -> Value {
 /// Put back the files as they were before the latest change.
 pub fn undo(app: &App, c: &Course) -> Result<Value> {
     let _g = app.write_lock.lock().unwrap();
-    let id = history_ids(app, c).pop().ok_or_else(|| anyhow!("there is no change to undo"))?;
+    let id = history_ids(app, c)
+        .pop()
+        .ok_or_else(|| anyhow!("there is no change to undo"))?;
     let snap = history_dir(app, c).join(&id);
     let h: Value = store::read_json(&snap.join("change.json"))?;
     let before = files(&snap);
@@ -369,7 +527,9 @@ pub fn undo(app: &App, c: &Course) -> Result<Value> {
     write_files(&mine(app, c), &before)?;
     std::fs::remove_dir_all(&snap)?;
     reload_course(app, c)?;
-    Ok(json!({ "course": c.id, "undone": id.parse::<u32>().unwrap_or(0), "note": h["note"], "using": using(app, c) }))
+    Ok(
+        json!({ "course": c.id, "undone": id.parse::<u32>().unwrap_or(0), "note": h["note"], "using": using(app, c) }),
+    )
 }
 
 /// Go back to the original. It is kept in history like any change, so it can be undone too.
@@ -378,10 +538,17 @@ pub fn reset(app: &App, c: &Course, note: &str) -> Result<Value> {
     ensure!(note.trim().len() >= 3, "say in a few words why (`note`)");
     let _g = app.write_lock.lock().unwrap();
     let current = files(&mine(app, c));
-    let n = history_ids(app, c).last().and_then(|s| s.parse::<u32>().ok()).unwrap_or(0) + 1;
+    let n = history_ids(app, c)
+        .last()
+        .and_then(|s| s.parse::<u32>().ok())
+        .unwrap_or(0)
+        + 1;
     let snap = history_dir(app, c).join(format!("{n:04}"));
     write_files(&snap, &current)?;
-    store::write_json(&snap.join("change.json"), &json!({ "time": crate::util::now_utc(), "action": "reset", "file": null, "note": note.trim() }))?;
+    store::write_json(
+        &snap.join("change.json"),
+        &json!({ "time": crate::util::now_utc(), "action": "reset", "file": null, "note": note.trim() }),
+    )?;
     write_files(&mine(app, c), &BTreeMap::new())?;
     reload_course(app, c)?;
     Ok(json!({ "course": c.id, "reset": true, "change": n, "using": "original" }))
@@ -393,10 +560,25 @@ mod tests {
 
     #[test]
     fn names() {
-        for ok in ["index.md", "_about.md", "_pitch.md", "09-my-chapter.md", "01-warmup.md"] {
+        for ok in [
+            "index.md",
+            "_about.md",
+            "_pitch.md",
+            "09-my-chapter.md",
+            "01-warmup.md",
+        ] {
             assert!(editable(ok), "{ok}");
         }
-        for bad in ["README.md", "_template.md", "../01-x.md", "9-x.md", "01-X.md", "01-x.txt", "01-a/b.md", "01-.md"] {
+        for bad in [
+            "README.md",
+            "_template.md",
+            "../01-x.md",
+            "9-x.md",
+            "01-X.md",
+            "01-x.txt",
+            "01-a/b.md",
+            "01-.md",
+        ] {
             assert!(!editable(bad), "{bad}");
         }
     }
@@ -404,9 +586,13 @@ mod tests {
     #[test]
     fn protected_section_ignores_spacing_only() {
         let a = "# Hi\n\n## Be gentle with your voice\n\nIt should\nnever hurt.\n\n## Next\n\nx";
-        let b = "# Changed\n\n## Be gentle with your voice\n\nIt should never   hurt.\n\n## Other\n\ny";
+        let b =
+            "# Changed\n\n## Be gentle with your voice\n\nIt should never   hurt.\n\n## Other\n\ny";
         let h = "Be gentle with your voice";
         assert_eq!(section(a, h), section(b, h));
-        assert_ne!(section(a, h), section("## Be gentle with your voice\n\nPush through it.", h));
+        assert_ne!(
+            section(a, h),
+            section("## Be gentle with your voice\n\nPush through it.", h)
+        );
     }
 }

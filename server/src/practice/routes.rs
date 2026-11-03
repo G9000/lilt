@@ -35,7 +35,11 @@ async fn today(State(app): State<Shared>) -> R<Json<Value>> {
     let (date, local_ts) = util::local_now(&profile.timezone);
     let ex = exercises::json(&app, &plan.exercise_id, plan.exercise_version);
     let cue = plan.cue_id.as_ref().and_then(|c| {
-        ex["cues"].as_array()?.iter().find(|x| x["id"] == c.as_str()).cloned()
+        ex["cues"]
+            .as_array()?
+            .iter()
+            .find(|x| x["id"] == c.as_str())
+            .cloned()
     });
     let ladder_step = plan.ladder_step.and_then(|i| ex["ladder"].get(i).cloned());
     let sessions = app.sessions();
@@ -44,7 +48,11 @@ async fn today(State(app): State<Shared>) -> R<Json<Value>> {
         .rev()
         .find(|s| s.kind.is_guided() && s.state == SessionState::InProgress && s.local_date == date)
         .cloned();
-    let latest_review = app.all_reviews().into_iter().last().map(|r| review_view(&app, &r));
+    let latest_review = app
+        .all_reviews()
+        .into_iter()
+        .last()
+        .map(|r| review_view(&app, &r));
     // Today's guided sessions (not Studio), so the home screen can show its state.
     let today_sessions: Vec<Value> = sessions
         .iter()
@@ -64,7 +72,10 @@ async fn today(State(app): State<Shared>) -> R<Json<Value>> {
         let now_hm = &local_ts[11..16];
         now_hm >= t.as_str() && !participation["practised_today"].as_bool().unwrap_or(false)
     });
-    let pending = analysis::jobs(&app).iter().filter(|j| j.status != "done").count();
+    let pending = analysis::jobs(&app)
+        .iter()
+        .filter(|j| j.status != "done")
+        .count();
     Ok(Json(json!({
         "local_date": date, "local_time": local_ts, "timezone": profile.timezone,
         "goal": profile.goal, "plan": plan, "exercise": ex, "cue": cue, "ladder_step": ladder_step,
@@ -81,14 +92,22 @@ async fn today(State(app): State<Shared>) -> R<Json<Value>> {
 async fn list_exercises(State(app): State<Shared>) -> Json<Value> {
     let reg = app.registry.read().unwrap();
     let list: Vec<Value> = reg.all_latest().iter().map(|e| e.raw.clone()).collect();
-    let caps: Vec<Value> = progress::AREAS.iter().map(|a| json!({"area": a, "capability": progress::capability(a)})).collect();
+    let caps: Vec<Value> = progress::AREAS
+        .iter()
+        .map(|a| json!({"area": a, "capability": progress::capability(a)}))
+        .collect();
     Json(json!({"exercises": list, "capability_matrix": caps}))
 }
 
 async fn get_exercise(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<Value>> {
     let reg = app.registry.read().unwrap();
-    let versions = reg.by_id.get(&id).ok_or_else(|| anyhow::anyhow!("exercise not found"))?;
-    Ok(Json(json!({"versions": versions.values().map(|e| e.raw.clone()).collect::<Vec<_>>()})))
+    let versions = reg
+        .by_id
+        .get(&id)
+        .ok_or_else(|| anyhow::anyhow!("exercise not found"))?;
+    Ok(Json(
+        json!({"versions": versions.values().map(|e| e.raw.clone()).collect::<Vec<_>>()}),
+    ))
 }
 
 async fn get_plan(State(app): State<Shared>) -> R<Json<Plan>> {
@@ -102,7 +121,8 @@ async fn plan_history(State(app): State<Shared>) -> Json<Vec<Plan>> {
 async fn deck_today(State(app): State<Shared>) -> R<Json<Value>> {
     let mut v = cards::today_queue(&app)?;
     // Practice days this week, for the calendar on the room's wall.
-    v["participation"] = progress::participation(&app, v["local_date"].as_str().unwrap_or_default());
+    v["participation"] =
+        progress::participation(&app, v["local_date"].as_str().unwrap_or_default());
     Ok(Json(v))
 }
 
@@ -117,8 +137,22 @@ async fn deck_review(State(app): State<Shared>, Json(req): Json<cards::RateReq>)
     if ouch {
         // Record the comfort report on the session the card was practised in.
         if let Some(sid) = take.and_then(|t| app.take(&t).ok()).map(|t| t.session_id) {
-            let comfort = recordings::ComfortInput { comfort: Comfort::Strain, effort: None, hoarseness: false, likes_sound: None, note: Some("Rated a card as hurting or strained.".into()) };
-            recordings::update_session(&app, &sid, recordings::SessionUpdate { comfort: Some(comfort), notes: None, complete: None })?;
+            let comfort = recordings::ComfortInput {
+                comfort: Comfort::Strain,
+                effort: None,
+                hoarseness: false,
+                likes_sound: None,
+                note: Some("Rated a card as hurting or strained.".into()),
+            };
+            recordings::update_session(
+                &app,
+                &sid,
+                recordings::SessionUpdate {
+                    comfort: Some(comfort),
+                    notes: None,
+                    complete: None,
+                },
+            )?;
         }
     }
     out["deck"] = cards::today_queue(&app)?;
@@ -132,7 +166,12 @@ async fn resume_plan(State(app): State<Shared>) -> R<Json<Plan>> {
         return Ok(Json(cur));
     }
     let v = cur.version;
-    let plan = Plan { paused: false, author: "learner".into(), rationale: "You resumed after a pause. Go gently and stop if anything hurts.".into(), ..cur };
+    let plan = Plan {
+        paused: false,
+        author: "learner".into(),
+        rationale: "You resumed after a pause. Go gently and stop if anything hurts.".into(),
+        ..cur
+    };
     Ok(Json(app.write_plan(plan, Some(v))?))
 }
 
@@ -145,7 +184,10 @@ async fn choose_plan(State(app): State<Shared>, Json(req): Json<ChooseReq>) -> R
     let cur = app.ensure_plan()?;
     let ex = {
         let reg = app.registry.read().unwrap();
-        let ex = reg.latest(&req.exercise_id).ok_or_else(|| anyhow::anyhow!("exercise not found"))?.clone();
+        let ex = reg
+            .latest(&req.exercise_id)
+            .ok_or_else(|| anyhow::anyhow!("exercise not found"))?
+            .clone();
         reg.eligible(&ex.id, ex.version)?;
         ex
     };

@@ -350,7 +350,7 @@ authentication.
 | --- | --- | --- |
 | `LILT_DATA_DIR` | `~/Lilt/data` (`/data` in Docker) | Where everything is stored |
 | `LILT_BIND` | `127.0.0.1:7878` (`0.0.0.0:7878` in Docker) | Listen address |
-| `LILT_PYTHON` | `analysis/.venv/bin/python` | Python for the analysis helper |
+| `LILT_PYTHON` | `analysis/.venv/bin/python` (Windows: `analysis/.venv/Scripts/python.exe`) | Python for the analysis helper; an explicit value overrides the platform default |
 | `LILT_CONTENT_DIR` | `content` | Exercise registry and prompts to seed from |
 | `LILT_WEB_DIR` | `web/dist` | Built web UI |
 | `LILT_MCP_TOKEN` | unset | If set, `/mcp` on this computer requires `Authorization: Bearer <token>` (apps connecting through the public address sign in with OAuth instead) |
@@ -363,10 +363,17 @@ Deterministic practice analysis does not use a cloud model.
 
 ## Development and tests
 
+Install the analysis environment before running Rust tests: they use the real local Python helper.
+From the repository root, `uv sync --locked --project analysis` installs the pinned dependencies
+and pytest into `analysis/.venv` on Windows, macOS and Linux. The app and Rust tests select the
+interpreter path for the current platform. The lockfile is not updated by this command.
+
 ```bash
-cd server && cargo test                     # 15 acceptance-scenario tests (uses the real analysis helper)
-cd analysis && .venv/bin/python -m pytest   # 27 analysis tests on fixed fixtures
-cd analysis && .venv/bin/python scripts/evaluate.py   # regenerates EVALUATION.md
+cd server && cargo fmt --all -- --check
+cd server && cargo clippy --all-targets --all-features -- -D warnings
+cd server && cargo test --all-targets --all-features  # includes the real analysis helper
+cd analysis && uv run --locked pytest      # analysis tests on fixed fixtures
+cd analysis && uv run --locked python scripts/evaluate.py   # regenerates EVALUATION.md
 cd web && node --test src/pitch.test.ts     # live pitch tracker (YIN) on synthetic tones
 cd web && LILT_URL=http://127.0.0.1:5173 node --test e2e/recording-lock.mjs  # Vite running: real browser locks/recorder, fake mic and stubbed API
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/safari.mjs  # disposable test server on :7979; open :5175 in Safari and click each tab's audio button

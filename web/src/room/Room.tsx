@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
   CAT_SPOT, catHit, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
   quadMatrix, roomUrl, W, weights,
@@ -53,6 +53,7 @@ const PET_SAYS = ["purr… :3", "prrrr <3", "mrrp!", "*happy cat noises*"];
 
 /** `children` float in the painting: position them in painting pixels; `--inv` undoes the camera's scale. */
 export function Room({ inside, onEnter, cards, done, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; children?: ReactNode }) {
+  const screenGlowId = useId();
   const stage = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const bubble = useRef<HTMLDivElement>(null);
@@ -210,12 +211,17 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />
         ))}
         <canvas ref={canvas} className="room-fx" width={W} height={H} />
+        <svg className="room-screen-light" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+          <defs><filter id={screenGlowId} x="820" y="280" width="370" height="240" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="7" /></filter></defs>
+          <polygon className="room-screen-bloom" points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="none" stroke="#a8dfff" strokeWidth="10" filter={`url(#${screenGlowId})`} />
+          <polygon className="room-screen-edge" points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="rgba(180,220,255,0.06)" stroke="#c9edff" strokeWidth="1.7" strokeLinejoin="round" />
+        </svg>
         <button className="room-hit" style={{ transform: quadMatrix(100, 100, MAIN_SCREEN) }} onClick={onEnter} tabIndex={inside ? -1 : 0}
           aria-label={`Sit down at the computer${cards !== null ? `: ${cards} card${cards === 1 ? "" : "s"} today` : ""}`}
           onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)} onFocus={() => setHover(true)} onBlur={() => setHover(false)} />
         <div className="room-peek" style={{ left: peekX, top: peekTop }} aria-hidden="true">
-          <b>{cards === null ? "Your desk" : cards === 0 ? "All done today" : `${cards} card${cards === 1 ? "" : "s"} today`}</b>
-          <span>Sit down at the desk</span>
+          <b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5v10l3-3 2.5 4 2-1.2-2.5-4H13Z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg><span className="room-click">Click the screen</span><span className="room-tap">Tap the screen</span></b>
+          <span>{cards === null ? "Your desk is ready" : cards === 0 ? "All done · your desk is still open" : `${cards} card${cards === 1 ? "" : "s"} today`}</span>
         </div>
         {children}
       </div>

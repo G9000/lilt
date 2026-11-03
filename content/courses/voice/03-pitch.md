@@ -14,19 +14,19 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shaping your voice: pitch and resonance" (Activity 2), and NHS Lothian's "Where to start" (2026). The mm-hm text is a common speech-therapy way to find a speaking pitch, chosen by Lilt.
 ---
 
-Pitch is how high or low your voice sits. It matters, but less than people think: a voice pushed high while everything else stays the same tends to sound strained or cartoony. You're looking for a note that's a little higher, easy, and yours.
+Pitch is how high or low your voice sounds. It is one important part of voice feminization, alongside resonance and voice quality. There is no single pitch that makes a voice feminine. Explore a speaking range you like and can use comfortably, rather than aiming for the highest note you can reach.
 
 **How it fits together.** Your vocal folds make the sound: how fast they vibrate is pitch, and how thick and firmly they meet is weight. Your throat, mouth and nose then shape that sound: that's resonance. The next chapters take one each, so you can learn to change them separately.
 
-**Find where you are now.** Say "mm-hm!" the way you'd agree with a friend. That little sound lands close to an easy speaking pitch for you. Watch where it sits on the pitch line: that's where you speak now.
+**Find where you are now.** Record a few everyday sentences. The middle pitch describes that sample, not your whole range. A relaxed "mm-hm!" can be a useful way into sound, but its pitch may differ from your usual speaking voice.
 
-**Explore upwards, gently.** Glide from where you speak now up and back down on a hum. About two to four semitones above it (two to four piano keys) there's usually a spot that still feels easy; Lilt shows semitones after each take. That's your note, a starting point rather than a ceiling. You don't need to reach the women's average shown after each take; many women speak below it. If you feel squeezing or strain, the sound turns breathy or hollow, or you couldn't keep it up for a chat, you've gone past it; come back down.
+**Explore a small change.** Try a short, gentle hum glide within an easy range, then say "Hello, how are you?" near a spot you liked. Compare it with your everyday version. A useful starting place feels easy in words as well as in the hum; it does not need to be a set number of semitones higher. Stop if speaking feels strained or becomes hoarse.
 
-**If your voice flips.** Partway up a glide, usually well above any speaking pitch you'd aim for here, the voice may flip from its everyday register into a lighter, falsetto-like one. That's normal, and your range doesn't end there. For everyday speaking, most people stay below the flip; a speaking voice built above it is possible, but best learned with a coach. If the flipped sound is breathy or hollow, come back down.
+**If your voice flips.** A glide may move into a different register. A flip does not by itself mean injury or failure, and register labels do not decide whether a voice is feminine. Return to an easy sound if the change is difficult to control. A voice-specialist speech and language therapist can help if you keep getting stuck or uncomfortable.
 
 **Anchor it.** Hum your note, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
 
-**Move it up slowly.** After a week where your note felt easy every day, try it one semitone higher. Stop at the first squeeze. The weight and resonance chapters sometimes use a higher note just to find a feeling; that isn't your speaking note.
+**Progress by ease, not a calendar.** There is no weekly pitch increase to complete. Keep a range when you like it and can repeat it comfortably in a short phrase. Change only one thing next: the sound, the phrase length, or the situation. You may spend time on resonance or weight without raising pitch further.
 
 **Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. A flat, held pitch sounds robotic.
 
@@ -36,19 +36,19 @@ Pitch is how high or low your voice sits. It matters, but less than people think
 
 mm-hm!
 
-> Agree with an imaginary friend. Say it a few times without thinking about it; where it lands is close to an easy speaking pitch for you.
+> Agree with an imaginary friend. Notice the easy start and the changing pitch. This is an exploration, not a measurement of your everyday speaking pitch.
 
 ## hum-speak
 
 mmm
 
-> Hum where you'd normally speak. That's where you speak now: everything else is measured from here.
+> Hum on an easy note. Compare its feel with a short spoken phrase; the hum is a starting cue, not a target to hold throughout speech.
 
 ## glide
 
 mmm ↗ ↘
 
-> Slide up from where you speak now and back down. The highest spot that still feels easy, often two to four piano keys up (the note name shows after each take), is your note: a starting point, not a ceiling. Squeezing, or a breathy or hollow sound, means you've gone past it. A flip partway up is normal.
+> Make a small, comfortable slide up and back down. Choose an easy spot somewhere within it and try a greeting there. You are exploring options, not finding your highest note. Stop for strain or hoarseness.
 
 ## hum-target
 

@@ -20,17 +20,21 @@ export interface InsightInput {
 export interface Insight { note: string; cue: string }
 
 /**
- * What a card asks of the voice: "steady" for hums and counting, where a level pitch is the point;
- * "speech" for phrases, sentences, passages and your own words, where pitch should move. Null: unknown.
+ * A plain held sound can be steady; counting is speech. Mixed vocalises and glides are exploratory:
+ * their chapter's display kind alone cannot tell us what their pitch contour should do.
  */
-export type TakeStyle = "steady" | "speech" | null;
+export type TakeStyle = "steady" | "speech" | "explore" | null;
 /** What `takeStyle` reads from a card (a deck card, or a chapter text described the same way). */
 export interface CardKind { kind: string; text_kind: string; front: string }
 export function takeStyle(card: CardKind | null | undefined): TakeStyle {
   if (!card) return null;
-  if (card.kind === "exercise") return /^hum\b/i.test(card.front) ? "steady" : "speech";
-  if (card.text_kind === "hum" || card.text_kind === "automatic") return "steady";
-  return ["phrases", "sentences", "passage", "prompt"].includes(card.text_kind) ? "speech" : null;
+  if (/[↗↘↔↑↓]/u.test(card.front)) return "explore";
+  if (card.kind === "exercise") return /^hum\b/i.test(card.front) ? "explore" : "speech";
+  if (card.text_kind === "hum") {
+    // Only recognise an unambiguous held sound. A hum chapter also contains greetings and glides.
+    return /^(?:m+|e+|a+|o+|u+|i+|n+g*|z+|v+|br+)$/i.test(card.front.trim()) ? "steady" : "explore";
+  }
+  return ["automatic", "phrases", "sentences", "passage", "prompt"].includes(card.text_kind) ? "speech" : null;
 }
 
 /**
@@ -60,6 +64,10 @@ export function endDropSt(pts: InsightInput["pts"]): number | null {
 
 export function describeTake({ median, spanSt, band, pts, style = null, flags = [] }: InsightInput): Insight | null {
   if (!median || flags.length > 0 || voicedSeconds(pts) < MIN_VOICED_S) return null;
+  if (style === "explore") return {
+    note: "This exercise explores a sound or moves between sounds.",
+    cue: "Follow the exercise's cue and compare what you hear. The pitch line only describes pitch; listen for the change this exercise asks for, and keep it comfortable.",
+  };
   if (band && median > band[1] * 1.03) return {
     note: "This take sat above your comfortable range.",
     cue: "If it felt easy and this is the note you've been working towards, move your range up to match it. If there was any strain, ease back down a little next time.",
@@ -67,7 +75,7 @@ export function describeTake({ median, spanSt, band, pts, style = null, flags = 
   const drop = endDropSt(pts);
   if (drop !== null && drop >= 2) return {
     note: "Your voice settled lower towards the end.",
-    cue: "Keep the last few words as light and bright as the first ones.",
+    cue: "A falling ending can be natural. Listen back: did it express what you meant and feel easy? Pitch alone cannot tell whether brightness or vocal weight changed.",
   };
   if (band && median < band[0] * 0.97) return {
     note: "This take sat a little below your comfortable range.",

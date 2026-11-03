@@ -16,11 +16,11 @@ written_by: Written for Lilt, from NHS Fife's vocal-cord tuning-in activity and 
 
 Vocal weight is how heavy or light your voice sounds: a firm "HEY!" to a friend beside you is heavy, a soft "uh-oh" to a toddler is light. It's partly separate from pitch and loudness: they move together, but you can learn to steer weight on its own. Lighter, but still clear, is where many people want to go, if it's what you want.
 
-**Slide into it.** Lightness is easiest to find on the way up: glide an "ah" from low to high and notice the sound thin out as it rises. Keep that thin feel and come back down to an easy note.
+**Try a small glide.** Within an easy range, glide an "ah" gently upward and notice whether it sounds lighter. If you find a change you like, try bringing it back to a short phrase. A higher pitch does not guarantee lighter weight, and you do not need to reach the top of your range.
 
-**Feel the difference.** At the same pitch and talking volume, say a firm "HEY!" to a friend beside you, then a soft "awww" like you've just seen a puppy. The second uses thinner, lighter vibration. That's the light end, and you get it without adding air.
+**Hear the difference.** Use the chapter video to hear heavier and lighter examples. Then try an easy "hey" and a gentle "aww" at roughly similar pitch and volume. Those words are exploration cues, not proof that your vocal folds changed in a particular way. Neither version needs force.
 
-**Go light, not breathy.** A little air in the voice is normal for many people, but leaning on lots of it isn't the same as light: it's hard to keep up, hard to hear in noise, and can tire your voice. Don't go quiet or whispery to sound softer either; speak at your normal level. If you hear a lot of air, add a touch more clarity. A buzzy, squeezed sound (a pressed voice) isn't lightness either, it's effort: if you feel a push in your chest or throat, back off.
+**Separate lightness from airiness.** Vocal weight, loudness and breathiness can change together, but they are not interchangeable. A little breathiness can be a chosen quality; it is not required for femininity. Aim for an easy sound you can hear clearly at a conversational volume. Do not squeeze to remove airiness or push to make a heavier example.
 
 **Borrow a light moment.** Little sounds are naturally light: "uh-oh", "huh?", a gentle "aww". Start from one of them and carry its feel into the next words.
 
@@ -32,13 +32,13 @@ Vocal weight is how heavy or light your voice sounds: a firm "HEY!" to a friend 
 
 aaah ↗ … hello
 
-> Start low and a little heavy, glide up, and let the sound thin out as it rises. Keep that thin feel and say "hello" somewhere easy. Later, try keeping it light as you come back down.
+> Start on an easy "ah" and make a small upward glide, without pushing for a heavy sound or a high note. If you find a lighter sound you like, try "hello" comfortably. Later, explore a small downward glide too.
 
 ## middle
 
 aaah · aaah · aaah
 
-> Three ahs at the same pitch and the same loudness: sturdy like "HEY", then thin like a cooing "aww", then that thin one again with no extra air. If it got quieter, it got softer, not lighter. Play them back without looking: which one was lightest?
+> Three easy ahs: your familiar sound, a gentler version, then repeat the version you prefer. Keep pitch and loudness roughly similar to hear the contrast more clearly. Quieter does not prove lighter, and a volume change does not prove weight stayed the same. No forceful "HEY" needed.
 
 ## uh-oh
 
@@ -50,7 +50,7 @@ uh-oh! · huh? · aww
 
 nyeh · nyeh · nyeh
 
-> A small, playful whimper, like a puppy asking for a treat, with a little downward slide. Relaxed and fairly quiet, never breathy.
+> Optional: a small, playful "nyeh" with a little downward slide. Keep it easy; skip it if the imitation makes you squeeze. It need not be perfectly free of breathiness.
 
 ## light-hello
 

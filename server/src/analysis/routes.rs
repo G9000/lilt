@@ -24,7 +24,9 @@ pub fn router() -> Router<Shared> {
 
 async fn take_analysis(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<Value>> {
     let t = app.take(&id)?;
-    let an = app.take_analysis(&t).ok_or_else(|| anyhow::anyhow!("analysis not found"))?;
+    let an = app
+        .take_analysis(&t)
+        .ok_or_else(|| anyhow::anyhow!("analysis not found"))?;
     Ok(Json(an))
 }
 
@@ -40,7 +42,9 @@ async fn remeasure(State(app): State<Shared>, Path(id): Path<String>) -> R<Json<
 
 /// Re-measure every take analysed with an older method; the earlier results are kept.
 async fn remeasure_stale(State(app): State<Shared>) -> R<Json<Value>> {
-    Ok(Json(json!({ "queued": analysis::remeasure_stale(&app)?, "method": analysis::ANALYSIS_METHOD })))
+    Ok(Json(
+        json!({ "queued": analysis::remeasure_stale(&app)?, "method": analysis::ANALYSIS_METHOD }),
+    ))
 }
 
 #[derive(Deserialize)]
@@ -49,7 +53,10 @@ struct CompareQuery {
     b: String,
 }
 
-async fn compare_takes(State(app): State<Shared>, Query(q): Query<CompareQuery>) -> R<Json<compare::Comparison>> {
+async fn compare_takes(
+    State(app): State<Shared>,
+    Query(q): Query<CompareQuery>,
+) -> R<Json<compare::Comparison>> {
     Ok(Json(compare::compare(&app, &q.a, &q.b)?))
 }
 

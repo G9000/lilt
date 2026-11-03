@@ -7,20 +7,20 @@ kind: phrases
 area: lightness
 check_in: tip-teeth-lips
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lightenbrighten-articulation/
-written_by: Written for Lilt, from NHS Fife's "Shaping your voice: articulation" and its articulation tuning-in activity. "The tip of the tongue, the teeth, the lips" is a traditional diction exercise, and the pen (cork) exercise is a common articulation drill used in voice therapy; the other texts are Lilt's own.
+written_by: Written for Lilt, from NHS Fife's "Shaping your voice: articulation" and its articulation tuning-in activity. "The tip of the tongue, the teeth, the lips" is a traditional diction exercise; the other texts and the no-prop clarity comparison are Lilt's own.
 ---
 
 Articulation is how your lips, tongue and jaw shape sounds. Lighter, quicker contact with the tip of the tongue and the lips keeps speech at the front of the mouth, which can help it sound brighter and lighter, and clearer too. Listeners notice a crisp, forward s in particular.
 
-**Light taps.** Say "la la la", then "ta ta ta". Let the very tip of your tongue tap just behind your top teeth, as lightly and quickly as you can. Think of tapping a phone screen, not pressing a doorbell.
+**Light taps.** Say "la la la", then "ta ta ta". Let the tip of your tongue tap lightly just behind your top teeth at an easy pace. Think of tapping a phone screen, not pressing a doorbell.
 
 **Lips that move.** "Pa ba ma": let your lips meet and spring apart. Keep your jaw loose; it doesn't need to do the work.
 
-**Crisp s.** Keep the s at the front with a narrow, hissy stream: the tongue close to (not touching) the ridge behind your top teeth, or the tip down behind your lower teeth if that's how you already make it. Not slushy or lisped. Listeners notice it.
+**Explore clarity.** Try an easy "see you soon" and listen to the consonants. Keep the pronunciation and accent that feel like you. You do not need a particular s sound, faster speech, or a different accent to have a feminine voice.
 
 **Use it in words.** "Thanks, that's perfect, see you later!" with quick, light consonants. Clear doesn't mean slow or over-pronounced.
 
-**Listen back.** Does the speech sound neat and forward rather than chewed or swallowed? If it sounds stiff, you're working too hard; go faster and lighter.
+**Listen back.** Is the message clear and the movement easy? If it sounds stiff, use less effort and return to your ordinary pace. Speed is not a measure of progress.
 
 ## tip-teeth-lips
 
@@ -32,7 +32,7 @@ The tip of the tongue, the teeth, the lips.
 
 la la la · ta ta ta · da da da
 
-> The tongue tip taps just behind your top teeth. As light and quick as you can while staying clear.
+> The tongue tip taps just behind your top teeth. Keep the movement light, clear and comfortable; there is no speed target.
 
 ## lips
 
@@ -62,4 +62,4 @@ Can I take a quick look at the cake?
 
 Take a little time to think it through.
 
-> Hold a clean pen lightly across your front teeth and read it slowly and clearly, then take the pen out and read it again. Do the consonants sound crisper the second time? Keep it gentle; stop if your jaw aches.
+> Say it once normally, then again with easy, clear consonants and a loose jaw. Compare the two. No pen, cork or other object is needed in your mouth.

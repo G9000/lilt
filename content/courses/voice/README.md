@@ -55,6 +55,20 @@ Dedicated A/B recordings are still missing. Use the existing video links and per
 permitted audio file exists. A generated speech voice or synthetic tone is not evidence of vocal
 weight or resonance technique. No clinician has reviewed the content or pacing.
 
+## November 2026 guidance review
+
+The general MtF route and listening-resource list are on `index.md`. The 3 November review checked
+the accessible ASHA and NHS Fife guidance and the YouTube resource metadata. It is an editorial
+review, not clinician approval or a full review of the video content. The NHS Lothian PDF was
+unavailable during that check. The course now avoids fixed weekly pitch increases, held swallowing
+positions, props in the mouth, and treating creak or a falling pitch as proof of heavier weight.
+Chapter/text ids and check-in words were kept stable. Edition 3 is unchanged so personal copies
+can review these corrections piece by piece instead of replacing the whole course.
+
+Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
+review by a voice-specialist speech and language therapist; and real-user checks of comfort,
+understanding and everyday carryover. Automated software tests do not establish training efficacy.
+
 ## A chapter file
 
 ```markdown

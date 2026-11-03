@@ -58,11 +58,23 @@ pub fn router(app: Shared) -> Router {
 /// Block cross-site requests to the local API (a web page elsewhere could otherwise
 /// POST to localhost). Same-origin browser requests and non-browser clients pass.
 async fn same_origin_only(req: Request, next: Next) -> Response {
-    if let Some(origin) = req.headers().get(header::ORIGIN).and_then(|v| v.to_str().ok()) {
-        let host = req.headers().get(header::HOST).and_then(|v| v.to_str().ok()).unwrap_or("");
+    if let Some(origin) = req
+        .headers()
+        .get(header::ORIGIN)
+        .and_then(|v| v.to_str().ok())
+    {
+        let host = req
+            .headers()
+            .get(header::HOST)
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("");
         let origin_host = origin.split("://").nth(1).unwrap_or("");
         if origin_host != host {
-            return (StatusCode::FORBIDDEN, Json(json!({"error": "cross-origin request refused"}))).into_response();
+            return (
+                StatusCode::FORBIDDEN,
+                Json(json!({"error": "cross-origin request refused"})),
+            )
+                .into_response();
         }
     }
     next.run(req).await
@@ -83,25 +95,40 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
     }
     if let Some(t) = &mut p.reminder_time {
         // Stored as HH:MM ("9:05" becomes "09:05"): Today compares it with the clock as text.
-        let parsed = chrono::NaiveTime::parse_from_str(t, "%H:%M").map_err(|_| anyhow::anyhow!("reminder time must be HH:MM"))?;
+        let parsed = chrono::NaiveTime::parse_from_str(t, "%H:%M")
+            .map_err(|_| anyhow::anyhow!("reminder time must be HH:MM"))?;
         *t = parsed.format("%H:%M").to_string();
     }
-    if let Some([lo, hi]) = p.comfort_range_hz {
-        if !(60.0..=700.0).contains(&lo) || !(60.0..=700.0).contains(&hi) || lo >= hi {
-            return Err(anyhow::anyhow!("comfortable range must be two values between 60 and 700 Hz, low before high").into());
-        }
+    if let Some([lo, hi]) = p.comfort_range_hz
+        && (!(60.0..=700.0).contains(&lo) || !(60.0..=700.0).contains(&hi) || lo >= hi)
+    {
+        return Err(anyhow::anyhow!(
+            "comfortable range must be two values between 60 and 700 Hz, low before high"
+        )
+        .into());
     }
     if p.external_processing {
-        return Err(anyhow::anyhow!("external recording analysis is not implemented in this release; it stays off").into());
+        return Err(anyhow::anyhow!(
+            "external recording analysis is not implemented in this release; it stays off"
+        )
+        .into());
     }
     p.session_minutes = p.session_minutes.clamp(2, 30);
-    if let Some(n) = &p.room_note {
-        if n.chars().count() > 280 {
-            return Err(anyhow::anyhow!("the note can hold up to 280 characters").into());
-        }
+    if let Some(n) = &p.room_note
+        && n.chars().count() > 280
+    {
+        return Err(anyhow::anyhow!("the note can hold up to 280 characters").into());
     }
-    if p.warmup_card.len() > 64 || !p.warmup_card.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') {
-        return Err(anyhow::anyhow!("the warm-up must be a text id from the Warm-ups chapter, or empty for none").into());
+    if p.warmup_card.len() > 64
+        || !p
+            .warmup_card
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+    {
+        return Err(anyhow::anyhow!(
+            "the warm-up must be a text id from the Warm-ups chapter, or empty for none"
+        )
+        .into());
     }
     p.schema = "lilt.profile/1".into();
     p.updated_utc = util::now_utc();
@@ -112,14 +139,19 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
 /// Zip of the whole data directory, streamed from a temp file.
 async fn export(State(app): State<Shared>) -> R<Response> {
     let app2 = app.clone();
-    let path = tokio::task::spawn_blocking(move || store::export::write_zip(&app2)).await.map_err(|e| anyhow::anyhow!(e.to_string()))??;
+    let path = tokio::task::spawn_blocking(move || store::export::write_zip(&app2))
+        .await
+        .map_err(|e| anyhow::anyhow!(e.to_string()))??;
     let file = tokio::fs::File::open(&path).await?;
     let _ = std::fs::remove_file(&path); // unlinked; the open handle keeps streaming
     let stream = tokio_util::io::ReaderStream::new(file);
     let (date, _) = util::local_now(&app.profile().timezone);
     Ok(Response::builder()
         .header(header::CONTENT_TYPE, "application/zip")
-        .header(header::CONTENT_DISPOSITION, format!("attachment; filename=\"lilt-export-{date}.zip\""))
+        .header(
+            header::CONTENT_DISPOSITION,
+            format!("attachment; filename=\"lilt-export-{date}.zip\""),
+        )
         .body(Body::from_stream(stream))
         .unwrap())
 }
@@ -133,7 +165,7 @@ mod tests {
     fn external_processing_stays_off() {
         let (_d, app) = app();
         assert!(!app.profile().external_processing);
-        assert!(!validate::MODEL_PERCEIVED_ENABLED);
+        const { assert!(!validate::MODEL_PERCEIVED_ENABLED) };
     }
 
     /// Every feature's routes are mounted on the one router, behind the cross-origin guard.
@@ -145,26 +177,78 @@ mod tests {
         let (dir, app) = app();
         let router = crate::build_router(app.clone(), &config(dir.path()));
         let send = |method: &str, uri: &str| {
-            let req = Request::builder().method(method).uri(uri).header("host", "127.0.0.1:7878").body(Body::empty()).unwrap();
+            let req = Request::builder()
+                .method(method)
+                .uri(uri)
+                .header("host", "127.0.0.1:7878")
+                .body(Body::empty())
+                .unwrap();
             let r = router.clone();
             async move { r.oneshot(req).await.unwrap().status() }
         };
-        for uri in ["/healthz", "/api/today", "/api/profile", "/api/exercises", "/api/deck/today", "/api/plan", "/api/plan/history",
-            "/api/progress", "/api/sessions", "/api/history", "/api/jobs", "/api/courses", "/api/texts", "/api/syllabus",
-            "/api/syllabus/updates", "/api/syllabus/history", "/api/connect", "/api/export"] {
+        for uri in [
+            "/healthz",
+            "/api/today",
+            "/api/profile",
+            "/api/exercises",
+            "/api/deck/today",
+            "/api/plan",
+            "/api/plan/history",
+            "/api/progress",
+            "/api/sessions",
+            "/api/history",
+            "/api/jobs",
+            "/api/courses",
+            "/api/texts",
+            "/api/syllabus",
+            "/api/syllabus/updates",
+            "/api/syllabus/history",
+            "/api/connect",
+            "/api/export",
+        ] {
             assert_eq!(send("GET", uri).await, StatusCode::OK, "GET {uri}");
         }
         // Routes that need an ID or a body answer from their handler, not the static-file fallback.
-        for (method, uri) in [("GET", "/api/sessions/nope"), ("GET", "/api/takes/nope"), ("GET", "/api/takes/nope/analysis"),
-            ("GET", "/api/reviews/nope"), ("GET", "/api/exercises/nope"), ("GET", "/api/compare?a=x&b=y")] {
-            assert_eq!(send(method, uri).await, StatusCode::NOT_FOUND, "{method} {uri}");
+        for (method, uri) in [
+            ("GET", "/api/sessions/nope"),
+            ("GET", "/api/takes/nope"),
+            ("GET", "/api/takes/nope/analysis"),
+            ("GET", "/api/reviews/nope"),
+            ("GET", "/api/exercises/nope"),
+            ("GET", "/api/compare?a=x&b=y"),
+        ] {
+            assert_eq!(
+                send(method, uri).await,
+                StatusCode::NOT_FOUND,
+                "{method} {uri}"
+            );
         }
-        for uri in ["/api/takes", "/api/deck/review", "/api/plan/choose", "/api/mixtape/remix", "/api/reviews/x/respond"] {
+        for uri in [
+            "/api/takes",
+            "/api/deck/review",
+            "/api/plan/choose",
+            "/api/mixtape/remix",
+            "/api/reviews/x/respond",
+        ] {
             let s = send("POST", uri).await;
-            assert!(s.is_client_error() && s != StatusCode::NOT_FOUND && s != StatusCode::METHOD_NOT_ALLOWED, "POST {uri} answered {s}");
+            assert!(
+                s.is_client_error()
+                    && s != StatusCode::NOT_FOUND
+                    && s != StatusCode::METHOD_NOT_ALLOWED,
+                "POST {uri} answered {s}"
+            );
         }
-        let cross = Request::builder().method("POST").uri("/api/studio/session").header("host", "127.0.0.1:7878").header("origin", "http://evil.example").body(Body::empty()).unwrap();
-        assert_eq!(router.clone().oneshot(cross).await.unwrap().status(), StatusCode::FORBIDDEN);
+        let cross = Request::builder()
+            .method("POST")
+            .uri("/api/studio/session")
+            .header("host", "127.0.0.1:7878")
+            .header("origin", "http://evil.example")
+            .body(Body::empty())
+            .unwrap();
+        assert_eq!(
+            router.clone().oneshot(cross).await.unwrap().status(),
+            StatusCode::FORBIDDEN
+        );
     }
 
     /// DNS rebinding: a page at attacker.example resolved to 127.0.0.1 is same-origin with itself,
@@ -181,14 +265,36 @@ mod tests {
         let router = crate::build_router(app, &cfg);
         let send = |method: &str, uri: &str, host: &str| {
             let origin = format!("http://{host}");
-            let req = Request::builder().method(method).uri(uri).header("host", host).header("origin", origin).body(Body::empty()).unwrap();
+            let req = Request::builder()
+                .method(method)
+                .uri(uri)
+                .header("host", host)
+                .header("origin", origin)
+                .body(Body::empty())
+                .unwrap();
             let r = router.clone();
             async move { r.oneshot(req).await.unwrap().status() }
         };
-        assert_eq!(send("POST", "/api/connect/code", "attacker.example:7878").await, StatusCode::FORBIDDEN);
-        assert_eq!(send("GET", "/api/export", "attacker.example:7878").await, StatusCode::FORBIDDEN);
-        for host in ["localhost:7878", "127.0.0.1:7878", "[::1]:7878", "192.168.1.20:7878", "lilt.tailnet.ts.net"] {
-            assert_eq!(send("GET", "/api/profile", host).await, StatusCode::OK, "{host}");
+        assert_eq!(
+            send("POST", "/api/connect/code", "attacker.example:7878").await,
+            StatusCode::FORBIDDEN
+        );
+        assert_eq!(
+            send("GET", "/api/export", "attacker.example:7878").await,
+            StatusCode::FORBIDDEN
+        );
+        for host in [
+            "localhost:7878",
+            "127.0.0.1:7878",
+            "[::1]:7878",
+            "192.168.1.20:7878",
+            "lilt.tailnet.ts.net",
+        ] {
+            assert_eq!(
+                send("GET", "/api/profile", host).await,
+                StatusCode::OK,
+                "{host}"
+            );
         }
     }
 
@@ -202,8 +308,13 @@ mod tests {
         let router = crate::build_router(app.clone(), &config(dir.path()));
         let mut p = serde_json::to_value(app.profile()).unwrap();
         p["reminder_time"] = serde_json::json!("9:05");
-        let req = Request::builder().method("PUT").uri("/api/profile").header("host", "127.0.0.1:7878").header("content-type", "application/json")
-            .body(Body::from(p.to_string())).unwrap();
+        let req = Request::builder()
+            .method("PUT")
+            .uri("/api/profile")
+            .header("host", "127.0.0.1:7878")
+            .header("content-type", "application/json")
+            .body(Body::from(p.to_string()))
+            .unwrap();
         assert_eq!(router.oneshot(req).await.unwrap().status(), StatusCode::OK);
         assert_eq!(app.profile().reminder_time.as_deref(), Some("09:05"));
     }

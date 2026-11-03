@@ -88,10 +88,16 @@ pub fn voiced_span(an: &Value) -> Option<[f64; 2]> {
 }
 
 fn capture_key(t: &Take) -> Vec<(String, String)> {
-    ["echoCancellation", "noiseSuppression", "autoGainControl", "sampleRate", "channelCount"]
-        .iter()
-        .map(|k| (k.to_string(), t.capture["settings"][*k].to_string()))
-        .collect()
+    [
+        "echoCancellation",
+        "noiseSuppression",
+        "autoGainControl",
+        "sampleRate",
+        "channelCount",
+    ]
+    .iter()
+    .map(|k| (k.to_string(), t.capture["settings"][*k].to_string()))
+    .collect()
 }
 
 pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
@@ -112,18 +118,22 @@ pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
         limitations.push("One take was recorded before practice and one after. An immediate change after an exercise does not show a lasting habit.".into());
     }
     if a.mime != b.mime {
-        limitations.push(format!("Different recording formats ({} vs {}).", a.mime, b.mime));
+        limitations.push(format!(
+            "Different recording formats ({} vs {}).",
+            a.mime, b.mime
+        ));
     }
-    let device_changed = a.device_label.is_some()
-        && b.device_label.is_some()
-        && a.device_label != b.device_label;
+    let device_changed =
+        a.device_label.is_some() && b.device_label.is_some() && a.device_label != b.device_label;
     if device_changed {
         reasons.push("Different microphones. Measurements may differ because of the device rather than your voice.".into());
     }
     if capture_key(&a) != capture_key(&b) {
         limitations.push("Browser capture settings differ between the takes.".into());
     }
-    if a.original.is_some() && a.original.as_ref().map(|o| &o.sha256) == b.original.as_ref().map(|o| &o.sha256) {
+    if a.original.is_some()
+        && a.original.as_ref().map(|o| &o.sha256) == b.original.as_ref().map(|o| &o.sha256)
+    {
         limitations.push("These are byte-identical recordings.".into());
     }
 
@@ -197,7 +207,9 @@ pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
                 b: cb,
                 delta: ca.zip(cb).map(|(p, q)| q - p),
                 unit: "fraction of analysed frames".into(),
-                definition: "Voiced frames / all analysed frames. A coverage change is not a voice change.".into(),
+                definition:
+                    "Voiced frames / all analysed frames. A coverage change is not a voice change."
+                        .into(),
             });
             measures.push(MeasureDelta {
                 name: "resonance_f2_f3_st".into(),
@@ -213,14 +225,18 @@ pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
             {
                 limitations.push("Resonance was measured with an older method on one take. Measure older takes again in Recordings to compare resonance.".into());
             }
-            if let (Some(p), Some(q)) = (ca, cb) {
-                if (p - q).abs() > 0.2 {
-                    limitations.push("Voiced coverage differs a lot between the takes, so the summaries describe different amounts of material.".into());
-                }
+            if let (Some(p), Some(q)) = (ca, cb)
+                && (p - q).abs() > 0.2
+            {
+                limitations.push("Voiced coverage differs a lot between the takes, so the summaries describe different amounts of material.".into());
             }
             if outcome == "insufficient_evidence" && reasons.is_empty() {
                 outcome = match (dmed, dspan) {
-                    (Some(m), Some(s)) if m.abs() < STABLE_MEDIAN_ST && s.abs() < STABLE_SPAN_ST => "stable".into(),
+                    (Some(m), Some(s))
+                        if m.abs() < STABLE_MEDIAN_ST && s.abs() < STABLE_SPAN_ST =>
+                    {
+                        "stable".into()
+                    }
                     (Some(_), _) => "difference_noted".into(),
                     _ => "insufficient_evidence".into(),
                 };

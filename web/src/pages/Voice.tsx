@@ -5,6 +5,7 @@ import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useSt
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
+import { introductionSteps } from "../markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
 import { byPart, isLong, passageTitle, readingTime, textLabel } from "../chapters";
@@ -52,7 +53,7 @@ const howTo = (basis: string) => cap(basis.replace(/^(NHS Fife( progression)?|Li
 
 /* ---------------------------------------------------------------- layout: sidebar and split sizes */
 
-/** Your sidebar width, whether it's hidden, and where the text/recorder split sits, kept in this browser. */
+/** Sidebar layout, legacy recorder split, and reading width, kept in this browser. */
 interface Layout { side: number; collapsed: boolean; split: number }
 const LAYOUT_KEY = "lilt.practice.layout";
 const LAYOUT: Layout = { side: 272, collapsed: false, split: 0.5 };
@@ -279,16 +280,15 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
   // Decided once per visit (the parent keys this by chapter), so it never folds up under you.
   const [open, setOpen] = useState(!started);
   const [sources, setSources] = useState(false);
-  const [lede, ...paras] = howTo(level.basis).split("\n\n");
-  const tips = paras.map((p) => {
-    const m = p.match(/^\*\*(.+?)\*\*\s*([\s\S]*)$/);
-    if (!m) return { label: "", body: p };
-    if (/^on track when$/i.test(m[1].trim())) return { label: "Signs it's working", body: m[2].charAt(0).toUpperCase() + m[2].slice(1) };
-    return { label: m[1].replace(/[.:]$/, ""), body: m[2] };
+  const basis = howTo(level.basis);
+  const steps = introductionSteps(basis);
+  const tips = (steps?.tips ?? []).map(({ label, body }) => {
+    if (/^on track when$/i.test(label.trim())) return { label: "Signs it's working", body: body.charAt(0).toUpperCase() + body.slice(1) };
+    return { label: label.replace(/[.:]$/, ""), body };
   });
   return (
     <section className="ci" aria-label="About this chapter">
-      <Markdown src={lede} className="ci-lede" />
+      <Markdown src={steps?.lede ?? basis} className={steps ? "ci-lede" : "ci-body"} headingOffset={1} />
       {tips.length > 0 && open && (
         <button type="button" className="ci-link ci-skip" onClick={() => document.getElementById(`texts-${level.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
           Skip to the texts<span aria-hidden="true">↓</span>
@@ -303,7 +303,7 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
                 {care
                   ? <span className="ci-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
                   : <span className="ci-ic ci-n" aria-hidden="true">{tips.slice(0, i + 1).filter((x) => !isCare(x.label)).length}</span>}
-                <div>{t.label && <b>{t.label}</b>}<Markdown src={t.body} /></div>
+                <div>{t.label && <b>{t.label}</b>}<Markdown src={t.body} headingOffset={2} /></div>
               </li>
             );
           })}
@@ -380,7 +380,7 @@ function MixtapeDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
         <section className="co-sec">
           <h2>How to remix</h2>
           <div className="co-box">
-            <div className="co-row"><div><b>A chapter</b><p>Open it and press <b className="co-k">Remix</b> at the top right. Say what to change; you can keep going or undo.</p></div></div>
+            <div className="co-row"><div><b>A chapter</b><p>Open it and press <b className="co-k">Remix</b> below the chapter title. Say what to change; you can keep going or undo.</p></div></div>
             <div className="co-row"><div><b>A new chapter</b><p>Press <b className="co-k">New chapter</b> at the end of the chapter list, then say what it should be about.</p></div></div>
             <div className="co-row">
               <div><b>The whole course</b><p>Ask for your own version of everything: gentler, shorter, about your own days.</p></div>
@@ -397,7 +397,7 @@ function MixtapeDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
 function PieceView({ piece }: { piece: Piece | null }) {
   if (!piece) return <p className="ve-up-gone">Removed</p>;
   if (piece.text) return <div className="ve-up-text"><p>{piece.text}</p>{piece.hint && <small>{piece.hint}</small>}</div>;
-  return <Markdown src={piece.markdown.replace(/^---\n[\s\S]*?\n---\n/, "")} className="ve-md ve-up-md" />;
+  return <Markdown src={piece.markdown.replace(/^---\n[\s\S]*?\n---\n/, "")} className="ve-md ve-up-md" headingOffset={1} />;
 }
 
 const KIND: Record<SyllabusChange["kind"], string> = { added: "New", changed: "Updated", removed: "Removed" };
@@ -924,16 +924,14 @@ function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, num
 /* ---------------------------------------------------------------- home: what Practice is for */
 
 /**
- * The Practice home, read like a note: a full-width cover, the owner's words and pictures from
- * content/courses/voice/index.md, then the chapters with your progress (generated, so it never goes stale).
+ * The Practice home: actions and the chapter catalog, with the owner's complete Markdown guide
+ * available in a disclosure. Keep the guide intact so code blocks and references work across sections.
  * Nothing is picked, so the recorder takes free recordings.
  */
 function HomeDoc({ texts, deck, practised, history, profile }: {
   texts: Texts; deck: Deck | null; practised: Set<string>; history: Take[]; profile: Profile;
 }) {
   const band = profile.comfort_range_hz ?? null;
-  const cut = texts.home ? texts.home.indexOf("\n## ") : -1;
-  const intro = texts.home && cut >= 0 ? texts.home.slice(0, cut) : texts.home ?? "", rest = cut >= 0 ? texts.home!.slice(cut + 1) : "";
   const cover = texts.home_cover && picture(texts.home_cover);
   const next = nextChapter(texts, practised);
   return (
@@ -941,11 +939,15 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
       <div className="ve-page">
         {cover && <div className="ve-cover" style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
         <article className="ve-col ve-home-col">
-          {/* The welcome first; then, under its opening paragraph, where you are: starting, or practising. */}
-          {intro ? <Markdown src={intro} className="ve-md" /> : <header className="ve-head"><h1>Practice</h1></header>}
+          <header className="ve-head"><h1>Your practice</h1><p className="ve-subtitle">Pick up where you left off, or explore a chapter.</p></header>
           {!band ? <StartCard /> : <YourPractice history={history} band={band} next={<NextStep deck={deck} texts={texts} practised={practised} />} />}
-          {rest && <Markdown src={rest} className="ve-md" />}
-          <section className="ve-md">
+          <nav className="ve-course-jumps" aria-label="Course shortcuts">
+            {texts.levels.length > 0 && <a href={`#/studio/${next?.id ?? texts.levels[0].id}`}>{practised.size ? "Continue learning" : "First chapter"}</a>}
+            <a href="#/deck">Today's practice</a>
+            <button type="button" onClick={() => document.getElementById("voice-chapters")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Browse {texts.levels.length} chapters <span aria-hidden="true">↓</span></button>
+          </nav>
+          {texts.home && <details className="ve-course-guide"><summary>Course guide<span>Introduction and resources</span></summary><Markdown src={texts.home} className="ve-md" headingOffset={1} /></details>}
+          <section className="ve-md" id="voice-chapters" aria-label="Course chapters">
             <h2>The chapters</h2>
             {byPart(texts.levels).map((g, gi) => (
               <div className="ve-part-group" key={`${gi}-${g.part ?? ""}`}>

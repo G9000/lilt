@@ -5,9 +5,9 @@
 
 pub mod model;
 pub mod routes;
-pub mod validate;
 #[cfg(test)]
 mod tests;
+pub mod validate;
 
 use crate::analysis::compare;
 use crate::app::App;
@@ -29,11 +29,21 @@ pub const PROGRESS_SESSIONS: usize = 3;
 
 pub fn goal_connection(area: &str) -> &'static str {
     match area {
-        "resonance" => "Your goal includes a brighter, more forward sound. Where you feel the buzz is how this source-checked activity tracks it: a clue about easy voicing, not a measurement of resonance.",
-        "lightness" => "Your goal includes a lighter sound. In this activity, your own listening judgement is the evidence. Lighter does not mean quieter.",
-        "pitch" => "Pitch is one part of your goal, alongside resonance and lightness. Lilt does not treat a higher number as automatically better.",
-        "intonation" => "You want a voice that sounds natural and like you. Rise and fall that fits the meaning helps with that. No particular melody is required.",
-        "carryover" => "Your goal is a voice that works in everyday conversation. That means carrying what you practise into longer, less scripted speech.",
+        "resonance" => {
+            "Your goal includes a brighter, more forward sound. Where you feel the buzz is how this source-checked activity tracks it: a clue about easy voicing, not a measurement of resonance."
+        }
+        "lightness" => {
+            "Your goal includes a lighter sound. In this activity, your own listening judgement is the evidence. Lighter does not mean quieter."
+        }
+        "pitch" => {
+            "Pitch is one part of your goal, alongside resonance and lightness. Lilt does not treat a higher number as automatically better."
+        }
+        "intonation" => {
+            "You want a voice that sounds natural and like you. Rise and fall that fits the meaning helps with that. No particular melody is required."
+        }
+        "carryover" => {
+            "Your goal is a voice that works in everyday conversation. That means carrying what you practise into longer, less scripted speech."
+        }
         _ => "This relates to your chosen voice goal.",
     }
 }
@@ -53,14 +63,14 @@ pub fn take_signal(ex: &Exercise, t: &Take) -> Option<(String, String, String)> 
     let sr = t.self_report.as_ref()?;
     let mut best: Option<(String, String, String)> = None;
     for q in &ex.check_questions {
-        if let Some(ans) = sr.answers.get(&q.id) {
-            if let Some(sig) = ex.signal(&q.id, ans) {
-                if sig == "comfort_stop" {
-                    return Some((sig.into(), q.id.clone(), ans.clone()));
-                }
-                if sig != "info" && (best.is_none() || sig == "target_not_met") {
-                    best = Some((sig.into(), q.id.clone(), ans.clone()));
-                }
+        if let Some(ans) = sr.answers.get(&q.id)
+            && let Some(sig) = ex.signal(&q.id, ans)
+        {
+            if sig == "comfort_stop" {
+                return Some((sig.into(), q.id.clone(), ans.clone()));
+            }
+            if sig != "info" && (best.is_none() || sig == "target_not_met") {
+                best = Some((sig.into(), q.id.clone(), ans.clone()));
             }
         }
     }
@@ -87,7 +97,12 @@ fn question_text(ex: &Exercise, q: &str) -> String {
 fn practice_takes(takes: &[Take]) -> Vec<&Take> {
     takes
         .iter()
-        .filter(|t| matches!(t.role, TakeRole::Exercise | TakeRole::Retry | TakeRole::FollowUp))
+        .filter(|t| {
+            matches!(
+                t.role,
+                TakeRole::Exercise | TakeRole::Retry | TakeRole::FollowUp
+            )
+        })
         .filter(|t| t.original.is_some())
         .collect()
 }
@@ -125,14 +140,12 @@ fn exercise_history(app: &App, ex_id: &str, ladder_step: Option<usize>) -> Vec<(
         let takes = app.takes_in(&s.id);
         let latest = takes
             .iter()
-            .filter(|t| t.exercise_id.as_deref() == Some(ex_id) && t.self_report.is_some())
-            .last();
-        if let Some(t) = latest {
-            if let Some(ex) = reg.get(ex_id, t.exercise_version.unwrap_or(1)) {
-                if let Some((sig, _, _)) = take_signal(ex, t) {
-                    out.push((s.clone(), sig));
-                }
-            }
+            .rfind(|t| t.exercise_id.as_deref() == Some(ex_id) && t.self_report.is_some());
+        if let Some(t) = latest
+            && let Some(ex) = reg.get(ex_id, t.exercise_version.unwrap_or(1))
+            && let Some((sig, _, _)) = take_signal(ex, t)
+        {
+            out.push((s.clone(), sig));
         }
     }
     out
@@ -159,10 +172,16 @@ fn idempotency_key(s: &Session, takes: &[Take]) -> String {
             "{}|{}|{}",
             t.id,
             t.analysis_run.clone().unwrap_or_default(),
-            t.self_report.as_ref().map(|r| r.reported_utc.clone()).unwrap_or_default()
+            t.self_report
+                .as_ref()
+                .map(|r| r.reported_utc.clone())
+                .unwrap_or_default()
         ));
     }
-    format!("rules-{}", &store::sha256_hex(parts.join("\n").as_bytes())[..20])
+    format!(
+        "rules-{}",
+        &store::sha256_hex(parts.join("\n").as_bytes())[..20]
+    )
 }
 
 /// Build (or return the existing) rules-based review for a session.
@@ -170,7 +189,11 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
     let s = app.session(sid)?;
     let takes = app.takes_in(sid);
     let key = idempotency_key(&s, &takes);
-    if let Some(r) = app.reviews_in(sid).into_iter().find(|r| r.idempotency_key == key) {
+    if let Some(r) = app
+        .reviews_in(sid)
+        .into_iter()
+        .find(|r| r.idempotency_key == key)
+    {
         return Ok(r);
     }
     let ex = {
@@ -209,10 +232,11 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
 
     // 1. Comfort first.
     let comfort_stop = ex.as_ref().and_then(|ex| {
-        practice
-            .iter()
-            .rev()
-            .find_map(|t| take_signal(ex, t).filter(|(sig, _, _)| sig == "comfort_stop").map(|x| (*t, x)))
+        practice.iter().rev().find_map(|t| {
+            take_signal(ex, t)
+                .filter(|(sig, _, _)| sig == "comfort_stop")
+                .map(|x| (*t, x))
+        })
     });
     let pause_from_comfort = s.comfort.as_ref().filter(|c| c.requires_pause());
     if pause_from_comfort.is_some() || comfort_stop.is_some() {
@@ -238,7 +262,12 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
             });
         }
         if let (Some((t, (_, q, a))), Some(ex)) = (comfort_stop, ex) {
-            evidence.push(self_evidence(t, &q, &a, format!("You answered \u{201c}{}\u{201d}.", answer_label(ex, &q, &a))));
+            evidence.push(self_evidence(
+                t,
+                &q,
+                &a,
+                format!("You answered \u{201c}{}\u{201d}.", answer_label(ex, &q, &a)),
+            ));
         }
         let (ex_id, ex_v, area) = ex
             .map(|e| (e.id.clone(), e.version, e.primary_area.clone()))
@@ -304,23 +333,53 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
             continue;
         };
         let blocks = compare::blocking_flags(&an);
-        let flags: Vec<&Value> = an["quality_flags"].as_array().map(|a| a.iter().collect()).unwrap_or_default();
+        let flags: Vec<&Value> = an["quality_flags"]
+            .as_array()
+            .map(|a| a.iter().collect())
+            .unwrap_or_default();
         for f in flags {
             let code = f["code"].as_str().unwrap_or("");
-            let segment = f["segments"][0].as_array().and_then(|s| Some([s.first()?.as_f64()?, s.get(1)?.as_f64()?]));
+            let segment = f["segments"][0]
+                .as_array()
+                .and_then(|s| Some([s.first()?.as_f64()?, s.get(1)?.as_f64()?]));
             let (obs, action) = match code {
-                "clipping" => ("Parts of this recording are clipped: the input was too loud for the microphone. This is about the recording, not your voice.", "Move a little further from the microphone, or lower the input level, then record again."),
-                "low_signal" => ("This recording has very little signal. The microphone may be muted, too far away, or the wrong input.", "Check the microphone level meter before recording, then try again."),
-                "insufficient_voiced" => ("There was too little voiced sound to measure.", "Record the full task. It needs a few seconds of voice."),
-                "suspected_tracking_errors" => ("The pitch tracker may have made errors (sudden jumps) in this take, so its pitch summary is unreliable.", "Nothing to change in your practice. Measurements for this take are shown with a warning."),
-                "decode_truncated" => ("The end of this recording is missing. The saved part plays normally.", "If you want the whole task, record it again."),
+                "clipping" => (
+                    "Parts of this recording are clipped: the input was too loud for the microphone. This is about the recording, not your voice.",
+                    "Move a little further from the microphone, or lower the input level, then record again.",
+                ),
+                "low_signal" => (
+                    "This recording has very little signal. The microphone may be muted, too far away, or the wrong input.",
+                    "Check the microphone level meter before recording, then try again.",
+                ),
+                "insufficient_voiced" => (
+                    "There was too little voiced sound to measure.",
+                    "Record the full task. It needs a few seconds of voice.",
+                ),
+                "suspected_tracking_errors" => (
+                    "The pitch tracker may have made errors (sudden jumps) in this take, so its pitch summary is unreliable.",
+                    "Nothing to change in your practice. Measurements for this take are shown with a warning.",
+                ),
+                "decode_truncated" => (
+                    "The end of this recording is missing. The saved part plays normally.",
+                    "If you want the whole task, record it again.",
+                ),
                 _ => continue,
             };
             let measure = if code == "clipping" {
-                compare::measure(&an, "clipped_sample_fraction").map(|v| QuotedMeasure { name: "clipped_sample_fraction".into(), value: v, unit: None })
+                compare::measure(&an, "clipped_sample_fraction").map(|v| QuotedMeasure {
+                    name: "clipped_sample_fraction".into(),
+                    value: v,
+                    unit: None,
+                })
             } else if code == "low_signal" {
-                compare::measure(&an, "rms_dbfs").map(|v| QuotedMeasure { name: "rms_dbfs".into(), value: v, unit: Some("dBFS".into()) })
-            } else { None };
+                compare::measure(&an, "rms_dbfs").map(|v| QuotedMeasure {
+                    name: "rms_dbfs".into(),
+                    value: v,
+                    unit: Some("dBFS".into()),
+                })
+            } else {
+                None
+            };
             let p = Pointer {
                 id: next_id(),
                 kind: PointerKind::Capture,
@@ -359,7 +418,8 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
                     ask: "Check that the level meter moves while you speak.".into(),
                 }),
             };
-            let blocking_without_report = blocks.iter().any(|b| b == code) && t.self_report.is_none();
+            let blocking_without_report =
+                blocks.iter().any(|b| b == code) && t.self_report.is_none();
             if review.active_pointer.is_none() && blocking_without_report {
                 review.active_pointer = Some(p);
             } else {
@@ -375,26 +435,47 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
             pairs.push((orig.clone(), t.id.clone(), "Original and retry"));
         }
     }
-    let refs: Vec<&Take> = takes.iter().filter(|t| t.role == TakeRole::Reference && t.original.is_some()).collect();
+    let refs: Vec<&Take> = takes
+        .iter()
+        .filter(|t| t.role == TakeRole::Reference && t.original.is_some())
+        .collect();
     if refs.len() >= 2 {
-        pairs.push((refs[0].id.clone(), refs[refs.len() - 1].id.clone(), "Reference phrase before and after practice"));
+        pairs.push((
+            refs[0].id.clone(),
+            refs[refs.len() - 1].id.clone(),
+            "Reference phrase before and after practice",
+        ));
     }
     for (a, b, label) in pairs {
-        let Ok(c) = compare::compare(app, &a, &b) else { continue };
+        let Ok(c) = compare::compare(app, &a, &b) else {
+            continue;
+        };
         let observation = match c.outcome.as_str() {
-            "stable" => format!("{label}: pitch summaries are similar (median within {} semitone).", compare::STABLE_MEDIAN_ST),
+            "stable" => format!(
+                "{label}: pitch summaries are similar (median within {} semitone).",
+                compare::STABLE_MEDIAN_ST
+            ),
             "difference_noted" => {
                 let d = c.measures.first().and_then(|m| m.delta).unwrap_or(0.0);
-                format!("{label}: the median pitch of the second take differs by {d:+.1} semitones. This is a description, not a judgement. Pitch alone is not progress.")
+                format!(
+                    "{label}: the median pitch of the second take differs by {d:+.1} semitones. This is a description, not a judgement. Pitch alone is not progress."
+                )
             }
             "not_comparable" => format!("{label}: not comparable. {}", c.reasons.join(" ")),
-            _ => format!("{label}: not enough evidence to compare yet. {}", c.reasons.join(" ")),
+            _ => format!(
+                "{label}: not enough evidence to compare yet. {}",
+                c.reasons.join(" ")
+            ),
         };
-        let delta_measure = c.measures.first().and_then(|m| m.delta).map(|v| QuotedMeasure {
-            name: "f0_median_delta_st".into(),
-            value: (v * 10.0).round() / 10.0,
-            unit: Some("st".into()),
-        });
+        let delta_measure = c
+            .measures
+            .first()
+            .and_then(|m| m.delta)
+            .map(|v| QuotedMeasure {
+                name: "f0_median_delta_st".into(),
+                value: (v * 10.0).round() / 10.0,
+                unit: Some("st".into()),
+            });
         review.other_observations.push(Pointer {
             id: next_id(),
             kind: PointerKind::Descriptive,
@@ -406,7 +487,11 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
                 take_id: Some(a.clone()),
                 segment: c.segment_a,
                 analysis_run: app.take(&a).ok().and_then(|t| t.analysis_run),
-                measure: if c.outcome == "difference_noted" || c.outcome == "stable" { delta_measure } else { None },
+                measure: if c.outcome == "difference_noted" || c.outcome == "stable" {
+                    delta_measure
+                } else {
+                    None
+                },
                 self_report: None,
                 comparison_take_id: Some(b.clone()),
                 comparison_segment: c.segment_b,
@@ -414,7 +499,14 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
             }],
             goal_connection: goal_connection("pitch").into(),
             confidence_basis: ConfidenceBasis {
-                data_quality: c.reasons.join(" ").chars().take(300).collect::<String>().trim().to_string(),
+                data_quality: c
+                    .reasons
+                    .join(" ")
+                    .chars()
+                    .take(300)
+                    .collect::<String>()
+                    .trim()
+                    .to_string(),
                 comparability: c.limitations.join(" "),
                 method_status: c.method_status.clone(),
                 uncertainty: "Descriptive only. It never changes your plan.".into(),
@@ -425,37 +517,44 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
     }
 
     // 4-5. Self-reported evidence, goal relevance, one eligible cue.
-    if review.active_pointer.is_none() {
-        if let Some(ex) = &ex {
-            let reported = practice.iter().rev().find(|t| t.exercise_id.as_deref() == Some(&ex.id) && t.self_report.is_some());
-            match reported.and_then(|t| take_signal(ex, t).map(|sig| (*t, sig))) {
-                Some((t, (sig, q, a))) => {
-                    let (pointer, change) = pointer_for_signal(app, &s, ex, t, &sig, &q, &a, &takes, next_id());
-                    review.active_pointer = Some(pointer);
-                    plan_change = change;
-                }
-                None if !practice.is_empty() => {
-                    review.abstention = Some(Abstention {
+    if review.active_pointer.is_none()
+        && let Some(ex) = &ex
+    {
+        let reported = practice
+            .iter()
+            .rev()
+            .find(|t| t.exercise_id.as_deref() == Some(&ex.id) && t.self_report.is_some());
+        match reported.and_then(|t| take_signal(ex, t).map(|sig| (*t, sig))) {
+            Some((t, (sig, q, a))) => {
+                let (pointer, change) =
+                    pointer_for_signal(app, &s, ex, t, &sig, &q, &a, &takes, next_id());
+                review.active_pointer = Some(pointer);
+                plan_change = change;
+            }
+            None if !practice.is_empty() => {
+                review.abstention = Some(Abstention {
                         reason: "You haven't answered this exercise's self-check yet. Lilt's pitch measurements are descriptive only, so there's no supported pointer.".into(),
                         next_action: "Listen back to your take, then answer the self-check question.".into(),
                     });
-                }
-                None => {
-                    review.abstention = Some(Abstention {
-                        reason: if s.kind == SessionKind::CheckIn {
-                            "Check-in saved. A single reference recording can be described, but it does not support a corrective pointer.".into()
-                        } else {
-                            "No practice take has been saved in this session yet.".into()
-                        },
-                        next_action: "Start today's exercise when you have a few minutes.".into(),
-                    });
-                }
+            }
+            None => {
+                review.abstention = Some(Abstention {
+                    reason: if s.kind == SessionKind::CheckIn {
+                        "Check-in saved. A single reference recording can be described, but it does not support a corrective pointer.".into()
+                    } else {
+                        "No practice take has been saved in this session yet.".into()
+                    },
+                    next_action: "Start today's exercise when you have a few minutes.".into(),
+                });
             }
         }
     }
 
     // Carryover limit: reading-only history cannot establish conversational use.
-    let any_spontaneous = app.all_takes().iter().any(|t| t.role == TakeRole::Spontaneous && t.original.is_some());
+    let any_spontaneous = app
+        .all_takes()
+        .iter()
+        .any(|t| t.role == TakeRole::Spontaneous && t.original.is_some());
     if !any_spontaneous {
         review.other_observations.push(Pointer {
             id: next_id(),
@@ -485,7 +584,12 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
         let prior: Vec<ReviewResponse> = app
             .all_reviews()
             .iter()
-            .filter(|r| r.active_pointer.as_ref().map(|x| x.area == p.area).unwrap_or(false))
+            .filter(|r| {
+                r.active_pointer
+                    .as_ref()
+                    .map(|x| x.area == p.area)
+                    .unwrap_or(false)
+            })
             .flat_map(|r| app.review_responses(r))
             .filter(|x| x.response == "disagree")
             .collect();
@@ -493,7 +597,10 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
             p.confidence_basis.uncertainty = format!(
                 "{} Earlier you marked a pointer in this area as not matching what you hear or feel{}.",
                 p.confidence_basis.uncertainty,
-                last.note.as_ref().map(|n| format!(" (\u{201c}{n}\u{201d})")).unwrap_or_default()
+                last.note
+                    .as_ref()
+                    .map(|n| format!(" (\u{201c}{n}\u{201d})"))
+                    .unwrap_or_default()
             );
         }
     }
@@ -508,11 +615,21 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
             }];
             evidence_refs.dedup();
             // Only the learner lifts a pause ("until you choose to resume").
-            let paused = review.active_pointer.as_ref().map(|p| p.kind == PointerKind::Pause).unwrap_or(false)
+            let paused = review
+                .active_pointer
+                .as_ref()
+                .map(|p| p.kind == PointerKind::Pause)
+                .unwrap_or(false)
                 || current.as_ref().is_some_and(|c| c.paused);
-            let unchanged = current.as_ref().map(|c| {
-                c.exercise_id == pp.exercise_id && c.cue_id == pp.cue_id && c.ladder_step == pp.ladder_step && c.paused == paused
-            }).unwrap_or(false);
+            let unchanged = current
+                .as_ref()
+                .map(|c| {
+                    c.exercise_id == pp.exercise_id
+                        && c.cue_id == pp.cue_id
+                        && c.ladder_step == pp.ladder_step
+                        && c.paused == paused
+                })
+                .unwrap_or(false);
             if !unchanged {
                 let plan = app.write_plan(
                     Plan {
@@ -539,7 +656,12 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
     }
 
     review.summary = Some(summary_line(&review));
-    store::write_json(&app.paths.reviews_dir(sid).join(format!("{}.json", review.id)), &review)?;
+    store::write_json(
+        &app.paths
+            .reviews_dir(sid)
+            .join(format!("{}.json", review.id)),
+        &review,
+    )?;
     store::write_atomic(
         &app.paths.reviews_dir(sid).join(format!("{}.md", review.id)),
         render_markdown(&review).as_bytes(),
@@ -562,11 +684,21 @@ fn pointer_for_signal(
     let label = answer_label(ex, q, a);
     let qtext = question_text(ex, q);
     let task = if let (Some(step), true) = (s.ladder_step, !ex.ladder.is_empty()) {
-        ex.ladder.get(step).map(|l| l.text.clone()).unwrap_or_else(|| ex.practice_task.prompt_text.clone())
+        ex.ladder
+            .get(step)
+            .map(|l| l.text.clone())
+            .unwrap_or_else(|| ex.practice_task.prompt_text.clone())
     } else {
         ex.practice_task.prompt_text.clone()
     };
-    let evidence = vec![self_evidence(t, q, a, format!("You answered \u{201c}{qtext}\u{201d} with \u{201c}{label}\u{201d}. This applies to the whole take."))];
+    let evidence = vec![self_evidence(
+        t,
+        q,
+        a,
+        format!(
+            "You answered \u{201c}{qtext}\u{201d} with \u{201c}{label}\u{201d}. This applies to the whole take."
+        ),
+    )];
     let recheck = Recheck {
         prompt_id: t.prompt_id.clone(),
         prompt_text: t.prompt_text.clone(),
@@ -584,16 +716,23 @@ fn pointer_for_signal(
             candidates.extend(ex.cues_for("target_not_met"));
             let cue = candidates
                 .iter()
-                .find(|c| !used_cues.contains(&c.id) && current_plan.as_ref().and_then(|p| p.cue_id.as_ref()) != Some(&c.id))
+                .find(|c| {
+                    !used_cues.contains(&c.id)
+                        && current_plan.as_ref().and_then(|p| p.cue_id.as_ref()) != Some(&c.id)
+                })
                 .or(candidates.first())
                 .copied();
             // Pitch "cartoon-like": the source links this to resonance staying low.
             let cartoony = ex.id == "nhsfife.gentle-pitch-count" && a == "cartoony";
             let ladder_back = !ex.ladder.is_empty() && s.ladder_step.unwrap_or(0) > 0;
             let observation = if cartoony {
-                format!("In this attempt at \u{201c}{task}\u{201d}, you said it sounded cartoon-like. The source links this to pitch going up while resonance stays low.")
+                format!(
+                    "In this attempt at \u{201c}{task}\u{201d}, you said it sounded cartoon-like. The source links this to pitch going up while resonance stays low."
+                )
             } else {
-                format!("In this attempt at \u{201c}{task}\u{201d}, you answered \u{201c}{label}\u{201d}.")
+                format!(
+                    "In this attempt at \u{201c}{task}\u{201d}, you answered \u{201c}{label}\u{201d}."
+                )
             };
             let next_action = NextAction {
                 exercise_id: ex.id.clone(),
@@ -611,11 +750,17 @@ fn pointer_for_signal(
                     exercise_version: ex.version,
                     focus_area: area.clone(),
                     cue_id: next_action.cue_id.clone(),
-                    ladder_step: if ladder_back { s.ladder_step.map(|x| x - 1) } else { s.ladder_step },
+                    ladder_step: if ladder_back {
+                        s.ladder_step.map(|x| x - 1)
+                    } else {
+                        s.ladder_step
+                    },
                     rationale: if ladder_back {
                         "You reported the current step was too hard, so the plan steps back one rung, as the source recommends.".into()
                     } else {
-                        format!("Same activity with a different cue from the source, after you answered \u{201c}{label}\u{201d}.")
+                        format!(
+                            "Same activity with a different cue from the source, after you answered \u{201c}{label}\u{201d}."
+                        )
                     },
                 },
                 true,
@@ -636,7 +781,11 @@ fn pointer_for_signal(
             )
         }
         "unsure" => {
-            let cue = ex.cues_for("unsure").first().copied().or_else(|| ex.cue(&ex.primary_cue.id));
+            let cue = ex
+                .cues_for("unsure")
+                .first()
+                .copied()
+                .or_else(|| ex.cue(&ex.primary_cue.id));
             (
                 Pointer {
                     id,
@@ -662,12 +811,17 @@ fn pointer_for_signal(
             // target_met
             let hist = exercise_history(app, &ex.id, s.ladder_step);
             let met = trailing_met(&hist);
-            let efforts: Vec<Option<u8>> = met.iter().map(|x| x.comfort.as_ref().and_then(|c| c.effort)).collect();
+            let efforts: Vec<Option<u8>> = met
+                .iter()
+                .map(|x| x.comfort.as_ref().and_then(|c| c.effort))
+                .collect();
             let easier = met.len() >= PROGRESS_SESSIONS
                 && efforts.iter().all(|e| e.is_some())
                 && efforts.last().unwrap().unwrap() < efforts.first().unwrap().unwrap();
             let mut change = None;
-            let (kind, observation, summary) = if !ex.ladder.is_empty() && met.len() >= STABLE_SESSIONS {
+            let (kind, observation, summary) = if !ex.ladder.is_empty()
+                && met.len() >= STABLE_SESSIONS
+            {
                 let step = s.ladder_step.unwrap_or(0);
                 if step + 1 < ex.ladder.len() {
                     change = Some((
@@ -688,29 +842,49 @@ fn pointer_for_signal(
                 }
                 (
                     PointerKind::Progress,
-                    format!("For {} sessions in a row, you reported keeping your practised voice comfortably and consistently at \u{201c}{task}\u{201d}.", met.len()),
-                    if change.is_some() { "You can move to the next step if you want, or stay here." } else { "You're on the last step. Keep practising at a pace that feels comfortable." },
+                    format!(
+                        "For {} sessions in a row, you reported keeping your practised voice comfortably and consistently at \u{201c}{task}\u{201d}.",
+                        met.len()
+                    ),
+                    if change.is_some() {
+                        "You can move to the next step if you want, or stay here."
+                    } else {
+                        "You're on the last step. Keep practising at a pace that feels comfortable."
+                    },
                 )
             } else if easier {
                 (
                     PointerKind::Progress,
-                    format!("For {} sessions in a row, you reached this activity's target, and your effort rating went down from {} to {}.", met.len(), efforts.first().unwrap().unwrap(), efforts.last().unwrap().unwrap()),
+                    format!(
+                        "For {} sessions in a row, you reached this activity's target, and your effort rating went down from {} to {}.",
+                        met.len(),
+                        efforts.first().unwrap().unwrap(),
+                        efforts.last().unwrap().unwrap()
+                    ),
                     "It is getting easier in this task. Keep practising, or try a next context if you like.",
                 )
             } else if met.len() >= STABLE_SESSIONS {
                 (
                     PointerKind::Stable,
-                    format!("For {} sessions in a row, you reported reaching this activity's target (\u{201c}{label}\u{201d}).", met.len()),
+                    format!(
+                        "For {} sessions in a row, you reported reaching this activity's target (\u{201c}{label}\u{201d}).",
+                        met.len()
+                    ),
                     "Stable in this task. Keep going, or try a next context if you like.",
                 )
             } else {
                 (
                     PointerKind::MoreEvidence,
-                    format!("This time you answered \u{201c}{label}\u{201d}. Another session will show whether it repeats."),
+                    format!(
+                        "This time you answered \u{201c}{label}\u{201d}. Another session will show whether it repeats."
+                    ),
                     "Repeat this activity in your next session.",
                 )
             };
-            if change.is_none() && matches!(kind, PointerKind::Stable | PointerKind::Progress) && ex.ladder.is_empty() {
+            if change.is_none()
+                && matches!(kind, PointerKind::Stable | PointerKind::Progress)
+                && ex.ladder.is_empty()
+            {
                 let reg = app.registry.read().unwrap();
                 if let Some(next) = ex.next.iter().find_map(|id| reg.latest(id)) {
                     change = Some((
@@ -719,8 +893,15 @@ fn pointer_for_signal(
                             exercise_version: next.version,
                             focus_area: next.primary_area.clone(),
                             cue_id: Some(next.primary_cue.id.clone()),
-                            ladder_step: if next.ladder.is_empty() { None } else { Some(0) },
-                            rationale: format!("Next context after a stable result in \u{201c}{}\u{201d}. Optional, and only if it feels comfortable.", ex.title),
+                            ladder_step: if next.ladder.is_empty() {
+                                None
+                            } else {
+                                Some(0)
+                            },
+                            rationale: format!(
+                                "Next context after a stable result in \u{201c}{}\u{201d}. Optional, and only if it feels comfortable.",
+                                ex.title
+                            ),
                         },
                         false,
                     ));
@@ -738,7 +919,10 @@ fn pointer_for_signal(
                     self_report: None,
                     comparison_take_id: None,
                     comparison_segment: None,
-                    description: format!("Earlier session on {} with the same answer.", x.local_date),
+                    description: format!(
+                        "Earlier session on {} with the same answer.",
+                        x.local_date
+                    ),
                 });
             }
             (
@@ -750,7 +934,10 @@ fn pointer_for_signal(
                     evidence: ev,
                     goal_connection: goal_connection(&area).into(),
                     confidence_basis: ConfidenceBasis {
-                        comparability: format!("{} session(s) on the same activity and task.", met.len().max(1)),
+                        comparability: format!(
+                            "{} session(s) on the same activity and task.",
+                            met.len().max(1)
+                        ),
                         ..self_report_basis()
                     },
                     next_action: Some(NextAction {
@@ -770,7 +957,11 @@ fn pointer_for_signal(
 
 fn summary_line(r: &Review) -> String {
     if let Some(p) = &r.active_pointer {
-        let next = p.next_action.as_ref().map(|n| format!(" Next: {}", n.summary)).unwrap_or_default();
+        let next = p
+            .next_action
+            .as_ref()
+            .map(|n| format!(" Next: {}", n.summary))
+            .unwrap_or_default();
         format!("{}{}", p.observation, next)
     } else if let Some(a) = &r.abstention {
         format!("{} {}", a.reason, a.next_action)
@@ -785,15 +976,23 @@ pub fn render_markdown(r: &Review) -> String {
         r.id, r.session_id, r.author.name, r.author.kind, r.created_utc
     );
     let write_pointer = |md: &mut String, p: &Pointer, title: &str| {
-        md.push_str(&format!("## {title}: {} ({:?})\n\n{}\n\n", p.area, p.kind, p.observation));
+        md.push_str(&format!(
+            "## {title}: {} ({:?})\n\n{}\n\n",
+            p.area, p.kind, p.observation
+        ));
         md.push_str(&format!("- Goal connection: {}\n", p.goal_connection));
         for e in &p.evidence {
             md.push_str(&format!(
                 "- Evidence ({:?}): {}{}{}\n",
                 e.class,
                 e.description,
-                e.take_id.as_ref().map(|t| format!(" [take {t}]")).unwrap_or_default(),
-                e.segment.map(|s| format!(" [{:.2}–{:.2} s]", s[0], s[1])).unwrap_or_default()
+                e.take_id
+                    .as_ref()
+                    .map(|t| format!(" [take {t}]"))
+                    .unwrap_or_default(),
+                e.segment
+                    .map(|s| format!(" [{:.2}–{:.2} s]", s[0], s[1]))
+                    .unwrap_or_default()
             ));
         }
         md.push_str(&format!(
@@ -804,10 +1003,22 @@ pub fn render_markdown(r: &Review) -> String {
             p.confidence_basis.uncertainty
         ));
         if let Some(n) = &p.next_action {
-            md.push_str(&format!("- Next: {} ({} v{}{})\n", n.summary, n.exercise_id, n.exercise_version, n.cue_id.as_ref().map(|c| format!(", cue {c}")).unwrap_or_default()));
+            md.push_str(&format!(
+                "- Next: {} ({} v{}{})\n",
+                n.summary,
+                n.exercise_id,
+                n.exercise_version,
+                n.cue_id
+                    .as_ref()
+                    .map(|c| format!(", cue {c}"))
+                    .unwrap_or_default()
+            ));
         }
         if let Some(rc) = &p.recheck {
-            md.push_str(&format!("- Recheck: \u{201c}{}\u{201d}, then {}\n", rc.prompt_text, rc.ask));
+            md.push_str(&format!(
+                "- Recheck: \u{201c}{}\u{201d}, then {}\n",
+                rc.prompt_text, rc.ask
+            ));
         }
         md.push('\n');
     };
@@ -815,7 +1026,10 @@ pub fn render_markdown(r: &Review) -> String {
         write_pointer(&mut md, p, "Practice priority");
     }
     if let Some(a) = &r.abstention {
-        md.push_str(&format!("## No pointer\n\n{}\n\nNext: {}\n\n", a.reason, a.next_action));
+        md.push_str(&format!(
+            "## No pointer\n\n{}\n\nNext: {}\n\n",
+            a.reason, a.next_action
+        ));
     }
     for p in &r.other_observations {
         write_pointer(&mut md, p, "Other observation");
@@ -835,8 +1049,14 @@ pub fn respond(app: &App, rid: &str, mut resp: ReviewResponse) -> Result<Option<
     let current = app.current_plan();
     match resp.response.as_str() {
         "accept" => {
-            let pp = r.proposed_plan.clone().ok_or_else(|| anyhow!("this review has no proposed change"))?;
-            app.registry.read().unwrap().eligible(&pp.exercise_id, pp.exercise_version)?;
+            let pp = r
+                .proposed_plan
+                .clone()
+                .ok_or_else(|| anyhow!("this review has no proposed change"))?;
+            app.registry
+                .read()
+                .unwrap()
+                .eligible(&pp.exercise_id, pp.exercise_version)?;
             new_plan = Some(app.write_plan(
                 Plan {
                     schema: "lilt.plan/1".into(),
@@ -849,17 +1069,26 @@ pub fn respond(app: &App, rid: &str, mut resp: ReviewResponse) -> Result<Option<
                     cue_id: pp.cue_id,
                     ladder_step: pp.ladder_step,
                     rationale: format!("You accepted: {}", pp.rationale),
-                    evidence_refs: vec![EvidenceRef { review_id: r.id.clone(), pointer_id: r.active_pointer.as_ref().map(|p| p.id.clone()) }],
+                    evidence_refs: vec![EvidenceRef {
+                        review_id: r.id.clone(),
+                        pointer_id: r.active_pointer.as_ref().map(|p| p.id.clone()),
+                    }],
                     paused: false,
                 },
                 current.map(|c| c.version),
             )?);
         }
         "choose_other" => {
-            let id = resp.chosen_exercise_id.clone().ok_or_else(|| anyhow!("choose an exercise"))?;
+            let id = resp
+                .chosen_exercise_id
+                .clone()
+                .ok_or_else(|| anyhow!("choose an exercise"))?;
             let ex = {
                 let reg = app.registry.read().unwrap();
-                let ex = reg.latest(&id).ok_or_else(|| anyhow!("unknown exercise"))?.clone();
+                let ex = reg
+                    .latest(&id)
+                    .ok_or_else(|| anyhow!("unknown exercise"))?
+                    .clone();
                 reg.eligible(&ex.id, ex.version)?;
                 ex
             };
@@ -875,7 +1104,10 @@ pub fn respond(app: &App, rid: &str, mut resp: ReviewResponse) -> Result<Option<
                     cue_id: Some(ex.primary_cue.id.clone()),
                     ladder_step: if ex.ladder.is_empty() { None } else { Some(0) },
                     rationale: "You chose this activity.".into(),
-                    evidence_refs: vec![EvidenceRef { review_id: r.id.clone(), pointer_id: None }],
+                    evidence_refs: vec![EvidenceRef {
+                        review_id: r.id.clone(),
+                        pointer_id: None,
+                    }],
                     paused: false,
                 },
                 current.map(|c| c.version),
@@ -884,7 +1116,9 @@ pub fn respond(app: &App, rid: &str, mut resp: ReviewResponse) -> Result<Option<
         _ => {}
     }
     store::append_line(
-        &app.paths.reviews_dir(&r.session_id).join(format!("{}.responses.jsonl", r.id)),
+        &app.paths
+            .reviews_dir(&r.session_id)
+            .join(format!("{}.responses.jsonl", r.id)),
         &serde_json::to_string(&resp)?,
     )?;
     Ok(new_plan)

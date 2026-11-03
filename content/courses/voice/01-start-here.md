@@ -21,7 +21,7 @@ Hi, friend. Five minutes of setup, one "before" recording, and you're ready.
 
 **Check your level.** Count to ten below and play it back. You want it clear, with no loud warning. A gappy pitch line on its own doesn't mean you're too quiet: unvoiced sounds like s and h never draw a line.
 
-**Choose your goal.** Feminine, androgynous, just "more like me": all of these are real goals, and they can change. Write yours in [Practice settings](#/studio/settings); it becomes the note on your wall. Going for androgynous? The middle is a real place to aim for, not a stop on the way: the overlap band on the pitch scale is a common home, and how far you take brightness and lightness is up to you. If you take oestrogen, it won't raise a voice that has already deepened, so practice like this is the main way to change it.
+**Choose your goal.** This guide focuses on a more feminine voice, but what that sounds like is yours to choose. Write a goal in [Practice settings](#/studio/settings); it becomes the note on your wall. Name a situation and a quality you want, such as an easy, light voice for everyday conversation. An androgynous voice or a flexible range are valid goals too. A band on a pitch chart cannot define any of these. Oestrogen generally does not reverse voice deepening from testosterone; voice training can work on more than pitch.
 
 **Record your "before".** Read the texts below in your everyday voice. Don't change anything yet. Future you will want this, trust me. You don't have to listen back to it until you want to.
 

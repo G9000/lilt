@@ -1,8 +1,8 @@
 //! Coach reviews: asking for one, reading it, and the learner's response.
 
 use crate::app::Shared;
-use crate::coach::model::{Review, ReviewResponse};
 use crate::coach;
+use crate::coach::model::{Review, ReviewResponse};
 use crate::http::R;
 use axum::{
     Json, Router,
@@ -56,15 +56,23 @@ struct RespondReq {
     chosen_exercise_id: Option<String>,
 }
 
-async fn respond(State(app): State<Shared>, Path(id): Path<String>, Json(req): Json<RespondReq>) -> R<Json<Value>> {
-    let plan = coach::respond(&app, &id, ReviewResponse {
-        review_id: id.clone(),
-        pointer_id: req.pointer_id,
-        response: req.response,
-        note: req.note.filter(|n| !n.trim().is_empty()),
-        chosen_exercise_id: req.chosen_exercise_id,
-        created_utc: String::new(),
-    })?;
+async fn respond(
+    State(app): State<Shared>,
+    Path(id): Path<String>,
+    Json(req): Json<RespondReq>,
+) -> R<Json<Value>> {
+    let plan = coach::respond(
+        &app,
+        &id,
+        ReviewResponse {
+            review_id: id.clone(),
+            pointer_id: req.pointer_id,
+            response: req.response,
+            note: req.note.filter(|n| !n.trim().is_empty()),
+            chosen_exercise_id: req.chosen_exercise_id,
+            created_utc: String::new(),
+        },
+    )?;
     let r = app.review(&id)?;
     Ok(Json(json!({"review": review_view(&app, &r), "plan": plan})))
 }

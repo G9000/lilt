@@ -23,13 +23,23 @@ pub fn router() -> Router<Shared> {
 /// What Settings → Connect your AI shows: how to connect each kind of app from this computer, the
 /// public address for cloud apps, the apps signed in through it, and recent activity.
 async fn connect_info(State(app): State<Shared>, headers: HeaderMap) -> Json<Value> {
-    let host = headers.get(header::HOST).and_then(|v| v.to_str().ok()).unwrap_or("127.0.0.1:7878");
+    let host = headers
+        .get(header::HOST)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("127.0.0.1:7878");
     let in_docker = std::path::Path::new("/.dockerenv").exists();
     let stdio = if in_docker {
         json!({ "command": "docker", "args": ["exec", "-i", "lilt", "lilt", "mcp-stdio"] })
     } else {
-        let exe = std::env::current_exe().map(|p| p.display().to_string()).unwrap_or_else(|_| "lilt".into());
-        let abs = |p: &std::path::Path| std::fs::canonicalize(p).unwrap_or_else(|_| p.to_path_buf()).display().to_string();
+        let exe = std::env::current_exe()
+            .map(|p| p.display().to_string())
+            .unwrap_or_else(|_| "lilt".into());
+        let abs = |p: &std::path::Path| {
+            std::fs::canonicalize(p)
+                .unwrap_or_else(|_| p.to_path_buf())
+                .display()
+                .to_string()
+        };
         json!({ "command": exe, "args": ["mcp-stdio"], "env": { "LILT_DATA_DIR": abs(&app.paths.root), "LILT_CONTENT_DIR": abs(&app.config.content_dir) } })
     };
     let public = oauth::public_url(&app);
@@ -45,10 +55,14 @@ async fn connect_info(State(app): State<Shared>, headers: HeaderMap) -> Json<Val
 }
 
 #[derive(Deserialize)]
-struct Address { url: String }
+struct Address {
+    url: String,
+}
 
 async fn connect_address(State(app): State<Shared>, Json(b): Json<Address>) -> R<Json<Value>> {
-    Ok(Json(json!({ "public_url": oauth::set_public_url(&app, &b.url)? })))
+    Ok(Json(
+        json!({ "public_url": oauth::set_public_url(&app, &b.url)? }),
+    ))
 }
 
 async fn connect_code(State(app): State<Shared>) -> Json<Value> {

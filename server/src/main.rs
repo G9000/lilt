@@ -7,9 +7,9 @@ mod http;
 mod practice;
 mod recordings;
 mod store;
-mod util;
 #[cfg(test)]
 mod test_support;
+mod util;
 
 use anyhow::Result;
 use axum::{Router, middleware};
@@ -21,7 +21,10 @@ use tower_http::services::{ServeDir, ServeFile};
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "lilt=info,tower_http=warn".into()))
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "lilt=info,tower_http=warn".into()),
+        )
         .with_writer(std::io::stderr)
         .init();
     let config = app::Config::from_env();
@@ -30,7 +33,9 @@ async fn main() -> Result<()> {
     match mode.as_str() {
         "mcp-stdio" => {
             use rmcp::ServiceExt;
-            let svc = ai::mcp::LiltMcp::new(app).serve(rmcp::transport::stdio()).await?;
+            let svc = ai::mcp::LiltMcp::new(app)
+                .serve(rmcp::transport::stdio())
+                .await?;
             svc.waiting().await?;
             Ok(())
         }
@@ -41,13 +46,16 @@ async fn main() -> Result<()> {
 
 pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
     let mcp_app = app.clone();
-    let mcp_service: StreamableHttpService<ai::mcp::LiltMcp, LocalSessionManager> = StreamableHttpService::new(
-        move || Ok(ai::mcp::LiltMcp::new(mcp_app.clone())),
-        Default::default(),
-        // Host names are checked by `oauth::gate` instead: local ones, or the saved public address
-        // with a signed-in app.
-        StreamableHttpServerConfig::default().with_json_response(true).disable_allowed_hosts(),
-    );
+    let mcp_service: StreamableHttpService<ai::mcp::LiltMcp, LocalSessionManager> =
+        StreamableHttpService::new(
+            move || Ok(ai::mcp::LiltMcp::new(mcp_app.clone())),
+            Default::default(),
+            // Host names are checked by `oauth::gate` instead: local ones, or the saved public address
+            // with a signed-in app.
+            StreamableHttpServerConfig::default()
+                .with_json_response(true)
+                .disable_allowed_hosts(),
+        );
     let mcp_router = Router::new().nest_service("/mcp", mcp_service);
     let index = config.web_dir.join("index.html");
     let static_files = ServeDir::new(&config.web_dir).fallback(ServeFile::new(index));
@@ -60,9 +68,13 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
         .merge(ai::chatgpt::router(app.clone()));
     for c in courses::all(&app) {
         for part in ["images", "audio"] {
-            router = router.nest_service(&format!("/courses/{}/{part}", c.id), ServeDir::new(c.dir.join(part)));
+            router = router.nest_service(
+                &format!("/courses/{}/{part}", c.id),
+                ServeDir::new(c.dir.join(part)),
+            );
             if c.id == courses::DEFAULT {
-                router = router.nest_service(&format!("/texts/{part}"), ServeDir::new(c.dir.join(part)));
+                router =
+                    router.nest_service(&format!("/texts/{part}"), ServeDir::new(c.dir.join(part)));
             }
         }
     }
@@ -74,11 +86,17 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
 async fn serve(app: app::Shared, config: app::Config) -> Result<()> {
     let requeued = analysis::reconcile(&app)?;
     let interrupted = recordings::reconcile_interrupted(&app)?;
-    tracing::info!("startup: {requeued} job(s) requeued, {interrupted} interrupted take(s) recovered");
+    tracing::info!(
+        "startup: {requeued} job(s) requeued, {interrupted} interrupted take(s) recovered"
+    );
     tokio::spawn(analysis::worker(app.clone()));
     let router = build_router(app.clone(), &config);
     let listener = tokio::net::TcpListener::bind(&config.bind).await?;
-    tracing::info!("Lilt listening on http://{} (data: {})", config.bind, app.paths.root.display());
+    tracing::info!(
+        "Lilt listening on http://{} (data: {})",
+        config.bind,
+        app.paths.root.display()
+    );
     axum::serve(listener, router)
         .with_graceful_shutdown(async {
             let _ = tokio::signal::ctrl_c().await;

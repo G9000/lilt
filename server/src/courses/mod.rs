@@ -21,10 +21,10 @@
 pub mod remix;
 pub mod routes;
 pub mod syllabus;
-pub mod texts;
-pub mod updates;
 #[cfg(test)]
 mod tests;
+pub mod texts;
+pub mod updates;
 
 use crate::app::App;
 use anyhow::{Context, Result, anyhow, ensure};
@@ -38,7 +38,11 @@ pub const DEFAULT: &str = "voice";
 /// ids it always had (`text.<chapter>.<text>`); every other course's are `<course>/text.<chapter>.<text>`,
 /// so two courses can both have a "greetings" chapter without sharing progress.
 pub fn text_id(course: &str, chapter: &str, text: &str) -> String {
-    if course == DEFAULT { format!("text.{chapter}.{text}") } else { format!("{course}/text.{chapter}.{text}") }
+    if course == DEFAULT {
+        format!("text.{chapter}.{text}")
+    } else {
+        format!("{course}/text.{chapter}.{text}")
+    }
 }
 
 /// The course, chapter and text a text id names (see `text_id`). For the next kind of practice,
@@ -64,7 +68,11 @@ pub struct Course {
 }
 
 pub fn valid_id(id: &str) -> bool {
-    !id.is_empty() && id.len() <= 40 && id.bytes().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-')
+    !id.is_empty()
+        && id.len() <= 40
+        && id
+            .bytes()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == b'-')
 }
 
 fn root(app: &App) -> PathBuf {
@@ -73,29 +81,56 @@ fn root(app: &App) -> PathBuf {
 
 fn read(dir: PathBuf) -> Result<Course> {
     let path = dir.join("course.md");
-    let src = std::fs::read_to_string(&path).with_context(|| format!("reading {}", path.display()))?;
-    let (meta, body) = crate::courses::texts::front_matter(&src).with_context(|| format!("in {}", path.display()))?;
-    let get = |k: &str| meta.get(k).and_then(Value::as_str).map(str::trim).unwrap_or("").to_string();
+    let src =
+        std::fs::read_to_string(&path).with_context(|| format!("reading {}", path.display()))?;
+    let (meta, body) = crate::courses::texts::front_matter(&src)
+        .with_context(|| format!("in {}", path.display()))?;
+    let get = |k: &str| {
+        meta.get(k)
+            .and_then(Value::as_str)
+            .map(str::trim)
+            .unwrap_or("")
+            .to_string()
+    };
     let id = get("id");
     let folder = dir.file_name().and_then(|n| n.to_str()).unwrap_or_default();
-    ensure!(valid_id(&id) && id == folder, "{}: `id` must match the folder name ({folder}) in lowercase letters, digits and dashes", path.display());
+    ensure!(
+        valid_id(&id) && id == folder,
+        "{}: `id` must match the folder name ({folder}) in lowercase letters, digits and dashes",
+        path.display()
+    );
     for k in ["title", "kind"] {
         ensure!(!get(k).is_empty(), "{}: needs `{k}`", path.display());
     }
     Ok(Course {
-        title: get("title"), kind: get("kind"), version: get("version"),
+        title: get("title"),
+        kind: get("kind"),
+        version: get("version"),
         source: Some(get("source")).filter(|s| !s.is_empty()),
-        locked: get("locked").split(',').map(str::trim).filter(|s| !s.is_empty()).map(str::to_string).collect(),
+        locked: get("locked")
+            .split(',')
+            .map(str::trim)
+            .filter(|s| !s.is_empty())
+            .map(str::to_string)
+            .collect(),
         summary: body.split_whitespace().collect::<Vec<_>>().join(" "),
-        id, dir,
+        id,
+        dir,
     })
 }
 
 /// Every course, the app's own first, then by id.
 pub fn all(app: &App) -> Vec<Course> {
-    let mut out: Vec<Course> = std::fs::read_dir(root(app)).into_iter().flatten().filter_map(|e| e.ok())
+    let mut out: Vec<Course> = std::fs::read_dir(root(app))
+        .into_iter()
+        .flatten()
+        .filter_map(|e| e.ok())
         .filter(|e| e.path().join("course.md").exists())
-        .filter_map(|e| read(e.path()).map_err(|err| tracing::warn!("skipping a course: {err:#}")).ok())
+        .filter_map(|e| {
+            read(e.path())
+                .map_err(|err| tracing::warn!("skipping a course: {err:#}"))
+                .ok()
+        })
         .collect();
     out.sort_by_key(|c| (c.id != DEFAULT, c.id.clone()));
     out
@@ -104,7 +139,10 @@ pub fn all(app: &App) -> Vec<Course> {
 pub fn get(app: &App, id: &str) -> Result<Course> {
     ensure!(valid_id(id), "`{id}` isn't a course id");
     let dir = root(app).join(id);
-    ensure!(dir.join("course.md").exists(), "there is no course `{id}`; courses_list shows them");
+    ensure!(
+        dir.join("course.md").exists(),
+        "there is no course `{id}`; courses_list shows them"
+    );
     read(dir)
 }
 
@@ -135,7 +173,8 @@ pub fn migrate(app: &App) -> Result<()> {
     let new = app.paths.root.join("courses").join(DEFAULT);
     if old.exists() && !new.exists() {
         std::fs::create_dir_all(app.paths.root.join("courses"))?;
-        std::fs::rename(&old, &new).map_err(|e| anyhow!("moving {} to {}: {e}", old.display(), new.display()))?;
+        std::fs::rename(&old, &new)
+            .map_err(|e| anyhow!("moving {} to {}: {e}", old.display(), new.display()))?;
         tracing::info!("moved your copy of the voice course to {}", new.display());
     }
     Ok(())

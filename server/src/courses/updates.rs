@@ -29,13 +29,22 @@ use std::collections::BTreeMap;
 fn pieces(src: &str) -> Vec<(String, String)> {
     let mut out = Vec::new();
     let mut rest = src;
-    let head_end = if rest.starts_with("## ") { 0 } else { rest.find("\n## ").map(|i| i + 1).unwrap_or(rest.len()) };
+    let head_end = if rest.starts_with("## ") {
+        0
+    } else {
+        rest.find("\n## ").map(|i| i + 1).unwrap_or(rest.len())
+    };
     out.push((String::new(), rest[..head_end].trim_end().to_string()));
     rest = &rest[head_end..];
     while !rest.is_empty() {
         let end = rest[3..].find("\n## ").map(|i| i + 4).unwrap_or(rest.len());
         let section = rest[..end].trim_end().to_string();
-        let key = section.lines().next().unwrap_or_default().trim_end().to_string();
+        let key = section
+            .lines()
+            .next()
+            .unwrap_or_default()
+            .trim_end()
+            .to_string();
         out.push((key, section));
         rest = &rest[end..];
     }
@@ -43,7 +52,11 @@ fn pieces(src: &str) -> Vec<(String, String)> {
 }
 
 fn join(pieces: &[(String, String)]) -> String {
-    let parts: Vec<&str> = pieces.iter().map(|(_, s)| s.as_str()).filter(|s| !s.is_empty()).collect();
+    let parts: Vec<&str> = pieces
+        .iter()
+        .map(|(_, s)| s.as_str())
+        .filter(|s| !s.is_empty())
+        .collect();
     format!("{}\n", parts.join("\n\n"))
 }
 
@@ -55,13 +68,23 @@ fn same(a: Option<&String>, b: Option<&String>) -> bool {
 
 /// What happens to one piece the original changed.
 #[derive(Clone, Copy, PartialEq)]
-enum Outcome { Take, Keep, Choose }
+enum Outcome {
+    Take,
+    Keep,
+    Choose,
+}
 
 fn outcome(base: Option<&String>, orig: Option<&String>, mine: Option<&String>) -> Option<Outcome> {
     if same(base, orig) {
         return None; // the original didn't change it
     }
-    Some(if same(mine, orig) { Outcome::Keep } else if same(mine, base) { Outcome::Take } else { Outcome::Choose })
+    Some(if same(mine, orig) {
+        Outcome::Keep
+    } else if same(mine, base) {
+        Outcome::Take
+    } else {
+        Outcome::Choose
+    })
 }
 
 /// How a piece reads to a person: a chapter text as its words and hint, anything else as Markdown.
@@ -72,7 +95,9 @@ fn show(file: &str, key: &str, piece: Option<&String>) -> Value {
     }
     let doc = format!("---\nid: x\ntitle: x\nkind: x\n---\n\n{p}\n");
     match texts::chapter(&doc, 0) {
-        Ok(c) => json!({ "markdown": p, "text": c["items"][0]["text"], "hint": c["items"][0]["hint"] }),
+        Ok(c) => {
+            json!({ "markdown": p, "text": c["items"][0]["text"], "hint": c["items"][0]["hint"] })
+        }
         Err(_) => json!({ "markdown": p }),
     }
 }
@@ -95,7 +120,13 @@ fn label(file: &str, key: &str, titles: &BTreeMap<String, String>) -> String {
 fn part(c: &Change) -> &'static str {
     let chapter = c.file.starts_with(|ch: char| ch.is_ascii_digit());
     match (c.key.is_empty(), chapter) {
-        (true, _) if c.base.is_none() || c.orig.is_none() || c.mine.is_none() => if chapter { "The whole chapter" } else { "The whole page" },
+        (true, _) if c.base.is_none() || c.orig.is_none() || c.mine.is_none() => {
+            if chapter {
+                "The whole chapter"
+            } else {
+                "The whole page"
+            }
+        }
         (true, true) => "The chapter's title and how to do it",
         (true, false) => "The top of the page",
         (false, true) => "A text",
@@ -104,11 +135,21 @@ fn part(c: &Change) -> &'static str {
 }
 
 /// One change of the original, how it will be handled, and the versions to choose between.
-struct Change { id: String, file: String, key: String, outcome: Outcome, base: Option<String>, orig: Option<String>, mine: Option<String> }
+struct Change {
+    id: String,
+    file: String,
+    key: String,
+    outcome: Outcome,
+    base: Option<String>,
+    orig: Option<String>,
+    mine: Option<String>,
+}
 
 /// A course's edition: `version` in its `_about.md`.
 fn version(f: &Files) -> Option<String> {
-    f.get("_about.md").and_then(|s| s.lines().find_map(|l| l.strip_prefix("version:"))).map(|v| v.trim().to_string())
+    f.get("_about.md")
+        .and_then(|s| s.lines().find_map(|l| l.strip_prefix("version:")))
+        .map(|v| v.trim().to_string())
 }
 
 /// The id of the one change a new edition makes.
@@ -116,12 +157,25 @@ const EDITION: &str = "edition";
 
 /// Every change of the original since your copy's base, file by file and piece by piece.
 fn changes(base: &Files, orig: &Files, mine: &Files) -> Vec<Change> {
-    if let (Some(b), Some(o)) = (version(base), version(orig)) {
-        if b != o {
-            let untouched = base.len() == mine.len() && base.iter().all(|(n, s)| same(Some(s), mine.get(n)));
-            let outcome = if untouched { Outcome::Take } else { Outcome::Choose };
-            return vec![Change { id: EDITION.into(), file: String::new(), key: String::new(), outcome, base: None, orig: None, mine: None }];
-        }
+    if let (Some(b), Some(o)) = (version(base), version(orig))
+        && b != o
+    {
+        let untouched =
+            base.len() == mine.len() && base.iter().all(|(n, s)| same(Some(s), mine.get(n)));
+        let outcome = if untouched {
+            Outcome::Take
+        } else {
+            Outcome::Choose
+        };
+        return vec![Change {
+            id: EDITION.into(),
+            file: String::new(),
+            key: String::new(),
+            outcome,
+            base: None,
+            orig: None,
+            mine: None,
+        }];
     }
     let mut out = Vec::new();
     let names: std::collections::BTreeSet<&String> = base.keys().chain(orig.keys()).collect();
@@ -133,18 +187,40 @@ fn changes(base: &Files, orig: &Files, mine: &Files) -> Vec<Change> {
         // A whole file added or removed on one side is decided as one change.
         if b.is_none() || o.is_none() || m.is_none() {
             if let Some(oc) = outcome(b, o, m) {
-                out.push(Change { id: name.clone(), file: name.clone(), key: String::new(), outcome: oc, base: b.cloned(), orig: o.cloned(), mine: m.cloned() });
+                out.push(Change {
+                    id: name.clone(),
+                    file: name.clone(),
+                    key: String::new(),
+                    outcome: oc,
+                    base: b.cloned(),
+                    orig: o.cloned(),
+                    mine: m.cloned(),
+                });
             }
             continue;
         }
-        let (pb, po, pm): (BTreeMap<_, _>, BTreeMap<_, _>, BTreeMap<_, _>) =
-            (pieces(b.unwrap()).into_iter().collect(), pieces(o.unwrap()).into_iter().collect(), pieces(m.unwrap()).into_iter().collect());
-        let mut keys: Vec<&String> = pieces(o.unwrap()).iter().map(|(k, _)| k).filter_map(|k| po.get_key_value(k).map(|(k, _)| k)).collect();
+        let (pb, po, pm): (BTreeMap<_, _>, BTreeMap<_, _>, BTreeMap<_, _>) = (
+            pieces(b.unwrap()).into_iter().collect(),
+            pieces(o.unwrap()).into_iter().collect(),
+            pieces(m.unwrap()).into_iter().collect(),
+        );
+        let mut keys: Vec<&String> = pieces(o.unwrap())
+            .iter()
+            .map(|(k, _)| k)
+            .filter_map(|k| po.get_key_value(k).map(|(k, _)| k))
+            .collect();
         keys.extend(pb.keys().filter(|k| !po.contains_key(*k)));
         for key in keys {
             if let Some(oc) = outcome(pb.get(key), po.get(key), pm.get(key)) {
-                out.push(Change { id: format!("{name}#{key}"), file: name.clone(), key: key.clone(), outcome: oc,
-                    base: pb.get(key).cloned(), orig: po.get(key).cloned(), mine: pm.get(key).cloned() });
+                out.push(Change {
+                    id: format!("{name}#{key}"),
+                    file: name.clone(),
+                    key: key.clone(),
+                    outcome: oc,
+                    base: pb.get(key).cloned(),
+                    orig: po.get(key).cloned(),
+                    mine: pm.get(key).cloned(),
+                });
             }
         }
     }
@@ -160,10 +236,15 @@ fn merge_file(mine: &str, orig: &str, take: &[&String]) -> String {
         let new = po.iter().find(|(k, _)| k == *key).map(|(_, s)| s.clone());
         match (out.iter().position(|(k, _)| k == *key), new) {
             (Some(i), Some(s)) => out[i].1 = s,
-            (Some(i), None) => { out.remove(i); }
+            (Some(i), None) => {
+                out.remove(i);
+            }
             (None, Some(s)) => {
                 let at = po.iter().position(|(k, _)| k == *key).unwrap();
-                let after = po[..at].iter().rev().find_map(|(k, _)| out.iter().position(|(m, _)| m == k));
+                let after = po[..at]
+                    .iter()
+                    .rev()
+                    .find_map(|(k, _)| out.iter().position(|(m, _)| m == k));
                 out.insert(after.map_or(out.len(), |i| i + 1), ((*key).clone(), s));
             }
             (None, None) => {}
@@ -174,7 +255,14 @@ fn merge_file(mine: &str, orig: &str, take: &[&String]) -> String {
 
 /// How many of the original's changes are waiting to come in (or to be chosen).
 pub fn waiting(app: &App, c: &Course) -> usize {
-    changes(&syllabus::base_files(app, c), &syllabus::original_files(c), &syllabus::mine_files(app, c)).iter().filter(|c| c.outcome != Outcome::Keep).count()
+    changes(
+        &syllabus::base_files(app, c),
+        &syllabus::original_files(c),
+        &syllabus::mine_files(app, c),
+    )
+    .iter()
+    .filter(|c| c.outcome != Outcome::Keep)
+    .count()
 }
 
 /// What the original changed since your copy's base, and how each change would be handled.
@@ -183,11 +271,27 @@ pub fn list(app: &App, course: &Course) -> Value {
         return json!({ "course": course.id, "using": "original", "available": false, "changes": [],
             "note": "You're using Lilt's original, so its updates already apply." });
     }
-    let (base, orig, mine) = (syllabus::base_files(app, course), syllabus::original_files(course), syllabus::mine_files(app, course));
-    let titles: BTreeMap<String, String> = mine.iter().chain(orig.iter())
-        .filter_map(|(n, s)| texts::chapter(s, 0).ok().map(|c| (n.clone(), c["title"].as_str().unwrap_or_default().to_string())))
+    let (base, orig, mine) = (
+        syllabus::base_files(app, course),
+        syllabus::original_files(course),
+        syllabus::mine_files(app, course),
+    );
+    let titles: BTreeMap<String, String> = mine
+        .iter()
+        .chain(orig.iter())
+        .filter_map(|(n, s)| {
+            texts::chapter(s, 0).ok().map(|c| {
+                (
+                    n.clone(),
+                    c["title"].as_str().unwrap_or_default().to_string(),
+                )
+            })
+        })
         .collect();
-    let (vb, vo) = (version(&base).unwrap_or_default(), version(&orig).unwrap_or_default());
+    let (vb, vo) = (
+        version(&base).unwrap_or_default(),
+        version(&orig).unwrap_or_default(),
+    );
     let rows: Vec<Value> = changes(&base, &orig, &mine).iter().map(|c| if c.id == EDITION { json!({
         "id": EDITION, "file": "", "title": format!("A new edition of Lilt's course (version {vo})"), "part": "The whole course",
         "kind": "changed",
@@ -215,30 +319,53 @@ pub fn list(app: &App, course: &Course) -> Value {
 }
 
 /// Bring the original's updates in. Every "choose" change needs a choice: "yours" or "original".
-pub fn apply(app: &App, course: &Course, choices: &BTreeMap<String, String>, note: &str) -> Result<Value> {
-    ensure!(syllabus::has_mine(app, course), "you're using Lilt's original, so its updates already apply");
-    let (base, orig, mine) = (syllabus::base_files(app, course), syllabus::original_files(course), syllabus::mine_files(app, course));
+pub fn apply(
+    app: &App,
+    course: &Course,
+    choices: &BTreeMap<String, String>,
+    note: &str,
+) -> Result<Value> {
+    ensure!(
+        syllabus::has_mine(app, course),
+        "you're using Lilt's original, so its updates already apply"
+    );
+    let (base, orig, mine) = (
+        syllabus::base_files(app, course),
+        syllabus::original_files(course),
+        syllabus::mine_files(app, course),
+    );
     let all = changes(&base, &orig, &mine);
     for id in choices.keys() {
-        ensure!(all.iter().any(|c| &c.id == id), "`{id}` isn't one of the updates");
+        ensure!(
+            all.iter().any(|c| &c.id == id),
+            "`{id}` isn't one of the updates"
+        );
     }
-    if let [c] = all.as_slice() {
-        if c.id == EDITION {
-            let wants = c.outcome == Outcome::Take || match choices.get(EDITION).map(String::as_str) {
+    if let [c] = all.as_slice()
+        && c.id == EDITION
+    {
+        let wants = c.outcome == Outcome::Take
+            || match choices.get(EDITION).map(String::as_str) {
                 Some("original") => true,
                 Some("yours") => false,
                 _ => bail!("a new edition: choose \"yours\" or \"original\" for `{EDITION}`"),
             };
-            if !wants {
-                syllabus::set_base(app, course, &orig)?;
-                return Ok(json!({ "course": course.id, "using": "mine", "updates_taken": 0, "kept_yours": 1 }));
-            }
-            let note = if note.trim().is_empty() { "Took the new edition of Lilt's course" } else { note };
-            let mut r = syllabus::commit_with_base(app, course, orig.clone(), "update", "", note, Some(orig))?;
-            r["updates_taken"] = json!(1);
-            r["kept_yours"] = json!(0);
-            return Ok(r);
+        if !wants {
+            syllabus::set_base(app, course, &orig)?;
+            return Ok(
+                json!({ "course": course.id, "using": "mine", "updates_taken": 0, "kept_yours": 1 }),
+            );
         }
+        let note = if note.trim().is_empty() {
+            "Took the new edition of Lilt's course"
+        } else {
+            note
+        };
+        let mut r =
+            syllabus::commit_with_base(app, course, orig.clone(), "update", "", note, Some(orig))?;
+        r["updates_taken"] = json!(1);
+        r["kept_yours"] = json!(0);
+        return Ok(r);
     }
     let mut take: BTreeMap<&String, Vec<&String>> = BTreeMap::new();
     let mut whole: BTreeMap<&String, Option<&String>> = BTreeMap::new();
@@ -250,8 +377,14 @@ pub fn apply(app: &App, course: &Course, choices: &BTreeMap<String, String>, not
             Outcome::Choose => match choices.get(&c.id).map(String::as_str) {
                 Some("original") => true,
                 Some("yours") => false,
-                Some(x) => bail!("choose \"yours\" or \"original\" for `{}`, not \"{x}\"", c.id),
-                None => bail!("you both changed `{}`: choose \"yours\" or \"original\"", c.id),
+                Some(x) => bail!(
+                    "choose \"yours\" or \"original\" for `{}`, not \"{x}\"",
+                    c.id
+                ),
+                None => bail!(
+                    "you both changed `{}`: choose \"yours\" or \"original\"",
+                    c.id
+                ),
             },
         };
         if !wants {
@@ -267,7 +400,10 @@ pub fn apply(app: &App, course: &Course, choices: &BTreeMap<String, String>, not
     }
     let mut next = mine.clone();
     for (file, keys) in take {
-        let m = next.get(file).cloned().ok_or_else(|| anyhow!("{file} is missing"))?;
+        let m = next
+            .get(file)
+            .cloned()
+            .ok_or_else(|| anyhow!("{file} is missing"))?;
         next.insert(file.clone(), merge_file(&m, &orig[file], &keys));
     }
     for (file, src) in whole {
@@ -276,7 +412,11 @@ pub fn apply(app: &App, course: &Course, choices: &BTreeMap<String, String>, not
             None => next.remove(file),
         };
     }
-    let note = if note.trim().is_empty() { "Brought in updates from Lilt's original" } else { note };
+    let note = if note.trim().is_empty() {
+        "Brought in updates from Lilt's original"
+    } else {
+        note
+    };
     let mut r = syllabus::commit_with_base(app, course, next, "update", "", note, Some(orig))?;
     r["updates_taken"] = json!(taken);
     r["kept_yours"] = json!(kept);
@@ -289,44 +429,89 @@ mod tests {
 
     const BASE: &str = "---\nid: c\ntitle: C\nkind: hum\n---\n\nHow.\n\n## a\n\none\n\n> h\n\n## b\n\ntwo\n\n> h\n\n## c\n\nthree\n\n> h\n";
 
-    fn files(s: &str) -> Files { BTreeMap::from([("01-c.md".to_string(), s.to_string())]) }
+    fn files(s: &str) -> Files {
+        BTreeMap::from([("01-c.md".to_string(), s.to_string())])
+    }
 
     #[test]
     fn splits_and_joins_back() {
         let p = pieces(BASE);
-        assert_eq!(p.iter().map(|(k, _)| k.as_str()).collect::<Vec<_>>(), ["", "## a", "## b", "## c"]);
+        assert_eq!(
+            p.iter().map(|(k, _)| k.as_str()).collect::<Vec<_>>(),
+            ["", "## a", "## b", "## c"]
+        );
         assert_eq!(join(&p), BASE);
     }
 
     #[test]
     fn three_way_by_piece() {
         // The original rewords a, removes c and adds d after b; you reworded b, and also a.
-        let orig = BASE.replace("one", "ONE").replace("## c\n\nthree\n\n> h\n", "## d\n\nfour\n\n> h\n");
+        let orig = BASE
+            .replace("one", "ONE")
+            .replace("## c\n\nthree\n\n> h\n", "## d\n\nfour\n\n> h\n");
         let mine_same_a = BASE.replace("two", "my two");
         let ch = changes(&files(BASE), &files(&orig), &files(&mine_same_a));
-        let o: Vec<_> = ch.iter().map(|c| (c.key.as_str(), c.outcome as u8)).collect();
-        assert_eq!(o, [("## a", Outcome::Take as u8), ("## d", Outcome::Take as u8), ("## c", Outcome::Take as u8)]);
-        let merged = merge_file(&mine_same_a, &orig, &ch.iter().map(|c| &c.key).collect::<Vec<_>>());
-        assert_eq!(merged, BASE.replace("one", "ONE").replace("two", "my two").replace("## c\n\nthree\n\n> h\n", "## d\n\nfour\n\n> h\n"));
+        let o: Vec<_> = ch
+            .iter()
+            .map(|c| (c.key.as_str(), c.outcome as u8))
+            .collect();
+        assert_eq!(
+            o,
+            [
+                ("## a", Outcome::Take as u8),
+                ("## d", Outcome::Take as u8),
+                ("## c", Outcome::Take as u8)
+            ]
+        );
+        let merged = merge_file(
+            &mine_same_a,
+            &orig,
+            &ch.iter().map(|c| &c.key).collect::<Vec<_>>(),
+        );
+        assert_eq!(
+            merged,
+            BASE.replace("one", "ONE")
+                .replace("two", "my two")
+                .replace("## c\n\nthree\n\n> h\n", "## d\n\nfour\n\n> h\n")
+        );
 
         let mine_both = BASE.replace("one", "my one");
         let ch = changes(&files(BASE), &files(&orig), &files(&mine_both));
-        assert!(ch.iter().any(|c| c.key == "## a" && c.outcome == Outcome::Choose));
+        assert!(
+            ch.iter()
+                .any(|c| c.key == "## a" && c.outcome == Outcome::Choose)
+        );
         let mine_already = BASE.replace("one", "ONE");
-        assert!(changes(&files(BASE), &files(&orig), &files(&mine_already)).iter().any(|c| c.key == "## a" && c.outcome == Outcome::Keep));
+        assert!(
+            changes(&files(BASE), &files(&orig), &files(&mine_already))
+                .iter()
+                .any(|c| c.key == "## a" && c.outcome == Outcome::Keep)
+        );
     }
 
     #[test]
     fn a_new_edition_is_one_change() {
         let about = |v: u8| format!("---\nversion: {v}\n---\n\nNote.\n");
-        let base = BTreeMap::from([("_about.md".to_string(), about(1)), ("02-old.md".to_string(), BASE.to_string())]);
-        let orig = BTreeMap::from([("_about.md".to_string(), about(2)), ("05-new.md".to_string(), BASE.replace("id: c", "id: n"))]);
+        let base = BTreeMap::from([
+            ("_about.md".to_string(), about(1)),
+            ("02-old.md".to_string(), BASE.to_string()),
+        ]);
+        let orig = BTreeMap::from([
+            ("_about.md".to_string(), about(2)),
+            ("05-new.md".to_string(), BASE.replace("id: c", "id: n")),
+        ]);
         let ch = changes(&base, &orig, &base);
-        assert!(ch.len() == 1 && ch[0].id == EDITION && ch[0].outcome == Outcome::Take, "untouched: it just comes in");
+        assert!(
+            ch.len() == 1 && ch[0].id == EDITION && ch[0].outcome == Outcome::Take,
+            "untouched: it just comes in"
+        );
         let mut mine = base.clone();
         mine.insert("02-old.md".into(), BASE.replace("one", "my one"));
         let ch = changes(&base, &orig, &mine);
-        assert!(ch.len() == 1 && ch[0].outcome == Outcome::Choose, "edited: yours or the whole new edition");
+        assert!(
+            ch.len() == 1 && ch[0].outcome == Outcome::Choose,
+            "edited: yours or the whole new edition"
+        );
     }
 
     #[test]
@@ -335,7 +520,14 @@ mod tests {
         let mut orig = base.clone();
         orig.insert("02-new.md".into(), BASE.replace("id: c", "id: n"));
         let ch = changes(&base, &orig, &base);
-        assert_eq!((ch.len(), ch[0].file.as_str(), ch[0].outcome == Outcome::Take), (1, "02-new.md", true));
+        assert_eq!(
+            (
+                ch.len(),
+                ch[0].file.as_str(),
+                ch[0].outcome == Outcome::Take
+            ),
+            (1, "02-new.md", true)
+        );
         // You removed a chapter the original then changed: yours to decide.
         let orig2 = files(&BASE.replace("one", "ONE"));
         let ch = changes(&base, &orig2, &BTreeMap::new());

@@ -122,10 +122,10 @@ fn write_private(path: &std::path::Path, bytes: &[u8]) -> Result<()> {
 }
 fn host_id(app: &Shared) -> Result<String> {
     let path = secret_dir(app)?.join("host-id");
-    if let Ok(s) = fs::read_to_string(&path) {
-        if s.starts_with("urn:uuid:") {
-            return Ok(s);
-        }
+    if let Ok(s) = fs::read_to_string(&path)
+        && s.starts_with("urn:uuid:")
+    {
+        return Ok(s);
     }
     let id = format!("urn:uuid:{}", uuid::Uuid::new_v4());
     write_private(&path, id.as_bytes())?;
@@ -155,9 +155,7 @@ fn registration(app: &Shared) -> Result<Option<Registration>> {
 fn local_host(headers: &HeaderMap) -> Option<String> {
     let h = headers.get(header::HOST)?.to_str().ok()?;
     let port = h.strip_prefix("127.0.0.1:")?;
-    if port.parse::<u16>().ok().filter(|p| *p > 0).is_none() {
-        return None;
-    }
+    port.parse::<u16>().ok().filter(|p| *p > 0)?;
     Some(format!("http://127.0.0.1:{port}"))
 }
 async fn guard(req: Request, next: Next) -> Response {
@@ -169,15 +167,17 @@ async fn guard(req: Request, next: Next) -> Response {
         )
             .into_response();
     };
-    if let Some(origin) = headers.get(header::ORIGIN) {
-        if origin.to_str().ok() != Some(base.as_str()) {
-            return (StatusCode::FORBIDDEN, "Cross-origin request refused.").into_response();
-        }
+    if let Some(origin) = headers.get(header::ORIGIN)
+        && origin.to_str().ok() != Some(base.as_str())
+    {
+        return (StatusCode::FORBIDDEN, "Cross-origin request refused.").into_response();
     }
-    if let Some(site) = headers.get("sec-fetch-site").and_then(|s| s.to_str().ok()) {
-        if site != "same-origin" && site != "none" && req.uri().path() != "/auth/callback" {
-            return (StatusCode::FORBIDDEN, "Cross-site request refused.").into_response();
-        }
+    if let Some(site) = headers.get("sec-fetch-site").and_then(|s| s.to_str().ok())
+        && site != "same-origin"
+        && site != "none"
+        && req.uri().path() != "/auth/callback"
+    {
+        return (StatusCode::FORBIDDEN, "Cross-site request refused.").into_response();
     }
     let mut response = next.run(req).await;
     response
@@ -467,40 +467,35 @@ async fn disconnect(AxumState(app): AxumState<Shared>) -> Response {
         Err(_) => return error(),
     };
     let mut revoked = cred.is_none();
-    if let Some(c) = cred {
-        if let Ok(http) = client() {
-            if let Ok(discovery) = http
-                .get("https://auth.openai.com/.well-known/openid-configuration")
-                .send()
-                .await
-            {
-                if let Ok(v) = discovery.json::<Value>().await {
-                    if let Some(endpoint) = v["revocation_endpoint"]
-                        .as_str()
-                        .filter(|v| v.starts_with("https://auth.openai.com/"))
-                    {
-                        revoked = http
-                            .post(endpoint)
-                            .form(&[
-                                ("token", c.refresh_token.as_str()),
-                                ("token_type_hint", "refresh_token"),
-                                ("client_id", c.client_id.as_str()),
-                            ])
-                            .send()
-                            .await
-                            .is_ok_and(|r| r.status().is_success());
-                    }
-                }
-            }
-        }
+    if let Some(c) = cred
+        && let Ok(http) = client()
+        && let Ok(discovery) = http
+            .get("https://auth.openai.com/.well-known/openid-configuration")
+            .send()
+            .await
+        && let Ok(v) = discovery.json::<Value>().await
+        && let Some(endpoint) = v["revocation_endpoint"]
+            .as_str()
+            .filter(|v| v.starts_with("https://auth.openai.com/"))
+    {
+        revoked = http
+            .post(endpoint)
+            .form(&[
+                ("token", c.refresh_token.as_str()),
+                ("token_type_hint", "refresh_token"),
+                ("client_id", c.client_id.as_str()),
+            ])
+            .send()
+            .await
+            .is_ok_and(|r| r.status().is_success());
     }
     let Ok(dir) = secret_dir(&app) else {
         return error();
     };
-    if let Err(e) = fs::remove_file(dir.join("chatgpt.json")) {
-        if e.kind() != std::io::ErrorKind::NotFound {
-            return error();
-        }
+    if let Err(e) = fs::remove_file(dir.join("chatgpt.json"))
+        && e.kind() != std::io::ErrorKind::NotFound
+    {
+        return error();
     }
     Json(json!({"connected":false, "revoked":revoked})).into_response()
 }
@@ -606,7 +601,10 @@ async fn model(http: &reqwest::Client, cred: &Credential) -> Result<String> {
         .await?;
     models["models"]
         .as_array()
-        .and_then(|list| list.iter().find(|m| m["visibility"] == "list" && m["slug"].as_str().is_some()))
+        .and_then(|list| {
+            list.iter()
+                .find(|m| m["visibility"] == "list" && m["slug"].as_str().is_some())
+        })
         .and_then(|m| m["slug"].as_str())
         .map(str::to_owned)
         .context("no available ChatGPT model")
@@ -721,10 +719,10 @@ fn parse_response(stream: &str) -> Result<String> {
     for item in items {
         if let Some(content) = item["content"].as_array() {
             for part in content {
-                if part["type"] == "output_text" {
-                    if let Some(s) = part["text"].as_str() {
-                        text.push_str(s);
-                    }
+                if part["type"] == "output_text"
+                    && let Some(s) = part["text"].as_str()
+                {
+                    text.push_str(s);
                 }
             }
         }

@@ -8,7 +8,14 @@ use crate::recordings::model::*;
 use serde::Serialize;
 use serde_json::{Value, json};
 
-pub const AREAS: [&str; 6] = ["listening", "lightness", "resonance", "pitch", "intonation", "carryover"];
+pub const AREAS: [&str; 6] = [
+    "listening",
+    "lightness",
+    "resonance",
+    "pitch",
+    "intonation",
+    "carryover",
+];
 
 #[derive(Debug, Serialize)]
 pub struct SkillCard {
@@ -25,12 +32,42 @@ pub struct SkillCard {
 /// What Lilt can do per area: practice, measurement, listening feedback, validation.
 pub fn capability(area: &str) -> Value {
     let (practice, measure, listening, validation) = match area {
-        "listening" => ("A/B playback, favourites and notes", "None. Preferences are your choice, not a score.", "Your own listening", "Not applicable"),
-        "lightness" => ("Smile to brighten; forward hum (NHS Fife, source-checked)", "None. No validated lightness measure exists in Lilt.", "Your own A/B judgement", "No perceptual validation; automatic judgements are disabled"),
-        "resonance" => ("Forward hum (NHS Fife, source-checked)", "None. Formant measures are not implemented or validated.", "Your report of where you feel the vibration", "No perceptual validation; automatic judgements are disabled"),
-        "pitch" => ("Gentle pitch and counting (NHS Fife, source-checked)", "F0 median, percentiles, spread (Praat autocorrelation)", "Your report", "Tested on synthetic test audio only. Descriptive only; not validated on natural speech"),
-        "intonation" => ("Real-life phrases (NHS Fife, source-checked)", "Pitch spread in semitones (descriptive only)", "Your report", "Descriptive only; no judgement of correct intonation"),
-        "carryover" => ("Carryover ladder (NHS Fife, source-checked) and short unscripted answers", "Descriptive pitch only", "Your report", "Reading tasks cannot show how your voice works in conversation"),
+        "listening" => (
+            "A/B playback, favourites and notes",
+            "None. Preferences are your choice, not a score.",
+            "Your own listening",
+            "Not applicable",
+        ),
+        "lightness" => (
+            "Smile to brighten; forward hum (NHS Fife, source-checked)",
+            "None. No validated lightness measure exists in Lilt.",
+            "Your own A/B judgement",
+            "No perceptual validation; automatic judgements are disabled",
+        ),
+        "resonance" => (
+            "Forward hum (NHS Fife, source-checked)",
+            "None. Formant measures are not implemented or validated.",
+            "Your report of where you feel the vibration",
+            "No perceptual validation; automatic judgements are disabled",
+        ),
+        "pitch" => (
+            "Gentle pitch and counting (NHS Fife, source-checked)",
+            "F0 median, percentiles, spread (Praat autocorrelation)",
+            "Your report",
+            "Tested on synthetic test audio only. Descriptive only; not validated on natural speech",
+        ),
+        "intonation" => (
+            "Real-life phrases (NHS Fife, source-checked)",
+            "Pitch spread in semitones (descriptive only)",
+            "Your report",
+            "Descriptive only; no judgement of correct intonation",
+        ),
+        "carryover" => (
+            "Carryover ladder (NHS Fife, source-checked) and short unscripted answers",
+            "Descriptive pitch only",
+            "Your report",
+            "Reading tasks cannot show how your voice works in conversation",
+        ),
         _ => ("", "", "", ""),
     };
     json!({"guided_practice": practice, "acoustic_measurement": measure, "listening_feedback": listening, "validation_status": validation})
@@ -44,11 +81,20 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
     for area in AREAS {
         let disagreement = reviews
             .iter()
-            .filter(|r| r.active_pointer.as_ref().map(|p| p.area == area).unwrap_or(false))
+            .filter(|r| {
+                r.active_pointer
+                    .as_ref()
+                    .map(|p| p.area == area)
+                    .unwrap_or(false)
+            })
             .flat_map(|r| app.review_responses(r))
             .filter(|x| x.response == "disagree")
             .last()
-            .map(|x| x.note.unwrap_or_else(|| "You marked a pointer as not matching what you hear or feel.".into()));
+            .map(|x| {
+                x.note.unwrap_or_else(|| {
+                    "You marked a pointer as not matching what you hear or feel.".into()
+                })
+            });
 
         if area == "listening" {
             let favs = takes.iter().filter(|t| t.favourite).count();
@@ -69,7 +115,9 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
             .iter()
             .filter(|t| t.original.is_some())
             .filter(|t| {
-                t.exercise_id.as_ref().and_then(|id| reg.get(id, t.exercise_version.unwrap_or(1)))
+                t.exercise_id
+                    .as_ref()
+                    .and_then(|id| reg.get(id, t.exercise_version.unwrap_or(1)))
                     .map(|ex| ex.areas.iter().any(|a| a == area))
                     .unwrap_or(false)
                     || (area == "carryover" && t.role == TakeRole::Spontaneous)
@@ -85,7 +133,12 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
             learner_disagreement: disagreement.clone(),
         };
         if in_area.is_empty() {
-            out.push(card("not_assessed", "No suitable task has been attempted in this area yet.".into(), "Try the introductory activity for this area.", vec![]));
+            out.push(card(
+                "not_assessed",
+                "No suitable task has been attempted in this area yet.".into(),
+                "Try the introductory activity for this area.",
+                vec![],
+            ));
             continue;
         }
         let latest = in_area.last().unwrap();
@@ -105,9 +158,20 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
         // Per session: latest self-reported signal for an exercise covering this area.
         let mut per_session: Vec<(String, String, String, Option<u8>)> = vec![]; // (session, signal, take, effort)
         for t in &in_area {
-            let Some(ex) = t.exercise_id.as_ref().and_then(|id| reg.get(id, t.exercise_version.unwrap_or(1))) else { continue };
-            let Some((sig, _, _)) = coach::take_signal(ex, t) else { continue };
-            let effort = app.session(&t.session_id).ok().and_then(|s| s.comfort.and_then(|c| c.effort));
+            let Some(ex) = t
+                .exercise_id
+                .as_ref()
+                .and_then(|id| reg.get(id, t.exercise_version.unwrap_or(1)))
+            else {
+                continue;
+            };
+            let Some((sig, _, _)) = coach::take_signal(ex, t) else {
+                continue;
+            };
+            let effort = app
+                .session(&t.session_id)
+                .ok()
+                .and_then(|s| s.comfort.and_then(|c| c.effort));
             if let Some(last) = per_session.last_mut().filter(|x| x.0 == t.session_id) {
                 *last = (t.session_id.clone(), sig, t.id.clone(), effort);
             } else {
@@ -117,15 +181,31 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
         let ev = |xs: &[(String, String, String, Option<u8>)]| -> Vec<Value> {
             xs.iter().map(|(s, sig, t, e)| json!({"session_id": s, "take_id": t, "self_report_signal": sig, "effort": e})).collect()
         };
-        if area == "carryover" && in_area.iter().all(|t| t.role != TakeRole::Spontaneous) && per_session.is_empty() {
+        if area == "carryover"
+            && in_area.iter().all(|t| t.role != TakeRole::Spontaneous)
+            && per_session.is_empty()
+        {
             out.push(card("more_evidence", "Only scripted recordings so far. Reading does not show how your voice works in conversation.".into(), "Record a short unscripted answer.", vec![]));
             continue;
         }
         let Some(last) = per_session.last() else {
-            out.push(card("more_evidence", "There are recordings in this area, but no self-check answers yet.".into(), "Listen back and answer the self-check after practising.", vec![]));
+            out.push(card(
+                "more_evidence",
+                "There are recordings in this area, but no self-check answers yet.".into(),
+                "Listen back and answer the self-check after practising.",
+                vec![],
+            ));
             continue;
         };
-        let met: Vec<_> = per_session.iter().rev().take_while(|x| x.1 == "target_met").cloned().collect::<Vec<_>>().into_iter().rev().collect();
+        let met: Vec<_> = per_session
+            .iter()
+            .rev()
+            .take_while(|x| x.1 == "target_met")
+            .cloned()
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev()
+            .collect();
         let (state, reason, next) = match last.1.as_str() {
             "comfort_stop" => ("practice_focus", "Your last attempt here was paused because of a comfort report. Comfort comes first.".to_string(), "Rest. Resume gently when your voice feels comfortable."),
             "target_not_met" => ("practice_focus", "In your last attempt at this activity, you reported not reaching its target yet. This is about one task, not a general weakness.".to_string(), "Use the suggested cue, then retry the same task."),
@@ -143,11 +223,21 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
             }
         };
         let (state, reason) = if disagreement.is_some() && state != "practice_focus" {
-            (state, format!("{reason} You have also marked a pointer here as not matching what you hear or feel; that is kept with the evidence."))
+            (
+                state,
+                format!(
+                    "{reason} You have also marked a pointer here as not matching what you hear or feel; that is kept with the evidence."
+                ),
+            )
         } else {
             (state, reason)
         };
-        out.push(card(state, reason, next, ev(&per_session[per_session.len().saturating_sub(4)..])));
+        out.push(card(
+            state,
+            reason,
+            next,
+            ev(&per_session[per_session.len().saturating_sub(4)..]),
+        ));
     }
     out
 }
@@ -156,17 +246,34 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
 pub fn participation(app: &App, today: &str) -> Value {
     use chrono::{Datelike, NaiveDate};
     let sessions = app.sessions();
-    let Ok(d) = NaiveDate::parse_from_str(today, "%Y-%m-%d") else { return json!({}) };
+    let Ok(d) = NaiveDate::parse_from_str(today, "%Y-%m-%d") else {
+        return json!({});
+    };
     let monday = d - chrono::Duration::days(d.weekday().num_days_from_monday() as i64);
     let mut days: Vec<String> = sessions
         .iter()
         .filter(|s| !app.takes_in(&s.id).iter().all(|t| t.original.is_none()))
         .map(|s| s.local_date.clone())
-        .filter(|ld| NaiveDate::parse_from_str(ld, "%Y-%m-%d").map(|x| x >= monday && x <= d).unwrap_or(false))
+        .filter(|ld| {
+            NaiveDate::parse_from_str(ld, "%Y-%m-%d")
+                .map(|x| x >= monday && x <= d)
+                .unwrap_or(false)
+        })
         .collect();
     days.sort();
     days.dedup();
-    let last = sessions.iter().rev().find(|s| !app.takes_in(&s.id).is_empty()).map(|s| s.local_date.clone());
-    let partial = sessions.iter().filter(|s| s.kind.is_guided() && s.state == SessionState::InProgress && !app.takes_in(&s.id).is_empty()).count();
+    let last = sessions
+        .iter()
+        .rev()
+        .find(|s| !app.takes_in(&s.id).is_empty())
+        .map(|s| s.local_date.clone());
+    let partial = sessions
+        .iter()
+        .filter(|s| {
+            s.kind.is_guided()
+                && s.state == SessionState::InProgress
+                && !app.takes_in(&s.id).is_empty()
+        })
+        .count();
     json!({"days_this_week": days.len(), "dates_this_week": days, "last_practice_date": last, "partial_sessions": partial, "practised_today": days.iter().any(|x| x == today)})
 }

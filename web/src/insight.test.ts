@@ -47,12 +47,27 @@ test("a level pitch is praised on a hum, nudged in speech, and hedged when unkno
 
 test("the card says what it asks for", () => {
   const card = (kind: string, text_kind: string, front = "") => ({ kind, text_kind, front });
-  assert.equal(takeStyle(card("text", "hum")), "steady");
-  assert.equal(takeStyle(card("reference", "automatic")), "steady");
+  assert.equal(takeStyle(card("text", "hum", "mmmmmmm")), "steady");
+  assert.equal(takeStyle(card("reference", "automatic")), "speech");
   assert.equal(takeStyle(card("text", "passage")), "speech");
-  assert.equal(takeStyle(card("exercise", "phrases", "Hum forward, then say: mmmee")), "steady");
+  assert.equal(takeStyle(card("exercise", "phrases", "Hum forward, then say: mmmee")), "explore");
   assert.equal(takeStyle(card("exercise", "phrases", "Black coffee, please.")), "speech");
   assert.equal(takeStyle(null), null);
+});
+
+test("glides and mixed hum-to-speech tasks do not ask for a level pitch", () => {
+  for (const front of ["mmm ↗ ↘", "ooo ↗ ↘", "haaah ↘", "mmm… hello, how are you?", "One, two, three, four, five."]) {
+    const style = takeStyle({ kind: "text", text_kind: "hum", front });
+    assert.equal(style, "explore", front);
+    const result = describeTake({ median: 200, spanSt: 12, band: [180, 230], pts: line((i) => i < 80 ? 220 : 150), style });
+    assert.doesNotMatch(result!.cue, /stay there|last few words|smooth out|rise and fall/);
+  }
+});
+
+test("a falling ending does not diagnose lost brightness or vocal weight", () => {
+  const result = describeTake({ median: 200, spanSt: 5, band: null, pts: line((i) => i < 80 ? 200 : 160), style: "speech" });
+  assert.match(result!.cue, /natural/);
+  assert.doesNotMatch(result!.cue, /light and bright/);
 });
 
 const REF = { men_mean: 115, men_sd: 21, women_mean: 199, women_sd: 28, overlap_low: 145, overlap_high: 165 };

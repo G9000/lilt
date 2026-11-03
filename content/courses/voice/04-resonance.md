@@ -14,13 +14,13 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's resonance and articulation tuning-in activities and "Shaping your voice" (Activity 1, and articulation). The whisper siren, the lifted "wa", the brightness-only slide and twang are community exercises from trans voice coaching (TransVoiceLessons, the TransVoice wiki), chosen by Lilt; the mirror check follows the lip-spreading in Carew, Dacakis and Oates (2007). The measurement and its limits are in analysis/EVALUATION.md.
 ---
 
-Resonance is the space your voice travels through after it leaves your vocal folds: your throat and mouth (and your nose, for m, n and ng). A shorter, smaller space sounds brighter and a longer, bigger one darker, the way a short pipe rings higher than a long one. For listeners it matters about as much as pitch in recent research.
+Resonance is how the spaces above your vocal folds shape sound. Changing your tongue, lips and vocal tract shape can change the sound's colour without simply making the note higher. It matters alongside pitch, but there is no universal ratio between them or one throat position everyone should use.
 
-**Hear the difference first.** Softly whisper "ee" and slide it up and down like a siren, just for a few seconds (no loud stage whisper). You'll hear the whisper itself get brighter and darker, with no voice at all. That change is resonance. Play the chapter video for a voiced demonstration.
+**Hear the difference first.** Play the chapter demonstration and listen for a darker versus brighter sound. Then try a small change on an easy voiced "ee". Whisper exercises are optional coaching explorations, not a prerequisite; skip them if whispering feels effortful.
 
-**Make the space smaller.** Three things do it. Your tongue: forward, not pulled back into your throat. Your lips: a slight smile instead of rounded. Your larynx (voice box): it can float up a little, which shortens the space. Check in a mirror that the corners of your lips widen a little. If it sounds pinched or cartoonish, you've lifted too far; ease back.
+**Try a small sound change.** Keep your jaw easy and try a slight smile on a hum opening into "ee". Compare with relaxed lips. A smile is one cue to explore, not a posture to hold through every word. Keep vowels understandable and let your mouth move naturally.
 
-**Find your larynx.** Rest a fingertip lightly on your throat and swallow: you'll feel the larynx rise and drop. Now do a small silent giggle, or whisper the siren going up: you'll feel the same little lift, without swallowing. Say "wa wa wa" with that lift, and keep it into words.
+**Follow the sound, not a throat position.** You do not need to locate, push or hold your voice box up. Do not hold a swallow while trying to speak. If a cue makes you brace your neck, reset and use the easy hum-to-word option instead. A clinician can help find another approach if this repeatedly feels difficult.
 
 **Brightness isn't pitch.** Brightening tends to drag your pitch up with it. Practise moving them separately: hold one note and make only the brightness change, then keep the brightness and let the pitch drop a little. The pitch line should stay put while the sound changes.
 
@@ -36,13 +36,13 @@ Resonance is the space your voice travels through after it leaves your vocal fol
 
 eee ↗ ↘ · eee
 
-> Softly whisper "ee" sliding up and down (a few seconds, no loud stage whisper) and listen to the whisper brighten as it goes up. Then say the last "ee" out loud with the mouth shape of the bright end.
+> Optional: explore a very brief, easy whisper changing colour, then a voiced "ee". Skip this if whispering takes effort; use a gentle voiced "ee" throughout instead. A whisper has no vocal-fold pitch for Lilt to track.
 
 ## small-dog
 
 wa · wa · wa
 
-> Rest a fingertip on your throat, do a small silent giggle and feel your voice box lift a little. Keep that lift and say "wa wa wa". Listen for a brighter "wa" than your usual one; ease off if it sounds pinched.
+> Optional playful sound: try a small, easy "wa", then your usual one. Listen for a change in colour without holding or lifting your throat. If you cannot find it comfortably, use hum-to-"ee" instead.
 
 ## forward-hum
 
@@ -54,7 +54,7 @@ mmmmmmm
 
 eee · eee · eee
 
-> One easy note: a darker "ee" (tongue pulled back, lips a little round), a brighter "ee" (tongue forward, a slight smile), then darker again. Only the brightness moves; check the pitch line stays flat. Play it back without looking: can you hear which was which?
+> One easy note: an "ee" with relaxed lips, another with a slight smile, then the first version again. Listen for a small colour change while keeping pitch roughly similar. Do not pull your tongue back or brace your throat to exaggerate the contrast. Can you hear a difference without watching the line?
 
 ## m-vowels
 
@@ -72,7 +72,7 @@ eeeeee
 
 Morning! How are you?
 
-> Hum, then say it with the brighter "ee" space (from the whisper siren, if you've tried it). Compare with an ordinary take.
+> Hum, open into an easy "ee", then say the greeting. Compare with an ordinary take. Let the vowels change naturally instead of holding one mouth shape.
 
 ## m-words
 
@@ -84,7 +84,7 @@ many · maybe · mellow · morning · lemon
 
 eye · air · ear
 
-> Do a small, silent giggle first and notice the little upward lift in your throat, and the smaller space behind your tongue. Then say each word with that feeling. Skip it if it makes you tense.
+> Optional: let a small, easy giggle lead into the words. Listen for a change you like, without trying to hold your throat in place. Skip it if it makes you tense.
 
 ## twang
 

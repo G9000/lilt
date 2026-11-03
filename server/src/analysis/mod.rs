@@ -132,7 +132,13 @@ pub fn remeasure(app: &App, tid: &str) -> Result<String> {
     let prefix = format!("run-{tid}-a");
     let latest = store::list_files_with_ext(&app.paths.analyses_dir(&t.session_id), "json")
         .iter()
-        .filter_map(|p| p.file_stem()?.to_str()?.strip_prefix(&prefix)?.parse::<u32>().ok())
+        .filter_map(|p| {
+            p.file_stem()?
+                .to_str()?
+                .strip_prefix(&prefix)?
+                .parse::<u32>()
+                .ok()
+        })
         .max()
         .unwrap_or(1);
     let run_id = format!("{prefix}{}", latest + 1);
@@ -164,7 +170,9 @@ pub fn remeasure_stale(app: &App) -> Result<usize> {
         .filter(|t| t.original.is_some() && matches!(t.status, TakeStatus::ReviewReady))
         .filter(|t| {
             let run = t.analysis_run.as_deref().unwrap_or_default();
-            app.analysis(&t.session_id, run).map(|a| a["method"]["method_version"] != ANALYSIS_METHOD).unwrap_or(false)
+            app.analysis(&t.session_id, run)
+                .map(|a| a["method"]["method_version"] != ANALYSIS_METHOD)
+                .unwrap_or(false)
         })
         .map(|t| t.id)
         .collect();
@@ -176,7 +184,10 @@ pub fn remeasure_stale(app: &App) -> Result<usize> {
 
 /// Run every pending job once (blocking). Used by the worker and by tests.
 pub fn run_pending(app: &App) {
-    let pending: Vec<Job> = jobs(app).into_iter().filter(|j| j.status == "pending").collect();
+    let pending: Vec<Job> = jobs(app)
+        .into_iter()
+        .filter(|j| j.status == "pending")
+        .collect();
     for job in pending {
         if let Err(e) = run_job(app, job) {
             tracing::warn!("analysis job error: {e:#}");
@@ -206,14 +217,20 @@ fn run_job(app: &App, mut job: Job) -> Result<()> {
         .analyses_dir(&t.session_id)
         .join(format!("{}.json", job.run_id));
     // A completed run from before a crash is reused, not duplicated.
-    if let Ok(existing) = store::read_json::<Value>(&out_path) {
-        if existing["status"] == "ok" {
-            job.status = "done".into();
-            job.updated_utc = util::now_utc();
-            store::write_json(&job_path(app, &job.take_id), &job)?;
-            set_take_status(app, &t.id, TakeStatus::ReviewReady, Some(job.run_id.clone()), None)?;
-            return Ok(());
-        }
+    if let Ok(existing) = store::read_json::<Value>(&out_path)
+        && existing["status"] == "ok"
+    {
+        job.status = "done".into();
+        job.updated_utc = util::now_utc();
+        store::write_json(&job_path(app, &job.take_id), &job)?;
+        set_take_status(
+            app,
+            &t.id,
+            TakeStatus::ReviewReady,
+            Some(job.run_id.clone()),
+            None,
+        )?;
+        return Ok(());
     }
     job.status = "running".into();
     job.attempts += 1;
@@ -230,15 +247,30 @@ fn run_job(app: &App, mut job: Job) -> Result<()> {
         Ok(()) => {
             job.status = "done".into();
             job.error = None;
-            set_take_status(app, &t.id, TakeStatus::ReviewReady, Some(job.run_id.clone()), None)?;
+            set_take_status(
+                app,
+                &t.id,
+                TakeStatus::ReviewReady,
+                Some(job.run_id.clone()),
+                None,
+            )?;
         }
         Err(e) => {
             let msg = format!("{e:#}");
             job.error = Some(msg.clone());
-            job.status = if job.attempts >= MAX_ATTEMPTS { "failed" } else { "pending" }.into();
+            job.status = if job.attempts >= MAX_ATTEMPTS {
+                "failed"
+            } else {
+                "pending"
+            }
+            .into();
             if job.status == "failed" {
                 // A failed re-measure leaves the earlier measurement in place.
-                let status = if job.kind == "remeasure" && t.analysis_run.is_some() { TakeStatus::ReviewReady } else { TakeStatus::AnalysisFailed };
+                let status = if job.kind == "remeasure" && t.analysis_run.is_some() {
+                    TakeStatus::ReviewReady
+                } else {
+                    TakeStatus::AnalysisFailed
+                };
                 set_take_status(app, &t.id, status, None, Some(msg))?;
             }
         }
@@ -248,20 +280,23 @@ fn run_job(app: &App, mut job: Job) -> Result<()> {
 
     // A finished analysis can change what the session's review may say. Re-measuring doesn't
     // rewrite feedback someone has already read; it only refreshes the numbers.
-    if job.status == "done" && job.kind != "remeasure" {
-        if let Ok(s) = app.session(&t.session_id) {
-            if s.state == SessionState::Completed && s.kind.is_guided() {
-                if let Err(e) = crate::coach::review_session(app, &s.id) {
-                    tracing::warn!("auto review failed: {e:#}");
-                }
-            }
-        }
+    if job.status == "done"
+        && job.kind != "remeasure"
+        && let Ok(s) = app.session(&t.session_id)
+        && s.state == SessionState::Completed
+        && s.kind.is_guided()
+        && let Err(e) = crate::coach::review_session(app, &s.id)
+    {
+        tracing::warn!("auto review failed: {e:#}");
     }
     Ok(())
 }
 
 fn run_analyzer(app: &App, t: &Take, run_id: &str) -> Result<()> {
-    let orig = t.original.as_ref().ok_or_else(|| anyhow!("take has no original"))?;
+    let orig = t
+        .original
+        .as_ref()
+        .ok_or_else(|| anyhow!("take has no original"))?;
     let dir = app.paths.take_dir(&t.session_id, &t.id);
     let input = dir.join(&orig.file);
     // Integrity check before analysis: the original must match its recorded hash.
@@ -294,14 +329,24 @@ fn run_analyzer(app: &App, t: &Take, run_id: &str) -> Result<()> {
         return Err(anyhow!(
             "analysis helper produced no output (exit {:?}): {}",
             status.code(),
-            stderr.chars().rev().take(600).collect::<String>().chars().rev().collect::<String>()
+            stderr
+                .chars()
+                .rev()
+                .take(600)
+                .collect::<String>()
+                .chars()
+                .rev()
+                .collect::<String>()
         ));
     };
     v["run_id"] = json!(run_id);
     v["take_id"] = json!(t.id);
     v["session_id"] = json!(t.session_id);
     v["prompt_id"] = json!(t.prompt_id);
-    let out_path = app.paths.analyses_dir(&t.session_id).join(format!("{run_id}.json"));
+    let out_path = app
+        .paths
+        .analyses_dir(&t.session_id)
+        .join(format!("{run_id}.json"));
     {
         // Under the lock deletion takes, so a take deleted meanwhile doesn't get its run back.
         let _g = app.write_lock.lock().unwrap();
@@ -333,7 +378,9 @@ fn run_with_timeout(
         .stdout(Stdio::null())
         .stderr(Stdio::from(log))
         .spawn()
-        .map_err(|e| anyhow!("could not start analysis helper ({e}); is the Python environment installed?"));
+        .map_err(|e| {
+            anyhow!("could not start analysis helper ({e}); is the Python environment installed?")
+        });
     let status = spawned.and_then(|mut child| {
         let start = std::time::Instant::now();
         loop {
