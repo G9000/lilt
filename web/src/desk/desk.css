@@ -146,7 +146,8 @@
 .ds-r-skip svg { width: 13px; height: 13px; }
 
 /* the one app window */
-.ds-win { position: absolute; z-index: 20; left: 50%; top: calc(50% - 12px); width: min(var(--w, 760px), calc(100vw - 48px)); max-height: calc(100dvh - 32px - 112px); transform: translate(-50%, -50%); display: flex; flex-direction: column; border-radius: 22px; background: var(--win); color: var(--ink);
+/* a window sits between the menu bar (32px) and the dock (its top 84px up), 18px clear of each */
+.ds-win { position: absolute; z-index: 20; left: 50%; top: calc(50% - 26px); width: min(var(--w, 760px), calc(100vw - 48px)); max-height: calc(100dvh - 50px - 102px); transform: translate(-50%, -50%); display: flex; flex-direction: column; border-radius: 22px; background: var(--win); color: var(--ink);
   backdrop-filter: blur(30px) saturate(1.7); -webkit-backdrop-filter: blur(30px) saturate(1.7);
   box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.22), 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 40px 90px -30px rgba(10, 10, 40, 0.65), 0 10px 24px -12px rgba(10, 10, 40, 0.3);
   animation: ds-open 0.32s var(--ease); }

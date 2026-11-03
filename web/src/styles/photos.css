@@ -35,7 +35,7 @@
 .ph-confirm button { min-height: 30px; padding: 0 12px; border-radius: 99px; background: rgba(255, 255, 255, 0.14); color: #fff; font-size: 12.5px; font-weight: 600; }
 .ph-confirm .ph-danger { background: var(--rec); }
 
-.ph-drop button { width: 100%; aspect-ratio: 1; min-height: 0; display: grid; place-content: center; justify-items: center; gap: 4px; padding: 12px; border: 1.5px dashed var(--line-strong); border-radius: 16px;
+.ph-drop button { box-sizing: border-box; width: 100%; min-width: 0; aspect-ratio: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; justify-items: center; gap: 4px; padding: 12px; border: 1.5px dashed var(--line-strong); border-radius: 16px;
   background: none; color: var(--ink-3); text-align: center; }
 .ph-drop button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
 .ph-drop svg { width: 28px; height: 28px; }
