@@ -129,6 +129,16 @@ agent, other devices, settings, development and troubleshooting.
    it, then each text in a reading serif with a hint under it. Pick a text (or press <kbd>↓</kbd>),
    press record, and the docked recorder draws your pitch live.
    - **Show my pitch live** lets you watch without recording.
+   - **Play my note · F♯3** (once you have a comfortable range) plays a soft tone for about two
+     seconds at the middle of your range, on the nearest note, so you can hum along to it. It never
+     ends up in a take: it can't play while the microphone is listening, pressing Record stops it at
+     once, and the take waits until its half-second pre-roll is clear of the tone.
+   - In **Resonance**, while you record, a **darker–brighter strip** sits under the pitch line: the
+     coral dot shows whether the sound is brighter or darker than when you started this take (its
+     first second of sound is the tick in the middle), with one line in words. Silence and breaths
+     leave it where it was. It reads where the sound's energy sits across the spectrum, so it works
+     best on a steady sound on one note (a hum, a held vowel, a whisper), not on speech, and it never
+     shows an absolute value.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
      measured pitch line; click the line to play from that point.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.

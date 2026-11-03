@@ -745,6 +745,31 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 .ve-studio-rec .ve-dock.folded .ve-scope, .ve-studio-rec .ve-dock.folded .ve-stats { display: none; }
 .ve-studio-rec .ve-dock .ve-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-area: auto; grid-column: 1 / -1; }
 
+/* "Play my note": a quiet pill beside Record; tinted while the tone sounds */
+.ve .ve-note { padding: 0 13px 0 11px; height: 36px; font-variant-numeric: tabular-nums; }
+.ve .ve-note svg { width: 15px; height: 15px; }
+.ve .ve-note[aria-pressed="true"] svg { animation: ve-note 0.9s ease-in-out infinite; }
+@keyframes ve-note { 50% { opacity: 0.45; } }
+
+/* Resonance, live: brighter or darker than the start of this take, on the same strip as a take's
+   resonance card (darker grey, brighter coral, where you started as the tick in the middle) */
+.ve .ve-dock.bright:not(.idle) { grid-template-areas: "rec now" "scope scope" "bright bright" "sub sub"; }
+.ve-bright { grid-area: bright; padding: 14px 16px 12px; border-radius: 14px; background: var(--ve-card); box-shadow: 0 0 0 1px var(--hair); animation: ve-rise 0.25s var(--ease) both; }
+.ve-bright-track { position: relative; height: 10px; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 16%, transparent), var(--fill) 50%, color-mix(in srgb, var(--accent) 24%, transparent)); }
+.ve-bright-start { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 45%, transparent); }
+/* the full track wide, so translateX(50%) puts the dot at the brighter end */
+.ve-bright-pos { position: absolute; inset: 0; transition: transform 0.22s var(--ease), opacity 0.3s ease; }
+.ve-bright-pos b { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card), 0 2px 6px rgba(224, 100, 60, 0.45); }
+.ve-bright-pos.wait { opacity: 0; }
+/* through a pause the dot stays where you left it, quieter, like the Now readout */
+.ve-bright-pos.held { opacity: 0.45; }
+.ve-bright-words { margin: 10px 0 0; font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--ink); }
+.ve-bright-note { margin: 2px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce) {
+  .ve-bright, .ve .ve-note[aria-pressed="true"] svg { animation: none; }
+  .ve-bright-pos { transition: none; }
+}
+
 /* Studio (free talk): a plain opening line, like a chapter's. */
 .ci-lede-plain { margin: 0 0 32px; max-width: 34em; font-size: 18px; line-height: 1.5; color: var(--ink-2); }
 .ci-lede-plain a { color: var(--ink); }

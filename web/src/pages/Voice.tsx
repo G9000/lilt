@@ -28,6 +28,8 @@ import { useMic } from "../components/Recording";
 import { ReadAlong, ReadNotes } from "../components/ReadAlong";
 import { cleanContour, noteName, recentMedian, steadinessSt } from "../pitch";
 import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
+import { clearOfTone, noteFor, onTone, playTone, stopTone } from "../tone";
+import { Brightness, brightnessWords, meterPosition, trackBrightness } from "../brightness";
 
 /**
  * Voice practice as a writing app: chapters in a sidebar (today's cards first, then the seven
@@ -654,8 +656,10 @@ function useHeld(value: number | null, run: boolean, smooth = false): { v: numbe
 }
 
 /** The recorder at the bottom: one button, the waveform with the pitch line on it, and the numbers. */
-export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false, retake = false, eyesOff = false, foldChart = false }: {
+export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, idleHint, result, quiet = false, liveButton = false, retake = false, eyesOff = false, foldChart = false, brightness = false }: {
   meta: TakeMeta | null; band: [number, number] | null; allowRetake: boolean; quiet?: boolean;
+  /** Show the darker–brighter meter while the mic is in use (the Resonance chapter's steady sounds). */
+  brightness?: boolean;
   /** An eyes-off take: no live pitch line or numbers, so you listen to yourself instead. */
   eyesOff?: boolean;
   /** Offer "Show my pitch live" (Studio); a text's recorder only records. */
@@ -731,6 +735,27 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
     });
   }, [mic.stream, recording, listening]);
 
+  // "Play my note": the middle of your range, to hum along to. It never plays while the mic listens.
+  const note = band ? noteFor(band) : null;
+  const [toneOn, setToneOn] = useState(false);
+  useEffect(() => onTone(setToneOn), []);
+  useEffect(() => { if (recording || listening) stopTone(); }, [recording, listening]);
+  useEffect(() => () => stopTone(), []);
+
+  // Brighter or darker than the start of this take, read a few times a second.
+  const [bright, setBright] = useState<Brightness | null>(null);
+  useEffect(() => {
+    if (!brightness || !mic.stream || !(recording || listening)) return;
+    setBright(null);
+    let last = 0;
+    return trackBrightness(mic.stream, (b) => {
+      const t = performance.now();
+      if (t - last < 120) return;
+      last = t;
+      setBright(b);
+    });
+  }, [brightness, mic.stream, recording, listening]);
+
   useEffect(() => {
     if (!recording) return;
     const id = setInterval(() => {
@@ -749,6 +774,9 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
       setErr(null); setListening(false);
       const stream = mic.stream ?? (await mic.request());
       if (!stream || !mounted.current) return;
+      // The take keeps the half second before Record: let that be clear of your note.
+      await clearOfTone();
+      if (!mounted.current) return;
       kept.current = [];
       const r = new TakeRecorder(stream, (x) => { setState(x.state); if (x.error) setErr(x.error); });
       rec.current = r;
@@ -797,7 +825,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const loudest = amps.current.length ? Math.max(...amps.current.filter((a) => a.t > amps.current[amps.current.length - 1].t - 3).map((a) => a.v)) : 1;
   const tooQuiet = (recording ? elapsed > 3 : listening && amps.current.length > 120) && loudest < Math.sqrt(0.012) * 2.4;
 
-  const startListening = async () => { const s = mic.stream ?? (await mic.request()); if (s) setListening(true); };
+  const startListening = async () => { stopTone(); const s = mic.stream ?? (await mic.request()); if (s) setListening(true); };
 
   const dash = <span className="ve-none">–</span>;
   // Until the microphone is in use, the right half is just the room's window and the record button.
@@ -809,8 +837,9 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const canFold = foldChart && idle && state === "saved";
   const folded = canFold && !chartOpen;
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
+  const showBright = brightness && (recording || listening);
   return (
-    <section ref={box} className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}${folded ? " folded" : ""}`} aria-label="Recorder">
+    <section ref={box} className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}${folded ? " folded" : ""}${showBright ? " bright" : ""}`} aria-label="Recorder">
       {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
       <div className="ve-now" aria-live="off">
         <div className={`ve-now-read${nowHeld.held ? " held" : ""}`}>
@@ -826,6 +855,18 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
         {eyesOff && active && <span className="ve-eyes">Eyes off: listen to yourself, not the line</span>}
         {inBand !== null && <span className={`ve-inrange${inBand ? " ok" : ""}`}>{inBand ? "In your range" : "Outside your range"}</span>}
       </div>
+      {showBright && (
+        <div className="ve-bright">
+          <div className="ve-bright-track" role="meter" aria-label="Brightness compared with the start of this take" aria-valuemin={-1} aria-valuemax={1}
+            aria-valuenow={bright?.rel != null ? Number(meterPosition(bright.rel).toFixed(2)) : 0} aria-valuetext={brightnessWords(bright)}>
+            <i className="ve-bright-start" />
+            <span className={`ve-bright-pos${bright?.rel == null ? " wait" : bright.voiced ? "" : " held"}`} style={{ transform: `translateX(${(bright?.rel != null ? meterPosition(bright.rel) : 0) * 50}%)` }}><b /></span>
+          </div>
+          <div className="rz-labels" aria-hidden="true"><span>Darker</span><span>Where you started</span><span>Brighter</span></div>
+          <p className="ve-bright-words" aria-hidden="true">{brightnessWords(bright)}</p>
+          <p className="ve-bright-note">Works best on a steady sound on one note: a hum, a held vowel, a whisper. Not on speech.</p>
+        </div>
+      )}
       <div className="ve-stats" aria-live="off" title="Live estimate. Saved takes are measured with Praat.">
         <div className="ve-stat"><span>Middle</span><b>{mid ? <>{Math.round(mid)}<small>Hz</small></> : dash}</b><i>{mid ? noteName(mid) : ""}</i></div>
         <div className="ve-stat"><span>Usual range</span><b>{range ? <>{Math.round(range[0])}–{Math.round(range[1])}</> : dash}</b><i>{range ? "Hz" : ""}</i></div>
@@ -846,6 +887,13 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
             : listening ? "Listening only. Nothing is saved."
             : state === "saving" ? "Saving to your computer…" : ""}
         </span>
+        {note && !quiet && (
+          <button className="ve-ghost ve-note" onClick={() => (toneOn ? stopTone() : playTone(note))} disabled={recording || listening || state === "saving"} aria-pressed={toneOn}
+            title={recording || listening ? "Your note can't play while the microphone is listening" : "A soft tone at the middle of your comfortable range, to hum along to"}>
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6.2h2.2L8 3.4v9.2L4.7 9.8H2.5z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><path d="M10.6 5.6a3.4 3.4 0 010 4.8M12.4 3.9a5.8 5.8 0 010 8.2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
+            Play my note · {noteName(note)}
+          </button>
+        )}
         {children}
         {canFold && <button className="ve-ghost" aria-expanded={!folded} onClick={() => setChartOpen(!chartOpen)}>{folded ? "Show pitch line" : "Hide pitch line"}</button>}
         <span className="ve-sp" />
@@ -1251,7 +1299,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   // The recorder sits under the text it records.
   const recorder = (
     <Dock key={promptId} meta={sessionId ? { session_id: sessionId, ...FREE, ...(item && { prompt_id: promptId, prompt_text: item.text }) } : null}
-            band={band} allowRetake retake={!!(latest || earlier.length)} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
+            band={band} allowRetake retake={!!(latest || earlier.length)} brightness={level.id === "resonance" && !!item} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
             idleHint={item ? "Press record and read the highlighted text" : FREE_HINT}>
             <button className="ve-icon" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1} aria-label={item ? "Next text" : "Start with text 1"} title={`${item ? "Next text" : "Start with text 1"} (↓)`}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
