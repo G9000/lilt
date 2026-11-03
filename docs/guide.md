@@ -41,7 +41,7 @@ agent, other devices, settings, development and troubleshooting.
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back. Widgets near an edge slide inward rather than disappear. A widget whose spot
      is cropped off a small screen steps aside; a phone shows just the stack.
-   - Or click the **computer** itself (it glows and says how many cards are waiting), or press
+   - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
      <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,
      full screen, laid out like a writing app: chapters in a sidebar, the chapter as a page of
      things to read, and the recorder docked at the bottom. Click any card further down to do it next.

@@ -160,7 +160,6 @@ export function App() {
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>
         <RoomTop inbox={inbox} />
         <CardStack deck={deck} onStart={(id) => go(id ? `/deck?card=${encodeURIComponent(id)}` : "/deck")} />
-        <p className="ds-hint">Click the computer to sit down <kbd>↵</kbd></p>
       </div>
       <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}
         onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox} />

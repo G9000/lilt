@@ -24,10 +24,11 @@
 .room-peek b svg { width: 16px; height: 16px; }
 .room-peek > span { color: rgba(255, 255, 255, 0.8); }
 .room-tap { display: none; }
-.room-stage.settled .room-peek { opacity: 1; transform: translate(-50%, 0) scale(var(--inv, 1)); }
+/* the screen glows on its own; its label shows when you point at it (always on touch, where you can't) */
+.room.hovering .room-stage.settled .room-peek { opacity: 1; transform: translate(-50%, 0) scale(var(--inv, 1)); }
 .room.hovering .room-peek { background: rgba(16, 16, 24, 0.8); }
 .room.inside .room-peek { opacity: 0; }
-@media (pointer: coarse) { .room-click { display: none; } .room-tap { display: inline; } }
+@media (pointer: coarse) { .room-click { display: none; } .room-tap { display: inline; } .room-stage.settled .room-peek { opacity: 1; transform: translate(-50%, 0) scale(var(--inv, 1)); } }
 .room-bubble { position: fixed; left: 0; top: 0; z-index: 3; opacity: 0; transform: translate(-28%, -100%); font: 600 14px/1.3 var(--font); color: #17171d; background: rgba(255, 255, 255, 0.92); border-radius: 14px; padding: 7px 13px; box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45); white-space: nowrap; pointer-events: none; transition: opacity 0.3s; }
 .room-bubble::after { content: ""; position: absolute; left: 28%; bottom: -7px; margin-left: -7px; border: 7px solid transparent; border-bottom: 0; border-top-color: rgba(255, 255, 255, 0.92); }
 
@@ -37,9 +38,7 @@
 .ds-rt-mark { display: flex; align-items: center; gap: 7px; font-weight: 700; }
 .ds-rt-mark svg { width: 16px; height: 16px; }
 .ds-rt-r { display: flex; align-items: center; gap: 12px; font-variant-numeric: tabular-nums; }
-.ds-hint { position: fixed; z-index: 4; left: 50%; bottom: 28px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; color: rgba(255, 255, 255, 0.92); font-size: 13px; font-weight: 500; white-space: nowrap; background: rgba(16, 16, 24, 0.42); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12); transition: opacity 0.3s; }
-.ds-hint kbd { color: #fff; }
-.outside-leaving .ds-roomtop, .outside-leaving .ds-hint { opacity: 0; pointer-events: none; }
+.outside-leaving .ds-roomtop { opacity: 0; pointer-events: none; }
 
 /* ===== The desktop inside the monitor ===== */
 .ds { position: fixed; inset: 0; z-index: 10; overflow: clip; opacity: 0; pointer-events: none; transform: scale(1.035); filter: blur(12px);
@@ -174,7 +173,6 @@
 .ds-sep { width: 1px; height: 36px; background: rgba(255, 255, 255, 0.3); margin: 0 2px; }
 
 @media (max-width: 760px) {
-  .ds-hint { display: none; }
   .ds-hide-s, .ds-leave span { display: none; }
   .ds-menubar b { max-width: 34vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ds-widgets { top: 46px; left: 10px; right: 10px; transform: none !important; grid-template-columns: 1fr; grid-template-rows: auto; max-height: calc(100% - 140px); overflow: auto; padding-top: 46px; }
@@ -262,7 +260,6 @@
 @media (max-width: 1100px), (max-height: 760px) { .cs { --fs: 0.86; right: 24px; bottom: 20px; } }
 @media (max-width: 900px) and (min-width: 761px), (max-height: 620px) { .cs { --fs: 0.74; right: 18px; bottom: 14px; } }
 @media (max-width: 760px) { .cs { left: 50%; right: auto; bottom: 16px; translate: -50% 0; transform-origin: 50% 100%; } }
-@media (max-width: 1100px) and (min-width: 761px) { .ds-hint { left: 24px; bottom: 24px; transform: none; } }
 
 /* ===== Little things floating in the room, pinned to the painting ===== */
 .fls { position: absolute; inset: 0; pointer-events: none; transition: opacity 0.3s; }
