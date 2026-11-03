@@ -6,7 +6,9 @@ import { SpotifyRadio } from "./Spotify";
 import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
-import { FlashcardsIcon, SettingsAppIcon } from "./icons";
+import { SettingsAppIcon } from "./icons";
+import { PICTURES } from "./pictures";
+import { currentLight } from "../room/scene";
 import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
@@ -175,7 +177,10 @@ function NewsWidget() {
   );
 }
 
-/** Flashcards, in the room: the chapter you're on and how far through it you are. A click opens it. */
+/**
+ * Flashcards, in the room: a small pile of the app's cards, the top one showing the chapter you're on
+ * (with the picture its first card has in the app) and a segment per card. A click opens it.
+ */
 function FlashcardsWidget({ texts }: { texts: Texts }) {
   const { last, runs } = loadRuns();
   // The chapter you were last on, else the first one you haven't finished.
@@ -183,15 +188,21 @@ function FlashcardsWidget({ texts }: { texts: Texts }) {
     ?? texts.levels.find((l) => { const c = chapterCards(l); return progress(c, runs[l.id] ?? EMPTY).got < c.length; })
     ?? texts.levels[0];
   if (!level) return null;
-  const { got, total } = progress(chapterCards(level), runs[level.id] ?? EMPTY);
+  const cards = chapterCards(level), run = runs[level.id] ?? EMPTY;
+  const { got, total } = progress(cards, run);
+  const pic = PICTURES[(texts.levels.indexOf(level) * 3) % PICTURES.length];
   return (
     <button className="fl-cards" onClick={() => go(`/flashcards/${level.id}`)} aria-label={`Flashcards: ${level.title}, ${got} of ${total} cards done`}>
-      <span className="fl-cards-ic" aria-hidden="true"><FlashcardsIcon /></span>
-      <span className="fl-cards-t">
-        <small>Flashcards</small>
-        <b>{level.title}</b>
-        <span className="fl-cards-bar" aria-hidden="true"><i style={{ width: `${total ? (got / total) * 100 : 0}%` }} /></span>
-        <small>{got === total ? "Done, go again any time" : `${got} of ${total} cards`}</small>
+      <span className="fl-cards-back b2" aria-hidden="true" />
+      <span className="fl-cards-back b1" aria-hidden="true" />
+      <span className="fl-cards-card" aria-hidden="true">
+        <span className="fl-cards-art" style={{ backgroundImage: `url(${pic.url(currentLight())})`, ...pic.card }} />
+        <span className="fl-cards-chip">Flashcards</span>
+        <span className="fl-cards-body">
+          <b>{level.title}</b>
+          <span className="fl-cards-segs">{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : undefined} />)}</span>
+          <small>{got === total ? "Done · go again any time" : got ? `${got} of ${total} cards` : `${total} cards · start`}</small>
+        </span>
       </span>
     </button>
   );
