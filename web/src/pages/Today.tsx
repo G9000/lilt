@@ -158,7 +158,7 @@ export function TodayPage({ recovered }: { recovered: number }) {
 
       <details className="why">
         <summary>{state === "paused" ? "Why paused?" : "Why this exercise?"}</summary>
-        <div className="body">{t.plan.rationale} Source: <a href={ex.source.url} target="_blank" rel="noreferrer">{ex.source.title}</a> ({ex.review.status.replace("_", " ")}, not clinician-reviewed).</div>
+        <div className="body">{t.plan.rationale} Based on <a href={ex.source.url} target="_blank" rel="noreferrer">{ex.source.title}</a> ({ex.review.status.replace("_", " ")}, not clinician-reviewed).</div>
       </details>
       {t.pending_jobs > 0 && <p className="vcap">{t.pending_jobs} recording{t.pending_jobs > 1 ? "s are" : " is"} still being analysed. They're saved and playable.</p>}
     </div>

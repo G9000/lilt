@@ -5,7 +5,6 @@ web/dist/
 lilt-data*/
 __pycache__/
 .DS_Store
-# Exercise content is NHS Fife copyright (personal-use paraphrase). Don't publish this repo with it.
 
 # Runtime data (sessions, recordings) never belongs in git.
 data/

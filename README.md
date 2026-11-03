@@ -47,5 +47,5 @@ Data lives in `~/Lilt/data` (Docker: `./lilt-data`), and Lilt only listens on yo
 - **Write a course:** see [docs/courses.md](docs/courses.md). Course texts live in `content/courses`.
 - **More:** the [guide](docs/guide.md) (every feature, MCP, other devices, settings, troubleshooting,
   tests), the [tech stack](docs/tech-stack.md) and [what's been verified](VALIDATION.md). Contributions are welcome.
-- **Licensing:** the bundled exercise texts paraphrase NHS Fife patient-advice pages, which allow
-  personal use only. See [content and licensing](docs/guide.md#content-and-licensing).
+- **Content:** the course and exercises are written for Lilt in its own words, crediting and
+  linking the NHS Fife, ASHA and coaching sources they draw on. See [content and licensing](docs/guide.md#content-and-licensing).

@@ -1,0 +1,184 @@
+{
+  "id": "nhsfife.progression-ladder",
+  "version": 2,
+  "title": "Carryover ladder",
+  "areas": [
+    "carryover"
+  ],
+  "primary_area": "carryover",
+  "stage": "beginner",
+  "prerequisites": [],
+  "purpose": "Take the voice you like from easy, automatic speech into longer, freer talking, one rung at a time.",
+  "instructions": [
+    "Start on the lowest rung: speech so automatic you can pay attention to how you sound, not what to say.",
+    "Use your practice voice for the whole rung.",
+    "Move up only when the rung feels comfortable and your voice stays steady through it.",
+    "If a rung is too much, step down and spend longer on the one before."
+  ],
+  "primary_cue": {
+    "id": "comfortable-consistent",
+    "text": "Keep your practice voice, easily, for the whole rung."
+  },
+  "cues": [
+    {
+      "id": "comfortable-consistent",
+      "text": "Keep your practice voice, easily, for the whole rung.",
+      "use_when": "default"
+    },
+    {
+      "id": "step-back",
+      "text": "Step down a rung and give it more time.",
+      "use_when": "target_not_met"
+    }
+  ],
+  "practice_task": {
+    "prompt_id": "nhsfife.progression-ladder.step",
+    "prompt_text": "Use your practice voice for this rung of the ladder.",
+    "duration_hint_s": 30,
+    "variants": []
+  },
+  "ladder": [
+    {
+      "id": "count-1-10",
+      "text": "Count from one to ten.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "months",
+      "text": "Say the months of the year.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "count-50-75",
+      "text": "Count on from fifty to seventy-five.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "name-address",
+      "text": "Say your name, an address and a phone number (made-up ones are fine, or record privately).",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "news-sentences",
+      "text": "Read a few short sentences aloud: a news story, a recipe, a shop's opening hours.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "talk-one-minute",
+      "text": "Talk for one minute about anything: your morning, a film, what's for dinner.",
+      "recordable": true,
+      "spontaneous": true
+    },
+    {
+      "id": "real-life-phrases",
+      "text": "Say the short things you really say: ordering a coffee, answering the phone, greeting a neighbour.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "book-paragraphs",
+      "text": "Read a few paragraphs of a book aloud.",
+      "recordable": true,
+      "spontaneous": false
+    },
+    {
+      "id": "conversation-known",
+      "text": "Chat for a few minutes with someone you know well.",
+      "recordable": false,
+      "spontaneous": true
+    },
+    {
+      "id": "phone-call",
+      "text": "Make a phone call.",
+      "recordable": false,
+      "spontaneous": true
+    }
+  ],
+  "check_questions": [
+    {
+      "id": "held_voice",
+      "text": "Could you keep your practice voice easily through this rung?",
+      "options": [
+        {
+          "id": "yes_consistent",
+          "label": "Yes, easily and steadily",
+          "signal": "target_met"
+        },
+        {
+          "id": "partly",
+          "label": "Partly",
+          "signal": "unsure"
+        },
+        {
+          "id": "no",
+          "label": "No, too hard",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "uncomfortable",
+          "label": "It felt uncomfortable",
+          "signal": "comfort_stop"
+        }
+      ]
+    }
+  ],
+  "dose_guidance": {
+    "text": "Little and often works best: a few minutes at a time, several times a day, builds the habit without tiring your voice. There's no set time per rung, and Lilt only logs what you choose to.",
+    "from_source": false
+  },
+  "progression_rule": {
+    "text": "Lilt offers the next rung after two sessions in a row where you say it went easily and steadily.",
+    "from_source": false,
+    "source_basis": "Moving up only once a step feels easy is common practice in voice training; two sessions in a row is Lilt's own setting."
+  },
+  "expected_observations": [
+    "Progress is rarely steady. Some rungs take much longer than others."
+  ],
+  "common_misunderstandings": [
+    "Reading well doesn't mean your voice will hold in conversation yet.",
+    "Climbing faster isn't better."
+  ],
+  "stop_conditions": [
+    "Anything hurts, feels tight or scratchy, or your voice turns hoarse: that usually means too much, too soon.",
+    "Rest your voice and come back another day, starting smaller.",
+    "If hoarseness or discomfort lasts or keeps coming back, see a GP, or a speech and language therapist who works with voices.",
+    "Any pain or discomfort: stop, and step back a rung next time."
+  ],
+  "adaptations": [
+    "Build your own ladder from the situations in your life."
+  ],
+  "limitations": [
+    "Written for Lilt for practising on your own. Lilt can't check your technique, and it doesn't replace a speech and language therapist.",
+    "The last two rungs happen away from Lilt; it only knows what you tell it."
+  ],
+  "source": {
+    "url": "https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/",
+    "organization": "NHS Fife Speech and Language Therapy",
+    "author": null,
+    "title": "Progression activities to shape your authentic voice",
+    "issued": null,
+    "date_checked": "2026-11-04",
+    "section": "Progression activities"
+  },
+  "license_note": "Written for Lilt in its own words. The idea comes from an NHS Fife activity, credited and linked here; none of NHS Fife's text is reproduced.",
+  "review": {
+    "status": "source_checked",
+    "reviewer": "Rewritten for Lilt on 2026-11-04 (AI-assisted, not clinical review)",
+    "clinician_reviewed": false,
+    "notes": "Version 2 (2026-11-04): rewritten in Lilt's own words from the idea of the NHS Fife activity, keeping version 1's questions, answers and cues so coaching works the same. No clinician has reviewed it."
+  },
+  "examples": [
+    {
+      "kind": "link",
+      "label": "The NHS Fife activity it's based on",
+      "url": "https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/activities-to-shape-your-authentic-voice/progression-activities-to-shape-your-authentic-voice/"
+    }
+  ],
+  "next": [],
+  "schema": "lilt.exercise/1"
+}

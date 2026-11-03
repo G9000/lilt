@@ -217,6 +217,6 @@ Pitch, resonance, articulation, intonation and goal-setting guidance was checked
   [TransVoice wiki](https://totalchaos05.github.io/TransVoice-Wiki/wiki/pages/resonance/). Community
   material, not clinical guidance.
 
-NHS Fife allows its material for private study and personal use. An AI checked each exercise against
-its source; no clinician has reviewed this course. If you're a speech and language therapist or a
+Lilt's chapters and exercises are written in its own words and link to the sources above; none of
+their text is reproduced. No clinician has reviewed this course. If you're a speech and language therapist or a
 voice coach and spot something wrong, I'd really like to hear it.

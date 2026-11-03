@@ -1,0 +1,139 @@
+{
+  "id": "nhsfife.gentle-pitch-count",
+  "version": 2,
+  "title": "Gentle pitch and counting",
+  "areas": [
+    "pitch",
+    "resonance"
+  ],
+  "primary_area": "pitch",
+  "stage": "beginner_after_resonance",
+  "prerequisites": [
+    "nhsfife.forward-hum"
+  ],
+  "purpose": "Try a slightly higher, comfortable pitch on a hum, then keep it while you count, without losing the bright, forward sound.",
+  "instructions": [
+    "Warm up with a few easy glides up and down.",
+    "Hum a few times at your everyday speaking pitch, keeping the buzz forward around your lips and face.",
+    "Now hum a little higher than that: a small, smooth step, not a leap.",
+    "Keep that hum and open it into counting, one to five, then breathe normally. Repeat a few times.",
+    "When five feels easy, try counting to twenty."
+  ],
+  "primary_cue": {
+    "id": "slightly-higher",
+    "text": "Just a little higher than usual, still bright and forward."
+  },
+  "cues": [
+    {
+      "id": "slightly-higher",
+      "text": "Just a little higher than usual, still bright and forward.",
+      "use_when": "default"
+    },
+    {
+      "id": "back-to-hum",
+      "text": "Go back to the forward hum at your usual pitch until it's bright again, then step up only a little.",
+      "use_when": "target_not_met"
+    }
+  ],
+  "practice_task": {
+    "prompt_id": "nhsfife.gentle-pitch-count.count5",
+    "prompt_text": "Hum a little higher than usual, then count: one, two, three, four, five.",
+    "duration_hint_s": 12,
+    "variants": []
+  },
+  "check_questions": [
+    {
+      "id": "held_both",
+      "text": "Could you keep the slightly higher pitch and the bright, forward sound while you counted?",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes",
+          "signal": "target_met"
+        },
+        {
+          "id": "partly",
+          "label": "Partly",
+          "signal": "unsure"
+        },
+        {
+          "id": "no",
+          "label": "No",
+          "signal": "target_not_met"
+        }
+      ]
+    },
+    {
+      "id": "genuine",
+      "text": "Did it sound like you, or like a cartoon voice?",
+      "options": [
+        {
+          "id": "genuine",
+          "label": "Like me",
+          "signal": "info"
+        },
+        {
+          "id": "cartoony",
+          "label": "Cartoon-like",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "not_sure",
+          "label": "Not sure",
+          "signal": "info"
+        }
+      ]
+    }
+  ],
+  "dose_guidance": {
+    "text": "No set number: a few unhurried rounds. Finding a new pitch takes time and concentration, so go easy on yourself.",
+    "from_source": false
+  },
+  "expected_observations": [
+    "A higher pitch without the brightness can sound cartoonish. That's why the forward hum comes first."
+  ],
+  "common_misunderstandings": [
+    "Pitch is one part of a voice, not the whole goal, and no number shows how feminine a voice is.",
+    "Higher isn't automatically better. Pick a comfortable level that sounds like you."
+  ],
+  "stop_conditions": [
+    "Anything hurts, feels tight or scratchy, or your voice turns hoarse: that usually means too much, too soon.",
+    "Rest your voice and come back another day, starting smaller.",
+    "If hoarseness or discomfort lasts or keeps coming back, see a GP, or a speech and language therapist who works with voices."
+  ],
+  "adaptations": [
+    "Stay with counting to five for as long as you need."
+  ],
+  "limitations": [
+    "Written for Lilt for practising on your own. Lilt can't check your technique, and it doesn't replace a speech and language therapist.",
+    "Lilt shows pitch to describe a take. It isn't validated for coaching and never sets a target for you."
+  ],
+  "source": {
+    "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/",
+    "organization": "NHS Fife Speech and Language Therapy",
+    "author": null,
+    "title": "Shaping your voice: Lighten brighten: pitch and resonance",
+    "issued": "November 2023",
+    "date_checked": "2026-11-04",
+    "section": "Activity 2: raising your pitch safely"
+  },
+  "license_note": "Written for Lilt in its own words. The idea comes from an NHS Fife activity, credited and linked here; none of NHS Fife's text is reproduced.",
+  "review": {
+    "status": "source_checked",
+    "reviewer": "Rewritten for Lilt on 2026-11-04 (AI-assisted, not clinical review)",
+    "clinician_reviewed": false,
+    "notes": "Version 2 (2026-11-04): rewritten in Lilt's own words from the idea of the NHS Fife activity, keeping version 1's questions, answers and cues so coaching works the same. No clinician has reviewed it."
+  },
+  "examples": [
+    {
+      "kind": "link",
+      "label": "The NHS Fife activity it's based on",
+      "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/"
+    }
+  ],
+  "next": [
+    "nhsfife.real-phrases-intonation",
+    "nhsfife.progression-ladder"
+  ],
+  "schema": "lilt.exercise/1"
+}

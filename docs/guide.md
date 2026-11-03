@@ -501,7 +501,11 @@ one per chapter, so you can edit them in any editor or as an Obsidian vault with
 [content/courses/voice/README.md](content/courses/voice/README.md) explains the format. Restart Lilt after editing
 (with Docker, `docker compose up -d --build`).
 
-The exercise texts in `content/exercises` are short paraphrases of NHS Fife Speech and Language Therapy
-patient-advice pages, with links to the originals. NHS Fife permits use for private study and personal
-use only, so keep this repository private and don't redistribute that content. The status of every
-exercise is `source_checked`: an AI checked it against its source, and no clinician has reviewed it.
+The five built-in exercises in `content/exercises` are written for Lilt in its own words. Each one
+is based on the idea of an NHS Fife Speech and Language Therapy activity, credited and linked as
+"Based on", and none of NHS Fife's text is reproduced, so the repository and the Mac app can be
+shared. On 4 November 2026 every course chapter and exercise was compared with the six NHS Fife
+pages they cite: no run of six words or more matches, apart from the page titles in the links.
+Keep it that way: write in your own words and link to the source. Versions you already practised
+stay in your data folder (`exercises/`), so older takes keep their own wording and scoring. The
+status of every exercise is `source_checked`, and no clinician has reviewed them.

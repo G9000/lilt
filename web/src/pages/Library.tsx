@@ -48,7 +48,7 @@ export function LibraryPage() {
                     <dt>Stop if</dt><dd>{e.stop_conditions.join(" ")}</dd>
                     <dt>Adaptations</dt><dd>{e.adaptations.join(" ")}</dd>
                     <dt>Limits</dt><dd>{e.limitations.join(" ")}</dd>
-                    <dt>Source</dt>
+                    <dt>Based on</dt>
                     <dd><a href={e.source.url} target="_blank" rel="noreferrer">{e.source.title}<span className="sr-only"> (opens in a new tab)</span></a>, section “{e.source.section}”, {e.source.organization}{e.source.issued ? `, issued ${e.source.issued}` : ""}. Checked {e.source.date_checked}.</dd>
                   </dl>
                   <p className="lb-licence">{e.license_note}</p>

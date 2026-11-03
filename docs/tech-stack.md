@@ -124,13 +124,14 @@ no audio was delivered to the model.
 
 ## Exercise content (first release)
 
-Five activities, all from NHS Fife Speech and Language Therapy "Shaping your voice" pages, checked
-26 Oct 2026. Their status is `source_checked`: an AI checked the source, and **no clinician has
-reviewed them**. Each one is a short paraphrase with a link back to the source. NHS Fife copyright
-allows private study and personal use, but not redistribution, so do not publish
-`content/exercises`.
+Five activities, each based on an NHS Fife Speech and Language Therapy activity and written for
+Lilt in its own words (rewritten 4 Nov 2026: forward hum and smile to brighten v3, the others v2,
+with the same ids, questions, answers and cues as before). Their status is `source_checked`, and
+**no clinician has reviewed them**. Each links to the NHS Fife activity it's based on; none of
+NHS Fife's text is reproduced, so `content/exercises` can be published. Earlier versions are not in
+the repo, but stay in each person's data folder for the takes that used them.
 
-| ID | Area(s) | Source section |
+| ID | Area(s) | Based on |
 | --- | --- | --- |
 | `nhsfife.smile-brighten` | lightness | Lighten/brighten: articulation, "Exploring how your lips affect your voice" |
 | `nhsfife.forward-hum` | resonance, lightness | Lighten brighten: pitch and resonance, Activity 1 |

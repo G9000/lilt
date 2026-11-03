@@ -1,8 +1,10 @@
 //! Coaching scenarios (PRD §14): the rules' decisions, pausing on pain, disagreement, and agent review validation.
 
+use crate::app::App;
 use crate::coach::{self, model::*, validate};
 use crate::practice::progress;
 use crate::recordings::model::*;
+use crate::store;
 use crate::test_support::*;
 
 #[test]
@@ -41,7 +43,7 @@ fn useful_coaching_selects_a_cue_and_matched_retry_updates() {
         .registry
         .read()
         .unwrap()
-        .get("nhsfife.forward-hum", 1)
+        .latest("nhsfife.forward-hum")
         .unwrap()
         .clone();
     let cue = ex.cue(na.cue_id.as_deref().unwrap()).unwrap();
@@ -330,7 +332,7 @@ fn invalid_agent_reviews_are_rejected_and_valid_ones_are_idempotent() {
     let mut bad_cue = measured_pointer(&t, shown, "Descriptive only.");
     bad_cue.next_action = Some(NextAction {
         exercise_id: "nhsfife.forward-hum".into(),
-        exercise_version: 1,
+        exercise_version: 3,
         cue_id: Some("push-harder".into()),
         cue_text: None,
         summary: "do it".into(),
@@ -341,18 +343,36 @@ fn invalid_agent_reviews_are_rejected_and_valid_ones_are_idempotent() {
     assert!(err(model).contains("model-perceived evidence is disabled"));
 }
 
-/// Forward hum v2 is judged by what you hear (brighter and easy). Where you felt the buzz is kept as
-/// information only, so "throat or chest" is no longer a miss. Version 1 still scores old takes as before.
+/// Forward hum is judged by what you hear (brighter and easy); where you felt the buzz is kept as
+/// information only, so "throat or chest" is no longer a miss. Lilt now ships only the newest
+/// version of each exercise, but the versions you already used stay in your data folder: an old
+/// take keeps version 1's scoring, which judged where you felt it.
 #[test]
-fn forward_hum_v2_scores_what_you_hear_not_where_you_feel_it() {
-    let (_d, app) = app();
+fn forward_hum_scores_what_you_hear_and_old_versions_keep_their_own() {
+    let dir = tempfile::tempdir().unwrap();
+    // A data folder from before: forward hum v1, as Lilt seeded it then (its questions and signals).
+    let mut v1: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(root().join("content/exercises/nhsfife.forward-hum.v3.json"))
+            .unwrap(),
+    )
+    .unwrap();
+    v1["version"] = 1.into();
+    v1["check_questions"] = serde_json::json!([{"id": "where_felt", "text": "Where did you feel it most?", "options": [
+        {"id": "lips_face_nose", "label": "Lips, face or nose", "signal": "target_met"},
+        {"id": "throat_chest", "label": "Throat or chest", "signal": "target_not_met"}]}]);
+    let old = store::Paths::new(dir.path())
+        .exercises()
+        .join("nhsfife.forward-hum");
+    std::fs::create_dir_all(&old).unwrap();
+    std::fs::write(old.join("v1.json"), v1.to_string()).unwrap();
+    let app = App::open(config(dir.path())).unwrap();
     let s = session(&app);
     let id = new_take(&app, &s.id, T::default(), "audio/wav");
     let mut t = app.take(&id).unwrap();
     let reg = app.registry.read().unwrap();
-    let (v1, v2) = (
+    let (v1, v3) = (
         reg.get("nhsfife.forward-hum", 1).unwrap(),
-        reg.get("nhsfife.forward-hum", 2).unwrap(),
+        reg.get("nhsfife.forward-hum", 3).unwrap(),
     );
     let answers = |pairs: &[(&str, &str)]| {
         Some(TakeSelfReport {
@@ -369,9 +389,9 @@ fn forward_hum_v2_scores_what_you_hear_not_where_you_feel_it() {
         Some("target_not_met"),
         "v1 unchanged"
     );
-    t.exercise_version = Some(2);
+    t.exercise_version = Some(3);
     assert_eq!(
-        coach::take_signal(v2, &t),
+        coach::take_signal(v3, &t),
         None,
         "where you felt it alone isn't a result"
     );
@@ -380,7 +400,7 @@ fn forward_hum_v2_scores_what_you_hear_not_where_you_feel_it() {
         ("where_felt", "throat_chest"),
     ]);
     assert_eq!(
-        coach::take_signal(v2, &t).map(|x| x.0).as_deref(),
+        coach::take_signal(v3, &t).map(|x| x.0).as_deref(),
         Some("target_met")
     );
     t.self_report = answers(&[
@@ -388,9 +408,9 @@ fn forward_hum_v2_scores_what_you_hear_not_where_you_feel_it() {
         ("where_felt", "lips_face_nose"),
     ]);
     assert_eq!(
-        coach::take_signal(v2, &t).map(|x| x.0).as_deref(),
+        coach::take_signal(v3, &t).map(|x| x.0).as_deref(),
         Some("target_not_met")
     );
-    assert_eq!(reg.latest("nhsfife.forward-hum").unwrap().version, 2);
-    assert_eq!(reg.latest("nhsfife.smile-brighten").unwrap().version, 2);
+    assert_eq!(reg.latest("nhsfife.forward-hum").unwrap().version, 3);
+    assert_eq!(reg.latest("nhsfife.smile-brighten").unwrap().version, 3);
 }

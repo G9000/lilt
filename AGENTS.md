@@ -71,8 +71,9 @@ server on :7979. Most suites take a screenshot folder:
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/results-extras.mjs /tmp/shots
 ```
 
-`e2e/flow.mjs` is out of date (it fails at the card stack's arrow keys on any server); the newer
-suites (`flashcards`, `photos`, `recorder-extras`, `results-extras`, `yarn`) pass.
+`e2e/flow.mjs` and `e2e/practice.mjs` are out of date (they stop at the card stack's arrow keys and
+the first-take range offer on any server); the newer suites (`flashcards`, `photos`,
+`recorder-extras`, `results-extras`, `yarn`) pass.
 
 ## Conventions
 
@@ -99,7 +100,8 @@ suites (`flashcards`, `photos`, `recorder-extras`, `results-extras`, `yarn`) pas
 
 ## Content licence
 
-The exercise texts in `content/exercises` paraphrase NHS Fife patient-advice pages, which NHS Fife
-allows for private study and personal use. Don't copy more NHS wording into the repo, and flag
-anything that would publish or redistribute that content (a release, a hosted copy) to the owner
-before doing it. Details: [Content and licensing](docs/guide.md#content-and-licensing).
+The course and the exercises are written for Lilt in its own words; they credit and link the NHS
+Fife, ASHA and coaching sources they're based on. NHS Fife's pages allow personal use only, so never
+copy their wording (or anyone's) into the repo: write it fresh and link the source. To change an
+exercise, add a new version file and keep its ids, questions, answers and cues, since takes and
+coaching refer to them. Details: [Content and licensing](docs/guide.md#content-and-licensing).

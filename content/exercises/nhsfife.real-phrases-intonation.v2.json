@@ -1,0 +1,121 @@
+{
+  "id": "nhsfife.real-phrases-intonation",
+  "version": 2,
+  "title": "Real-life phrases with rise and fall",
+  "areas": [
+    "intonation"
+  ],
+  "primary_area": "intonation",
+  "stage": "beginner",
+  "prerequisites": [],
+  "purpose": "Play with rise and fall in phrases you really use, and find a melody that feels like you.",
+  "instructions": [
+    "Jot down a few short phrases you say a lot.",
+    "Say them with a little more movement in your voice than usual, so they sound livelier.",
+    "Lean on the words that carry the meaning.",
+    "Then try longer things you'd really say.",
+    "Record and listen back, and keep what feels like you."
+  ],
+  "primary_cue": {
+    "id": "stress-meaning",
+    "text": "Let the melody follow what you mean."
+  },
+  "cues": [
+    {
+      "id": "stress-meaning",
+      "text": "Let the melody follow what you mean.",
+      "use_when": "default"
+    },
+    {
+      "id": "more-movement",
+      "text": "Add a little more rise and fall, then listen back.",
+      "use_when": "too_flat"
+    },
+    {
+      "id": "fit-meaning",
+      "text": "Lean only on the words that carry the meaning.",
+      "use_when": "too_much"
+    }
+  ],
+  "practice_task": {
+    "prompt_id": "nhsfife.real-phrases-intonation.phrases",
+    "prompt_text": "Are you coming tonight? I'd love that, thank you!",
+    "duration_hint_s": 10,
+    "variants": []
+  },
+  "check_questions": [
+    {
+      "id": "fit",
+      "text": "Did the rise and fall fit what you meant, and feel like you?",
+      "options": [
+        {
+          "id": "fits",
+          "label": "Yes, it fits",
+          "signal": "target_met"
+        },
+        {
+          "id": "too_flat",
+          "label": "Too flat",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "too_much",
+          "label": "Too much",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "not_sure",
+          "label": "Not sure",
+          "signal": "unsure"
+        }
+      ]
+    }
+  ],
+  "dose_guidance": null,
+  "expected_observations": [
+    "Lively speech moves more than pitch: loudness, pace and your face all change a little too."
+  ],
+  "common_misunderstandings": [
+    "You don't need an exaggerated melody, an accent or particular words. Overdoing it while you explore can help you find your range; that part is optional."
+  ],
+  "stop_conditions": [
+    "Anything hurts, feels tight or scratchy, or your voice turns hoarse: that usually means too much, too soon.",
+    "Rest your voice and come back another day, starting smaller.",
+    "If hoarseness or discomfort lasts or keeps coming back, see a GP, or a speech and language therapist who works with voices."
+  ],
+  "adaptations": [
+    "Swap the example phrases for your own.",
+    "Exaggerating is optional."
+  ],
+  "limitations": [
+    "Written for Lilt for practising on your own. Lilt can't check your technique, and it doesn't replace a speech and language therapist.",
+    "Lilt doesn't judge whether your intonation is right. A sentence that falls at the end isn't wrong."
+  ],
+  "source": {
+    "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-intonation/",
+    "organization": "NHS Fife Speech and Language Therapy",
+    "author": null,
+    "title": "Shaping your voice: Lighten brighten: intonation",
+    "issued": "November 2023",
+    "date_checked": "2026-11-04",
+    "section": "Intonation activity"
+  },
+  "license_note": "Written for Lilt in its own words. The idea comes from an NHS Fife activity, credited and linked here; none of NHS Fife's text is reproduced.",
+  "review": {
+    "status": "source_checked",
+    "reviewer": "Rewritten for Lilt on 2026-11-04 (AI-assisted, not clinical review)",
+    "clinician_reviewed": false,
+    "notes": "Version 2 (2026-11-04): rewritten in Lilt's own words from the idea of the NHS Fife activity, keeping version 1's questions, answers and cues so coaching works the same. No clinician has reviewed it."
+  },
+  "examples": [
+    {
+      "kind": "link",
+      "label": "The NHS Fife activity it's based on",
+      "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-intonation/"
+    }
+  ],
+  "next": [
+    "nhsfife.progression-ladder"
+  ],
+  "schema": "lilt.exercise/1"
+}

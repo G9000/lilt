@@ -1,0 +1,165 @@
+{
+  "id": "nhsfife.forward-hum",
+  "version": 3,
+  "title": "Forward hum",
+  "areas": [
+    "resonance",
+    "lightness"
+  ],
+  "primary_area": "resonance",
+  "stage": "beginner",
+  "prerequisites": [],
+  "purpose": "Find an easy, buzzy hum with your tongue forward and a small smile, then open it into vowels and m-words, listening for a brighter sound.",
+  "instructions": [
+    "Breathe in easily and hum on a comfortable note, lips gently closed and teeth apart.",
+    "Rest your tongue forward, behind your bottom teeth, and add a small smile. Listen for the hum getting brighter. A tingle on your lips is a sign of easy voicing, not the goal.",
+    "Open the hum into vowels without a break: mmmee, mmmaa, mmmoo.",
+    "Then words that start with m, lingering on the m at first: meet, many, maybe, Mary, magic."
+  ],
+  "primary_cue": {
+    "id": "aim-forward",
+    "text": "Hum with your tongue forward and a small smile."
+  },
+  "cues": [
+    {
+      "id": "aim-forward",
+      "text": "Hum with your tongue forward and a small smile.",
+      "use_when": "default"
+    },
+    {
+      "id": "smile",
+      "text": "Add a small smile and hum again.",
+      "use_when": "target_not_met"
+    },
+    {
+      "id": "nose-air",
+      "text": "Start with a soft breath out through your nose, then let the hum begin: hhhmmm.",
+      "use_when": "target_not_met"
+    },
+    {
+      "id": "throw-forward",
+      "text": "Picture the sound landing just in front of your lips.",
+      "use_when": "target_not_met"
+    },
+    {
+      "id": "quiet-build",
+      "text": "Start the hum very quietly, then let it grow a little, listening for brightness.",
+      "use_when": "target_not_met"
+    }
+  ],
+  "practice_task": {
+    "prompt_id": "nhsfife.forward-hum.m-words",
+    "prompt_text": "Hum with your tongue forward, then say: mmmee, mmmaa, mmmoo — meet, many, maybe, Mary, magic.",
+    "duration_hint_s": 25,
+    "variants": []
+  },
+  "check_questions": [
+    {
+      "id": "brighter_easy",
+      "text": "Listen back. Did the hum and the words sound brighter, and feel easy?",
+      "options": [
+        {
+          "id": "brighter_easy",
+          "label": "Brighter, and easy",
+          "signal": "target_met"
+        },
+        {
+          "id": "easy_no_change",
+          "label": "Easy, but I can't hear a change yet",
+          "signal": "unsure"
+        },
+        {
+          "id": "effort",
+          "label": "It took effort or felt tight",
+          "signal": "target_not_met"
+        },
+        {
+          "id": "not_sure",
+          "label": "Not sure",
+          "signal": "unsure"
+        }
+      ]
+    },
+    {
+      "id": "where_felt",
+      "text": "Where did you notice the buzz most? (Only a clue about easy voicing; every answer is fine.)",
+      "options": [
+        {
+          "id": "lips_face_nose",
+          "label": "Lips, face or nose",
+          "signal": "info"
+        },
+        {
+          "id": "mouth",
+          "label": "In my mouth",
+          "signal": "info"
+        },
+        {
+          "id": "throat_chest",
+          "label": "Throat or chest",
+          "signal": "info"
+        },
+        {
+          "id": "not_sure",
+          "label": "Not sure",
+          "signal": "info"
+        }
+      ]
+    }
+  ],
+  "dose_guidance": {
+    "text": "No set number. A few unhurried rounds, then move on while it still feels easy. Short and often beats long and rare.",
+    "from_source": false
+  },
+  "expected_observations": [
+    "A light buzz around your lips and face, which tends to come with easy voicing.",
+    "Over days, a brighter sound carrying into the words after the hum."
+  ],
+  "common_misunderstandings": [
+    "The buzz isn't resonance. Where you feel it says more about easy voicing and pitch, so listen for brightness instead.",
+    "Pitch alone doesn't decide how a voice sounds.",
+    "Lighter doesn't mean quieter or whispery."
+  ],
+  "stop_conditions": [
+    "Anything hurts, feels tight or scratchy, or your voice turns hoarse: that usually means too much, too soon.",
+    "Rest your voice and come back another day, starting smaller.",
+    "If hoarseness or discomfort lasts or keeps coming back, see a GP, or a speech and language therapist who works with voices."
+  ],
+  "adaptations": [
+    "Make up your own m-words.",
+    "Stay with the hum and the vowels for as long as you like."
+  ],
+  "limitations": [
+    "Written for Lilt for practising on your own. Lilt can't check your technique, and it doesn't replace a speech and language therapist.",
+    "Lilt can't feel where your voice buzzes, and its resonance comparison is rough and only works on held vowels, so your ears and what you report lead here."
+  ],
+  "source": {
+    "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/",
+    "organization": "NHS Fife Speech and Language Therapy",
+    "author": null,
+    "title": "Shaping your voice: Lighten brighten: pitch and resonance",
+    "issued": "November 2023",
+    "date_checked": "2026-11-04",
+    "section": "Activity 1: bringing your resonance up and forward"
+  },
+  "license_note": "Written for Lilt in its own words. The idea comes from an NHS Fife activity, credited and linked here; none of NHS Fife's text is reproduced.",
+  "review": {
+    "status": "source_checked",
+    "reviewer": "Rewritten for Lilt on 2026-11-04 (AI-assisted, not clinical review)",
+    "clinician_reviewed": false,
+    "notes": "Version 3 (2026-11-04): rewritten in Lilt's own words from the idea of the NHS Fife activity, keeping version 2's questions, answers and cues so coaching works the same. No clinician has reviewed it."
+  },
+  "examples": [
+    {
+      "kind": "link",
+      "label": "The NHS Fife activity it's based on",
+      "url": "https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/"
+    }
+  ],
+  "next": [
+    "nhsfife.smile-brighten",
+    "nhsfife.gentle-pitch-count",
+    "nhsfife.progression-ladder"
+  ],
+  "schema": "lilt.exercise/1"
+}

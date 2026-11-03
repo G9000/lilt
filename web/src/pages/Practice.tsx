@@ -209,7 +209,7 @@ function ExerciseStep({ exercise, session, cue, ladderText, takes, onTake, onNex
         <div className="body small stack">
           <div><strong>Stop if:</strong><ul>{exercise.stop_conditions.map((s, i) => <li key={i}>{s}</li>)}</ul></div>
           {exercise.dose_guidance && <p><strong>How much:</strong> {exercise.dose_guidance.text}</p>}
-          <p><strong>Source:</strong> <a href={exercise.source.url} target="_blank" rel="noreferrer">{exercise.source.title}</a>, {exercise.source.section}. {exercise.source.organization}, checked {exercise.source.date_checked}.</p>
+          <p><strong>Based on:</strong> <a href={exercise.source.url} target="_blank" rel="noreferrer">{exercise.source.title}</a>, {exercise.source.section}. {exercise.source.organization}, checked {exercise.source.date_checked}.</p>
           <p><strong>Review status:</strong> {exercise.review.status.replace(/_/g, " ")}. {exercise.review.reviewer}.</p>
           <ul>{exercise.limitations.map((s, i) => <li key={i}>{s}</li>)}</ul>
         </div>
