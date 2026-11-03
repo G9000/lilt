@@ -115,10 +115,6 @@
 @keyframes ds-clock-in { from { opacity: 0.2; } }
 .ds-clock-next { position: absolute; inset: 0; z-index: 2; padding: 0; border: 0; background: none; cursor: pointer; border-radius: inherit; }
 .ds-clock-next:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
-.ds-clock-dots { position: absolute; z-index: 2; right: 13px; top: 18px; display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s ease-out; pointer-events: none; }
-.ds-clock-dots i { width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); }
-.ds-clock-dots i.on { background: #fff; }
-.ds-clock:hover .ds-clock-dots, .ds-clock:has(:focus-visible) .ds-clock-dots { opacity: 1; }
 .ds-clock-time {position: absolute; z-index: 1; left: 13px; bottom: 8px; font-size: 44px; font-weight: 300; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35); }
 
 .ds-plant { background: linear-gradient(180deg, #fbf6ee, #f1e7da); padding: 8px 14px 12px; display: flex; flex-direction: column; }
@@ -390,6 +386,28 @@
 .fl .ds-w { width: 168px; height: 168px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 0 0.5px rgba(0, 0, 0, 0.4), 0 22px 40px -16px rgba(0, 0, 0, 0.8); }
 .fl .ds-clock .ds-clock-img { filter: saturate(1.15) brightness(0.88); background-position: 70% 30%; background-size: 420% auto; }
 .fl .ds-clock::after { z-index: 1; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); border-radius: inherit; }
+/* Photos: the clock's pictures as a grid under it; pick one to keep, or shuffle */
+.ds-clockbox { position: relative; }
+.fl:has(.ds-clockbox.open) { z-index: 6; }
+.ds-photos { position: absolute; top: calc(100% + 10px); left: 50%; z-index: 3; width: 300px; translate: -50% 0; padding: 12px; border-radius: 20px; color: #fff; cursor: default;
+  background: linear-gradient(135deg, rgba(36, 33, 45, 0.96), rgba(18, 17, 24, 0.96)); box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.12), 0 24px 44px -18px rgba(0, 0, 0, 0.85);
+  animation: ds-photos-in 0.22s var(--ease); }
+@keyframes ds-photos-in { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+.ds-photos header { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 10px; }
+.ds-photos header b { font-size: 14px; font-weight: 650; }
+.ds-shuffle { min-height: 0; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 0; border-radius: 99px; background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.75); font-size: 12px; font-weight: 600; cursor: pointer; }
+.ds-shuffle svg { width: 14px; height: 14px; }
+.ds-shuffle.on { background: #e0643c; color: #fff; }
+.ds-photos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ds-photos-grid button { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 0; border: 0; background: none; color: rgba(255, 255, 255, 0.7); cursor: pointer; text-align: left; }
+.ds-photos-grid span { display: block; width: 100%; aspect-ratio: 1; border-radius: 12px; background-repeat: no-repeat; background-position: 70% 30%; background-size: 420% auto; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s ease; }
+.ds-photos-grid small { font-size: 10.5px; font-weight: 500; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ds-photos-grid button:hover span { transform: scale(1.04); }
+.ds-photos-grid button.on span { box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(224, 100, 60, 0.9); }
+.ds-photos-grid button.on small { color: #fff; }
+.ds-photos > p { margin: 10px 2px 0; font-size: 11.5px; color: rgba(255, 255, 255, 0.55); }
+@media (prefers-reduced-motion: reduce) { .ds-photos { animation: none; } .ds-photos-grid span { transition: none; } }
 
 /* Settings, in the room: the app's icon, like one on a Mac desktop */
 .fl-app { pointer-events: auto; display: grid; justify-items: center; width: auto; min-height: 0; padding: 0; border: 0; border-radius: 14px; background: none; color: #fff; cursor: pointer; }

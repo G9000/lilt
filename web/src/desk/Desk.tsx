@@ -6,7 +6,7 @@ import { currentLight, Light } from "../room/scene";
 import { radio, useRadio } from "./lofi";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
-import { PICTURES } from "./pictures";
+import { picture, Picture, PICTURES } from "./pictures";
 import { SettingsButton } from "./SettingsSheet";
 import { CoursesIcon, FlashcardsIcon, LeaveIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
 
@@ -190,35 +190,80 @@ export function PlantWidget({ days }: { days: number }) {
   );
 }
 
-const PICTURE_KEY = "lilt.clock.picture";
+/** Which picture the clock shows: "shuffle" (the default: a different photo each time), or one you picked. */
+const PICTURE_KEY = "lilt.clock.picture.v2";
+/** The photo it showed last, so shuffling never shows the same one twice running. */
+const LAST_KEY = "lilt.clock.last";
+const read = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
+const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* private mode: forget on reload */ } };
+/** A photo to shuffle to: any but the room's own views, and not the last one shown. */
+function shuffled(): Picture {
+  const pool = PICTURES.filter((p) => p.photo && p.id !== read(LAST_KEY));
+  const p = pool[Math.floor(Math.random() * pool.length)] ?? PICTURES[0];
+  write(LAST_KEY, p.id);
+  return p;
+}
 
-/** A window onto the room at this hour (or another picture: click for the next one), with the time. */
+/** The time over a picture: a different photo each time you come in, or the one you picked in Photos (click it). */
 export function ClockWidget() {
   const now = useNow();
   const light = currentLight();
-  const [pic, setPic] = useState(() => { try { return (Number(localStorage.getItem(PICTURE_KEY)) || 0) % PICTURES.length; } catch { return 0; } });
+  const [pinned, setPinned] = useState<string | null>(() => { const v = read(PICTURE_KEY); return v && v !== "shuffle" && PICTURES.some((p) => p.id === v) ? v : null; });
+  const [shown, setShown] = useState<Picture>(() => (pinned ? picture(pinned) : shuffled()));
+  const [open, setOpen] = useState(false);
   // The widget drags from anywhere, so a press that moved isn't a click.
   const down = useRef<{ x: number; y: number } | null>(null);
-  const next = (e: MouseEvent) => {
+  const box = useRef<HTMLDivElement>(null);
+  const toggle = (e: MouseEvent) => {
     const d = down.current;
     if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) > 4) return;
-    const n = (pic + 1) % PICTURES.length;
-    setPic(n);
-    try { localStorage.setItem(PICTURE_KEY, String(n)); } catch { /* private mode: forget on reload */ }
+    setOpen((o) => !o);
   };
-  const p = PICTURES[pic];
+  // Clicking anywhere else, or Escape, closes Photos.
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: PointerEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("pointerdown", away);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  const pick = (p: Picture) => { setPinned(p.id); setShown(p); write(PICTURE_KEY, p.id); };
+  const shuffle = () => { setPinned(null); setShown(shuffled()); write(PICTURE_KEY, "shuffle"); };
   return (
-    <article className="ds-w ds-clock" aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
-      <div className="ds-clock-img" key={pic} style={{ backgroundImage: `url(${p.url(light)})`, ...p.clock }} />
-      <button className="ds-clock-next" onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }} onClick={next}
-        aria-label={`Picture: ${p.name}. Show the next one`} title="Next picture" />
-      <span className="ds-clock-dots" aria-hidden="true">{PICTURES.map((_, i) => <i key={i} className={i === pic ? "on" : ""} />)}</span>
-      <div className="ds-clock-top">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M2 11h12M4 11a4 4 0 018 0M8 3v1.5M3.2 5.5l1 1M12.8 5.5l-1 1" /></svg>
-        {LIGHT_NAME[light]}
-      </div>
-      <div className="ds-clock-time">{now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}</div>
-    </article>
+    <div className={`ds-clockbox${open ? " open" : ""}`} ref={box}>
+      <article className="ds-w ds-clock" aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
+        <div className="ds-clock-img" key={shown.id} style={{ backgroundImage: `url(${shown.url(light)})`, ...shown.clock }} />
+        <button className="ds-clock-next" onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }} onClick={toggle}
+          aria-label={`Picture: ${shown.name}. Choose a picture`} aria-expanded={open} aria-controls="ds-photos" title="Photos" />
+        <div className="ds-clock-top">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M2 11h12M4 11a4 4 0 018 0M8 3v1.5M3.2 5.5l1 1M12.8 5.5l-1 1" /></svg>
+          {LIGHT_NAME[light]}
+        </div>
+        <div className="ds-clock-time">{now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}</div>
+      </article>
+      {open && (
+        <section className="ds-photos" id="ds-photos" aria-label="Photos" onPointerDown={(e) => e.stopPropagation()}>
+          <header>
+            <b>Photos</b>
+            <button className={`ds-shuffle${pinned ? "" : " on"}`} aria-pressed={!pinned} onClick={shuffle}
+              title="A different photo each time you come in">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4.5h2.2c1.6 0 2.6.8 3.6 2.4l1.4 2.2c1 1.6 2 2.4 3.6 2.4H14M2 11.5h2.2c1 0 1.8-.3 2.5-1M9.3 5.8c.7-.8 1.5-1.3 2.5-1.3H14M12 2.5l2 2-2 2M12 9.5l2 2-2 2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              Shuffle
+            </button>
+          </header>
+          <div className="ds-photos-grid">
+            {PICTURES.map((p) => (
+              <button key={p.id} className={p.id === shown.id ? "on" : undefined} onClick={() => pick(p)} aria-pressed={p.id === pinned} title={p.name}>
+                <span style={{ backgroundImage: `url(${p.url(light)})`, ...p.clock }} />
+                <small>{p.name}</small>
+              </button>
+            ))}
+          </div>
+          <p>{pinned ? `Showing ${shown.name.toLowerCase()} every time.` : "A different photo each time you come in."}</p>
+        </section>
+      )}
+    </div>
   );
 }
 

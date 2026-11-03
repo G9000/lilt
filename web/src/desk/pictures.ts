@@ -2,14 +2,16 @@ import type { CSSProperties } from "react";
 import { roomUrl, type Light } from "../room/scene";
 
 /**
- * The pictures the clock widget and today's cards show (credits in public/pictures/CREDITS.md).
+ * The pictures the clock widget (and its Photos) and today's cards show (credits in public/pictures/CREDITS.md).
  * The room ones follow the hour. `clock` frames it on the square clock, `card` on a card's wide
  * strip; unset, the widget's own CSS frames the room.
  */
-export interface Picture { id: string; name: string; url: (l: Light) => string; clock?: CSSProperties; card?: CSSProperties }
+export interface Picture { id: string; name: string; url: (l: Light) => string; clock?: CSSProperties; card?: CSSProperties;
+  /** A photo of its own (not a view of the room): the clock shuffles through these. */
+  photo?: boolean }
 
 const photo = (id: string, name: string, cardY: string): Picture =>
-  ({ id, name, url: () => `pictures/${id}.webp`, clock: { backgroundSize: "cover" }, card: { backgroundSize: "cover", backgroundPosition: `center ${cardY}` } });
+  ({ id, name, url: () => `pictures/${id}.webp`, clock: { backgroundSize: "cover" }, card: { backgroundSize: "cover", backgroundPosition: `center ${cardY}` }, photo: true });
 
 /** In the clock's order: it remembers its picture by index. */
 export const PICTURES: Picture[] = [
