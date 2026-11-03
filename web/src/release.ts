@@ -13,6 +13,11 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "Ball of yarn", body: "A calm game: lift a ball of yarn with your voice, humming or speaking, in your own range. No scores.", to: "/yarn" },
+      { title: "Play my note", body: "The recorder plays the middle of your range, to hum along to before you start." },
+      { title: "Brighter or darker", body: "In Resonance, a live strip shows whether a steady sound is brighter or darker than when you started.", to: "/studio/resonance" },
+      { title: "Time in your range", body: "After each take, how much of what you voiced sat in your comfortable range." },
+      { title: "Photos", body: "Your own photos on the clock, and a Photos app to add, view and delete them.", to: "/photos" },
       { title: "Flashcards", body: "A chapter as a pile of cards: swipe through the steps, and record each text before it swipes away.", to: "/flashcards" },
       { title: "A new voice course", body: "Thirteen chapters in three parts, with real technique, checked against clinical guidance and coaching practice.", to: "/studio" },
       { title: "Extras to read aloud", body: "A Reading room, short Stories told in parts, and Articles to read like a presenter.", to: "/studio/reading-room" },
