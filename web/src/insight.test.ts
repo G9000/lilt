@@ -1,7 +1,7 @@
 // node --test src/insight.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { describeResonance, describeTake, endDropSt, placePitch, takeStyle } from "./insight.ts";
+import { describeRangeShare, describeResonance, describeTake, endDropSt, placePitch, shareInRange, takeStyle } from "./insight.ts";
 
 const line = (hz: (i: number) => number, n = 100) => Array.from({ length: n }, (_, i) => ({ t: i / 50, hz: hz(i) }));
 
@@ -87,4 +87,37 @@ test("resonance in words: about the same, a little, or plainly, never a score", 
   assert.equal(describeResonance(-0.7, "last time"), "A little darker than last time.");
   assert.equal(describeResonance(1.2, "your first take"), "Brighter than your first take, by about a semitone.");
   assert.equal(describeResonance(-2.6, "your first take"), "Darker than your first take, by about 3 semitones.");
+});
+
+test("time in your range counts voiced frames only", () => {
+  const band: [number, number] = [150, 200];
+  // 2 s take: a third of it unvoiced, and of the voiced part, half at 170 Hz and half at 230 Hz
+  const pts = line((i) => (i % 3 === 0 ? null : i % 3 === 1 ? 170 : 230) as number);
+  assert.equal(shareInRange(pts, band), 0.5);
+  assert.equal(shareInRange(line(() => 175), band), 1);
+  assert.equal(shareInRange(line(() => 150), band), 1); // the edges count as in
+});
+
+test("no share without a range or with too little voice", () => {
+  assert.equal(shareInRange(line(() => 175), null), null);
+  assert.equal(shareInRange(line((i) => (i % 3 === 0 ? 175 : null) as number), [150, 200]), null);
+  assert.equal(describeRangeShare(line(() => 175), null), null);
+  assert.equal(describeRangeShare([], [150, 200]), null);
+});
+
+test("time in your range in words, with where the rest went", () => {
+  const band: [number, number] = [150, 200];
+  const mix = (inside: number, hzOut: number | ((i: number) => number)) => line((i) => (i < inside ? 175 : typeof hzOut === "number" ? hzOut : hzOut(i)));
+  assert.equal(describeRangeShare(line(() => 175), band), "Nearly all of what you voiced sat in your range (150–200 Hz).");
+  assert.equal(describeRangeShare(mix(67, 230), band), "About two thirds of what you voiced sat in your range (150–200 Hz); the rest was mostly higher.");
+  assert.equal(describeRangeShare(mix(50, 120), band), "About half of what you voiced sat in your range (150–200 Hz); the rest was mostly lower.");
+  assert.match(describeRangeShare(mix(30, (i) => (i % 2 ? 120 : 230)), band)!, /^About a third .*; the rest was a mix of higher and lower\.$/);
+  assert.equal(describeRangeShare(line(() => 260), band), "Hardly any of what you voiced sat in your range (150–200 Hz); it was mostly higher.");
+});
+
+test("time in your range is a description, never a grade", () => {
+  for (let inside = 0; inside <= 100; inside += 5) {
+    const said = describeRangeShare(line((i) => (i < inside ? 175 : 230)), [150, 200])!;
+    assert.doesNotMatch(said, /%|only|great|good|well done|should|score/i, said);
+  }
 });

@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Take } from "../api";
+import { judgeRoom, Room } from "../noise";
 import { closeDelayLine, delayedStream, levelMeter, openMic, RecState, TakeMeta, TakeRecorder, wakeDelayLines } from "../recorder";
 import { Callout, StatusBadge } from "./bits";
 import { LiveReadout, useLivePitch } from "./LivePitch";
@@ -89,21 +90,46 @@ export function useMic() {
   return useContext(Ctx)!;
 }
 
-/** Step 1 of a session: confirm the microphone works and the level is usable. */
+/** How long the room is listened to, quietly, before you're asked to speak. */
+const QUIET_MS = 2000;
+/** Your voice is judged on the last few seconds of levels (about 60 a second), so it follows a closed window. */
+const KEEP_HEARD = 300;
+
+/**
+ * Step 1 of a session: confirm the microphone works and the level is usable. It opens with a quiet
+ * moment to hear the room, and says so (calmly, without holding you up) if background sound is close
+ * enough to your voice to throw off pitch readings.
+ */
 export function MicCheck({ onReady }: { onReady: () => void }) {
   const mic = useMic();
   const [rms, setRms] = useState(0);
   const [peakHold, setPeakHold] = useState(0);
   const [heard, setHeard] = useState(false);
+  const [quietMoment, setQuietMoment] = useState(false);
+  const [room, setRoom] = useState<Room | null>(null);
+  const [round, setRound] = useState(0); // "Listen to the room again" starts a new quiet moment
 
   useEffect(() => {
     if (!mic.stream) return;
+    const until = performance.now() + QUIET_MS, quiet: number[] = [], voice: number[] = [];
+    let n = 0;
+    setQuietMoment(true);
+    setRoom(null);
     return levelMeter(mic.stream, (r, p) => {
       setRms(r);
       setPeakHold((h) => Math.max(p, h * 0.97));
       if (r > 0.01) setHeard(true);
+      if (performance.now() < until) { quiet.push(r); return; }
+      setQuietMoment(false);
+      voice.push(r);
+      if (voice.length > KEEP_HEARD) voice.shift();
+      // A few times a second is plenty, and only a change of answer re-renders.
+      if (++n % 15 === 0) {
+        const now = judgeRoom(quiet, voice);
+        if (now) setRoom((was) => (was?.noisy === now.noisy ? was : now));
+      }
     });
-  }, [mic.stream]);
+  }, [mic.stream, round]);
 
   const pct = Math.min(100, Math.round(Math.sqrt(rms) * 220));
   const tooHot = peakHold > 0.98;
@@ -119,7 +145,7 @@ export function MicCheck({ onReady }: { onReady: () => void }) {
         <div className="vlive vmic-panel">
           <div className="vlive-top">
             <b>Input level</b>
-            <span>Say a few words at your usual volume.</span>
+            <span>{quietMoment ? "Stay quiet for a moment while Lilt listens to the room…" : "Say a few words at your usual volume."}</span>
           </div>
           <div className="levelbar" role="meter" aria-label="Input level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
             {segs.map((on, k) => <i key={k} className={on ? (k >= 17 ? "hot" : k >= 13 ? "warm" : "on") : ""} />)}
@@ -127,6 +153,12 @@ export function MicCheck({ onReady }: { onReady: () => void }) {
           <p className={`vmic-state${tooHot ? " hot" : heard ? " ok" : ""}`} aria-live="polite">
             {tooHot ? "Too loud: move back a little" : heard ? "Level looks usable" : "Waiting to hear you…"}
           </p>
+          {room?.noisy && (
+            <div className="vmic-noise" role="status">
+              <p><b>There's some background sound.</b> In a noisy room, pitch readings can wander. If you can, close a window, turn off a fan, or move a little closer to the mic.</p>
+              <button className="textlink" onClick={() => setRound((k) => k + 1)}>Listen to the room again</button>
+            </div>
+          )}
         </div>
       )}
       <div className="vactions">

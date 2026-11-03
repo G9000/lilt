@@ -930,7 +930,7 @@ const FREE_HINT = "Press the wave to watch your pitch, or Record to keep a take"
 const RESULTS_OPEN = "lilt.results.open";
 
 /**
- * A take's measured details, folded to one line (its middle pitch and whether that's in your range)
+ * A take's measured details, folded to one line (its middle pitch and how much of it sat in your range)
  * so the page stays short; open them for the rest. Whether you keep them open is remembered.
  */
 export function FoldedMeasures({ take, band, card, onUseRange, onMeasured }: {
@@ -938,16 +938,20 @@ export function FoldedMeasures({ take, band, card, onUseRange, onMeasured }: {
   onUseRange?: (lo: number, hi: number) => void; onMeasured?: (m: Measured) => void;
 }) {
   const [open, setOpen] = useState(() => { try { return localStorage.getItem(RESULTS_OPEN) === "1"; } catch { return false; } });
-  const [median, setMedian] = useState<number | null | undefined>(undefined);
+  const [measured, setMeasured] = useState<Measured | undefined>(undefined);
+  const median = measured?.median;
   const toggle = (on: boolean) => { setOpen(on); try { localStorage.setItem(RESULTS_OPEN, on ? "1" : "0"); } catch { /* private mode: forget on reload */ } };
   const inBand = median && band ? median >= band[0] && median <= band[1] : null;
+  // How much of the voiced take sat in your range says more than where its middle fell; the middle is
+  // the fallback when there's too little voice to count.
+  const share = median ? measured!.inRange(band) : null;
   return (
     <details className="ve-details" open={open} onToggle={(e) => { if (e.currentTarget.open !== open) toggle(e.currentTarget.open); }}>
       <summary>Pitch details
         <span className="ve-sum">{median === undefined ? "Measuring…" : median === null ? "No clear pitch"
-          : <>{Math.round(median)} Hz · {noteName(median)}{inBand !== null && (inBand ? " · in your range" : " · outside your range")}</>}</span>
+          : <>{Math.round(median)} Hz · {noteName(median)}{share !== null ? ` · ${Math.round(share * 100)}% in your range` : inBand !== null && (inBand ? " · in your range" : " · outside your range")}</>}</span>
       </summary>
-      <Measures take={take} band={band} card={card} onUseRange={onUseRange} onMeasured={(m) => { setMedian(m.median); onMeasured?.(m); }} />
+      <Measures take={take} band={band} card={card} onUseRange={onUseRange} onMeasured={(m) => { setMeasured(m); onMeasured?.(m); }} />
     </details>
   );
 }

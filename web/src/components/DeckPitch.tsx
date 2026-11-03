@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
-import { CardKind, describeResonance, describeTake, placePitch, takeStyle } from "../insight";
+import { CardKind, describeRangeShare, describeResonance, describeTake, placePitch, shareInRange, takeStyle } from "../insight";
 import { noteName } from "../pitch";
 import { contourPoints, PianoRoll, PitchPoint } from "./PianoRoll";
 import { useTakeAudio } from "./takeAudio";
 
 
-export interface Measured { median: number | null; take: Take }
+export interface Measured {
+  median: number | null; take: Take;
+  /** The share of the voiced take inside a range (0..1), asked with the range shown now, since it can change after. */
+  inRange: (band: [number, number] | null) => number | null;
+}
 
 /**
  * One observation and one thing to try, in words, above the numbers: a suggestion drawn from them, for
@@ -24,9 +28,10 @@ function InsightNote({ analysis, band, card }: { analysis: any; band: [number, n
 
 let reference: Promise<PitchReference | null> | null = null;
 const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_reference ?? null, () => null));
-// Whether you want the man/woman scale at all (Practice settings); a change there updates it straight away.
+// Whether you want the man/woman scale at all (Practice settings): off unless you turned it on, since
+// fixed population bands can hurt and your own range is what matters. A change there shows straight away.
 let wantScale: Promise<boolean> | null = null;
-const scaleWanted = () => (wantScale ??= api.profile().then((p) => p.show_pitch_scale !== false, () => true));
+const scaleWanted = () => (wantScale ??= api.profile().then((p) => p.show_pitch_scale === true, () => false));
 window.addEventListener("lilt:pitch-scale", (e) => { wantScale = Promise.resolve((e as CustomEvent<boolean>).detail); });
 
 /**
@@ -180,7 +185,8 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
         const a = t.analysis_summary ? await api.analysis(t.id).catch(() => null) : null;
         if (!live) return;
         setAnalysis(a);
-        onMeasured?.({ median: a?.measures?.f0_median_hz?.value ?? null, take: t });
+        const pts = contourPoints(a);
+        onMeasured?.({ median: a?.measures?.f0_median_hz?.value ?? null, take: t, inRange: (b) => shareInRange(pts, b) });
         return;
       }
       timer = window.setTimeout(tick, 1200);
@@ -218,6 +224,7 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
   const prevMedian = prev?.take.analysis_summary?.f0_median_hz ?? null;
 
   const shift = comparable && prevMedian ? Math.round(median! - prevMedian) : null;
+  const inRange = describeRangeShare(pts, band);
   return (
     <div className="prc-result" aria-label="What Lilt measured" role="group">
       {median === null ? (
@@ -229,6 +236,7 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
           <section className="tr-pitch" aria-label="Your pitch">
             <p className="tr-head">Your middle pitch <b>{fmtHz(median)}</b><span>{noteName(median)}</span></p>
             <PitchScale median={median} note={false} />
+            {inRange && <p className="tr-share">{inRange}</p>}
             <p className="tr-facts">
               {p10 && p90 && <span title="Where most of this take sat (10th to 90th percentile)">Most of this take <b>{Math.round(p10)}–{Math.round(p90)} Hz</b></span>}
               {voiced !== null && <span>Voice heard <b>{Math.round(voiced * 100)}%</b></span>}

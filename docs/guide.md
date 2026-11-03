@@ -89,9 +89,10 @@ agent, other devices, settings, development and troubleshooting.
      questions (how happy you are with it, whether it sounds like you, how much effort it took),
      kept with the take.
    - **The pitch scale** after each take places it against the average man's and woman's speaking
-     pitch, measured from the overlap between them. Turn it off in Practice settings if you'd rather
-     not see it. When a take sits above your saved range, Lilt suggests moving the range up instead
-     of telling you to come down.
+     pitch, measured from the overlap between them. It's off unless you turn it on in Practice
+     settings ("Pitch scale after each take"): population averages aren't targets, and your own
+     range is what matters. A profile that already had it on keeps it. When a take sits above your
+     saved range, Lilt suggests moving the range up instead of telling you to come down.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.
@@ -102,14 +103,23 @@ agent, other devices, settings, development and troubleshooting.
      pitch line over it and your comfortable range as a band, plus the current Hz and note, middle
      pitch, usual range and steadiness. Display only.
    - **Results after each take:** middle pitch, usual range (10th to 90th percentile) and how
-     much of the take was voiced, from the Praat analysis, plus the measured contour. "Last
+     much of the take was voiced, from the Praat analysis, plus the measured contour. With a
+     comfortable range saved, one sentence says how much of what you voiced sat in it ("About two
+     thirds of what you voiced sat in your range (150–200 Hz); the rest was mostly higher"), counting
+     only the moments with a pitch, and the folded summary adds it as "· 68% in your range". It's
+     left out with no range or under a second of pitch, and it's a description, never a pass or a
+     miss. "Last
      time" on the same card is overlaid only when the comparison check says the two takes are
      comparable; otherwise the reason is shown. The end of the deck lists each card's middle
      pitch and your rating. The numbers describe the recording and never set a rating.
    - The original guided session with coaching feedback is still there: **Guided session with
      feedback** on the Today widget, at `#/guided`, with **Start today** or **Quick check-in**.
 3. A session runs through these steps:
-   - microphone check, then a reference phrase (counting 1–10)
+   - microphone check, then a reference phrase (counting 1–10). The check opens with two seconds of
+     quiet to hear the room, then asks for a few words. If background sound is within about 20 dB
+     of your voice (a tenth of its loudness), close enough to throw off pitch readings, a calm note
+     suggests closing a window, turning off a fan or moving closer to the mic, with **Listen to the
+     room again**. It never stops you continuing.
    - the exercise, then listening back with a self-check question
    - the reference phrase again, then an optional short unscripted answer
    - a comfort and effort check

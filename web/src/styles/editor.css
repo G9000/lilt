@@ -534,6 +534,8 @@
 .tr-head b { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
 .tr-head span { font-size: 13px; color: var(--ink-3); }
 .tr-pitch .pscale { margin: 0; }
+/* time in your range: a plain sentence in ink, never tinted as a pass or a miss */
+.tr-share { margin: 2px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); text-wrap: pretty; }
 .tr-facts { margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13px; color: var(--ink-3); }
 .tr-facts b { margin-left: 4px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 /* the pitch line, folded: a quiet text toggle rather than the default grey details box */

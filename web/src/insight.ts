@@ -50,6 +50,44 @@ function voicedSeconds(pts: InsightInput["pts"]): number {
   return pts.filter((p) => p.hz).length * step;
 }
 
+/**
+ * The share of the voiced take (0..1) whose pitch sat inside your comfortable range, counted over
+ * the frames with a pitch only, so pauses and consonants don't count against it. None without a
+ * range, or with too little voice to say (the same second of pitch `describeTake` needs).
+ */
+export function shareInRange(pts: InsightInput["pts"], band: [number, number] | null): number | null {
+  if (!band || voicedSeconds(pts) < MIN_VOICED_S) return null;
+  const voiced = pts.filter((p) => p.hz).map((p) => p.hz as number);
+  return voiced.filter((hz) => hz >= band[0] && hz <= band[1]).length / voiced.length;
+}
+
+/** Roughly how much, in words a person would say: never a grade, so no "only" and no "well done". */
+function aboutHowMuch(share: number): string {
+  if (share >= 0.97) return "Nearly all";
+  if (share >= 0.85) return "Most";
+  if (share <= 0.03) return "Hardly any";
+  if (share <= 0.15) return "A little";
+  const words: [number, string][] = [[1 / 4, "a quarter"], [1 / 3, "a third"], [1 / 2, "half"], [2 / 3, "two thirds"], [3 / 4, "three quarters"]];
+  const [, near] = words.reduce((a, b) => (Math.abs(b[0] - share) < Math.abs(a[0] - share) ? b : a));
+  return `About ${near}`;
+}
+
+/**
+ * Time in your range, as a description: "About two thirds of what you voiced sat in your range (150–200 Hz);
+ * the rest was mostly higher." Where the rest went is said only when there's a fair amount of it.
+ */
+export function describeRangeShare(pts: InsightInput["pts"], band: [number, number] | null): string | null {
+  const share = shareInRange(pts, band);
+  if (share === null || !band) return null;
+  const range = `${Math.round(band[0])}–${Math.round(band[1])} Hz`;
+  const said = `${aboutHowMuch(share)} of what you voiced sat in your range (${range})`;
+  if (share > 0.85) return `${said}.`;
+  const voiced = pts.filter((p) => p.hz).map((p) => p.hz as number);
+  const above = voiced.filter((hz) => hz > band[1]).length, below = voiced.filter((hz) => hz < band[0]).length;
+  const rest = above >= below * 3 ? "mostly higher" : below >= above * 3 ? "mostly lower" : "a mix of higher and lower";
+  return `${said}; ${share <= 0.03 ? "it" : "the rest"} was ${rest}.`;
+}
+
 const st = (a: number, b: number) => 12 * Math.log2(a / b);
 const mid = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[s.length >> 1] : null; };
 

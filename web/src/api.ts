@@ -216,7 +216,7 @@ export interface Profile {
   room_note?: string | null;
   /** The Warm-ups text that opens every day's cards (the cool-down closes them); "" for none. */
   warmup_card?: string;
-  /** Show the average man/woman pitch scale after each take (on unless turned off). */
+  /** Show the average man/woman pitch scale after each take (off unless turned on; missing means off). */
   show_pitch_scale?: boolean;
   updated_utc: string;
 }

@@ -82,7 +82,10 @@ export function useProfileDraft() {
   const [saved, setSaved] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [err, setErr] = useState<string | null>(null);
   const dirty = useRef(false);
+  const latest = useRef<Profile | null>(null);
   useEffect(() => { void api.profile().then(setP); }, []);
+  // Leaving within the moment before a save (a tick, then straight off to practise) still keeps the change.
+  useEffect(() => () => { if (dirty.current && latest.current) void api.saveProfile(latest.current).catch(() => undefined); }, []);
   useEffect(() => {
     if (!p || !dirty.current) return;
     setSaved("saving");
@@ -91,7 +94,7 @@ export function useProfileDraft() {
     }, 600);
     return () => window.clearTimeout(id);
   }, [p]);
-  const edit = (next: Profile) => { dirty.current = true; setP(next); };
+  const edit = (next: Profile) => { dirty.current = true; latest.current = next; setP(next); };
   return { p, edit, saved, err };
 }
 
@@ -274,8 +277,8 @@ export function PracticeSettings() {
           )}
         </div>
         <div className="sx-group">
-          <Row label="Pitch scale after each take" htmlFor="pscale" help="Where a take sits between the average man's and woman's speaking pitch. Turn it off if you'd rather not see it.">
-            <input id="pscale" type="checkbox" checked={p.show_pitch_scale !== false} onChange={(e) => { edit({ ...p, show_pitch_scale: e.target.checked }); window.dispatchEvent(new CustomEvent("lilt:pitch-scale", { detail: e.target.checked })); }} />
+          <Row label="Pitch scale after each take" htmlFor="pscale" help="Off unless you turn it on. Where a take sits between the average man's and woman's speaking pitch: population averages, not targets. Your own range is what matters.">
+            <input id="pscale" type="checkbox" checked={p.show_pitch_scale === true} onChange={(e) => { edit({ ...p, show_pitch_scale: e.target.checked }); window.dispatchEvent(new CustomEvent("lilt:pitch-scale", { detail: e.target.checked })); }} />
           </Row>
         </div>
         <p className="sx-note">Optional. A pitch range that feels comfortable and sounds like you, shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like.</p>

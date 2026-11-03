@@ -120,6 +120,12 @@
 .vmic-state.ok { color: var(--ok); }
 .vmic-state.hot { color: var(--warn); }
 .vmic-select { max-width: 360px; }
+/* background sound: a calm note under a hairline in the same panel (no box in the box), never a
+   warning colour; it doesn't block Continue */
+.vmic-noise { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--hair); font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.vmic-noise p { margin: 0; }
+.vmic-noise b { font-weight: 600; color: var(--ink); }
+.vmic-noise .textlink { margin-top: 6px; font-size: 14px; }
 
 /* ---------- Today (guided session) ---------- */
 .vtoday h1 { font-size: 28px; letter-spacing: -0.035em; line-height: 1.12; margin: 0; }

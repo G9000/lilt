@@ -31,18 +31,16 @@ pub struct Profile {
     /// cool-down closing them. An empty string turns both off.
     #[serde(default = "default_warmup")]
     pub warmup_card: String,
-    /// Show where each take sits on the average man/woman pitch scale. Some people would rather not see it.
-    #[serde(default = "default_true")]
+    /// Show where each take sits on the average man/woman pitch scale. Off until the learner turns it
+    /// on: fixed population bands can hurt, and your own range is what matters. A profile without the
+    /// field reads as off; one that saved `true` keeps it.
+    #[serde(default)]
     pub show_pitch_scale: bool,
     pub updated_utc: String,
 }
 
 fn default_new_cards() -> u32 {
     2
-}
-
-fn default_true() -> bool {
-    true
 }
 
 fn default_warmup() -> String {
@@ -81,7 +79,7 @@ impl Default for Profile {
             new_cards_per_day: 2,
             room_note: None,
             warmup_card: default_warmup(),
-            show_pitch_scale: true,
+            show_pitch_scale: false,
             updated_utc: crate::util::now_utc(),
         }
     }
@@ -103,4 +101,23 @@ pub struct Plan {
     pub evidence_refs: Vec<EvidenceRef>,
     #[serde(default)]
     pub paused: bool,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn pitch_scale_is_opt_in_and_a_saved_choice_is_kept() {
+        assert!(!Profile::default().show_pitch_scale);
+        let mut saved = serde_json::to_value(Profile::default()).unwrap();
+        // An older profile that never had the setting: off.
+        saved.as_object_mut().unwrap().remove("show_pitch_scale");
+        let missing: Profile = serde_json::from_value(saved.clone()).unwrap();
+        assert!(!missing.show_pitch_scale);
+        // Someone who saved it on keeps it on.
+        saved["show_pitch_scale"] = true.into();
+        let kept: Profile = serde_json::from_value(saved).unwrap();
+        assert!(kept.show_pitch_scale);
+    }
 }
