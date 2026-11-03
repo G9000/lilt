@@ -8,6 +8,7 @@ import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
 import { SettingsAppIcon } from "./icons";
 import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
+import { Illustration } from "../components/Illustrations";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
 
@@ -193,7 +194,7 @@ function FlashcardsWidget({ texts }: { texts: Texts }) {
       <span className="fl-cards-back b2" aria-hidden="true" />
       <span className="fl-cards-back b1" aria-hidden="true" />
       <span className="fl-cards-card" aria-hidden="true">
-        <span className="fl-cards-art"><StudyBook /></span>
+        <span className="fl-cards-art"><Illustration art="book" /></span>
         <span className="fl-cards-chip">Flashcards</span>
         <span className="fl-cards-body">
           <b>{level.title}</b>
@@ -204,30 +205,6 @@ function FlashcardsWidget({ texts }: { texts: Texts }) {
     </button>
   );
 }
-
-/** An open book, a card with a tick rising out of it, and a couple of sparkles. */
-const StudyBook = () => (
-  <svg viewBox="0 0 196 96" aria-hidden="true">
-    <defs>
-      <linearGradient id="fl-book-l" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff4ea" /><stop offset="1" stopColor="#f6dccb" /></linearGradient>
-      <linearGradient id="fl-book-r" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stopColor="#fff4ea" /><stop offset="1" stopColor="#f6dccb" /></linearGradient>
-    </defs>
-    <ellipse cx="98" cy="88" rx="62" ry="6" fill="#000" opacity=".18" />
-    <path d="M40 80 L98 88 L156 80 L156 76 L98 84 L40 76Z" fill="#b8461f" />
-    <path d="M42 46 Q70 40 97 50 L97 84 Q70 74 42 78Z" fill="url(#fl-book-l)" />
-    <path d="M154 46 Q126 40 99 50 L99 84 Q126 74 154 78Z" fill="url(#fl-book-r)" />
-    <path d="M50 54 Q70 50 89 57 M50 61 Q70 57 89 64 M50 68 Q68 64 89 71" stroke="#e8b9a2" strokeWidth="1.6" strokeLinecap="round" fill="none" />
-    <path d="M107 57 Q126 50 146 54 M107 64 Q126 57 146 61" stroke="#e8b9a2" strokeWidth="1.6" strokeLinecap="round" fill="none" />
-    <path d="M128 49 L128 66 L132 62 L136 66 L136 47" fill="#e0643c" />
-    <g transform="rotate(-8 98 32)">
-      <rect x="78" y="12" width="40" height="30" rx="5" fill="#fff" />
-      <path d="M89 27l6 6 11-12" fill="none" stroke="#e0643c" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-    </g>
-    <path d="M58 22l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#fff" opacity=".85" />
-    <path d="M142 14l1.4 3.6 3.6 1.4-3.6 1.4-1.4 3.6-1.4-3.6-3.6-1.4 3.6-1.4z" fill="#fff" opacity=".7" />
-    <circle cx="150" cy="34" r="2" fill="#fff" opacity=".6" />
-  </svg>
-);
 
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();

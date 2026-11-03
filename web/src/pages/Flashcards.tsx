@@ -10,8 +10,7 @@ import { Markdown } from "../components/Markdown";
 import { byPart, chapterSteps, isCare, isLong } from "../chapters";
 import { DEFAULT_COURSE, textId } from "../courses";
 import { chapterCards, EMPTY, Flashcard, loadRuns, pile, progress, Run, saveRun, swipe } from "../flashcards";
-import { PICTURES } from "../desk/pictures";
-import { currentLight } from "../room/scene";
+import { Art, Illustration, wash } from "../components/Illustrations";
 import { ChapterVideo, Dock, FoldedMeasures, ListenBack } from "./Voice";
 
 /**
@@ -24,7 +23,6 @@ import { ChapterVideo, Dock, FoldedMeasures, ListenBack } from "./Voice";
 
 const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z";
 const HURT = "It hurts or feels strained";
-type Pic = (typeof PICTURES)[number];
 
 export function FlashcardsPage({ chapter }: { chapter?: string }) {
   const [texts, setTexts] = useState<Texts | null>(null);
@@ -87,7 +85,6 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
     return () => window.removeEventListener("keydown", onKey);
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pic = (c: Flashcard) => PICTURES[(texts.levels.indexOf(level) * 3 + cards.indexOf(c)) % PICTURES.length];
   const full = `#/studio/${level.id}${top?.kind === "text" ? `/${top.item.id}` : ""}`;
 
   return (
@@ -109,13 +106,13 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
 
       <main className="fc-stage">
         {hurt ? (
-          <EndCard pic={PICTURES[3]} chip="Resting" title="Let's stop here"
+          <EndCard art="tea" chip="Resting" title="Let's stop here"
             body="Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.">
             <button className="fc-primary" onClick={() => go("/")}>Back to the room</button>
             <button className="fc-ghost" onClick={() => setHurt(false)}>I feel fine, carry on</button>
           </EndCard>
         ) : !top ? (
-          <EndCard pic={PICTURES[5]} chip="Chapter done" title={`That's ${level.title}`}
+          <EndCard art="medal" chip="Chapter done" title={`That's ${level.title}`}
             body={<>Every card is done. Your takes are in <a href="#/history">Recordings</a>; go through it again any time.</>}>
             {next && <button className="fc-primary" onClick={() => go(`/flashcards/${next.id}`)}>Next: {next.title}</button>}
             <button className={next ? "fc-ghost" : "fc-primary"} onClick={() => { setUndo(null); setRun(EMPTY); }}>Go through it again</button>
@@ -127,7 +124,7 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
               <AnimatePresence initial={false} custom={flung}>
                 {left.slice(0, 3).map((c, d) => d === 0
                   ? <TopCard key={c.id} dir={flung} locked={locked} nudge={nudge} recording={recording} onSwipe={move} label={cardTitle(c, level)}>
-                      <CardFace card={c} level={level} pic={pic(c)} tips={tips} take={takes[c.id] ?? null} band={band} onHurt={() => setHurt(true)} />
+                      <CardFace card={c} level={level} tips={tips} take={takes[c.id] ?? null} band={band} onHurt={() => setHurt(true)} />
                     </TopCard>
                   : <motion.article key={c.id} className="fc-card under" aria-hidden="true"
                       initial={false} animate={{ y: -d * 16, scale: 1 - d * 0.05, rotate: d % 2 ? -1.2 : 1 }} exit={{ opacity: 0 }}
@@ -264,11 +261,15 @@ function TopCard({ dir, locked, nudge, recording, onSwipe, label, children }: {
   );
 }
 
-/** The picture at the top of a card, fading into it, with its chip. */
-function CardArt({ pic, chip, care }: { pic: Pic; chip: string; care?: boolean }) {
+/** Which drawing a card has. */
+const artFor = (c: Flashcard): Art => c.kind === "lede" ? "book" : c.kind === "step" ? (c.care ? "care" : "bulb") : c.kind === "video" ? "video" : "mic";
+
+/** A drawing at the top of a card, on a warm wash that melts into the card, with its chip. */
+function CardArt({ art, chip, care }: { art: Art; chip: string; care?: boolean }) {
   return (
     <div className="fc-head">
-      <div className="fc-art" style={{ backgroundImage: `url(${pic.url(currentLight())})`, ...pic.card }} />
+      <div className="fc-art" style={{ background: wash(art) }} />
+      <Illustration art={art} className="fc-illo" />
       <span className={`fc-chip${care ? " care" : ""}`}>
         {care && <svg viewBox="0 0 16 16" aria-hidden="true"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>}
         {chip}
@@ -277,14 +278,14 @@ function CardArt({ pic, chip, care }: { pic: Pic; chip: string; care?: boolean }
   );
 }
 
-function CardFace({ card, level, pic, tips, take, band, onHurt }: {
-  card: Flashcard; level: TextLevel; pic: Pic; tips: { label: string; body: string }[];
+function CardFace({ card, level, tips, take, band, onHurt }: {
+  card: Flashcard; level: TextLevel; tips: { label: string; body: string }[];
   take: Take | null; band: [number, number] | null; onHurt: () => void;
 }) {
   const [showTips, setShowTips] = useState(false);
   return (
     <>
-      <CardArt pic={pic} chip={kicker(card, !!take)} care={card.kind === "step" && card.care} />
+      <CardArt art={artFor(card)} chip={kicker(card, !!take)} care={card.kind === "step" && card.care} />
       <div className={`fc-body ${card.kind}`}>
         {card.kind === "lede" && <><h2 className="fc-title">{level.title}</h2><Markdown src={card.markdown} className="fc-md" headingOffset={2} /></>}
         {card.kind === "step" && <><h2 className="fc-title">{card.label}</h2><Markdown src={card.body} className="fc-md" headingOffset={2} /></>}
@@ -323,10 +324,10 @@ function CardFace({ card, level, pic, tips, take, band, onHurt }: {
   );
 }
 
-function EndCard({ pic, chip, title, body, children }: { pic: Pic; chip: string; title: string; body: ReactNode; children: ReactNode }) {
+function EndCard({ art, chip, title, body, children }: { art: Art; chip: string; title: string; body: ReactNode; children: ReactNode }) {
   return (
     <motion.article className="fc-card end" initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 300, damping: 28 }}>
-      <CardArt pic={pic} chip={chip} />
+      <CardArt art={art} chip={chip} />
       <div className="fc-body">
         <h2 className="fc-title">{title}</h2>
         <p className="fc-md">{body}</p>
