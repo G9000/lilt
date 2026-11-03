@@ -9,7 +9,7 @@ import { InboxButton, InboxState } from "./Inbox";
 import { PICTURES } from "./pictures";
 import { pinnedPicture, pinPicture, shufflePicture, usePhotos, visiblePictures } from "./photos";
 import { SettingsButton } from "./SettingsSheet";
-import { CoursesIcon, FlashcardsIcon, LeaveIcon, PhotosIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon } from "./icons";
+import { CoursesIcon, FlashcardsIcon, LeaveIcon, PhotosIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon, YarnIcon } from "./icons";
 
 /**
  * The small Mac inside the room's monitor: wallpaper, menu bar, widgets, one app window, a dock.
@@ -26,6 +26,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   texts: { title: "Practice texts", width: 760 },
   flashcards: { title: "Flashcards", width: 1120, full: true },
   photos: { title: "Photos", width: 960 },
+  yarn: { title: "Yarn", width: 1120, full: true },
   library: { title: "Exercises", width: 760 },
   progress: { title: "Progress", width: 840, full: true },
   history: { title: "Recordings", width: 780, full: true },
@@ -111,6 +112,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         {dockApp("/deck", "Today", <TodayIcon date={now} />, !page || section === "deck" || section === "guided" || section === "practice" || section === "review")}
         {dockApp("/studio", "Practice", <StudioIcon />, section === "studio" || section === "texts" || section === "library")}
         {dockApp("/flashcards", "Flashcards", <FlashcardsIcon />, section === "flashcards")}
+        {dockApp("/yarn", "Yarn", <YarnIcon />, section === "yarn")}
         {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
         {dockApp("/photos", "Photos", <PhotosIcon />, section === "photos")}

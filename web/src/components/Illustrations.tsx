@@ -5,7 +5,7 @@
  * the cards don't repeat the room's pictures. All share one 196×96 frame, sitting on its bottom edge.
  */
 
-export type Art = "book" | "bulb" | "care" | "video" | "mic" | "medal" | "tea";
+export type Art = "book" | "bulb" | "care" | "video" | "mic" | "medal" | "tea" | "yarn";
 
 /** Each drawing's wash, light at the top to deep at the bottom. */
 export const WASH: Record<Art, [string, string]> = {
@@ -16,6 +16,7 @@ export const WASH: Record<Art, [string, string]> = {
   mic: ["#ff9f9a", "#d8424f"],
   medal: ["#9fe6bf", "#2f9e6e"],
   tea: ["#bcc8ff", "#6474d6"],
+  yarn: ["#ffc9a0", "#b8577a"],
 };
 
 const Sparkle = ({ x, y, r = 5, o = 0.85 }: { x: number; y: number; r?: number; o?: number }) => (
@@ -93,6 +94,23 @@ const DRAW: Record<Art, () => JSX.Element> = {
       <path d="M130 42h6a10 10 0 010 20h-8" fill="none" stroke={PAPER} strokeWidth="5" />
       <path d="M70 46h56" stroke="#c9d1ff" strokeWidth="3" strokeLinecap="round" />
       <ellipse cx="98" cy="84" rx="44" ry="4" fill={PAPER_2} />
+    </>
+  ),
+  // The voice game: a ball of yarn up in the air, its thread trailing back in a wave (the pitch
+  // line it drew), a loop of yarn ahead of it, and the cat peeking up from below.
+  yarn: () => (
+    <>
+      <path d="M22 70 C40 70 46 52 62 50 S84 62 96 50" fill="none" stroke={PAPER} strokeWidth="2.6" strokeLinecap="round" opacity=".9" />
+      <ellipse cx="150" cy="40" rx="9" ry="19" fill="none" stroke="#ffd36e" strokeWidth="4.5" />
+      <path d="M150 21 L150 4" stroke={PAPER} strokeWidth="1.4" opacity=".7" />
+      <circle cx="110" cy="44" r="19" fill="#e0643c" />
+      <path d="M95 36c8-6 22-7 31 2M93 46c10-8 26-8 34 2M97 56c8-6 20-6 27 0" fill="none" stroke="#ffb08f" strokeWidth="2" strokeLinecap="round" />
+      <path d="M104 27c-6 8-7 22 0 33" fill="none" stroke="#b8461f" strokeWidth="1.8" strokeLinecap="round" opacity=".55" />
+      <path d="M58 96 L62 76 L71 84 Q80 80 89 84 L98 76 L102 96Z" fill="#2c2a33" />
+      <path d="M64 80 L67 87 L62 88Z M96 80 L93 87 L98 88Z" fill="#f3b2c2" />
+      <circle cx="73" cy="90" r="2.3" fill={PAPER} /><circle cx="87" cy="90" r="2.3" fill={PAPER} />
+      <circle cx="73.6" cy="89.4" r="1" fill="#2c2a33" /><circle cx="87.6" cy="89.4" r="1" fill="#2c2a33" />
+      <Sparkle x={170} y={66} r={4} o={0.75} /><Sparkle x={130} y={12} r={3.5} o={0.7} /><Sparkle x={34} y={40} />
     </>
   ),
 };

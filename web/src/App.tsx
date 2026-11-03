@@ -19,6 +19,7 @@ import { VoicePage } from "./pages/Voice";
 import { TextsPage } from "./pages/Texts";
 import { FlashcardsPage } from "./pages/Flashcards";
 import { PhotosPage } from "./pages/Photos";
+import { YarnPage } from "./pages/Yarn";
 
 export function useRoute(): [string, URLSearchParams] {
   const read = () => {
@@ -68,7 +69,7 @@ export function applyTheme(t: Theme) {
 // Before the first render, so a dark computer never flashes the light theme.
 applyTheme(resolveTheme(readThemeMode()));
 
-const SECTIONS = new Set(["deck", "flashcards", "photos", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses"]);
+const SECTIONS = new Set(["deck", "flashcards", "photos", "yarn", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses"]);
 
 export function App() {
   const [path, params] = useRoute();
@@ -138,6 +139,7 @@ export function App() {
     case "studio": page = seg[1] === "start" ? <VoicePage doc="start" /> : seg[1] === "updates" ? <VoicePage doc="updates" /> : seg[1] === "mixtape" ? <VoicePage doc="mixtape" /> : seg[1] === "settings" ? <VoicePage doc="settings" /> : seg[1] === "free" ? <VoicePage doc="free" /> : seg[1] ? <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} /> : <VoicePage doc="home" />; break;
     case "flashcards": page = <FlashcardsPage chapter={seg[1]} />; break;
     case "photos": page = <PhotosPage />; break;
+    case "yarn": page = <YarnPage />; break;
     case "texts": page = <TextsPage />; break;
     case "progress": page = <VoicePage doc="progress" />; break;
     case "history": page = <VoicePage doc="recordings" text={params.get("text")} />; break;

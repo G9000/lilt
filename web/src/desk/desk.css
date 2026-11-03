@@ -347,6 +347,19 @@
 .fl-cards:focus-visible { outline: none; }
 .fl-cards:focus-visible .fl-cards-card { box-shadow: 0 0 0 2px #fff, 0 20px 34px -16px rgba(0, 0, 0, 0.85); }
 @media (prefers-reduced-motion: reduce) { .fl-cards-card, .fl-cards-back { transition: none; } }
+/* Yarn: one small dark card, tilted the other way, the game's drawing on its dusk wash */
+.fl-yarn { position: relative; pointer-events: auto; width: 168px; height: 132px; min-height: 0; padding: 0; border: 0; border-radius: 22px; overflow: hidden; rotate: 2.5deg; color: #fff; text-align: left; cursor: pointer;
+  background: #1c1c21; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 20px 34px -16px rgba(0, 0, 0, 0.85);
+  transition: rotate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.fl-yarn-art { position: absolute; inset: 0 0 30%; display: grid; place-items: end center; background: radial-gradient(120% 95% at 50% 0%, #ffc9a0 0%, #b8577a 58%, #1c1c21 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent); mask-image: linear-gradient(to bottom, #000 55%, transparent); }
+.fl-yarn-art svg { width: 100%; height: 100%; }
+.fl-yarn-body { position: absolute; inset: auto 0 0; display: grid; gap: 1px; padding: 0 14px 12px; }
+.fl-yarn-body b { font-size: 15px; font-weight: 650; letter-spacing: -0.015em; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5); }
+.fl-yarn-body small { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.62); }
+@media (hover: hover) and (pointer: fine) { .fl-yarn:hover { rotate: 0deg; translate: 0 -3px; } }
+.fl-yarn:focus-visible { outline: none; box-shadow: 0 0 0 2px #fff, 0 20px 34px -16px rgba(0, 0, 0, 0.85); }
+@media (prefers-reduced-motion: reduce) { .fl-yarn { transition: none; } }
 @media (max-width: 760px) { .fl { display: none; } }
 @media (prefers-reduced-motion: reduce) { .fl-bob { animation: none; } .fl-sticky { transition: none; } }
 .ds-reset { width: auto !important; padding: 0 8px !important; }

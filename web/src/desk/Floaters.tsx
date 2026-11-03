@@ -18,7 +18,8 @@ import { CURRENT, shortVersion } from "../release";
  * days you practised this week) by the potted plant, Settings (theme, AI connection and
  * everything else, over the room) on the window beside the clock, and What's new (this version and
  * what came with it, from release.ts) up by the hanging lights, and Flashcards (the chapter you're
- * going through, a card at a time) beside the plant. Drag them anywhere; each remembers its
+ * going through, a card at a time) beside the plant, and Yarn (the voice game) on the desk under the
+ * screen. Drag them anywhere; each remembers its
  * spot in the painting (in this browser), so it rides the room's camera. One near the edge slides
  * inward to stay on screen; one left at home that would cover today's cards steps out of the way.
  */
@@ -26,7 +27,7 @@ import { CURRENT, shortVersion } from "../release";
 type Spot = { x: number; y: number };
 // Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
 // 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 } };
+const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -206,6 +207,22 @@ function FlashcardsWidget({ texts }: { texts: Texts }) {
   );
 }
 
+/**
+ * Yarn, in the room: a small card with the voice game's drawing (the yarn, its wavy thread, the
+ * cat peeking up). A click opens the game.
+ */
+function YarnWidget() {
+  return (
+    <button className="fl-yarn" onClick={() => go("/yarn")} aria-label="Ball of yarn: a voice game. Hum or speak to steer the yarn">
+      <span className="fl-yarn-art" aria-hidden="true"><Illustration art="yarn" /></span>
+      <span className="fl-yarn-body">
+        <b>Ball of yarn</b>
+        <small>Hum or speak to play</small>
+      </span>
+    </button>
+  );
+}
+
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const r = useRadio();
   // The radio plays Lilt's own lo-fi, or your Spotify; the choice is kept in this browser.
@@ -310,6 +327,9 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
           <FlashcardsWidget texts={texts} />
         </Widget>
       )}
+      <Widget id="yarn" delay={-5} label="Ball of yarn">
+        <YarnWidget />
+      </Widget>
       {note !== null && (
         <Widget id="note" delay={-2.6} label="Note" still={writing}>
           <Note text={note} onSave={(t) => void saveNote(t)} onEditing={setWriting} />

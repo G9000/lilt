@@ -47,7 +47,7 @@ agent, other devices, settings, development and troubleshooting.
      things to read, and the recorder docked at the bottom. Click any card further down to do it next.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Flashcards**,
-   **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
+   **Yarn** (a voice game), **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
    (or the door in the dock) walks you back out to the room. Until you've recorded your "before",
    sitting down opens Start here instead of Today.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
@@ -164,6 +164,21 @@ agent, other devices, settings, development and troubleshooting.
      there. Takes are saved like any chapter take, so they show in Recordings and the chapter's
      progress. **Full chapter** opens it in Practice at that text; <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
      is rated or scheduled, and where you are in each chapter is kept in this browser.
+   - **Yarn** (`#/yarn`, in the dock, or the Ball of yarn card on the desk in the room) is a calm
+     voice game: your pitch lifts a ball of yarn across an evening room while the cat pads after
+     it, and loops of yarn drift by to thread it through if you like. Higher floats it up, lower
+     lets it down, and the thread it leaves behind is your pitch line. Play by **humming or a lip
+     trill** (easy on the throat, good breath practice; the how-to is one line on screen) or by
+     **speaking** short everyday sentences from the course's phrases chapters (the yarn follows
+     the tune and waits between words). It plays in your **comfortable range** (the ends are
+     marked with their notes, with room to spare either side); with no range yet, two easy hums,
+     a low one and a high one, find one, and you can save it as your comfortable range or keep it
+     just for the game. **Hear low and high** plays both ends, and each loop's note can play as
+     it comes, while you're quiet. There's no score, timer or leaderboard: when you stop it says
+     how long you kept the yarn afloat and where in your range your voice mostly was. Every two
+     minutes it pauses for a breath; **It hurts or feels strained** stops it with Lilt's rest
+     advice. It shows a hint when the room sounds noisy. Nothing is recorded or saved, and the
+     lo-fi radio steps aside while you play. <kbd>Esc</kbd> closes it.
 8. **Texts** has 131 texts across 16 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, and real life. Each chapter explains the technique in a few numbered steps (how to
@@ -427,6 +442,8 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # th
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flashcards.mjs   # Flashcards: widget, swipes, a text locked until recorded
 cd web && node --test src/flashcards.test.ts   # a chapter dealt as cards, and a run through them
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/photos.mjs   # Photos: add, show on the clock, delete, hide and restore
+cd web && node --test src/yarn.test.ts   # Yarn: pitch to height, smoothing, loops, breaks, the words at the end
+cd web && LILT_URL=http://127.0.0.1:7979 node e2e/yarn.mjs /tmp/shots   # Yarn: widget, dock, calibration, the yarn follows the voice, speak mode, hurt
 ```
 
 ## Troubleshooting
