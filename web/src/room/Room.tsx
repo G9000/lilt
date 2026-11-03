@@ -196,6 +196,22 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
     e.currentTarget.style.cursor = catHit(x, y) ? "pointer" : "";
   };
 
+  // Buy me a coffee: hearts float up out of the cup and the cat says thanks, then the page opens in
+  // a new tab, a moment later so you see it (⌘/Ctrl-click and middle-click open it straight away).
+  const [sipped, setSipped] = useState(false);
+  const onCoffee = (e: React.MouseEvent) => {
+    if (!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
+      e.preventDefault();
+      window.setTimeout(() => window.open(COFFEE_URL, "_blank", "noopener,noreferrer"), reduced ? 300 : 900);
+    }
+    const f = frame.current;
+    if (!reduced) for (let i = 0; i < 4; i++) f.hearts.push({ x: COFFEE.x + 14 + i * 9, y: COFFEE.y + 20, born: f.t + i * 0.15, drift: Math.random() - 0.5 });
+    setSipped(true);
+    window.setTimeout(() => setSipped(false), 2400);
+    setAside("mrrp… thank you!");
+    window.setTimeout(() => setAside((a) => (a === "mrrp… thank you!" ? null : a)), 2400);
+  };
+
   const say = aside ?? state.say;
   // Under the monitor, so it never covers the clock in the window above it.
   const peekTop = Math.max(...MAIN_SCREEN.map((p) => p[1])) + 8;
@@ -223,7 +239,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
           <b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5v10l3-3 2.5 4 2-1.2-2.5-4H13Z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg><span className="room-click">Click the screen</span><span className="room-tap">Tap the screen</span></b>
           <span>{cards === null ? "Your desk is ready" : cards === 0 ? "All done · your desk is still open" : `${cards} card${cards === 1 ? "" : "s"} today`}</span>
         </div>
-        <a className="room-coffee" href={COFFEE_URL} target="_blank" rel="noopener noreferrer" tabIndex={inside ? -1 : 0}
+        <a className={`room-coffee${sipped ? " sipped" : ""}`} href={COFFEE_URL} onClick={onCoffee} target="_blank" rel="noopener noreferrer" tabIndex={inside ? -1 : 0}
           style={{ left: COFFEE.x, top: COFFEE.y, width: COFFEE.w, height: COFFEE.h }} onPointerDown={(e) => e.stopPropagation()}>
           <span>Buy me a coffee</span>
         </a>

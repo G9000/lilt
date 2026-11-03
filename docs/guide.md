@@ -71,7 +71,9 @@ agent, other devices, settings, development and troubleshooting.
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live
      pitch), so music never reaches a take or a pitch reading, then picks up again.
    - **The iced coffee** on the desk opens Buy Me a Coffee (`COFFEE_URL` in
-     `web/src/room/scene.ts`) in a new tab; pointing at it says "Buy me a coffee".
+     `web/src/room/scene.ts`). Pointing at it lights the cup with a warm glow and says "Buy me a
+     coffee"; clicking flashes it, sends hearts up out of the cup and has the cat say thank you,
+     then opens the page in a new tab a moment later (⌘/Ctrl-click opens it at once).
    - The artwork lives in `web/public/room/` (WebP files: four room lights, and the cat's body,
      tail and ear in each light). Swap them for other art of the same size, then re-measure the
      screen corners and the coffee's box in `web/src/room/scene.ts`. The look is documented in `DESIGN.md`.
