@@ -19,6 +19,8 @@ export const CAT_SPOT = { x: 345, y: 735 };
 export const COFFEE = { x: 1150, y: 455, w: 56, h: 120 };
 export const COFFEE_URL = "https://buymeacoffee.com/animaos";
 
+/** The lamps' painted glow; the lamp slot (room/items.ts) can change it. */
+export const LAMP_GLOW = "252,168,71";
 export const roomUrl = (l: Light) => `room/room-${l}.webp`;
 const catUrl = (part: string, l: Light) => `room/cat-${part}-${l}.webp`;
 
@@ -73,10 +75,11 @@ export function innerBox(q: Quad) {
 
 /* ---------- the cat ---------- */
 
-type CatPart = "body" | "tail" | "ear";
-const catImages: Record<CatPart, Record<Light, HTMLImageElement>> | null = typeof Image === "undefined" ? null : (() => {
+export type CatPart = "body" | "tail" | "ear";
+export const CAT_PARTS: CatPart[] = ["body", "tail", "ear"];
+export const catImages: Record<CatPart, Record<Light, HTMLImageElement>> | null = typeof Image === "undefined" ? null : (() => {
   const o = {} as Record<CatPart, Record<Light, HTMLImageElement>>;
-  for (const p of ["body", "tail", "ear"] as CatPart[]) {
+  for (const p of CAT_PARTS) {
     o[p] = {} as Record<Light, HTMLImageElement>;
     for (const l of LIGHTS) { const im = new Image(); im.src = catUrl(p, l); o[p][l] = im; }
   }
@@ -114,6 +117,12 @@ export interface Frame {
   hearts: { x: number; y: number; born: number; drift: number }[];
   /** 0–1: the string lights and the warm lamp, on once today's cards are done. */
   lights: number;
+  /** Parts of the painting you recoloured (room/items.ts), one picture per light, at x, y. */
+  patches: { x: number; y: number; img: Record<Light, CanvasImageSource> }[];
+  /** The lamps' glow colour, "r,g,b". */
+  lamp: string;
+  /** The cat's sprites recoloured to match a recoloured bed (their soft edges carry the blanket's colour). */
+  catArt?: Record<CatPart, Record<Light, CanvasImageSource>>;
 }
 
 function quadPath(g: CanvasRenderingContext2D, q: readonly (readonly [number, number])[]) {
@@ -161,7 +170,7 @@ function glow(g: CanvasRenderingContext2D, x: number, y: number, r: number, rgb:
   g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
 }
 
-function atmosphere(g: CanvasRenderingContext2D, t: number, w: Weights) {
+function atmosphere(g: CanvasRenderingContext2D, t: number, w: Weights, lamp: string) {
   const daylight = clamp(w.day + w.morning * 0.8 + w.sunset * 0.75), night = w.night;
   clouds(g, t, daylight);
   g.save(); g.globalCompositeOperation = "screen";
@@ -189,8 +198,8 @@ function atmosphere(g: CanvasRenderingContext2D, t: number, w: Weights) {
   glow(g, 1002, 400, 230, "244,170,215", lit * 0.2 * (1 + 0.06 * Math.sin(t * 1.2)));
   glow(g, 1293, 432, 160, "150,175,255", lit * 0.18 * (1 + 0.06 * Math.sin(t * 1.1 + 2)));
   glow(g, 1000, 530, 260, "255,160,210", night * 0.1);
-  glow(g, 172, 268, 200, "252,168,71", night * 0.3 * (1 + 0.04 * Math.sin(t * 3.1)));
-  glow(g, 420, 400, 120, "252,168,71", night * 0.22 * (1 + 0.04 * Math.sin(t * 2.7 + 1)));
+  glow(g, 172, 268, 200, lamp, night * 0.3 * (1 + 0.04 * Math.sin(t * 3.1)));
+  glow(g, 420, 400, 120, lamp, night * 0.22 * (1 + 0.04 * Math.sin(t * 2.7 + 1)));
   g.restore();
 }
 
@@ -208,7 +217,7 @@ const BULBS = (() => {
   return pts;
 })();
 
-function lightsOn(g: CanvasRenderingContext2D, t: number, on: number) {
+function lightsOn(g: CanvasRenderingContext2D, t: number, on: number, lamp: string) {
   // the wire
   g.save(); g.globalAlpha = 0.7; g.strokeStyle = "#3a2f2a"; g.lineWidth = 2;
   g.beginPath(); g.moveTo(STRAND[0][0], STRAND[0][1]);
@@ -217,7 +226,7 @@ function lightsOn(g: CanvasRenderingContext2D, t: number, on: number) {
   // the lamp warms the desk
   if (on > 0.01) {
     g.save(); g.globalCompositeOperation = "screen";
-    glow(g, 172, 268, 280, "255,190,110", 0.5 * on);
+    glow(g, 172, 268, 280, lamp === LAMP_GLOW ? "255,190,110" : lamp, 0.5 * on);
     g.save(); g.translate(760, 540); g.scale(1, 0.34); glow(g, 0, 0, 380, "255,200,130", 0.3 * on); g.restore();
     g.restore();
   }
@@ -247,19 +256,20 @@ function plants(g: CanvasRenderingContext2D, t: number, w: Weights) {
   g.restore();
 }
 
-function catPart(g: CanvasRenderingContext2D, part: CatPart, w: Weights, move: () => void) {
+function catPart(g: CanvasRenderingContext2D, part: CatPart, f: Frame, move: () => void) {
   if (!catImages) return;
+  const w = f.w;
   g.save(); move();
   for (const l of LIGHTS) {
-    const im = catImages[part][l];
+    const im = catImages[part][l], art = f.catArt?.[part][l];
     if (!im.complete || !im.naturalWidth || w[l] < 0.005) continue;
-    g.globalAlpha = w[l]; g.drawImage(im, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);
+    g.globalAlpha = w[l]; g.drawImage(art ?? im, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);
   }
   g.restore();
 }
 
 function cat(g: CanvasRenderingContext2D, f: Frame) {
-  const { t, w } = f;
+  const { t } = f;
   const breathe = Math.sin(t * (f.cat === "sleep" ? 1.66 : 2.1));
   // Listening: the ear keeps turning and the tail is livelier. Happy: a slow, wide swish.
   const since = t - f.poked, poke = Math.max(0, 1 - Math.abs(since) / 1.5);
@@ -267,9 +277,9 @@ function cat(g: CanvasRenderingContext2D, f: Frame) {
   const tail = 0.014 * Math.sin(t * 0.46) + 0.062 * Math.max(0, Math.sin(t * 0.31 + 2)) ** 9 + Math.sin(since * 13) * 0.13 * poke + lively * 0.05 * Math.sin(t * 1.4);
   const ear = (Math.max(0, Math.sin(t * (f.cat === "listen" ? 1.9 : 0.62) + 2)) ** 20) * 0.12 + Math.max(0, 1 - Math.abs(since) / 0.77) * 0.15 * Math.sin(since * 20);
   // The belly rises gently; scaling is anchored at the lower edge so the feet stay on the blanket.
-  catPart(g, "body", w, () => { g.translate(243, 820); g.scale(1 + 0.002 * breathe, 1 + 0.012 * breathe); g.translate(-243, -820); });
-  catPart(g, "tail", w, () => { g.translate(124, 801); g.rotate(tail); g.translate(-124, -801); });
-  catPart(g, "ear", w, () => { g.translate(389, 739); g.rotate(ear); g.translate(-389, -739); });
+  catPart(g, "body", f, () => { g.translate(243, 820); g.scale(1 + 0.002 * breathe, 1 + 0.012 * breathe); g.translate(-243, -820); });
+  catPart(g, "tail", f, () => { g.translate(124, 801); g.rotate(tail); g.translate(-124, -801); });
+  catPart(g, "ear", f, () => { g.translate(389, 739); g.rotate(ear); g.translate(-389, -739); });
 }
 
 function hearts(g: CanvasRenderingContext2D, f: Frame) {
@@ -285,13 +295,26 @@ function hearts(g: CanvasRenderingContext2D, f: Frame) {
   }
 }
 
+/** Recoloured parts, stacked by light exactly as the paintings are, so they fade with them. */
+function patches(g: CanvasRenderingContext2D, f: Frame) {
+  if (!f.patches.length) return;
+  const o = layerOpacity(f.w);
+  g.save();
+  for (const p of f.patches) for (const l of LIGHTS) {
+    if (o[l] < 0.005) continue;
+    g.globalAlpha = o[l]; g.drawImage(p.img[l], p.x, p.y);
+  }
+  g.restore();
+}
+
 /** Everything drawn over the painting for one frame. */
 export function paint(g: CanvasRenderingContext2D, f: Frame) {
   g.clearRect(0, 0, W, H);
-  atmosphere(g, f.t, f.w);
+  patches(g, f);
+  atmosphere(g, f.t, f.w, f.lamp);
   birds(g, f.t, f.w);
   plants(g, f.t, f.w);
-  lightsOn(g, f.t, f.lights);
+  lightsOn(g, f.t, f.lights, f.lamp);
   cat(g, f);
   hearts(g, f);
 }

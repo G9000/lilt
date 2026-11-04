@@ -17,13 +17,16 @@
 .room-hit:hover, .room-hit:focus-visible { background: rgba(200, 230, 255, 0.05); outline: none; }
 .room-hit:active { transform-origin: 0 0; }
 .room.inside .room-hit { animation: none; opacity: 0; pointer-events: none; }
-/* the pictures you chose for the screens, warped onto them; arranging outlines each screen, and a click shows the next */
+/* the pictures you chose for the screens, warped onto them; arranging outlines each changeable thing, and a click shows the next */
 .room-pic { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: center / cover no-repeat; pointer-events: none; animation: room-pic-in 0.25s ease-out; }
 @keyframes room-pic-in { from { opacity: 0; } }
-.room-slot { position: absolute; left: 0; top: 0; width: 100px; height: 100px; transform-origin: 0 0; padding: 0; min-height: 0; border: 0; border-radius: 0; cursor: pointer;
-  background: rgba(255, 255, 255, 0.04); box-shadow: inset 0 0 0 0.7px rgba(255, 255, 255, 0.85); transition: background 0.15s ease-out; }
-.room-slot:hover, .room-slot:focus-visible { background: rgba(255, 255, 255, 0.12); outline: none; }
-.room-slot:active { transform-origin: 0 0; }
+.room-slot { position: absolute; padding: 0; min-height: 0; border: 0; border-radius: 0; cursor: pointer; background: transparent; box-shadow: none; }
+.room-slot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+/* the stroke is centred on the edge and the clip keeps the inner half: a thin line inside the outline */
+.room-slot path { fill: rgba(255, 255, 255, 0.04); stroke: rgba(255, 255, 255, 0.9); stroke-width: 3.2; stroke-linejoin: round; transition: fill 0.15s ease-out; }
+.room-slot:hover path, .room-slot:focus-visible path { fill: rgba(255, 255, 255, 0.14); }
+.room-slot:focus-visible { outline: none; }
+.room-slot:active { transform: none; }
 .room.arranging .room-peek, .room.arranging .room-screen-light { opacity: 0; }
 .room.arranging .room-hit { pointer-events: none; }
 .room.arranging .fl { opacity: 0.35; pointer-events: none; transition: opacity 0.2s ease-out; }

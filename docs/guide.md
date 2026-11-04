@@ -79,13 +79,22 @@ its own window; quitting stops the server.
    - **Lights on when you're done:** once today's cards are finished, the string lights along the
      beam light up one by one and the desk lamp glows warmer. It's a quiet "nice work", never a score.
    - **Arrange the room:** Settings › Appearance › **Arrange the room** takes you out to the room
-     and outlines the two screens on the desk. Click one to show the next picture (cherry blossom or
-     the sleeping cat as painted, then galaxies, cats and plants from `web/public/pictures`), and
-     **Done** (or <kbd>Esc</kbd>) when you like it. The picture is warped onto the painted screen and
-     dims a little at sunset and night. Your choice is saved on the server (`room_items` in the
-     profile), so the Mac app and the browser agree. The slots and their pictures are listed in
-     `web/src/room/items.ts`; more of the room (the lamp, plants, the bed) can join as painted
-     cut-outs in each light, the way the cat is drawn.
+     and outlines what you can change. Click one to show its next look, and **Done** (or
+     <kbd>Esc</kbd>) when you like it:
+     - the **two screens** on the desk: cherry blossom or the sleeping cat as painted, then galaxies,
+       cats and plants from `web/public/pictures`, warped onto the screen and a little dimmer at
+       sunset and night;
+     - the **lamps** (the globe on the shelf and the small one behind the plant): warm, rose, lilac
+       or moonlight, and their glow after dark (and when today's cards are done) takes the colour;
+     - the **plant** by the drawers: green, autumn, red or silver leaves;
+     - the **bed cover**: pink, blue, sage or cream. The cat's sprites take the same colour at their
+       edges, so no pink shows round the cat.
+     The lamps, plant and bed are the painting itself recoloured: inside each one's outline, only
+     the colours its key picks out change (so the pillow and the cat keep theirs), in each of the
+     four lights, softened at the edges. A different lamp or a new plant would need painted art; it
+     can join as cut-outs in each light, the way the cat is drawn. Your choices are saved on the
+     server (`room_items` in the profile), so the Mac app and the browser agree. The slots, their
+     outlines, colour keys and looks are in `web/src/room/items.ts`.
    - **Menu bar and notifications:** the room and the desk share a macOS-style menu bar (Lilt, what's
      playing, notifications, date and time). The envelope opens a Notification Center from the right
      with a greeting for the time of day. It only holds real things: your feedback is ready, a new

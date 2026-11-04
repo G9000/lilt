@@ -1,9 +1,9 @@
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
-  CAT_SPOT, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
+  CAT_PARTS, CAT_SPOT, catHit, catImages, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, LAMP_GLOW, layerOpacity, type Light, LIGHTS, MAIN_SCREEN, minuteNow, paint,
   quadMatrix, roomUrl, W, weights,
 } from "./scene";
-import { chosen, cycle, type Items, screenTone, SLOTS } from "./items";
+import { bounds, chosen, cycle, type Items, keyFor, lampGlow, recolor, screenTone, type Slot, SLOTS, type Variant } from "./items";
 import { api } from "../api";
 
 /**
@@ -53,10 +53,72 @@ const FLY_MS = 1100;
 
 const PET_SAYS = ["purr… :3", "prrrr <3", "mrrp!", "*happy cat noises*"];
 
-/** Settings → Appearance asks the room to be arranged: click a screen to change its picture. */
+/** Settings → Appearance asks the room to be arranged: click a screen, the lamps, the plant or the bed to change it. */
 export const arrangeRoom = () => window.dispatchEvent(new CustomEvent("lilt:arrange"));
 // The screen pictures are 16:9 boxes warped onto the painted screens.
 const PIC_W = 320, PIC_H = 180;
+
+/** An SVG/CSS path through a slot's outlines, relative to its box. */
+const areaPath = (slot: Slot, b = bounds(slot.area)) =>
+  slot.area.map((poly) => `M${poly.map(([x, y]) => `${x - b.x} ${y - b.y}`).join("L")}Z`).join("");
+
+// Recoloured parts are cut from each light's painting once and kept while the page is open.
+const patchCache = new Map<string, Frame["patches"][number]>();
+async function patchFor(slot: Slot, v: Variant, arts: Record<string, HTMLImageElement | null>) {
+  const id = `${slot.id}:${v.id}`, hit = patchCache.get(id);
+  if (hit) return hit;
+  const b = bounds(slot.area), img = {} as Record<Light, CanvasImageSource>;
+  for (const l of LIGHTS) {
+    const art = arts[l];
+    if (!art) return null;
+    await art.decode().catch(() => {});
+    if (!art.naturalWidth) return null;
+    const c = document.createElement("canvas");
+    c.width = b.w; c.height = b.h;
+    const g = c.getContext("2d", { willReadFrequently: true })!;
+    g.clip(new Path2D(areaPath(slot, b)));
+    g.drawImage(art, -b.x, -b.y, W, H);
+    const d = g.getImageData(0, 0, b.w, b.h);
+    recolor(d.data, b.w, keyFor(slot, l), v.tint!);
+    g.putImageData(d, 0, 0);
+    img[l] = c;
+  }
+  const p = { x: b.x, y: b.y, img };
+  patchCache.set(id, p);
+  return p;
+}
+
+/** The cat's sprites with the bed's tint, so the blanket at their edges matches the bed. */
+const catCache = new Map<string, NonNullable<Frame["catArt"]>>();
+async function catFor(slot: Slot, v: Variant) {
+  const hit = catCache.get(v.id);
+  if (hit || !catImages) return hit ?? null;
+  const out = {} as NonNullable<Frame["catArt"]>;
+  for (const part of CAT_PARTS) {
+    out[part] = {} as Record<Light, CanvasImageSource>;
+    for (const l of LIGHTS) {
+      const im = catImages[part][l];
+      await im.decode().catch(() => {});
+      if (!im.naturalWidth) return null;
+      const c = document.createElement("canvas");
+      c.width = im.naturalWidth; c.height = im.naturalHeight;
+      const g = c.getContext("2d", { willReadFrequently: true })!;
+      g.drawImage(im, 0, 0);
+      const d = g.getImageData(0, 0, c.width, c.height), keep = d.data.slice();
+      recolor(d.data, c.width, keyFor(slot, l), v.tint!);
+      // Unlike a patch, the sprite is the whole cat: the tint replaces only the blanket's colours.
+      for (let i = 0; i < keep.length; i += 4) {
+        const k = keep[i + 3] ? d.data[i + 3] / keep[i + 3] : 0;
+        for (let j = 0; j < 3; j++) d.data[i + j] = keep[i + j] + (d.data[i + j] - keep[i + j]) * k;
+        d.data[i + 3] = keep[i + 3];
+      }
+      g.putImageData(d, 0, 0);
+      out[part][l] = c;
+    }
+  }
+  catCache.set(v.id, out);
+  return out;
+}
 
 /** `children` float in the painting: position them in painting pixels; `--inv` undoes the camera's scale. */
 export function Room({ inside, onEnter, cards, done, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; children?: ReactNode }) {
@@ -72,7 +134,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   const [arranging, setArranging] = useState(false);
   const cam = useRef<{ now: View; from: View; to: View; start: number; flying: boolean; inside: boolean }>(null!);
   if (!cam.current) { const v = viewFor(inside); cam.current = { now: v, from: v, to: v, start: 0, flying: false, inside }; }
-  const frame = useRef<Frame>({ t: 0, w: weights(minuteNow()), cat: "sleep", poked: -100, hearts: [], lights: 0 });
+  const frame = useRef<Frame>({ t: 0, w: weights(minuteNow()), cat: "sleep", poked: -100, hearts: [], lights: 0, patches: [], lamp: LAMP_GLOW });
   const doneRef = useRef(done);
   doneRef.current = done;
   const mouse = useRef({ x: 0, y: 0, sx: 0, sy: 0 });
@@ -196,6 +258,18 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
       void api.profile().then((p) => api.saveProfile({ ...p, room_items: next })).catch(() => { /* it shows now; it saves with the next change */ });
     }, 500);
   };
+  // The lamps, the plant and the bed are the painting recoloured; the loop draws them.
+  useEffect(() => {
+    let live = true;
+    const f = frame.current;
+    f.lamp = lampGlow(items);
+    const bed = SLOTS.find((s) => s.id === "bed")!, cover = chosen(items, bed);
+    void Promise.all([
+      Promise.all(SLOTS.filter((s) => s.key).map((s) => { const v = chosen(items, s); return v.tint ? patchFor(s, v, arts.current) : null; })),
+      cover.tint ? catFor(bed, cover) : null,
+    ]).then(([ps, cat]) => { if (!live) return; f.patches = ps.filter((p) => p !== null); f.catArt = cat ?? undefined; redraw.current(); });
+    return () => { live = false; };
+  }, [items]);
   useEffect(() => {
     const on = () => setArranging(true);
     window.addEventListener("lilt:arrange", on);
@@ -263,7 +337,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
         ))}
         {SLOTS.map((slot) => {
           const v = chosen(items, slot);
-          return v.url && <div key={`${slot.id}-${v.id}`} className="room-pic" aria-hidden="true"
+          return slot.quad && v.url && <div key={`${slot.id}-${v.id}`} className="room-pic" aria-hidden="true"
             style={{ width: PIC_W, height: PIC_H, backgroundImage: `url(${v.url})`, transform: quadMatrix(PIC_W, PIC_H, slot.quad), filter: screenTone(frame.current.w) }} />;
         })}
         <canvas ref={canvas} className="room-fx" width={W} height={H} />
@@ -283,16 +357,21 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
           style={{ left: COFFEE.x, top: COFFEE.y, width: COFFEE.w, height: COFFEE.h }} onPointerDown={(e) => e.stopPropagation()}>
           <span>Buy me a coffee</span>
         </a>
-        {arrangeNow && SLOTS.map((slot) => (
-          <button key={slot.id} className="room-slot" style={{ transform: quadMatrix(100, 100, slot.quad) }} onClick={() => change(slot.id)}
-            aria-label={`${slot.name}: ${chosen(items, slot).name}. Show the next picture`} />
-        ))}
+        {arrangeNow && SLOTS.map((slot) => {
+          const b = bounds(slot.area), d = areaPath(slot, b);
+          return (
+            <button key={slot.id} className="room-slot" style={{ left: b.x, top: b.y, width: b.w, height: b.h, clipPath: `path("${d}")` }} onClick={() => change(slot.id)}
+              aria-label={`${slot.name}: ${chosen(items, slot).name}. Show the next one`}>
+              <svg viewBox={`0 0 ${b.w} ${b.h}`} aria-hidden="true"><path d={d} /></svg>
+            </button>
+          );
+        })}
         {children}
       </div>
       <div className="room-shade" />
       {arrangeNow && (
         <div className="room-arrange" role="group" aria-label="Arrange the room">
-          <span>Click a screen to change its picture</span>
+          <span>Click anything outlined to change it</span>
           <button onClick={() => setArranging(false)}>Done</button>
         </div>
       )}
