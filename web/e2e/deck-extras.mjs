@@ -52,7 +52,8 @@ async function main() {
   // Today opens with the warm-up and closes with the cool-down.
   await page.goto(`${BASE}/#/deck`);
   await page.locator(".ve-item").first().waitFor({ timeout: 15000 });
-  const kinds = await page.locator(".ve-items .ve-kind").allInnerTexts();
+  await page.locator('.sd-upcoming > summary').click();
+  const kinds = await page.locator(".sd-current .ve-kind, .sd-upcoming .ve-kind").allInnerTexts();
   check("the warm-up opens today's cards", /Warm-up/.test(kinds[0]), kinds[0]);
   check("the cool-down closes them", /Cool-down/.test(kinds[kinds.length - 1]), kinds[kinds.length - 1]);
 
@@ -70,7 +71,8 @@ async function main() {
   await record(page);
   await page.getByRole("button", { name: /^Again,/ }).click();
   await page.waitForFunction(() => !document.body.innerText.includes("How did that feel?"), null, { timeout: 8000 });
-  const kindsAfter = await page.locator(".ve-items .ve-kind").allInnerTexts();
+  await page.locator('.sd-upcoming > summary').click();
+  const kindsAfter = await page.locator(".sd-current .ve-kind, .sd-upcoming .ve-kind").allInnerTexts();
   check("Again lands before the cool-down", /Cool-down/.test(kindsAfter[kindsAfter.length - 1]) && kindsAfter.some((k) => /Again/.test(k)), kindsAfter.join(" | "));
 
   // An eyes-off review: no line or numbers while recording, rate first, then the pitch.
@@ -119,7 +121,7 @@ async function main() {
   await page.getByRole("button", { name: "It hurts or feels strained" }).click();
   await page.getByRole("heading", { name: "Let's stop here" }).waitFor({ timeout: 8000 });
   await page.getByRole("button", { name: "I feel fine, resume" }).click();
-  await page.getByRole("heading", { name: "Today" }).waitFor({ timeout: 8000 });
+  await page.getByRole("heading", { name: "Your daily deck" }).waitFor({ timeout: 8000 });
   check("after it hurt, Resume brings the cards back", (await page.locator(".ve-item.on").count()) === 1);
 
   check("no page errors", errors.length === 0, errors.join(" | "));

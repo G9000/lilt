@@ -1,6 +1,8 @@
 import "../styles/deck.css";
 import "../styles/voice.css";
 import "../styles/editor.css";
+import "../styles/stationery-deck.css";
+import { DeckIllustration } from "../components/DeckIllustration";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
@@ -707,12 +709,12 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   useEffect(() => { onRecording(recording); }, [recording]); // eslint-disable-line react-hooks/exhaustive-deps
   // The recorder sits in the page, under the text: bring it into view while you record (live line and
   // Stop), and the take's result once it's saved (it renders just after the recorder).
-  useEffect(() => { if (recording) box.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [recording]);
+  useEffect(() => { if (recording) box.current?.scrollIntoView({ block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }); }, [recording]);
   useEffect(() => {
     if (state !== "saved") return;
     const id = window.setTimeout(() => {
       const next = box.current?.nextElementSibling;
-      if (next) next.scrollIntoView({ block: "start", behavior: "smooth" });
+      if (next) next.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
     }, 120);
     return () => window.clearTimeout(id);
   }, [state]);
@@ -1527,11 +1529,15 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   const resume = () => void api.resumePlan().then(load, (e) => setErr(e.message));
 
   const item = queue[idx];
-  useEffect(() => { curRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [idx, phase.k]);
+  useEffect(() => {
+    if (!item || phase.k !== "say") return;
+    curRef.current?.focus({ preventScroll: true });
+    curRef.current?.scrollIntoView({ block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+  }, [idx, item?.card.id, phase.k]);
   // A rating, a reveal or a before-and-after appears under the card: bring its top into view.
   useEffect(() => {
     if (phase.k !== "rate" && phase.k !== "reveal") return;
-    const id = window.setTimeout(() => document.querySelector(".ve-item.on .ve-result")?.scrollIntoView({ block: "start", behavior: "smooth" }), 150);
+    const id = window.setTimeout(() => document.querySelector(".ve-item.on .ve-result")?.scrollIntoView({ block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }), 150);
     return () => window.clearTimeout(id);
   }, [phase.k]);
 
@@ -1634,7 +1640,6 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
         <div className="vc-rate ve-rate" role="group" aria-labelledby="feel-q">
           {RATINGS.map((r, i) => (everyDay(item) && r.r === "again") ? null : (
             <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={everyDay(item) ? r.label : `${r.label}, next ${item.preview[r.r]}`}>
-              <span className="face" aria-hidden="true">{r.face}</span>
               <span className="l">{r.label}<kbd aria-hidden="true">{i + 1}</kbd></span>
               {!everyDay(item) && <small>{item.preview[r.r] === "later today" ? "in a few min" : item.preview[r.r]}</small>}
             </button>
@@ -1659,12 +1664,12 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   );
   return (
     <>
-      <div className="ve-page">
-        <article className="ve-col">
-          <header className="ve-head">
+      <div className="ve-page sd-page">
+        <article className="ve-col sd-deck">
+          <header className="ve-head sd-heading">
             {phase.k === "end" ? <h1 tabIndex={-1} ref={titleRef}>That's today's deck</h1>
               : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}>Let's stop here</h1>
-              : <h1>Today</h1>}
+              : <h1>Your daily deck</h1>}
             <p className="ve-subtitle">{date}</p>
             <p className="ve-meta">{phase.k === "hurt" ? "Paused" : `${doneCount} of ${total} done`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
           </header>
@@ -1697,34 +1702,27 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               <div className="ve-rate-more"><button className="ve-ghost" onClick={() => go("/")}>Back to the room</button></div>
             </div>
           ) : (
-            <blockquote className="ve-how"><b>How to do it</b>
-              Say each card the way its note asks, listen back, then rate how it felt. Your rating decides when a card comes back; pitch numbers never do. The chapter name above a card opens its steps.</blockquote>
+            <details className="sd-help"><summary>How to practise</summary>
+              <p>Say the card, listen back, then choose how it felt. Your choice decides when the card comes back; pitch numbers never do. Open the chapter name for its steps.</p>
+            </details>
           )}
           <ol className="ve-items">
-            {earlier.map((it) => (
-              <li key={`e-${it.card.id}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
-                <p className="readtext ve-read">{it.card.front}</p><p className="ve-hint"><span className="ve-tag">Done</span>{deckName(it)}</p></li>
-            ))}
-            {results.map((r, i) => (
-              <li key={`r-${i}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
-                <p className="readtext ve-read">{r.item.card.front}</p>
-                <p className="ve-hint"><span className={`ve-tag ${r.rating}`}>{label(r.rating)}</span>{r.median ? `${Math.round(r.median)} Hz, ${noteName(r.median)}` : deckName(r.item)}</p></li>
-            ))}
-            {!ended && queue.slice(idx).map((it, k) => {
+            {!ended && queue.slice(idx, idx + 1).map((it, k) => {
               const j = idx + k, on = chosen && k === 0;
               return (
-                <li key={`q-${j}-${it.card.id}`} ref={on ? curRef : undefined} className={`ve-item${on ? " on" : ""}`} onClick={() => { if (!on) choose(j); }}>
-                  <span className="ve-mk num" aria-hidden="true">{doneCount + k + 1}.</span>
+                <li key={`q-${j}-${it.card.id}`} ref={curRef} tabIndex={-1} aria-label={`Current card: ${it.card.front}`} className="ve-item on sd-current">
+                  <div className="sd-card-top"><span>Card {doneCount + 1} of {total}</span><DeckIllustration kind={it.kind === "warmup" || it.kind === "cooldown" ? "tea" : it.card.text_kind === "passage" || it.kind === "before_after" ? "book" : "mic"} /></div>
                   <p className="ve-kind">{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{KIND_TAG[it.kind] && it.card.deck_title !== KIND_TAG[it.kind] && <span className="ve-tag next">{KIND_TAG[it.kind]}</span>}
                     {it.eyes_off && <span className="ve-tag">Eyes off</span>}
                     {!chosen && k === 0 && phase.k === "say" && <span className="ve-tag start">Start here</span>}</p>
                   {on && it.card.kind !== "exercise"
                     ? <ReadAlong text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} kind={it.card.text_kind} stream={mic.stream} active={recOn} />
                     : <p className="readtext ve-read" aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
-                  {/* The little numbers in the text point to these notes, as in the chapters. */}
-                  {on && it.card.kind !== "exercise" && <ReadNotes text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} withHint={false} />}
                   {it.card.hint && <p className="ve-hint">{cardHint(it.card.hint)}</p>}
+                  {/* The little numbers in the text point to these notes, as in the chapters. */}
+                  {on && it.card.kind !== "exercise" && <ReadNotes text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} withHint={false} folded />}
                   {!on && <button className="ve-pick sr-only" onClick={() => choose(j)} disabled={phase.k !== "say" || recOn}>Practise {it.card.front.slice(0, 40)} next</button>}
+                  <div className="sd-controls">
                   {on && item && (
                     <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k !== "say"} eyesOff={!!item.eyes_off && phase.k === "say"}
                       onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
@@ -1734,10 +1732,28 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
                     </Dock>
                   )}
                   {on && rateView}
+                  </div>
                 </li>
               );
             })}
           </ol>
+          {!ended && queue.length > idx + 1 && <details className="sd-upcoming" key={`up-${idx}-${item?.card.id}`}>
+            <summary>Up next <span>{queue.length - idx - 1} cards</span></summary>
+            <ol>{queue.slice(idx + 1).map((it, k) => <li key={`${idx + k}-${it.card.id}`}>
+              <button className="sd-queue-pick" disabled={phase.k !== "say" || recOn} onClick={() => choose(idx + k + 1)} aria-label={`Practise ${it.card.front.slice(0, 40)} next`}>
+                <span className="sd-queue-number">{doneCount + k + 2}</span><span><b>{it.card.front}</b><small className="ve-kind">{deckName(it)}{KIND_TAG[it.kind] && <span>{KIND_TAG[it.kind]}</span>}{it.eyes_off && <span>Eyes off</span>}</small></span>
+              </button>
+            </li>)}</ol>
+          </details>}
+          {doneCount > 0 && <details className="sd-completed" open={ended ? true : undefined}>
+            <summary>Practised today <span>{doneCount} cards</span></summary>
+            <ol className="ve-items">
+              {earlier.map((it) => <li key={`e-${it.card.id}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
+                <p className="readtext ve-read">{it.card.front}</p><p className="ve-hint"><span className="ve-tag">Done</span>{deckName(it)}</p></li>)}
+              {results.map((r, i) => <li key={`r-${i}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
+                <p className="readtext ve-read">{r.item.card.front}</p><p className="ve-hint"><span className="ve-tag">{label(r.rating)}</span>{r.median ? `${Math.round(r.median)} Hz, ${noteName(r.median)}` : deckName(r.item)}</p></li>)}
+            </ol>
+          </details>}
           {err && <p role="alert" className="ve-err">{err}</p>}
         </article>
       </div>

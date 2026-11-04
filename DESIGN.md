@@ -70,8 +70,14 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   mic icon and a "Find my starting voice →" link until a range is set; after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
   button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots,
   and **Then and now** (your first and latest take of the same text, the reference line first).
-  Today opened with nothing picked tags the next card **Start here** and offers "Start today's
-  cards" by the recorder. If the microphone can't be used, a calm help box says what happened and
+  **Today** opens **Your daily deck** with one active stationery card: ivory paper in light mode,
+  charcoal in dark, subtle grain and two decorative paper edges. A small drawn mic, tea or book
+  sits opposite the card position. The prompt leads in the reading serif, followed by one hint
+  and optional **Reading tips**. Record, replay and neutral Again/Hard/Good/Easy buttons share
+  the area below the prompt. **How to practise**, **Up next** and **Practised today** fold away;
+  upcoming choices are keyboard buttons, disabled while recording or reviewing. The centred
+  column caps at 920px; controls wrap on phones and the page scrolls for longer text. A brief
+  card entrance and recorder scrolling respect reduced motion. If the microphone can't be used, a calm help box says what happened and
   the one step that fixes it, with **Try again**.
   **A take's result reads top to bottom**: the note in words; then "Your middle pitch 165 Hz · E3"
   once, the scale and its sentence, and one quiet line of facts (usual range, voice heard, last time
@@ -82,10 +88,9 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   ring and this take as the coral dot, then one sentence ("Brighter than your first take of this text,
   by about a semitone"; under 0.5 st "About the same"; 0.5–1 st "A little"). It compares only takes of
   the same text and microphone, says so when it can't, and ends "A rough guide; your ear decides."
-  The ratings carry a face for how it felt (😣 Again, 😕 Hard, 🙂 Good, 😌 Easy), and "Record it again"
-  and "It hurt or felt strained" are pill buttons with drawn icons (the latter tinted `--rec`).
-  While you rate a card, the recorder half says "Nice one / Listen back, then rate how it felt"
-  with no record button. **The pitch reference scale**: the average man's (grey), the overlap where pitch can be
+  Daily ratings use plain labels and the next interval, with quiet keyboard hints; "Record it again"
+  and "It hurts or feels strained" remain beside the review controls. While you rate a card,
+  the recorder steps aside for replay and review. **The pitch reference scale**: the average man's (grey), the overlap where pitch can be
   heard either way (striped) and the average woman's (coral) speaking ranges, each average ± 1 SD, with a
   tick at each average and your middle pitch as a coral dot; then one sentence placing it in words
   and semitones from the average woman's pitch, and a caption that pitch is one part of how a voice is

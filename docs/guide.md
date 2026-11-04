@@ -114,8 +114,8 @@ Monitor uploads and playback have an isolated check with locally generated media
      is cropped off a small screen steps aside; a phone keeps the stack and room shortcuts.
    - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
      <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,
-     full screen, laid out like a writing app: chapters in a sidebar, the chapter as a page of
-     things to read, and the recorder docked at the bottom. Click any card further down to do it next.
+     full screen, with chapters in a sidebar and one paper card to read. Record and listen below
+     the prompt. Open **Up next** to pick another card to practise first.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Flashcards**,
    **Yarn** (a voice game), **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
@@ -154,6 +154,11 @@ Monitor uploads and playback have an isolated check with locally generated media
    by default, `new_cards_per_day` in the profile). **Start** opens the Practice window: say the
    line, listen back, then rate how it felt: **Again** (later today), **Hard**, **Good** or
    **Easy**. Each button shows when the card will come back (keys 1–4 work too).
+   - **One card at a time:** ivory paper by day, charcoal at night, with a small microphone,
+     book or tea illustration. Reading tips and **How to practise** open when you need them.
+     **Up next** lets you choose another card before recording; **Practised today** holds
+     your completed cards. Record, listen and review stay together below the prompt. Cards
+     settle gently into view, with motion disabled when you prefer reduced motion.
    - **Your warm-up opens the deck and the cool-down closes it,** every day, not spaced like the
      other cards and outside the cap. Pick which warm-up (or none) in Practice settings.
    - **Eyes-off takes:** a review of a card you know well (three or more reviews) is eyes-off every
@@ -175,7 +180,7 @@ Monitor uploads and playback have an isolated check with locally generated media
    - New stages (m-words, phrases, sentences…) open once most cards in the stage before feel
      comfortable (rated Good or Easy twice in a row).
    - **It hurt or felt strained** pauses that card and your plan until you choose to resume.
-   - **Live pitch while recording,** in the recorder docked at the bottom: the waveform with your
+   - **Live pitch while recording,** below the card's prompt: the waveform with your
      pitch line over it and your comfortable range as a band, plus the current Hz and note, middle
      pitch, usual range and steadiness. Display only.
    - **Results after each take:** middle pitch, usual range (10th to 90th percentile) and how

@@ -125,7 +125,8 @@ async function main() {
   await page.locator(".ve-item").first().waitFor();
   check("today opens with its first card up", (await page.locator(".ve-item.on").count()) === 1);
   // A new card (the warm-up first in the list folds its pitch details away).
-  await page.locator(".ve-item:not(.done)").filter({ hasText: "New card" }).first().click();
+  await page.locator('.sd-upcoming > summary').click();
+  await page.locator('.sd-queue-pick').filter({ hasText: 'New card' }).first().click();
   await page.locator(".ve-item.on").waitFor();
   await record(page);
   await page.getByText("How did that feel?").waitFor({ timeout: 15000 });

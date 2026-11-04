@@ -64,13 +64,14 @@ async function main() {
   await page.goto(`${BASE}/#/deck`);
   await page.locator(".ve-item .readtext").first().waitFor();
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);
-  const listed = await page.locator(".ve-item").count();
+  await page.locator('.sd-upcoming > summary').click();
+  const listed = await page.locator(".sd-current, .sd-queue-pick").count();
   const chapters = await page.locator(".ve-folder").count() - 1; // the tree's folders: Today, then the chapters
   // Opened from the computer, the first card is up straight away: Record always records a card.
   const firstUp = await page.locator(".ve-item").first().evaluate((e) => e.classList.contains("on"));
   await page.locator(".ve-item.on .readtext").waitFor();
   check("Today opens with the first card up, today's cards (warm-up, then the reference) and the chapters",
-    firstUp && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator(".ve-item").nth(1).locator(".readtext").innerText()), `${listed} cards, ${chapters} chapters`);
+    firstUp && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator('.sd-queue-pick').first().innerText()), `${listed} cards, ${chapters} chapters`);
   await snap("00-deck");
   // "Again" on a new card (the third: after the warm-up and the reference, which come once a day).
   const ratings = ["good", "good", "again", "good", "good", "good", "good"];

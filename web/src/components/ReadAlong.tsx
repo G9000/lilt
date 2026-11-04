@@ -104,11 +104,11 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
 }
 
 /** Quiet numbered notes, shown under the controls. */
-export function ReadNotes({ text, levelId, hint, withHint = true }: { text: string; levelId: string; hint: string; withHint?: boolean }) {
+export function ReadNotes({ text, levelId, hint, withHint = true, folded = false }: { text: string; levelId: string; hint: string; withHint?: boolean; folded?: boolean }) {
   const notes = useMemo(() => notesFor(levelId, hint, tokenize(text)).filter((x) => withHint || x.word !== null), [levelId, hint, text, withHint]);
   if (!notes.length) return null;
   let n = 0;
-  return (
+  const content = (
     <ul className="notes" aria-label="Notes">
       {notes.map((x, i) => (
         <li key={i}>
@@ -118,4 +118,5 @@ export function ReadNotes({ text, levelId, hint, withHint = true }: { text: stri
       ))}
     </ul>
   );
+  return folded ? <details className="sd-tips"><summary>Reading tips</summary>{content}</details> : content;
 }

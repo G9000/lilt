@@ -1,5 +1,27 @@
 # Lilt: validation report
 
+## 5 November 2026: Stationery daily deck
+
+Today shows one paper card with a small drawn illustration, a larger reading prompt, optional
+tips and record/replay/review controls together. Upcoming and completed cards use disclosures;
+upcoming choices are native keyboard buttons. Scheduling, retry metadata and room positions
+are unchanged. Recorder scrolling now also respects reduced motion.
+
+The isolated `web/e2e/stationery-deck.mjs` suite passed using stubbed APIs and Chrome's fake
+microphone: record/save, one take per recording, opening tips during recording, listen-back,
+retry metadata, Again returning before cool-down, eyes-off concealment and reveal, keyboard
+rating and selection, room-selected card links, before-and-after questions and postponement,
+completion, comfort stop and resume. Choices stay disabled while recording or reviewing.
+Checked 390×844, 1024×768, 1440×950, 3440×1440 and 3840×2160 browser viewports, long prompts,
+dark mode and the largest text setting. Inspected phone, 4K, recording and comparison screenshots.
+
+Web typecheck, 109 unit tests and production build passed. Server formatting, strict Clippy and
+70 tests, Python 47 tests (one skipped), and desktop formatting/release Clippy passed. Existing
+bundle-size and Windows hard-link cache warnings remain. The older server-backed browser
+suites have updated selectors but were not rerun for this change. These are emulated browser
+sizes and synthetic recordings, not physical-device or natural-voice acceptance. No owner data
+or running backend was changed.
+
 ## 5 November 2026: Cozy Ball of yarn
 
 Replaced the empty play backdrop with a cached illustrated room, woven yarn and a connected
