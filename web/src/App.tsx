@@ -1,6 +1,6 @@
 import { CoursesPage } from "./pages/Courses";
 import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
-import { lazy, ReactNode, Suspense, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "./api";
 import { CardStack } from "./desk/CardStack";
 import { RoomFloaters } from "./desk/Floaters";
@@ -68,9 +68,6 @@ export function applyTheme(t: Theme) {
 }
 // Before the first render, so a dark computer never flashes the light theme.
 applyTheme(resolveTheme(readThemeMode()));
-
-// The room in 3D is a test on its own page; Three.js only loads when you open it.
-const Room3D = lazy(() => import("./room3d/Room3D"));
 
 const SECTIONS = new Set(["deck", "flashcards", "photos", "yarn", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses"]);
 
@@ -155,8 +152,6 @@ export function App() {
   const left = deck ? deck.items.filter((i) => !i.done_today).length : null;
   const done = !!deck && !deck.paused && left === 0;
   const inbox = useInbox(deck, recovered);
-
-  if (seg[0] === "room-3d") return <Suspense fallback={null}><Room3D /></Suspense>;
 
   return (
     <MicProvider>
