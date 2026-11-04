@@ -158,16 +158,14 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   `free`, today's Studio session). Once it stops, the right half shows that take under a bold "Your
   take": listen back, then the measured pitch line and numbers as analysis lands, compared with the
   last free take. Picking a card or text makes it the exercise; exercise results stay under the item.
-  **Desk recorder** is a bounded ivory/charcoal instrument beneath the prompt (880px maximum).
-  A small title and honest microphone status sit opposite the elapsed timer. The Record/Stop
-  button keeps its width and position under that header; preparation disables it with Starting.
-  Quiet secondary actions sit beside it or wrap below on phones. The recessed display shows
-  the live pitch line and faint loudness bars. **Pitch details** reveals current pitch, middle,
-  usual range and steadiness; eyes-off removes those controls and conceals the live chart.
-  Studio can reopen its retained pitch line after saving. Replay uses a compact waveform with
-  elapsed/total time and a native keyboard seek slider: paused seeking stays paused. Errors
-  stay beside playback; intentional playback cancellation is not reported as a failure.
-  A take keeps the half second before you press Record (a
+  **In use**, the instruments rise in, top to bottom: a big live **Now** readout (Geist 200, 68px, note
+  under it) with a status pill (Ready, Live, Recording with a pulsing red dot, Saved); the pitch
+  graph straight on the panel (note names up the side on a semitone grid from E2 to G4, comfortable
+  band, faint loudness bars, every reading a faint dot and a smooth coral line through them with a
+  soft glow and a dot at its tip); three
+  white tiles (Middle, Usual range, Steadiness; a faint dash until there's data); then a compact centred
+  **record pill** (ink, red dot, "Record", `Space`) that turns red with a white square, "Stop" and
+  the timer while recording; hints under it. A take keeps the half second before you press Record (a
   pre-roll from a delay line that runs while the mic is open) and a short tail after Stop, so a quick
   start or a last syllable is never clipped; Practice opens the mic on arrival when it is already
   allowed. The live numbers are calm: the Now readout eases in semitones, ignores wobbles under a
@@ -179,9 +177,9 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   detector was unsure of it or it sits beside a pause (a clear jump mid-speech stays); quiet, dead-steady
   hum (a fan, a fridge) under a fifth of your speech's loudness goes; each point is the median of its
   five neighbours, blips under 60 ms are dropped, and the line eases in semitones, so it glides
-  rather than jumps; loudness behind it is a faint voice-memo waveform, one thin bar every 6 px.
-  The recorder scrolls with the prompt and wraps its controls on phones; it steps away while
-  you rate a daily card. Rating sits inside
+  rather than jumps; loudness behind it is a faint voice-memo waveform, one thin bar every 6 px. Narrower, the recorder docks at the bottom: **idle it is one slim row** (the
+  record pill and its links), and the pitch readout, graph and numbers open only while recording or
+  listening; it steps away while you rate a card. Rating sits inside
   the card you just said, under the listen-back, so your eyes never leave it. On phones the sidebar
   becomes a strip of chapter chips, sharing its row with the window's traffic lights.
 
@@ -299,7 +297,7 @@ in `--ink-3`. Big numbers are Geist 300 with tight tracking. Sentence case every
   toolbar, content padded 24–28px, scrolls inside. One window at a time.
 - **Primary button**: ink background, white text, 44px tall, radius 12. **Secondary**: `--fill`.
   **Quiet link**: `--ink-2`, no underline until hover.
-- **Record**: an ink button with a red dot and "Record"; while recording it turns `--rec` with a white square and "Stop". The desk recorder keeps its timer separately in the header.
+- **Record**: an ink pill with a red dot and "Record"; while recording it turns `--rec` with a white square, "Stop" and the timer.
 - **Segmented control**: `--fill` track, the active segment white with a hairline shadow.
 - **Lists**: rows with hairline separators. No card inside a card.
 - **Stats**: small `--fill` tiles, caption above, number below.

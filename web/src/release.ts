@@ -13,7 +13,6 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
-      { title: "A small desk recorder", body: "Record with a clearer timer and steady controls on small and large screens. Open Pitch details when you want the numbers, then listen back with a seekable waveform and duration.", to: "/studio/free" },
       { title: "A quieter daily deck", body: "Practise one paper card at a time, with small illustrations, clearer text and record/listen/review controls together. Open Reading tips or Up next when you need them. Your review schedule stays the same.", to: "/deck" },
       { title: "A cozier Ball of yarn", body: "Play beside an illustrated window with a woven yarn ball and a curious cat. Setup is simpler, instructions open when you need them, and play controls stay within reach on small and large screens.", to: "/yarn" },
       { title: "A little motion on your screens", body: "Make it yours now lets each monitor show your own picture, GIF or silent looping video. Preview, pause or remove it whenever you like. Files stay in this browser." },

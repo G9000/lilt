@@ -180,15 +180,9 @@ Monitor uploads and playback have an isolated check with locally generated media
    - New stages (m-words, phrases, sentences…) open once most cards in the stage before feel
      comfortable (rated Good or Easy twice in a row).
    - **It hurt or felt strained** pauses that card and your plan until you choose to resume.
-   - **Desk recorder:** an ivory or charcoal surface below the prompt, with a separate timer,
-     microphone status and a steady Record/Stop button. While recording, the live display shows
-     a waveform and pitch line with your comfortable range. **Pitch details** opens the current
-     Hz and note, middle pitch, usual range and steadiness; these are display-only estimates.
-     Eyes-off cards keep the line and numbers hidden. The controls wrap on phones and stay
-     within a readable width on large screens.
-   - **Listen back:** the playback strip shows elapsed time and duration. Click or drag the
-     waveform to seek, or focus it and use the arrow keys. Seeking while paused stays paused;
-     press Play when you're ready. Playback errors stay beside the player so you can try again.
+   - **Live pitch while recording,** below the card's prompt: the waveform with your
+     pitch line over it and your comfortable range as a band, plus the current Hz and note, middle
+     pitch, usual range and steadiness. Display only.
    - **Results after each take:** middle pitch, usual range (10th to 90th percentile) and how
      much of the take was voiced, from the Praat analysis, plus the measured contour. With a
      comfortable range saved, one sentence says how much of what you voiced sat in it ("About two
