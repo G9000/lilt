@@ -104,9 +104,12 @@ its own window; quitting stops the server.
      **Change picture**), **Turn** and **Done**; the list on the left picks things by name, then the
      arrow keys move it, <kbd>R</kbd> turns it, <kbd>C</kbd> changes it and <kbd>Esc</kbd> lets go.
      **Now / Morning / Day / Sunset / Night** sets the light (the lamp glows after dark). The
-     layout is kept in this browser only. The furniture is simple shapes for now; the logic is in
-     `web/src/room3d/layout.ts` (tested beside it) and the scene in `Room3D.tsx`, which loads only
-     when you open the page.
+     layout is kept in this browser only. The furniture is Kenney's Furniture Kit (CC0, credited in
+     `web/public/room3d/models/CREDITS.md`): the bed, desk with its monitor and keyboard, chair,
+     lamp, plant, rug and a bookcase with books, scaled up about 1.9× and redrawn in the toon
+     shading; changing a colour repaints the cover, seat, shade, leaves, rug or wood. The logic is
+     in `web/src/room3d/layout.ts` (tested beside it, with each footprint matching its model) and
+     the scene in `Room3D.tsx`, which loads only when you open the page.
    - The artwork lives in `web/public/room/` (WebP files: four room lights, and the cat's body,
      tail and ear in each light). Swap them for other art of the same size, then re-measure the
      screen corners and the coffee's box in `web/src/room/scene.ts`. The look is documented in `DESIGN.md`.

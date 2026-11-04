@@ -35,26 +35,27 @@ export interface Item {
 const pic = (id: string, name: string): Variant => ({ id, name, picture: `pictures/${id}.webp` });
 
 export const KINDS: Record<string, Kind> = {
-  bed: { id: "bed", name: "Bed", size: [1.4, 0.55, 2.1], variants: [
+  // Sizes are the Kenney models' as the room scales them (Room3D.tsx), so footprints match what you see.
+  bed: { id: "bed", name: "Bed", size: [1.85, 0.72, 2.15], variants: [
     { id: "pink", name: "Pink cover", color: "#f2a7c3" }, { id: "blue", name: "Blue cover", color: "#8fb2e8" },
     { id: "sage", name: "Sage cover", color: "#a9c79b" }, { id: "cream", name: "Cream cover", color: "#f1e3c6" },
   ] },
-  desk: { id: "desk", name: "Desk", size: [1.6, 0.75, 0.7], variants: [
+  desk: { id: "desk", name: "Desk", size: [1.4, 0.73, 0.75], variants: [
     { id: "oak", name: "Oak", color: "#c99a6a" }, { id: "walnut", name: "Walnut", color: "#8a5a3c" }, { id: "white", name: "White", color: "#ece7e1" },
   ] },
-  chair: { id: "chair", name: "Chair", size: [0.6, 1, 0.6], variants: [
+  chair: { id: "chair", name: "Chair", size: [0.65, 1.16, 0.6], variants: [
     { id: "grey", name: "Grey", color: "#6f6f7d" }, { id: "pink", name: "Pink", color: "#e7a1b9" }, { id: "mint", name: "Mint", color: "#9fd3c1" },
   ] },
-  lamp: { id: "lamp", name: "Lamp", size: [0.45, 1.6, 0.45], variants: [
+  lamp: { id: "lamp", name: "Lamp", size: [0.35, 1.64, 0.35], variants: [
     { id: "warm", name: "Warm light", color: "#ffc27a" }, { id: "rose", name: "Rose light", color: "#ff8fbf" }, { id: "moon", name: "Moonlight", color: "#a9c8ff" },
   ] },
-  plant: { id: "plant", name: "Plant", size: [0.5, 1.2, 0.5], variants: [
+  plant: { id: "plant", name: "Plant", size: [0.45, 1.25, 0.47], variants: [
     { id: "green", name: "Green leaves", color: "#6fa35b" }, { id: "autumn", name: "Autumn leaves", color: "#e0913c" }, { id: "silver", name: "Silver leaves", color: "#b8c4b8" },
   ] },
-  rug: { id: "rug", name: "Rug", size: [2, 0.02, 1.4], flat: true, variants: [
+  rug: { id: "rug", name: "Rug", size: [2.05, 0.02, 1.2], flat: true, variants: [
     { id: "lilac", name: "Lilac", color: "#b9a6d9" }, { id: "peach", name: "Peach", color: "#f3b9a0" }, { id: "sky", name: "Sky", color: "#a7c7e7" },
   ] },
-  shelf: { id: "shelf", name: "Bookshelf", size: [0.9, 1.8, 0.35], variants: [
+  shelf: { id: "shelf", name: "Bookshelf", size: [0.76, 1.67, 0.48], variants: [
     { id: "oak", name: "Oak", color: "#c99a6a" }, { id: "white", name: "White", color: "#ece7e1" },
   ] },
   poster: { id: "poster", name: "Poster", size: [0.7, 0.9, 0.03], wall: true, variants: [
@@ -66,13 +67,13 @@ export const KINDS: Record<string, Kind> = {
 };
 
 export const DEFAULT_LAYOUT: Item[] = [
-  { id: "bed", kind: "bed", x: -2.25, z: 1.25, rot: 0, variant: 0 },
+  { id: "bed", kind: "bed", x: -2, z: 1.25, rot: 0, variant: 0 },
   { id: "rug", kind: "rug", x: 0.25, z: 0.5, rot: 0, variant: 0 },
-  { id: "desk", kind: "desk", x: 1, z: -2.15, rot: 0, variant: 0 },
+  { id: "desk", kind: "desk", x: 1, z: -2.125, rot: 0, variant: 0 },
   { id: "chair", kind: "chair", x: 1, z: -1.25, rot: 2, variant: 0 },
-  { id: "lamp", kind: "lamp", x: -2.7, z: -2.2, rot: 0, variant: 0 },
-  { id: "plant", kind: "plant", x: 2.7, z: -2.2, rot: 0, variant: 0 },
-  { id: "shelf", kind: "shelf", x: -1.5, z: -2.325, rot: 0, variant: 0 },
+  { id: "lamp", kind: "lamp", x: -2.75, z: -2.25, rot: 0, variant: 0 },
+  { id: "plant", kind: "plant", x: 2.7, z: -2.25, rot: 0, variant: 0 },
+  { id: "shelf", kind: "shelf", x: -1.5, z: -2.25, rot: 0, variant: 0 },
   { id: "poster", kind: "poster", x: 0, z: 0, rot: 0, variant: 0, wall: { side: "left", u: -0.5, y: 1.7 } },
   { id: "frame", kind: "frame", x: 0, z: 0, rot: 0, variant: 0, wall: { side: "back", u: -1.5, y: 2.3 } },
 ];

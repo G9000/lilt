@@ -1,7 +1,7 @@
 import "./room3d.css";
 import { createContext, type ElementRef, type ReactNode, type RefObject, Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { OrbitControls, Outlines, useTexture } from "@react-three/drei";
+import { OrbitControls, Outlines, useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 // Dragging a thing switches the orbit off.
@@ -25,7 +25,7 @@ const MOODS: Record<Light, Mood> = {
   sunset: { sky: "#f3b49a", bg: "#2d2230", ambient: ["#f1c6d6", 1.0], sun: ["#ff9f6a", 2.4], sunAt: [4, 2.2, -7], lamp: 0.9, screen: 1 },
   night: { sky: "#2b3160", bg: "#0f1122", ambient: ["#6d74b8", 0.75], sun: ["#9fb4ff", 0.7], sunAt: [2, 5, -6], lamp: 3, screen: 1.1 },
 };
-const WALL = "#efe2d8", WALL_LEFT = "#e8d6ce", FLOOR = "#c49a76", WOOD = "#b07d55";
+const WALL = "#efe2d8", WALL_LEFT = "#e8d6ce", FLOOR = "#c49a76";
 
 /* ---------- toon shading ---------- */
 
@@ -56,7 +56,6 @@ function Toon({ at, rot, color, emissive, glow = 0, map, outline = true, childre
   );
 }
 const Box = ({ size, ...p }: Omit<Part, "children"> & { size: Pos }) => <Toon {...p}><boxGeometry args={size} /></Toon>;
-const Cyl = ({ r, r2, h, ...p }: Omit<Part, "children"> & { r: number; r2?: number; h: number }) => <Toon {...p}><cylinderGeometry args={[r, r2 ?? r, h, 20]} /></Toon>;
 const Ball = ({ r, scale, ...p }: Omit<Part, "children"> & { r: number; scale?: Pos }) => (
   <group position={p.at} scale={scale}><Toon {...p} at={undefined}><icosahedronGeometry args={[r, 2]} /></Toon></group>
 );
@@ -126,45 +125,80 @@ function Cat() {
   );
 }
 
-function Bed({ color }: { color: string }) {
+/** Kenney's Furniture Kit (public/room3d/models, CC0): which model, how much to scale it, which
+ * materials take the chosen colour (and a darker shade of it), and a turn so its front faces +z. */
+type Spec = { file: string; scale: number; tint?: string[]; shade?: string[]; face?: number };
+const MODELS: Record<string, Spec> = {
+  bed: { file: "bedDouble", scale: 1.9, tint: ["carpet"] },
+  desk: { file: "desk", scale: 1.9, tint: ["wood"] },
+  chair: { file: "chairDesk", scale: 1.9, tint: ["carpet"] },
+  lamp: { file: "lampRoundFloor", scale: 1.9, tint: ["lamp"] },
+  plant: { file: "pottedPlant", scale: 1.9, tint: ["plant"] },
+  rug: { file: "rugRounded", scale: 1.3, tint: ["carpet"], shade: ["carpetDarker"] },
+  shelf: { file: "bookcaseOpen", scale: 1.9, tint: ["wood"] },
+};
+const modelUrl = (file: string) => `room3d/models/${file}.glb`;
+for (const m of [...Object.values(MODELS).map((m) => m.file), "computerScreen", "computerKeyboard", "books"]) useGLTF.preload(modelUrl(m), false);
+
+const darker = (hex: string) => `#${new THREE.Color(hex).multiplyScalar(0.68).getHexString()}`;
+
+/** A Kenney model, centred on its footprint with its base on the floor, redrawn in toon shading with ink outlines. */
+function Kenney({ file, scale, color, tint = [], shade = [], face = 0, glow = 0, at }: Spec & { color?: string; glow?: number; at?: Pos }) {
+  const ramp = useContext(Ramp), ink = useContext(Ink);
+  const { scene } = useGLTF(modelUrl(file), false);
+  const parts = useMemo(() => {
+    scene.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(scene), c = box.getCenter(new THREE.Vector3());
+    const fix = new THREE.Matrix4().makeScale(scale, scale, scale).multiply(new THREE.Matrix4().makeTranslation(-c.x, -box.min.y, -c.z));
+    const out: { geometry: THREE.BufferGeometry; matrix: THREE.Matrix4; name: string; color: string }[] = [];
+    scene.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      const mat = m.material as THREE.MeshStandardMaterial;
+      out.push({ geometry: m.geometry, matrix: fix.clone().multiply(m.matrixWorld), name: mat.name, color: `#${mat.color.getHexString()}` });
+    });
+    return out;
+  }, [scene, scale]);
   return (
-    <group>
-      <Box at={[0, 0.15, 0]} size={[1.4, 0.3, 2.1]} color={WOOD} />
-      <Box at={[0, 0.45, -1.01]} size={[1.4, 0.9, 0.08]} color={WOOD} />
-      <Box at={[0, 0.37, 0.02]} size={[1.3, 0.15, 1.98]} color="#fbf6f2" />
-      <Box at={[0, 0.47, 0.3]} size={[1.36, 0.1, 1.42]} color={color} />
-      <Box at={[0, 0.5, -0.72]} size={[0.95, 0.14, 0.42]} color="#fff7e8" />
-      <Cat />
+    <group position={at} rotation={[0, face, 0]}>
+      {parts.map((p, i) => {
+        const own = color && tint.includes(p.name), dim = color && shade.includes(p.name);
+        return (
+          <mesh key={i} geometry={p.geometry} matrix={p.matrix} matrixAutoUpdate={false} castShadow receiveShadow>
+            <meshToonMaterial color={own ? color : dim ? darker(color!) : p.color} gradientMap={ramp}
+              emissive={own && glow ? color : "#000"} emissiveIntensity={own ? glow : 0} />
+            <Outlines thickness={ink.thickness} color={ink.color} />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
 
 function Desk({ color }: { color: string }) {
+  const [, h] = KINDS.desk.size;
   const screen = useCrop(roomUrl("day"), MAIN_SCREEN[0][0], MAIN_SCREEN[0][1], MAIN_SCREEN[1][0] - MAIN_SCREEN[0][0], MAIN_SCREEN[2][1] - MAIN_SCREEN[0][1]);
   return (
     <group>
-      <Box at={[0, 0.72, 0]} size={[1.6, 0.06, 0.7]} color={color} />
-      {[[-0.74, -0.3], [0.74, -0.3], [-0.74, 0.3], [0.74, 0.3]].map(([x, z], i) => <Box key={i} at={[x, 0.345, z]} size={[0.06, 0.69, 0.06]} color={color} />)}
-      <Box at={[0, 0.8, -0.18]} size={[0.06, 0.12, 0.06]} color="#3b3640" />
-      <Box at={[0, 1.04, -0.2]} size={[0.74, 0.44, 0.04]} color="#2f2b33" />
-      <mesh position={[0, 1.04, -0.177]}>
-        <planeGeometry args={[0.68, 0.38]} />
+      <Kenney {...MODELS.desk} color={color} />
+      <Kenney file="computerScreen" scale={1.5} at={[0, h, -0.12]} />
+      {/* the cherry blossom from the painting's middle screen */}
+      <mesh position={[0, h + 0.27, -0.035]}>
+        <planeGeometry args={[0.5, 0.29]} />
         <meshBasicMaterial map={screen} toneMapped={false} />
       </mesh>
-      <Box at={[0, 0.765, 0.12]} size={[0.5, 0.03, 0.16]} color="#f2d7e3" />
-      <Cyl at={[0.5, 0.8, 0.1]} r={0.045} h={0.1} color="#fff" />
+      <Kenney file="computerKeyboard" scale={1.6} at={[0, h, 0.16]} />
     </group>
   );
 }
 
-function Chair({ color }: { color: string }) {
+// The bookcase's shelves (as scaled), each with a few of Kenney's books.
+const SHELVES: [number, number, number][] = [[-0.16, 0.247, 0], [0.13, 0.703, Math.PI], [-0.12, 1.159, 0.3]];
+function Shelf({ color }: { color: string }) {
   return (
     <group>
-      <Box at={[0, 0.48, 0]} size={[0.5, 0.08, 0.5]} color={color} />
-      <Box at={[0, 0.82, -0.23]} size={[0.5, 0.58, 0.06]} color={color} />
-      <Cyl at={[0, 0.24, 0]} r={0.03} h={0.44} color="#3b3640" />
-      <Box at={[0, 0.04, 0]} size={[0.5, 0.04, 0.06]} color="#3b3640" />
-      <Box at={[0, 0.04, 0]} size={[0.06, 0.04, 0.5]} color="#3b3640" />
+      <Kenney {...MODELS.shelf} color={color} />
+      {SHELVES.map(([x, y, r], i) => <group key={i} rotation={[0, r, 0]} position={[x, y, 0.02]}><Kenney file="books" scale={1.9} /></group>)}
     </group>
   );
 }
@@ -172,47 +206,8 @@ function Chair({ color }: { color: string }) {
 function Lamp({ color, power }: { color: string; power: number }) {
   return (
     <group>
-      <Cyl at={[0, 0.02, 0]} r={0.18} h={0.04} color="#3b3640" />
-      <Cyl at={[0, 0.72, 0]} r={0.02} h={1.4} color="#3b3640" />
-      <Cyl at={[0, 1.45, 0]} r={0.13} r2={0.21} h={0.28} color={color} emissive={color} glow={0.35 + power * 0.25} />
-      <pointLight position={[0, 1.3, 0]} color={color} intensity={power} distance={5} decay={1.4} />
-    </group>
-  );
-}
-
-function Plant({ color }: { color: string }) {
-  const leaves: Pos[] = [[0, 0.75, 0], [0.12, 0.95, 0.05], [-0.12, 0.92, -0.04], [0.02, 1.1, -0.08], [-0.05, 0.62, 0.12], [0.14, 0.7, -0.1]];
-  return (
-    <group>
-      <Cyl at={[0, 0.18, 0]} r={0.18} r2={0.14} h={0.36} color="#d9805a" />
-      <Cyl at={[0, 0.45, 0]} r={0.015} h={0.5} color="#5b7a3f" />
-      {leaves.map((p, i) => <Ball key={i} at={p} r={0.13 - i * 0.008} scale={[1, 0.7, 1]} color={color} />)}
-    </group>
-  );
-}
-
-function Rug({ color }: { color: string }) {
-  return (
-    <group>
-      <Box at={[0, 0.01, 0]} size={[2, 0.02, 1.4]} color={color} outline={false} />
-      <Box at={[0, 0.022, 0]} size={[1.7, 0.01, 1.1]} color="#fff4ea" outline={false} />
-      <Box at={[0, 0.026, 0]} size={[1.6, 0.01, 1.0]} color={color} outline={false} />
-    </group>
-  );
-}
-
-const BOOKS = ["#e7a1b9", "#8fb2e8", "#f3d27a", "#9fd3c1", "#b9a6d9", "#f3b9a0", "#7f8fb8"];
-function Shelf({ color }: { color: string }) {
-  return (
-    <group>
-      <Box at={[-0.43, 0.9, 0]} size={[0.04, 1.8, 0.35]} color={color} />
-      <Box at={[0.43, 0.9, 0]} size={[0.04, 1.8, 0.35]} color={color} />
-      <Box at={[0, 0.9, -0.16]} size={[0.86, 1.8, 0.02]} color={color} />
-      {[0.03, 0.47, 0.91, 1.35, 1.78].map((y, i) => <Box key={i} at={[0, y, 0]} size={[0.86, 0.04, 0.35]} color={color} />)}
-      {[0.05, 0.49, 0.93].flatMap((y, row) => [0, 1, 2, 3, 4].map((i) => {
-        const h = 0.26 + ((i * 7 + row * 3) % 5) * 0.025;
-        return <Box key={`${row}-${i}`} at={[-0.3 + i * 0.12, y + h / 2 + 0.02, 0]} size={[0.09, h, 0.24]} color={BOOKS[(i + row * 2) % BOOKS.length]} />;
-      }))}
+      <Kenney {...MODELS.lamp} color={color} glow={0.35 + power * 0.25} />
+      <pointLight position={[0, 1.45, 0]} color={color} intensity={power} distance={5} decay={1.4} />
     </group>
   );
 }
@@ -232,14 +227,12 @@ function Picture({ item }: { item: Item }) {
 function Model({ item, lamp }: { item: Item; lamp: number }) {
   const color = variantOf(item).color ?? "#fff";
   switch (item.kind) {
-    case "bed": return <Bed color={color} />;
+    case "bed": return <group><Kenney {...MODELS.bed} color={color} /><Cat /></group>;
     case "desk": return <Desk color={color} />;
-    case "chair": return <Chair color={color} />;
     case "lamp": return <Lamp color={color} power={lamp} />;
-    case "plant": return <Plant color={color} />;
-    case "rug": return <Rug color={color} />;
     case "shelf": return <Shelf color={color} />;
-    default: return <Picture item={item} />;
+    case "poster": case "frame": return <Picture item={item} />;
+    default: return <Kenney {...MODELS[item.kind]} color={color} />;
   }
 }
 

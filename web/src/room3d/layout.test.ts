@@ -31,7 +31,7 @@ test("a move onto something else is refused, but things can stand on the rug", (
 
 test("turning swaps width and depth, and is refused where it wouldn't fit", () => {
   const desk = get(DEFAULT_LAYOUT, "desk");
-  assert.deepEqual(footprint({ ...desk, rot: 1 }), [0.7, 1.6]);
+  assert.deepEqual(footprint({ ...desk, rot: 1 }), [0.75, 1.4]);
   // Against the back wall with the chair pulled up, the desk has no room to turn.
   assert.equal(get(turn(DEFAULT_LAYOUT, "desk"), "desk").rot, 0);
   const free = moveTo(DEFAULT_LAYOUT, "desk", 0.5, 0.5);
