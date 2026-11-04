@@ -6,6 +6,9 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const shots = process.argv[2];
+const sketch = process.env.CORNER_STYLE === 'sketch';
+const route = sketch ? '#/sketched-corner' : '#/painted-corner';
+const style = sketch ? 'sketch' : 'painted';
 if (shots) await mkdir(shots, { recursive: true });
 const server = await createServer({ server: { host: '127.0.0.1', port: 0 }, logLevel: 'error' });
 await server.listen();
@@ -23,7 +26,7 @@ try {
   const errors = [], api = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.route('**/api/**', r => { api.push(r.request().url()); return r.abort(); });
-  await page.goto(`${server.resolvedUrls.local[0]}#/painted-corner`);
+  await page.goto(`${server.resolvedUrls.local[0]}${route}`);
   await page.getByRole('heading', { name: 'A quiet corner' }).waitFor({ timeout: 10000 });
   const canvas = page.getByLabel('Painted room. Drag to look around; arrow keys to turn, plus and minus to zoom.');
   const sceneShot = () => canvas.screenshot({ style: '.pc-header, .pc-bottom { visibility: hidden !important; }' });
@@ -39,6 +42,13 @@ try {
     return different / (x.length / 4);
   }, [a.toString('base64'), b.toString('base64')]);
   await page.locator('[data-ready="true"]').waitFor();
+  const startingStyle = await sceneShot();
+  await page.getByRole('link', { name: sketch ? 'Summer paint' : 'Warm sketch', exact: true }).click();
+  await page.locator(`.pc[data-style="${sketch ? 'painted' : 'sketch'}"][data-ready="true"]`).waitFor();
+  assert.ok(await pixelDifference(await sceneShot(), startingStyle) > 0.2, 'styles change the actual scene appearance');
+  await page.getByRole('link', { name: sketch ? 'Warm sketch' : 'Summer paint', exact: true }).click();
+  await page.locator(`.pc[data-style="${style}"][data-ready="true"]`).waitFor();
+  assert.equal(new URL(page.url()).hash, route);
   await page.getByRole('button', { name: 'Pause motion' }).click();
   const before = await sceneShot();
   await page.getByRole('button', { name: 'Lamp', exact: true }).click();
@@ -89,6 +99,10 @@ try {
       const b = await page.getByRole('button', { name, exact: true }).boundingBox();
       assert.ok(b && b.height >= 44 && b.x >= 0 && b.x + b.width <= width);
     }
+    for (const name of ['Summer paint', 'Warm sketch']) {
+      const b = await page.getByRole('link', { name, exact: true }).boundingBox();
+      assert.ok(b && b.height >= 44 && b.x >= 0 && b.x + b.width <= width, 'style links fit on mobile');
+    }
     if (shots) await page.screenshot({ path: path.join(shots, `corner-${width}.png`) });
   }
   await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' });
@@ -108,13 +122,15 @@ try {
     await page.reload(); await page.locator('[data-ready="true"]').waitFor();
     assert.equal(await page.evaluate(() => document.documentElement.getAttribute('data-theme') || 'light'), saved);
     const color = await page.locator('.pc-controls').evaluate(el => getComputedStyle(el).color);
-    assert.equal(color, saved === 'dark' ? 'rgb(225, 236, 224)' : 'rgb(36, 73, 75)', 'saved theme controls the preview');
+    const expected = sketch ? (saved === 'dark' ? 'rgb(244, 224, 191)' : 'rgb(101, 67, 51)') : (saved === 'dark' ? 'rgb(225, 236, 224)' : 'rgb(36, 73, 75)');
+    assert.equal(color, expected, 'saved theme controls the preview');
   }
   // A failed asset and missing WebGL both retain an exit and recovery UI.
-  await page.route('**/painted-corner/surfaces.png', r => r.abort());
+  const surfaceUrl = `**/painted-corner/${sketch ? 'sketch-surfaces' : 'surfaces'}.png`;
+  await page.route(surfaceUrl, r => r.abort());
   await page.reload();
   await page.getByText('The room needs a fresh start.').waitFor();
-  await page.unroute('**/painted-corner/surfaces.png');
+  await page.unroute(surfaceUrl);
   await page.getByRole('button', { name: 'Try again' }).click();
   await page.locator('[data-ready="true"]').waitFor();
   const noGpu = await browser.newPage();
@@ -124,12 +140,12 @@ try {
       return kind === 'webgl2' ? null : getContext.call(this, kind, ...args);
     };
   });
-  await noGpu.goto(`${server.resolvedUrls.local[0]}#/painted-corner`);
+  await noGpu.goto(`${server.resolvedUrls.local[0]}${route}`);
   await noGpu.getByText('The room needs a fresh start.').waitFor();
   await noGpu.getByRole('link', { name: 'Back to Lilt' }).first().waitFor();
   await noGpu.close();
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto(`${server.resolvedUrls.local[0]}e2e/fixtures/painted-corner.html`);
+  await page.goto(`${server.resolvedUrls.local[0]}e2e/fixtures/painted-corner.html?style=${style}`);
   for (let i = 0; i < 3; i++) {
     await page.locator('[data-ready="true"]').waitFor();
     assert.equal(await page.locator('canvas').count(), 1);
@@ -141,7 +157,7 @@ try {
   }
   await page.locator('[data-ready="true"]').waitFor();
   assert.deepEqual(errors, [], 'browser errors');
-  console.log('PASS: isolated preview, visible light, geometry picking, rotating fan, camera/reset, drag safety, paused/hidden animation, mobile, saved themes, reduced motion, texture/WebGL failure, context recovery and repeated mount cleanup.');
+  console.log(`PASS (${style}): style comparison, isolated preview, visible light, geometry picking, rotating fan, camera/reset, drag safety, paused/hidden animation, mobile, saved themes, reduced motion, texture/WebGL failure, context recovery and repeated mount cleanup.`);
 } finally {
   await browser?.close();
   await server.close();

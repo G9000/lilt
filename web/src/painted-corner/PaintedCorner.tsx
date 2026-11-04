@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { createCorner, type Action, type Corner, type CornerState } from './scene';
+import { createCorner, type Action, type Corner, type CornerState, type CornerStyle } from './scene';
 import './corner.css';
 
 const FAN = ['off', 'low', 'high'] as const;
 
-export default function PaintedCorner() {
+export default function PaintedCorner({ style = 'painted' }: { style?: CornerStyle }) {
   const canvas = useRef<HTMLCanvasElement>(null), corner = useRef<Corner | null>(null);
   const [state, setState] = useState<CornerState>(() => ({ lamp: false, fan: 0, paused: window.matchMedia('(prefers-reduced-motion: reduce)').matches }));
   const current = useRef(state); current.current = state;
@@ -24,13 +24,13 @@ export default function PaintedCorner() {
         action: act, hover: setHover,
         ready: () => { if (mounted) setReady(true); },
         error: () => { if (mounted) { setError(true); setReady(false); } },
-      });
+      }, style);
     } catch { setError(true); }
     return () => { mounted = false; corner.current?.dispose(); corner.current = null; };
-  }, [attempt]);
+  }, [attempt, style]);
   useEffect(() => { if (!error) corner.current?.set(state); }, [state, error]);
-  return <main className="pc" data-ready={ready && !error}>
-    <canvas key={attempt} ref={canvas} className="pc-canvas" tabIndex={0} role="img"
+  return <main className="pc" data-style={style} data-ready={ready && !error}>
+    <canvas key={`${style}-${attempt}`} ref={canvas} className="pc-canvas" tabIndex={0} role="img"
       aria-label="Painted room. Drag to look around; arrow keys to turn, plus and minus to zoom."
       onKeyDown={e => {
         if (error || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -40,8 +40,11 @@ export default function PaintedCorner() {
       }} />
     <header className="pc-header">
       <a href="#/" className="pc-back"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m11 5-5 5 5 5M6 10h10" /></svg>Back to Lilt</a>
-      <div className="pc-title"><h1>A quiet corner</h1><p>A little room to try.</p></div>
-      <span className="pc-preview">Room preview</span>
+      <div className="pc-title"><h1>A quiet corner</h1><p>{style === 'sketch' ? 'Ink, paper & afternoon light.' : 'A little room to try.'}</p></div>
+      <nav className="pc-styles" aria-label="Room art style">
+        <a href="#/painted-corner" aria-current={style === 'painted' ? 'page' : undefined}>Summer paint</a>
+        <a href="#/sketched-corner" aria-current={style === 'sketch' ? 'page' : undefined}>Warm sketch</a>
+      </nav>
     </header>
     {!ready && !error && <div className="pc-message" role="status"><p>Opening the window…</p></div>}
     {error && <div className="pc-message" role="alert"><h2>The room needs a fresh start.</h2><p>Try again, or return to Lilt. If it keeps happening, check that your browser’s graphics acceleration is on.</p><button onClick={() => setAttempt(a => a + 1)}>Try again</button><a href="#/">Back to Lilt</a></div>}

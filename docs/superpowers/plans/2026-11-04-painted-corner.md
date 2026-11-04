@@ -30,3 +30,13 @@
 The user can inspect real perspective changes and operate lamp/fan by clicking their geometry or using accessible controls. The painting is a reference, not a falsely presented screenshot of the final result. Mobile and reduced-motion modes remain usable. Native tests never use owner data or port 7878; browser tests run their own Vite instance with no backend.
 
 Review additions verified: dappled interior sunlight, direct geometry picking, separately observed lamp illumination and fan animation, simulated hidden-document draw pause/resume, context loss, repeated entry/exit, and saved themes opposing the OS theme. The first browser acceptance run failed because the preview did not yet exist. Subsequent visual refinements corrected narrow-screen framing and changed procedural surfaces to a painted atlas.
+
+## Warm sketch comparison (follow-up)
+
+The user requested another art-style test using their supplied warm ink-and-watercolor room reference. Keep the same geometry and interactions, introduce a separate `#/sketched-corner` route with comparison links, cream/peach surfaces, muted teal enamel, terracotta accents, brown contour lines and matching illustrated scenery. Both routes remain lazy and isolated from practice data. Switching versions starts the same composed view.
+
+- [x] Add failing comparison navigation acceptance.
+- [x] Generate original warm sketch surface atlas and exterior scenery, with provenance.
+- [x] Share the existing scene through an explicit style option; add contour rendering only for the sketch version.
+- [x] Verify both versions, visual differences, interaction parity, direct entry, style switching cleanup, narrow layout and failure recovery; inspect screenshots.
+- [x] Update guide, design, release and validation; independent review completed and outline-material cleanup addressed. Save locally without pushing.

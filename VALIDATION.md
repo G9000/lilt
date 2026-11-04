@@ -1,5 +1,23 @@
 # Lilt: validation report
 
+## 4 November 2026: warm sketch art-style comparison
+
+Added `#/sketched-corner` alongside the original `#/painted-corner`, with links between them.
+Warm sketch uses original generated watercolor/ink textures and scenery, warm lighting and
+fine brown silhouette outlines. Both versions use the same geometry and interactions; style
+changes reset the view and session controls. The reference illustration itself is not shipped.
+
+Verified: each style passes the isolated Chrome suite, including direct entry without practice
+API calls, actual visual differences when switching styles, object picking, visible lamp and fan
+effects, camera/reset, motion pause, mobile comparison links, saved themes, reduced motion,
+missing assets/WebGL, context recovery and repeated StrictMode mounting. Desktop and narrow
+screenshots were inspected. Outline shader materials are explicitly released on cleanup.
+
+Root typecheck, 103 web tests, production build, server formatting/strict Clippy/70 tests,
+Python (47 passed, one skip), and desktop formatting/release Clippy pass. The lazy 3D chunk is
+about 588 kB / 154 kB gzip; the bundle-size advisory remains. No owner practice data or server
+on port 7878 was used. Safari, real phones and low-end GPU performance remain untested.
+
 ## 4 November 2026: painted 3D corner preview
 
 The optional `#/painted-corner` loads a Three.js scene separately from the practice app. The

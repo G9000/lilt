@@ -52,8 +52,15 @@ surface textures and dappled light explore the art direction, rather than reprod
 image exactly. A browser with WebGL 2 is needed. If graphics or artwork cannot load, the preview
 offers a retry and a way back. It loads its 3D code only when opened.
 
+The **Summer paint** and **Warm sketch** links at the top compare two art directions for the
+same corner. Warm sketch (`#/sketched-corner`) uses cream watercolor surfaces, fine brown
+outlines, muted teal objects and an ink-drawn window view. Switching styles starts a fresh
+preview with the original camera position and controls reset; browser Back also works.
+
 The isolated browser check starts its own Vite server and needs no backend:
 `cd web && node e2e/painted-corner.mjs [screenshot-folder]`.
+Set `CORNER_STYLE=sketch` to run the same suite against Warm sketch; both runs check switching
+between versions as well as their interactions.
 
 1. **The room and the desk.** Lilt opens on an illustrated anime room above a city.
    - **Today's cards are a stack** in the corner, one card per practice card left. Swipe the top

@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "Another way to draw the room", body: "Try Warm sketch: cream watercolor, fine brown outlines and muted teal. Switch between it and Summer paint at the top of the 3D corner.", to: "/sketched-corner" },
       { title: "A quiet corner to try", body: "Explore a small painted 3D room: look around the window and desk, switch the lamp on, and try the fan. Open it from the room's menu bar; your usual room is still here.", to: "/painted-corner" },
       { title: "Settings that keep your edits", body: "Quick changes save in order, even when you leave and reopen Settings. Commas stay put as you type your qualities, and comparisons clear the previous pair's results when you choose other takes.", to: "/studio/settings" },
       { title: "Resonance and weight, rewritten", body: "Two chapters now say plainly what to do: a smaller space for your voice, and a light, clear sound you borrow from little sounds and carry into words. Never by squeezing.", to: "/studio/resonance" },

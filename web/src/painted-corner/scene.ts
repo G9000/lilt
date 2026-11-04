@@ -1,10 +1,12 @@
 import * as T from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { palette, sunPatch } from './materials';
+import { OutlineEffect } from 'three/addons/effects/OutlineEffect.js';
+import { palette, sunPatch, type CornerStyle } from './materials';
 import { box, curtain, desk, fan, lamp, plant, rod } from './objects';
 
 export interface CornerState { lamp: boolean; fan: 0 | 1 | 2; paused: boolean }
 export type Action = 'lamp' | 'fan';
+export type { CornerStyle } from './materials';
 export interface Corner {
   set(state: CornerState): void;
   reset(): void;
@@ -14,13 +16,27 @@ export interface Corner {
 
 export function createCorner(canvas: HTMLCanvasElement, initial: CornerState, events: {
   action(action: Action): void; hover(action: Action | null): void; ready(): void; error(): void;
-}): Corner {
+}, style: CornerStyle = 'painted'): Corner {
+  const sketch = style === 'sketch';
   const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'low-power' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
   renderer.outputColorSpace = T.SRGBColorSpace;
   renderer.toneMapping = T.NoToneMapping;
-  const scene = new T.Scene(); scene.background = new T.Color('#b2d0cb');
+  const ink = new T.Color('#694431');
+  const outline = sketch ? new OutlineEffect(renderer, { defaultThickness: 0.0011, defaultColor: ink.toArray(), defaultAlpha: 0.85 }) : null;
+  const scene = new T.Scene(); scene.background = new T.Color(sketch ? '#ead4b9' : '#b2d0cb');
+  // OutlineEffect has no dispose method. Capture its temporary materials during its first
+  // pass, before it restores the scene, so StrictMode cleanup can release those programs too.
+  const outlineMaterials = new Set<T.Material>();
+  const afterRender = scene.onAfterRender;
+  if (outline) scene.onAfterRender = () => {
+    scene.traverse(o => {
+      if (o instanceof T.Mesh) for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+        if (m instanceof T.ShaderMaterial) outlineMaterials.add(m);
+      }
+    });
+  };
   const camera = new T.PerspectiveCamera(43, 1, 0.05, 35);
   const controls = new OrbitControls(camera, canvas);
   controls.enablePan = false; controls.enableDamping = false;
@@ -28,9 +44,9 @@ export function createCorner(canvas: HTMLCanvasElement, initial: CornerState, ev
   controls.minPolarAngle = 1.03; controls.maxPolarAngle = 1.6;
   controls.minDistance = 2.8; controls.maxDistance = 8.5;
   controls.rotateSpeed = 0.45; controls.zoomSpeed = 0.55;
-  const p = palette();
-  const ambient = new T.HemisphereLight('#d2f2ed', '#7e9a94', 2.2); scene.add(ambient);
-  const sun = new T.DirectionalLight('#fff0c8', 2.6); sun.position.set(-2.8, 6, -3.4); sun.target.position.set(0.3, 0, 0.9);
+  const p = palette(style);
+  const ambient = new T.HemisphereLight(sketch ? '#fff3df' : '#d2f2ed', sketch ? '#b6a18b' : '#7e9a94', 2.2); scene.add(ambient);
+  const sun = new T.DirectionalLight(sketch ? '#fff6df' : '#fff0c8', 2.6); sun.position.set(-2.8, 6, -3.4); sun.target.position.set(0.3, 0, 0.9);
   sun.castShadow = true; sun.shadow.mapSize.set(1536, 1536); sun.shadow.camera.left = -3.8; sun.shadow.camera.right = 3.8;
   sun.shadow.camera.top = 4.5; sun.shadow.camera.bottom = -3; sun.shadow.normalBias = 0.035; sun.shadow.bias = -0.00015;
   scene.add(sun, sun.target);
@@ -71,31 +87,37 @@ export function createCorner(canvas: HTMLCanvasElement, initial: CornerState, ev
 
   const patch = sunPatch();
   const patchMaterial = new T.MeshBasicMaterial({ map: patch, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1 });
+  patchMaterial.userData.outlineParameters = { visible: false };
   const floorSun = new T.Mesh(new T.PlaneGeometry(3.8, 3), patchMaterial); floorSun.rotation.x = -Math.PI / 2; floorSun.rotation.z = -0.18; floorSun.position.set(0.2, 0.012, 0.45); scene.add(floorSun);
   const deskSun = new T.Mesh(new T.PlaneGeometry(2.5, 1.01), patchMaterial); deskSun.rotation.x = -Math.PI / 2; deskSun.position.set(0.55, 0.904, -0.72); scene.add(deskSun);
 
   // The outdoors is distant painted scenery; furniture and window are all modeled.
   const landscapeMaterial = new T.MeshBasicMaterial({ color: '#c7e6db' });
+  landscapeMaterial.userData.outlineParameters = { visible: false };
   const landscape = new T.Mesh(new T.PlaneGeometry(8.4, 5.6), landscapeMaterial); landscape.position.set(0, 2.8, -3.4); scene.add(landscape);
   let dead = false, broken = false, state = initial, raf = 0, last = 0, time = 0, ready = false, loaded = 0, activePointer: number | null = null;
   let narrow: boolean | null = null;
   let down: { x: number; y: number; id: number; moved: boolean } | null = null;
   function loadedOne() { if (++loaded === 2 && !dead && !broken) { ready = true; render(); events.ready(); } }
   function fail() { if (!dead) { broken = true; stop(); events.error(); } }
-  const texture = new T.TextureLoader().load('/painted-corner/summer.png', t => {
+  const texture = new T.TextureLoader().load(`/painted-corner/${sketch ? 'sketch-summer' : 'summer'}.png`, t => {
     if (dead) { t.dispose(); return; }
     t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
     landscapeMaterial.map = t; landscapeMaterial.color.set('#ffffff'); landscapeMaterial.needsUpdate = true;
     loadedOne();
   }, undefined, fail);
-  const atlas = new T.TextureLoader().load('/painted-corner/surfaces.png', t => {
+  const atlas = new T.TextureLoader().load(`/painted-corner/${sketch ? 'sketch-surfaces' : 'surfaces'}.png`, t => {
     if (dead) { t.dispose(); return; }
     p.applyAtlas(t);
     for (const c of curtains) { c.mesh.material.map = p.cloth.map; c.mesh.material.color.copy(p.cloth.color); c.mesh.material.needsUpdate = true; }
     loadedOne();
   }, undefined, fail);
 
-  function render() { if (!dead && !broken) renderer.render(scene, camera); }
+  function render() {
+    if (dead || broken) return;
+    if (outline) { outline.render(scene, camera); if (outlineMaterials.size) scene.onAfterRender = afterRender; }
+    else renderer.render(scene, camera);
+  }
   function stop() { cancelAnimationFrame(raf); raf = 0; last = 0; }
   function frame(now: number) {
     if (dead || broken || state.paused || document.hidden) { stop(); return; }
@@ -187,6 +209,7 @@ export function createCorner(canvas: HTMLCanvasElement, initial: CornerState, ev
       scene.traverse(o => { if (o instanceof T.Mesh) { geometries.add(o.geometry); (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => materials.add(m)); } });
       geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose());
       p.dispose(); patch.dispose(); texture.dispose(); atlas.dispose(); sun.shadow.map?.dispose();
+      outlineMaterials.forEach(m => m.dispose()); outlineMaterials.clear(); scene.onAfterRender = afterRender;
       renderer.dispose();
       // Let the browser reclaim the context too on repeated entry and React StrictMode remounts.
       if (ready || !canvas.isConnected) renderer.forceContextLoss();

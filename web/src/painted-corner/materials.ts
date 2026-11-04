@@ -1,5 +1,7 @@
 import * as T from 'three';
 
+export type CornerStyle = 'painted' | 'sketch';
+
 function random(seed: number) {
   let n = seed;
   return () => ((n = (Math.imul(n, 1664525) + 1013904223) >>> 0) / 4294967296);
@@ -36,7 +38,8 @@ export function paintedTexture(wood = false) {
   return texture;
 }
 
-export function palette() {
+export function palette(style: CornerStyle = 'painted') {
+  const sketch = style === 'sketch';
   const paint = paintedTexture(), grain = paintedTexture(true);
   const ramp = new T.DataTexture(new Uint8Array([110, 160, 202, 239]), 4, 1, T.RedFormat);
   ramp.minFilter = ramp.magFilter = T.NearestFilter;
@@ -51,8 +54,8 @@ export function palette() {
     wall: make('#b3d7d0'), wood: make('#b4ac88', true), edge: make('#748f83', true),
     floor: make('#7e9f98', true), teal: make('#6da8a4'), dark: make('#325f65'),
     wire: make('#9ebfba'), paper: make('#f6edcf'), cloth: make('#e0eee0'),
-    terracotta: make('#c19483'), leaf: make('#65977c'), leafLight: make('#b5c98a'),
-    pink: make('#cbb0a7'), book: make('#668e98'),
+    terracotta: make(sketch ? '#c87858' : '#c19483'), leaf: make(sketch ? '#849d70' : '#65977c'), leafLight: make(sketch ? '#c4c796' : '#b5c98a'),
+    pink: make(sketch ? '#cd7c61' : '#cbb0a7'), book: make(sketch ? '#9fb9ab' : '#668e98'),
     applyAtlas(atlas: T.Texture) {
       const tile = (x: number, y: number) => {
         const t = atlas.clone(); t.colorSpace = T.SRGBColorSpace;
@@ -62,12 +65,18 @@ export function palette() {
       };
       const wood = tile(0, 0.5), wall = tile(0.5, 0.5), cloth = tile(0, 0), enamel = tile(0.5, 0);
       for (const [mat, map, color] of [
-        [result.wall, wall, '#ffffff'], [result.wood, wood, '#f4efdf'], [result.edge, wood, '#9aafa2'],
-        [result.floor, wood, '#b1c4b9'], [result.cloth, cloth, '#ffffff'], [result.teal, enamel, '#d4ece3'],
+        [result.wall, wall, '#ffffff'], [result.wood, wood, sketch ? '#fff9e9' : '#f4efdf'], [result.edge, wood, sketch ? '#d6b6a0' : '#9aafa2'],
+        [result.floor, wood, sketch ? '#eadcc7' : '#b1c4b9'], [result.cloth, cloth, '#ffffff'], [result.teal, enamel, sketch ? '#ffffff' : '#d4ece3'],
       ] as const) { mat.map = map; mat.color.set(color); mat.needsUpdate = true; }
     },
     dispose() { materials.forEach(m => m.dispose()); maps.forEach(t => t.dispose()); paint.dispose(); grain.dispose(); ramp.dispose(); },
   };
+  if (sketch) {
+    result.dark.color.set('#745349'); result.wire.color.set('#a88b71'); result.paper.color.set('#fff2d7');
+    // Fine fan wires already draw their own line; another silhouette makes the cage too heavy.
+    result.wire.userData.outlineParameters = { visible: false };
+    result.dark.userData.outlineParameters = { thickness: 0.0005 };
+  }
   return result;
 }
 export type Palette = ReturnType<typeof palette>;
