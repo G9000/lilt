@@ -2,6 +2,7 @@
 
 use crate::coach::model::EvidenceRef;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 pub const GOAL_SUMMARY: &str = "A more feminine speaking voice that sounds natural, feels comfortable, and works in everyday conversation.";
 
@@ -36,6 +37,10 @@ pub struct Profile {
     /// field reads as off; one that saved `true` keeps it.
     #[serde(default)]
     pub show_pitch_scale: bool,
+    /// What you chose for the room's changeable things, slot id to variant id (the web app's
+    /// `room/items.ts` knows them). A slot left out shows the painting.
+    #[serde(default)]
+    pub room_items: BTreeMap<String, String>,
     pub updated_utc: String,
 }
 
@@ -45,6 +50,17 @@ fn default_new_cards() -> u32 {
 
 fn default_warmup() -> String {
     "hum".into()
+}
+
+/// Room choices are a handful of short ids; the server keeps them without knowing the slots.
+pub fn room_items_ok(items: &BTreeMap<String, String>) -> bool {
+    let id = |s: &str| {
+        !s.is_empty()
+            && s.len() <= 64
+            && s.chars()
+                .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+    };
+    items.len() <= 32 && items.iter().all(|(k, v)| id(k) && id(v))
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -80,6 +96,7 @@ impl Default for Profile {
             room_note: None,
             warmup_card: default_warmup(),
             show_pitch_scale: false,
+            room_items: BTreeMap::new(),
             updated_utc: crate::util::now_utc(),
         }
     }
@@ -119,5 +136,30 @@ mod tests {
         saved["show_pitch_scale"] = true.into();
         let kept: Profile = serde_json::from_value(saved).unwrap();
         assert!(kept.show_pitch_scale);
+    }
+
+    #[test]
+    fn room_items_default_to_the_painting_and_only_short_ids_are_kept() {
+        let mut saved = serde_json::to_value(Profile::default()).unwrap();
+        saved.as_object_mut().unwrap().remove("room_items");
+        let old: Profile = serde_json::from_value(saved).unwrap();
+        assert!(old.room_items.is_empty());
+        let ok = BTreeMap::from([("main-screen".to_string(), "nebula-pillars".to_string())]);
+        assert!(room_items_ok(&ok));
+        for (k, v) in [
+            ("Main", "x"),
+            ("main-screen", ""),
+            ("a", "../x"),
+            ("a", &"x".repeat(65)),
+        ] {
+            assert!(
+                !room_items_ok(&BTreeMap::from([(k.to_string(), v.to_string())])),
+                "{k}: {v}"
+            );
+        }
+        let many = (0..33)
+            .map(|i| (format!("s{i}"), "x".to_string()))
+            .collect();
+        assert!(!room_items_ok(&many));
     }
 }

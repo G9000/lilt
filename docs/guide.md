@@ -78,6 +78,14 @@ its own window; quitting stops the server.
      it gets a purr and hearts.
    - **Lights on when you're done:** once today's cards are finished, the string lights along the
      beam light up one by one and the desk lamp glows warmer. It's a quiet "nice work", never a score.
+   - **Arrange the room:** Settings › Appearance › **Arrange the room** takes you out to the room
+     and outlines the two screens on the desk. Click one to show the next picture (cherry blossom or
+     the sleeping cat as painted, then galaxies, cats and plants from `web/public/pictures`), and
+     **Done** (or <kbd>Esc</kbd>) when you like it. The picture is warped onto the painted screen and
+     dims a little at sunset and night. Your choice is saved on the server (`room_items` in the
+     profile), so the Mac app and the browser agree. The slots and their pictures are listed in
+     `web/src/room/items.ts`; more of the room (the lamp, plants, the bed) can join as painted
+     cut-outs in each light, the way the cat is drawn.
    - **Menu bar and notifications:** the room and the desk share a macOS-style menu bar (Lilt, what's
      playing, notifications, date and time). The envelope opens a Notification Center from the right
      with a greeting for the time of day. It only holds real things: your feedback is ready, a new

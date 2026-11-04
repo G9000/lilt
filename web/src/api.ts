@@ -218,6 +218,8 @@ export interface Profile {
   warmup_card?: string;
   /** Show the average man/woman pitch scale after each take (off unless turned on; missing means off). */
   show_pitch_scale?: boolean;
+  /** The room's changeable things, slot id to variant id (room/items.ts); a missing slot is the painting. */
+  room_items?: Record<string, string>;
   updated_utc: string;
 }
 
