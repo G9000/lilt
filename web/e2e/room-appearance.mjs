@@ -14,6 +14,8 @@ try {
   const context = await browser.newContext({viewport:{width:1440,height:950}, reducedMotion:'reduce'});
   const page = await context.newPage();
   const errors=[], api=[];
+  const oldCatRequests=[];
+  page.on('request',r=>{if(/cat-(body|tail|ear)-/.test(r.url())) oldCatRequests.push(r.url());});
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/api/**',r=>{api.push(r.request().url());return r.abort();});
   const url=`${server.resolvedUrls.local[0]}e2e/fixtures/room-appearance.html`;
@@ -21,7 +23,7 @@ try {
   await page.getByRole('button',{name:'Make it yours',exact:true}).click();
   await page.getByRole('radio',{name:'Night',exact:true}).check();
   assert.equal(await page.locator('.room-paint').getAttribute('data-light'),'night');
-  assert.equal(await page.locator('img[src="room/room-night.webp"]').evaluate(el=>el.style.opacity),'1');
+  assert.equal(await page.locator('img[src="room/room-night-v2.webp"]').evaluate(el=>el.style.opacity),'1');
   await page.waitForFunction(()=>[...document.querySelectorAll('.room-art')].every(im=>im.complete&&im.naturalWidth));
   const canvas = page.locator('.room-fx');
   const unlit=await canvas.evaluate(c=>c.toDataURL());
@@ -29,8 +31,10 @@ try {
   assert.notEqual(await canvas.evaluate(c=>c.toDataURL()),unlit,'fairy lights change actual scene pixels with motion reduced');
   await page.getByRole('slider',{name:'Warmth'}).fill('65');
   assert.ok(Number(await page.locator('.room-color-wash').evaluate(el=>el.style.opacity))>0);
-  await page.getByRole('radio',{name:'Leaves',exact:true}).check();
-  assert.equal(await page.locator('.room-monitor-art').getAttribute('src'),'pictures/plant-fern.webp');
+  await page.getByRole('group',{name:'Side monitor',exact:true}).getByRole('radio',{name:'Leaves',exact:true}).check();
+  await page.getByRole('group',{name:'Main monitor',exact:true}).getByRole('radio',{name:'Stars',exact:true}).check();
+  assert.equal(await page.locator('[data-monitor="side"]').getAttribute('src'),'pictures/plant-fern.webp');
+  assert.equal(await page.locator('[data-monitor="main"]').getAttribute('src'),'pictures/nebula-cliffs.webp');
   await page.getByRole('radio',{name:'Sunset',exact:true}).check();
   if(shots) await page.screenshot({path:path.join(shots,'room-customize.png')});
   await page.keyboard.press('Escape');
@@ -40,11 +44,13 @@ try {
   await page.getByRole('button',{name:'Make it yours',exact:true}).click();
   assert.equal(await page.locator('.room-paint').getAttribute('data-light'),'sunset');
   assert.equal(await page.getByRole('slider',{name:'Warmth'}).inputValue(),'65');
-  assert.equal(await page.locator('.room-monitor-art').count(),1);
+  assert.equal(await page.locator('.room-monitor-art').count(),2);
+  assert.equal(await page.getByRole('group',{name:'Main monitor',exact:true}).getByRole('radio',{name:'Stars',exact:true}).isChecked(),true);
   for(const width of [390,768]) {
     await page.setViewportSize({width,height:844});
     for(const name of ['Reset room','Night','Leaves']) {
-      const control=name==='Reset room' ? page.getByRole('button',{name,exact:true}) : page.getByRole('radio',{name,exact:true}).locator('..');
+      const control=name==='Reset room' ? page.getByRole('button',{name,exact:true}) : (name==='Leaves' ? page.getByRole('group',{name:'Side monitor',exact:true}) : page).getByRole('radio',{name,exact:true}).locator('..');
+      await control.scrollIntoViewIfNeeded();
       const b=await control.boundingBox();
       assert.ok(b&&b.x>=0&&b.x+b.width<=width&&b.y>=0&&b.y+b.height<=844,`${name} fits at ${width}px`);
     }
@@ -57,6 +63,37 @@ try {
   await page.keyboard.press('Escape');
   await page.getByRole('button',{name:/Sit down at the computer/}).click();
   assert.equal(await page.evaluate(()=>window.entered),1,'computer hit target remains aligned');
+  await page.setViewportSize({width:1440,height:950});
+  for(const name of ['Daylight','Morning','Sunset','Night']) {
+    await page.getByRole('button',{name:'Make it yours',exact:true}).click();
+    await page.getByRole('radio',{name,exact:true}).check();
+    await page.keyboard.press('Escape');
+    if(shots) await page.screenshot({path:path.join(shots,`art-${name.toLowerCase()}.png`)});
+  }
+  const art=await page.evaluate(async()=>{
+    const read=async src=>{const im=new Image();im.src=src;await im.decode();const c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);return {im,g};};
+    const {im:cat,g:cg}=await read('room/cat-v2.webp');
+    const pixels=cg.getImageData(0,0,cat.width,cat.height).data;let clear=0,solid=0;
+    for(let i=3;i<pixels.length;i+=4){if(pixels[i]<5)clear++;if(pixels[i]>250)solid++;}
+    const brightness=async src=>{const {g}=await read(src);const p=g.getImageData(80,620,700,280).data;let n=0;for(let i=0;i<p.length;i+=4)n+=.2126*p[i]+.7152*p[i+1]+.0722*p[i+2];return n/(p.length/4);};
+    return {clear:clear/(pixels.length/4),solid:solid/(pixels.length/4),oldNight:await brightness('room/room-night.webp'),newNight:await brightness('room/room-night-v2.webp')};
+  });
+  assert.ok(art.clear>0.1&&art.solid>0.4,'cat has a real transparent cutout, not a rectangle of bedding');
+  assert.ok(art.newNight>art.oldNight*1.4,'night bed and chair remain more readable than the original');
+  console.log('Art checks:',art);
+  const catSpot=await page.locator('.room-stage').evaluate(el=>{
+    const r=el.getBoundingClientRect(),s=r.width/1672;
+    return {x:r.left+245*s,y:r.top+780*s,left:r.left+80*s,right:r.left+410*s};
+  });
+  assert.ok(catSpot.left>=0&&catSpot.right<=1440,'whole cat fits in the desktop room');
+  await page.mouse.click(catSpot.x,catSpot.y);
+  assert.match(await page.locator('.room-bubble').textContent(),/purr|prrrr|mrrp|happy cat/,'petting still works');
+  assert.deepEqual(oldCatRequests,[],'no detached tail/ear overlays are loaded');
+  for(const [width,height] of [[1024,1366],[1000,950]]) {
+    await page.setViewportSize({width,height});
+    const target=await page.getByRole('button',{name:/Sit down at the computer/}).boundingBox();
+    assert.ok(target&&target.x>=0&&target.x+target.width<=width,'cat framing never pushes the main screen off a tall display');
+  }
   // Other tabs can update or clear the same browser preferences.
   const other=await page.context().newPage(); await other.goto(url);
   await other.getByRole('button',{name:'Make it yours',exact:true}).click();
@@ -75,6 +112,7 @@ try {
   await home.getByRole('button',{name:'Make it yours',exact:true}).click();
   await home.getByRole('radio',{name:'Sunset',exact:true}).check();
   const reset=home.getByRole('button',{name:'Reset room',exact:true});
+  await reset.scrollIntoViewIfNeeded();
   assert.equal(await reset.evaluate(el=>{
     const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));
   }),true,'home cards do not cover appearance controls');
@@ -86,6 +124,7 @@ try {
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.setViewportSize({width:390,height:844});
   await home.getByRole('button',{name:'Make it yours',exact:true}).click();
+  await home.getByRole('button',{name:'Reset room',exact:true}).scrollIntoViewIfNeeded();
   assert.equal(await home.getByRole('button',{name:'Reset room',exact:true}).evaluate(el=>{
     const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));
   }),true,'mobile home cards do not cover appearance controls');

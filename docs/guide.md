@@ -40,11 +40,19 @@ its own window; quitting stops the server.
 
 **Make the room yours.** Choose **Make it yours** in the room's top bar. Follow the time of
 day or keep Morning, Daylight, Sunset or Night; slide Warmth toward cool or warm; switch the
-fairy lights on or off; and choose a picture for the side monitor. Automatic fairy lights
+fairy lights on or off; and choose pictures independently for the main and side monitors. Automatic fairy lights
 keep their usual response to finishing today's cards. Changes show immediately and are saved
 in this browser. **Reset room** returns the original colors, artwork and automatic lighting.
 The panel closes with Escape or a click outside. Your bed, computer, microphone and animated
 cat stay in the original illustration. The experimental 3D views have been removed.
+
+The room artwork has a quieter second pass: fewer repeated trinkets, clearer recording
+equipment and furniture, and matching morning/day/sunset/night versions. Night keeps the
+bed and desk visible in warm lamplight. The cat is a complete transparent cutout on empty
+bedding, with gentle breathing instead of separate rotating tail/ear pieces. It still
+responds when you pet it. On wide displays the camera includes the whole cat when the
+computer can also fit. Both monitor choices save independently; older side-monitor choices
+are preserved. Artwork provenance and prompts live in `web/public/room/CREDITS.md`.
 
 The isolated browser check uses the actual painting and controls, with no practice backend:
 `cd web && node e2e/room-appearance.mjs [screenshot-folder]`.

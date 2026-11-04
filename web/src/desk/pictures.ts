@@ -18,7 +18,7 @@ const photo = (id: string, name: string, cardY: string): Picture =>
 /** In the clock's order: it remembers its picture by index. */
 export const PICTURES: Picture[] = [
   { id: "room", name: "The room", url: roomUrl, card: { backgroundPosition: "65% 42%" } },
-  { id: "screen-cat", name: "The cat on the screen", url: roomUrl,
+  { id: "screen-cat", name: "Mountains on the screen", url: roomUrl,
     clock: { backgroundSize: "1000% auto", backgroundPosition: "82% 48%" }, card: { backgroundSize: "800% auto", backgroundPosition: "83% 47%" } },
   photo("cat-window-nap", "Cat napping by the window", "27%"),
   photo("cat-blanket", "Cat on a blanket", "52%"),

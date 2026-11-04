@@ -10,11 +10,29 @@ const FAIRY_LIGHTS: { value: RoomAppearancePrefs["lights"]; label: string }[] = 
   { value: "auto", label: "Automatic" }, { value: "on", label: "On" }, { value: "off", label: "Off" },
 ];
 const DECOR: { value: RoomAppearancePrefs["decor"]; label: string; image: string }[] = [
-  { value: "original", label: "Original", image: "room/room-day.webp" },
+  { value: "original", label: "Original", image: "room/room-day-v2.webp" },
   { value: "leaves", label: "Leaves", image: "pictures/plant-fern.webp" },
   { value: "stars", label: "Stars", image: "pictures/nebula-cliffs.webp" },
   { value: "cat", label: "Sleepy cat", image: "pictures/cat-window-nap.webp" },
 ];
+
+function MonitorChoices({ id, monitor, value, onChange }: {
+  id: string;
+  monitor: "main" | "side";
+  value: RoomAppearancePrefs["decor"];
+  onChange: (value: RoomAppearancePrefs["decor"]) => void;
+}) {
+  return <fieldset>
+    <legend>{monitor === "main" ? "Main monitor" : "Side monitor"}</legend>
+    <div className={`room-appearance-decor room-appearance-decor-${monitor}`}>
+      {DECOR.map(({ value: choice, label, image }) => <label key={choice}>
+        <input type="radio" name={`${id}-${monitor}-decor`} value={choice} checked={value === choice}
+          onChange={() => onChange(choice)} />
+        <span><span className={`room-appearance-thumb room-appearance-thumb-${choice}`} style={{ backgroundImage: `url(${image})` }} aria-hidden="true" />{label}</span>
+      </label>)}
+    </div>
+  </fieldset>;
+}
 
 export function RoomAppearance() {
   const prefs = useRoomAppearance();
@@ -95,16 +113,8 @@ export function RoomAppearance() {
             </label>)}
           </div>
         </fieldset>
-        <fieldset>
-          <legend>Side monitor</legend>
-          <div className="room-appearance-decor">
-            {DECOR.map(({ value, label, image }) => <label key={value}>
-              <input type="radio" name={`${id}-decor`} value={value} checked={prefs.decor === value}
-                onChange={() => setRoomAppearance({ decor: value })} />
-              <span><span className={`room-appearance-thumb room-appearance-thumb-${value}`} style={{ backgroundImage: `url(${image})` }} aria-hidden="true" />{label}</span>
-            </label>)}
-          </div>
-        </fieldset>
+        <MonitorChoices id={id} monitor="main" value={prefs.mainDecor} onChange={mainDecor => setRoomAppearance({ mainDecor })} />
+        <MonitorChoices id={id} monitor="side" value={prefs.decor} onChange={decor => setRoomAppearance({ decor })} />
         <button type="button" className="room-appearance-reset" onClick={resetRoomAppearance}>Reset room</button>
       </div>}
     </>

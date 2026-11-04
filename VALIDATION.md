@@ -1,5 +1,26 @@
 # Lilt: validation report
 
+## 4 November 2026: artwork and cat repair, independent monitors
+
+Versioned generated paintings preserve the familiar room with simpler coherent props and
+matching four-light variants. The new night illustration keeps interior midtones visible.
+A single transparent cat sits over empty painted bedding; detached tail/ear layers are no
+longer requested. The main and side monitor preferences save independently, including migration
+from previously saved side-only settings. Source artwork is retained for comparison.
+
+Verified in isolated Chrome using the actual room and the full home with practice APIs blocked:
+both monitor pictures persist independently, reset restores both, light/temperature effects
+work, the cat has real transparent alpha and responds to petting, all of the cat fits the
+1440px desktop framing, and the main monitor remains visible at 1024×1366 and 1000×950.
+The new night bed/chair sample is visibly brighter (mean encoded luminance about 96 versus
+28 previously; this is a relative image check, not calibrated display luminance). All four
+lighting screenshots and monitor placement were visually inspected. Browser checks also cover
+mobile scrolling, focus/route dismissal, cross-tab updates and reduced-motion rendering.
+
+Web typecheck, 108 unit tests/build, server formatting/strict Clippy/70 tests, Python (47 passed,
+one platform skip), and desktop formatting/release Clippy pass. No owner data or service on
+port 7878 was used. Existing bundle advisory remains. Real phones and Safari are untested.
+
 ## 4 November 2026: original room customization
 
 Removed the rejected painted/sketched 3D experiments, their routes, generated assets and

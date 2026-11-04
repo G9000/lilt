@@ -16,7 +16,7 @@ const COURSE = DEFAULT_COURSE;
 import { HistoryPage } from "./History";
 import { TextHistory } from "./TextHistory";
 import { setRoom } from "../room/Room";
-import { currentLight } from "../room/scene";
+import { CAT_URL, currentLight, roomUrl } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
 import { Measured, ResonanceNote, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
@@ -617,10 +617,8 @@ function SleepingCat({ hint, title = "Ready when you are" }: { hint: string; tit
   return (
     <div className="ve-art">
       <div className="ve-cat" aria-hidden="true">
-        <div className="ve-cat-stage" style={{ backgroundImage: `url(room/room-${light}.webp)` }}>
-          <img className="tail" src={`room/cat-tail-${light}.webp`} alt="" />
-          <img className="body" src={`room/cat-body-${light}.webp`} alt="" />
-          <img className="ear" src={`room/cat-ear-${light}.webp`} alt="" />
+        <div className="ve-cat-stage" style={{ backgroundImage: `url(${roomUrl(light)})` }}>
+          <img className="body" src={CAT_URL} alt="" />
           <span className="ve-zzz"><i>z</i><i>z</i><i>z</i></span>
         </div>
       </div>

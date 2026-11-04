@@ -31,7 +31,8 @@
 .room-appearance-decor label > span { display: block; padding: 3px; border-radius: 9px; color: var(--ink-2); font-size: 11px; text-align: center; white-space: nowrap; }
 .room-appearance-decor input:checked + span { background: var(--accent-soft); color: var(--accent-ink); box-shadow: 0 0 0 1px var(--accent); }
 .room-appearance-thumb { display: block; width: 100%; aspect-ratio: 1.2; margin-bottom: 5px; border-radius: 6px; background-size: cover; background-position: center; }
-.room-appearance-thumb-original { background-size: 690% auto; background-position: 90% 48%; }
+.room-appearance-thumb-original { background-size: 690% auto; background-position: 82% 45%; }
+.room-appearance-decor-main .room-appearance-thumb-original { background-size: 575% auto; background-position: 62% 41%; }
 .room-appearance-thumb-cat { background-position: center 27%; }
 .room-appearance-reset { min-height: 44px; padding: 6px 12px; border-radius: 9px; background: var(--fill); color: var(--ink-2); font-size: 13px; }
 .room-appearance-close:hover, .room-appearance-reset:hover { background: var(--fill-2); }

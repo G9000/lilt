@@ -11,7 +11,7 @@ export type Quad = [[number, number], [number, number], [number, number], [numbe
 
 /** Screen corners (top-left, top-right, bottom-right, bottom-left) of the two front monitors. */
 export const MAIN_SCREEN: Quad = [[857, 320], [1148, 321], [1147, 481], [857, 466]];
-export const SIDE_SCREEN: Quad = [[1172, 348], [1415, 354], [1413, 520], [1172, 497]];
+export const SIDE_SCREEN: Quad = [[1176, 354], [1417, 359], [1403, 511], [1171, 491]];
 /** Where the camera looks on the home screen, and the cat (for its speech bubble). */
 export const DESK_FOCUS = { x: 960, y: 430 };
 export const CAT_SPOT = { x: 345, y: 735 };
@@ -19,8 +19,8 @@ export const CAT_SPOT = { x: 345, y: 735 };
 export const COFFEE = { x: 1150, y: 455, w: 56, h: 120 };
 export const COFFEE_URL = "https://buymeacoffee.com/animaos";
 
-export const roomUrl = (l: Light) => `room/room-${l}.webp`;
-const catUrl = (part: string, l: Light) => `room/cat-${part}-${l}.webp`;
+export const roomUrl = (l: Light) => `room/room-${l}-v2.webp`;
+export const CAT_URL = 'room/cat-v2.webp';
 
 /** The window panes (outlines of the glass): birds, clouds, stars and city lights stay inside them. */
 const WINDOWS: [number, number][][] = [[[306, 52], [506, 47], [509, 277], [340, 303]], [[604, 22], [935, 14], [935, 312], [617, 312]], [[958, 8], [1671, 0], [1671, 364], [1388, 329], [959, 309]]];
@@ -73,20 +73,9 @@ export function innerBox(q: Quad) {
 
 /* ---------- the cat ---------- */
 
-type CatPart = "body" | "tail" | "ear";
-const catImages: Record<CatPart, Record<Light, HTMLImageElement>> | null = typeof Image === "undefined" ? null : (() => {
-  const o = {} as Record<CatPart, Record<Light, HTMLImageElement>>;
-  for (const p of ["body", "tail", "ear"] as CatPart[]) {
-    o[p] = {} as Record<Light, HTMLImageElement>;
-    for (const l of LIGHTS) { const im = new Image(); im.src = catUrl(p, l); o[p][l] = im; }
-  }
-  return o;
-})();
-
 export type CatMood = "sleep" | "listen" | "happy";
-
-/** Where the cat's sprites (body, tail, ear: each a full 363×173 frame) sit on the painting. */
-const CAT_BOX = { x: 62, y: 671, w: 363, h: 173 };
+/** One complete cutout, over empty bedding; no moving piece leaves a painted copy behind. */
+export const CAT_BOX = { x: 80, y: 689, w: 330, h: 165 };
 
 /** Hit box around the sleeping cat, in painting pixels. */
 export const catHit = (x: number, y: number) => x > 75 && x < 410 && y > 685 && y < 840;
@@ -114,6 +103,7 @@ export interface Frame {
   hearts: { x: number; y: number; born: number; drift: number }[];
   /** 0–1: the string lights and the warm lamp, on once today's cards are done. */
   lights: number;
+  catImage?: HTMLImageElement;
 }
 
 function quadPath(g: CanvasRenderingContext2D, q: readonly (readonly [number, number])[]) {
@@ -247,29 +237,20 @@ function plants(g: CanvasRenderingContext2D, t: number, w: Weights) {
   g.restore();
 }
 
-function catPart(g: CanvasRenderingContext2D, part: CatPart, w: Weights, move: () => void) {
-  if (!catImages) return;
-  g.save(); move();
-  for (const l of LIGHTS) {
-    const im = catImages[part][l];
-    if (!im.complete || !im.naturalWidth || w[l] < 0.005) continue;
-    g.globalAlpha = w[l]; g.drawImage(im, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);
-  }
-  g.restore();
-}
-
 function cat(g: CanvasRenderingContext2D, f: Frame) {
-  const { t, w } = f;
+  const { t, w, catImage } = f;
+  if (!catImage?.complete || !catImage.naturalWidth) return;
   const breathe = Math.sin(t * (f.cat === "sleep" ? 1.66 : 2.1));
-  // Listening: the ear keeps turning and the tail is livelier. Happy: a slow, wide swish.
-  const since = t - f.poked, poke = Math.max(0, 1 - Math.abs(since) / 1.5);
-  const lively = f.cat === "listen" ? 1 : f.cat === "happy" ? 1.8 : 0;
-  const tail = 0.014 * Math.sin(t * 0.46) + 0.062 * Math.max(0, Math.sin(t * 0.31 + 2)) ** 9 + Math.sin(since * 13) * 0.13 * poke + lively * 0.05 * Math.sin(t * 1.4);
-  const ear = (Math.max(0, Math.sin(t * (f.cat === "listen" ? 1.9 : 0.62) + 2)) ** 20) * 0.12 + Math.max(0, 1 - Math.abs(since) / 0.77) * 0.15 * Math.sin(since * 20);
-  // The belly rises gently; scaling is anchored at the lower edge so the feet stay on the blanket.
-  catPart(g, "body", w, () => { g.translate(243, 820); g.scale(1 + 0.002 * breathe, 1 + 0.012 * breathe); g.translate(-243, -820); });
-  catPart(g, "tail", w, () => { g.translate(124, 801); g.rotate(tail); g.translate(-124, -801); });
-  catPart(g, "ear", w, () => { g.translate(389, 739); g.rotate(ear); g.translate(-389, -739); });
+  const floor = CAT_BOX.y + CAT_BOX.h - 8;
+  g.save();
+  g.fillStyle = 'rgba(51,35,50,.18)';
+  g.beginPath(); g.ellipse(CAT_BOX.x + CAT_BOX.w / 2, floor - 4, CAT_BOX.w * 0.45, 12, 0, 0, Math.PI * 2); g.fill();
+  g.translate(CAT_BOX.x + CAT_BOX.w / 2, floor);
+  g.scale(1 + 0.0015 * breathe, 1 + 0.007 * breathe);
+  g.translate(-CAT_BOX.x - CAT_BOX.w / 2, -floor);
+  g.filter = `brightness(${1 - w.night * 0.22}) saturate(${1 - w.night * 0.15})`;
+  g.drawImage(catImage, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);
+  g.restore();
 }
 
 function hearts(g: CanvasRenderingContext2D, f: Frame) {

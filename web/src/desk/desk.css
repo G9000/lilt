@@ -124,12 +124,10 @@
 .ds-t-stage { flex: 1; display: grid; gap: 6px; font-size: 11.5px; color: #a9a9b3; }
 .ds-t-bar { height: 4px; border-radius: 99px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
 .ds-t-bar i { display: block; height: 100%; background: #ff8a5c; border-radius: inherit; }
-.ds-cat { position: absolute; right: 22px; top: -50px; width: 176px; height: 80px; pointer-events: none; z-index: 2; clip-path: inset(0 0 36% 0); filter: drop-shadow(0 -2px 6px rgba(0, 0, 0, 0.18)); transition: opacity 0.3s; }
+.ds-cat { position: absolute; right: 22px; top: -64px; width: 176px; height: 88px; pointer-events: none; z-index: 2; filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.18)); transition: opacity 0.3s; }
 .ds-cat img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ds-cat .tail { transform-origin: 17% 75%; animation: ds-tail 4.6s ease-in-out infinite; }
 .ds-cat .body { transform-origin: 50% 86%; animation: ds-breathe 3.4s ease-in-out infinite; }
-@keyframes ds-tail { 0%, 70%, 100% { transform: rotate(0); } 80% { transform: rotate(4deg); } 90% { transform: rotate(-2deg); } }
-@keyframes ds-breathe { 50% { transform: scale(1.004, 1.018); } }
+@keyframes ds-breathe { 50% { transform: scale(1.002, 1.007); } }
 
 .ds-clock { color: #fff; }
 .ds-clock-img { position: absolute; inset: -2px; background-position: 92% 18%; background-size: 520% auto; background-repeat: no-repeat; transition: transform 1.2s var(--ease); }
@@ -214,6 +212,7 @@
   .ds-dock { gap: 8px; padding: 8px 9px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .ds-cat img { animation: none; }
   .ds, .ds.in { transition: opacity 0.2s !important; transform: none !important; filter: none !important; }
 }
 

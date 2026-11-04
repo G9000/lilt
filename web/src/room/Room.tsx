@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
-  CAT_SPOT, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
+  CAT_BOX, CAT_SPOT, CAT_URL, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
   quadMatrix, roomUrl, SIDE_SCREEN, W,
 } from "./scene";
 import { useRoomAppearance } from './appearance';
@@ -31,7 +31,14 @@ const clamp = (n: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, n
 /** Outside: the painting fills the screen, framed on the desk. */
 function homeView(vw: number, vh: number): View {
   const s = Math.max(vw / W, vh / H) * 1.03;
-  return { s, left: clamp(vw / 2 - DESK_FOCUS.x * s, vw - W * s, 0), top: clamp(vh / 2 - DESK_FOCUS.y * s, vh - H * s, 0) };
+  let left = clamp(vw / 2 - DESK_FOCUS.x * s, vw - W * s, 0);
+  // On desktop keep the whole cat in frame as well as the recording desk.
+  if (vw >= 1000) {
+    const catLeft = Math.min(0, 24 - CAT_BOX.x * s);
+    const deskRight = vw - 24 - Math.max(...MAIN_SCREEN.map(p => p[0])) * s;
+    left = Math.min(Math.max(left, catLeft), deskRight);
+  }
+  return { s, left, top: clamp(vh / 2 - DESK_FOCUS.y * s, vh - H * s, 0) };
 }
 /** Inside: the monitor's screen covers the whole view. */
 function screenView(vw: number, vh: number): View {
@@ -75,6 +82,12 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   // With reduced motion there is no loop: this redraws the room once, on demand.
   const redraw = useRef(() => {});
   useEffect(() => { redraw.current(); }, [appearance]);
+  useEffect(() => {
+    const image = new Image();
+    image.onload = () => { frame.current.catImage = image; redraw.current(); };
+    image.src = CAT_URL;
+    return () => { image.onload = null; frame.current.catImage = undefined; };
+  }, []);
 
   // Fly the camera whenever we go in or out.
   useEffect(() => {
@@ -167,7 +180,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
     return () => { redraw.current = () => {}; cancelAnimationFrame(raf); };
   }, [reduced]);
 
-  // The cat says hello when you arrive: an ear flick, a tail swish, a little bubble.
+  // The cat says hello when you arrive, without moving disconnected pieces of its silhouette.
   useEffect(() => {
     if (inside) return;
     const id = window.setTimeout(() => {
@@ -236,7 +249,9 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
           <img key={l} ref={(el) => { arts.current[l] = el; }} className="room-art" src={roomUrl(l)} alt="" draggable={false}
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />
         ))}
-        {appearance.decor !== 'original' && <img className="room-monitor-art" src={ROOM_DECOR[appearance.decor]} alt="" draggable={false}
+        {appearance.mainDecor !== 'original' && <img className="room-monitor-art" data-monitor="main" src={ROOM_DECOR[appearance.mainDecor]} alt="" draggable={false}
+          style={{ transform: quadMatrix(520, 300, MAIN_SCREEN) }} />}
+        {appearance.decor !== 'original' && <img className="room-monitor-art" data-monitor="side" src={ROOM_DECOR[appearance.decor]} alt="" draggable={false}
           style={{ transform: quadMatrix(520, 300, SIDE_SCREEN) }} />}
         <canvas ref={canvas} className="room-fx" width={W} height={H} />
         <div className="room-color-wash" style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />

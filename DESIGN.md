@@ -9,8 +9,13 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 the painting visible: choose automatic/morning/day/sunset/night light, adjust a subtle cool/warm
 wash, set fairy lights to automatic/on/off, and swap the side monitor's picture. Native radio
 controls and a labeled slider work by keyboard; Escape closes and returns focus. Choices stay
-in this browser and Reset room restores the original look. The original furniture and
-painted cat remain; the 3D experiments have been removed.
+in this browser and Reset room restores the default look. Both monitors have independent
+picture choices. The original furniture arrangement remains; the 3D experiments have been removed.
+The refined v2 paintings reduce repeated props and ambiguous details while keeping the cozy
+palette and composition. Night has visible midtones and warm interior light. The cat is one
+connected alpha cutout over empty bedding, gently breathing; it no longer rotates fragments
+over a baked-in duplicate. Desktop framing includes the cat where possible while keeping
+the main monitor's navigation target visible, including tall displays.
 
 - **Room** (`#/`): the painting full screen in the light of the hour (morning, day, sunset,
   night), with its small animations (birds, dust, the sleeping cat). Today's cards sit in the

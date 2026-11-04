@@ -2,7 +2,7 @@ import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
 import { go } from "../App";
 import { Icon } from "../components/bits";
-import { currentLight, Light } from "../room/scene";
+import { CAT_URL, currentLight, Light, roomUrl } from "../room/scene";
 import { RoomAppearance } from '../room/RoomAppearance';
 import { radio, useRadio } from "./lofi";
 import { resetLayout, useLayoutMoved } from "./Floaters";
@@ -67,7 +67,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
 
   return (
     <div className={`ds${inside ? " in" : ""}${instant ? " instant" : ""}${page ? " app-open" : ""}${win?.full ? " app-full" : ""}`} aria-hidden={!inside} {...({ inert: inside ? undefined : "" } as object)}>
-      <div className="ds-wall" style={{ backgroundImage: `url(room/room-${light}.webp)` }} />
+      <div className="ds-wall" style={{ backgroundImage: `url(${roomUrl(light)})` }} />
 
       <header className="ds-menubar ds-boot">
         <Mark />
@@ -137,11 +137,9 @@ function TodayWidget({ deck, light, reload }: { deck: Deck | null; light: Light;
   return (
     <article className="ds-w ds-today" aria-label="Today's practice">
       <div className="ds-cat" aria-hidden="true">
-        <img className="tail" src={`room/cat-tail-${light}.webp`} alt="" />
-        <img className="body" src={`room/cat-body-${light}.webp`} alt="" />
-        <img src={`room/cat-ear-${light}.webp`} alt="" />
+        <img className="body" src={CAT_URL} alt="" />
       </div>
-      <div className="ds-t-img" style={{ backgroundImage: `url(room/room-${light}.webp)` }} />
+      <div className="ds-t-img" style={{ backgroundImage: `url(${roomUrl(light)})` }} />
       <svg className="ds-t-shape" viewBox="0 0 348 260" preserveAspectRatio="none" aria-hidden="true"><path d="M0 16 Q0 0 16 0 L176 0 Q188 0 197 8 L214 24 Q222 31 234 31 L332 31 Q348 31 348 47 L348 260 L0 260 Z" /></svg>
       <div className="ds-t-body">
         <h2 className="ds-t-title">{deck?.paused ? "Resting today" : "Today's practice"}</h2>
