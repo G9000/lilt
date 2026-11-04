@@ -8,7 +8,9 @@
   },
   "workspaces": ["web"],
   "scripts": {
-    "dev": "bun run --filter lilt-web dev",
+    "dev": "bun --no-orphans run --parallel dev:server dev:web",
+    "dev:server": "uv sync --locked --project analysis && cargo run --locked --manifest-path server/Cargo.toml -- serve",
+    "dev:web": "bun run --filter lilt-web dev",
     "build": "bun run --filter lilt-web build",
     "typecheck": "bun run --filter lilt-web typecheck",
     "test": "bun run --filter lilt-web test"

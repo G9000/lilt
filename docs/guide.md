@@ -457,11 +457,19 @@ From the repository root:
 
 ```bash
 bun install --frozen-lockfile
-bun run dev        # UI on :5173, proxies /api to :7878
+bun dev            # Rust server on :7878 and web UI on :5173
+bun dev:web        # only the UI, when the Rust server is already running
+bun dev:server     # only the Rust server, after preparing the Python helper
 bun run typecheck
 bun run test       # frontend unit tests using Node
 bun run build      # static app in web/dist
 ```
+
+`bun dev` runs both processes with prefixed logs. It installs the locked Python helper environment
+with uv and builds the Rust server with Cargo before starting it. Press Ctrl+C to stop both;
+if a process fails, Bun stops the other. Rust changes need a restart; the web UI reloads as you edit.
+Use `bun dev:web` if Lilt is already running on port 7878. The combined command uses the app's
+usual data folder unless you set `LILT_DATA_DIR`.
 
 Use `bun run test`, not `bun test`, to run the project's configured Node test suite. Workspace
 scripts also work from `web` (for example, `bun run dev`). To change web dependencies, run
@@ -484,7 +492,7 @@ cd web && LILT_URL=http://127.0.0.1:5173 node --test e2e/recording-lock.mjs  # V
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/safari.mjs  # disposable test server on :7979; open :5175 in Safari and click each tab's audio button
 cd web && node --test src/insight.test.ts   # the note in words after each take
 cd web && node --test src/room/scene.test.ts  # room: monitor warp, light blending, zoom box
-cd web && bun run dev                       # UI on :5173, proxies to a server on :7878
+bun dev:web                                # from the repo root: UI on :5173, server already running on :7878
 # Browser end-to-end with Chrome's fake microphone (server running on :7979 with a scratch data dir):
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flow.mjs /tmp/shots   # MOBILE=1 for phone size
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # the Practice window; needs a fresh data dir

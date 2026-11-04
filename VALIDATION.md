@@ -1,5 +1,24 @@
 # Lilt: validation report
 
+## 4 November 2026: one development command
+
+`bun dev` runs the Rust server and Vite together using Bun's parallel script runner. The server
+script first syncs the locked Python helper environment and builds Rust from the repository root.
+`bun dev:web` and `bun dev:server` run each side separately. Rust changes need a restart.
+
+Verified on Windows with temporary data and Rust on port 7979:
+
+- The actual `bun dev` command starts a healthy Rust server and serves the Vite HTML. Vite used
+  port 5174 because 5173 was occupied; the existing process was left alone.
+- Terminating the parent command releases both test ports, including descendant processes.
+- Holding the scratch Rust port open causes startup to fail, returns a nonzero exit code and
+  stops Vite as well.
+- Root type checking and all 103 frontend unit tests pass; `git diff --check` passes.
+
+The Vite API proxy still targets port 7878; this check fetched the scratch Rust health endpoint
+directly and checked the UI separately. No owner practice data or server on port 7878 was used.
+macOS/Linux signal handling was not exercised in this pass.
+
 ## 4 November 2026: Bun workspace
 
 The private root workspace manages `web` with Bun 1.4.2. All 221 dependency name/version pairs

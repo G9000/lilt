@@ -47,19 +47,23 @@ JavaScript packages are managed as a **Bun workspace**. The root `package.json` 
 and the root `bun.lock` keeps dependency versions fixed. Rust lives in `server/` and Python in
 `analysis/`, each with its own dependencies and lockfile.
 
-With Bun 1.4.2 and Node 22.18+ installed, run these commands from the repository root:
+With Rust, uv, Bun 1.4.2 and Node 22.18+ installed, run these commands from the repository root:
 
 ```bash
 bun install --frozen-lockfile
 bun run dev
 ```
 
-Open <http://127.0.0.1:5173>. The development UI reloads as you edit and connects to the Rust
-server on port 7878; start the server separately with `./lilt.sh` on macOS.
+Open <http://127.0.0.1:5173>. `bun dev` (or `bun run dev`) prepares the Python helper, builds and
+starts the Rust server on port 7878, and starts the web development server on port 5173. The UI
+reloads as you edit. Press Ctrl+C to stop both. If Lilt is already running on port 7878, use
+`bun dev:web` to run just the web app against it.
 
 | Command (from the repository root) | What it does |
 | --- | --- |
-| `bun run dev` | Start the web development server on port 5173 |
+| `bun dev` | Start the Rust server and web development server together |
+| `bun dev:server` | Prepare the Python helper, then build and start the Rust server |
+| `bun dev:web` | Start only the web development server on port 5173 |
 | `bun run build` | Check TypeScript and build the web app into `web/dist/` |
 | `bun run typecheck` | Check web TypeScript without building the app |
 | `bun run test` | Run the frontend unit tests using Node |
