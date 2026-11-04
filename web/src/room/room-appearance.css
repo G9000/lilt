@@ -1,0 +1,41 @@
+.ds-mb-btn.room-appearance-trigger { width: auto; padding: 0 7px; white-space: nowrap; }
+.ds-roomtop:has(.room-appearance) { z-index: 6; }
+.room-appearance {
+  position: fixed; top: 40px; right: 10px; z-index: 40;
+  width: min(360px, calc(100vw - 20px)); max-height: calc(100dvh - 54px); overflow-y: auto;
+  box-sizing: border-box; padding: 22px; border: 1px solid var(--hair); border-radius: 22px;
+  background: var(--panel); color: var(--ink); backdrop-filter: blur(30px) saturate(1.7);
+  -webkit-backdrop-filter: blur(30px) saturate(1.7); box-shadow: 0 18px 50px -18px rgba(5, 5, 20, .45);
+  font: 400 13px/1.5 var(--font); text-align: left;
+  animation: room-appearance-enter .18s ease-out;
+}
+.room-appearance-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.room-appearance h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.035em; line-height: 1.2; }
+.room-appearance-close { flex: 0 0 44px; width: 44px; min-height: 44px; padding: 12px; border-radius: 50%; color: var(--ink-2); background: var(--fill); }
+.room-appearance-close svg { width: 20px; height: 20px; display: block; }
+.room-appearance-intro { margin: 6px 0 22px; color: var(--ink-2); }
+.room-appearance fieldset { min-width: 0; margin: 0 0 22px; padding: 0; border: 0; }
+.room-appearance legend, .room-appearance-warmth > label { display: block; padding: 0; margin-bottom: 9px; font-size: 13px; font-weight: 600; }
+.room-appearance-segments { display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--fill); }
+.room-appearance-segments label, .room-appearance-decor label { position: relative; flex: 1; min-width: 0; cursor: pointer; }
+.room-appearance-segments input, .room-appearance-decor input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.room-appearance-segments label > span { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 3px 6px; border-radius: 9px; text-align: center; color: var(--ink-2); line-height: 1.25; }
+.room-appearance-segments input:checked + span { background: var(--panel); color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .1); }
+.room-appearance-light { flex-wrap: wrap; }
+.room-appearance-light label { flex-basis: 28%; }
+.room-appearance-light label:first-child { flex-basis: 54%; }
+.room-appearance-warmth { margin-bottom: 22px; }
+.room-appearance-warmth input { display: block; width: 100%; margin: 0; height: 44px; accent-color: var(--accent); cursor: pointer; }
+.room-appearance-range-labels { display: flex; justify-content: space-between; margin-top: 2px; font-size: 12px; color: var(--ink-2); }
+.room-appearance-decor { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.room-appearance-decor label > span { display: block; padding: 3px; border-radius: 9px; color: var(--ink-2); font-size: 11px; text-align: center; white-space: nowrap; }
+.room-appearance-decor input:checked + span { background: var(--accent-soft); color: var(--accent-ink); box-shadow: 0 0 0 1px var(--accent); }
+.room-appearance-thumb { display: block; width: 100%; aspect-ratio: 1.2; margin-bottom: 5px; border-radius: 6px; background-size: cover; background-position: center; }
+.room-appearance-thumb-original { background-size: 690% auto; background-position: 90% 48%; }
+.room-appearance-thumb-cat { background-position: center 27%; }
+.room-appearance-reset { min-height: 44px; padding: 6px 12px; border-radius: 9px; background: var(--fill); color: var(--ink-2); font-size: 13px; }
+.room-appearance-close:hover, .room-appearance-reset:hover { background: var(--fill-2); }
+.room-appearance :is(button, input[type="range"]):focus-visible, .room-appearance input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
+@keyframes room-appearance-enter { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 480px) { .room-appearance { padding: 18px; } .ds-mb-btn.room-appearance-trigger { gap: 4px; font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .room-appearance { animation: none; } }

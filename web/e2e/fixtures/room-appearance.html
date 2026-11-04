@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><base href="/"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Room appearance fixture</title></head>
+<body><div id="root"></div><script type="module">
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { Room } from '/src/room/Room.tsx';
+import { RoomAppearance } from '/src/room/RoomAppearance.tsx';
+import '/src/styles.css';
+import '/src/desk/desk.css';
+window.entered = 0;
+createRoot(document.getElementById('root')).render(React.createElement(React.StrictMode, null,
+  React.createElement(Room, {inside: false, onEnter: () => window.entered++, cards: 0, done: false}),
+  React.createElement('header', {className: 'ds-roomtop'}, React.createElement('span', null, 'Lilt'), React.createElement(RoomAppearance))
+));
+</script></body></html>

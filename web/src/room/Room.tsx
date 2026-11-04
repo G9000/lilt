@@ -1,8 +1,10 @@
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
   CAT_SPOT, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
-  quadMatrix, roomUrl, W, weights,
+  quadMatrix, roomUrl, SIDE_SCREEN, W,
 } from "./scene";
+import { useRoomAppearance } from './appearance';
+import { ROOM_DECOR, roomWeights } from './appearance-settings';
 
 /**
  * The illustrated room. Outside, it is the whole screen; the middle monitor is a way in. Inside,
@@ -53,6 +55,8 @@ const PET_SAYS = ["purr… :3", "prrrr <3", "mrrp!", "*happy cat noises*"];
 
 /** `children` float in the painting: position them in painting pixels; `--inv` undoes the camera's scale. */
 export function Room({ inside, onEnter, cards, done, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; children?: ReactNode }) {
+  const appearance = useRoomAppearance();
+  const appearanceRef = useRef(appearance); appearanceRef.current = appearance;
   const screenGlowId = useId();
   const stage = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -63,13 +67,14 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   const [aside, setAside] = useState<string | null>(null);
   const cam = useRef<{ now: View; from: View; to: View; start: number; flying: boolean; inside: boolean }>(null!);
   if (!cam.current) { const v = viewFor(inside); cam.current = { now: v, from: v, to: v, start: 0, flying: false, inside }; }
-  const frame = useRef<Frame>({ t: 0, w: weights(minuteNow()), cat: "sleep", poked: -100, hearts: [], lights: 0 });
+  const frame = useRef<Frame>({ t: 0, w: roomWeights(appearance.light, minuteNow()), cat: "sleep", poked: -100, hearts: [], lights: 0 });
   const doneRef = useRef(done);
   doneRef.current = done;
   const mouse = useRef({ x: 0, y: 0, sx: 0, sy: 0 });
   const reduced = typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   // With reduced motion there is no loop: this redraws the room once, on demand.
   const redraw = useRef(() => {});
+  useEffect(() => { redraw.current(); }, [appearance]);
 
   // Fly the camera whenever we go in or out.
   useEffect(() => {
@@ -97,6 +102,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
     const g = canvas.current?.getContext("2d");
     if (!g) return;
     let raf = 0, last = 0, lastLight = -1e9, lastHeart = 0;
+    let lastChoice = appearanceRef.current.light;
     const f = frame.current;
     const place = (now: number) => {
       const c = cam.current, m = mouse.current;
@@ -126,14 +132,17 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
     };
     const step = (now: number) => {
       f.t = now / 1000;
-      if (now - lastLight > 30000) {
+      const choice = appearanceRef.current;
+      if (now - lastLight > 30000 || lastChoice !== choice.light) {
         lastLight = now;
-        f.w = weights(minuteNow());
+        lastChoice = choice.light;
+        f.w = roomWeights(choice.light, minuteNow());
         const o = layerOpacity(f.w);
         for (const l of LIGHTS) { const im = arts.current[l]; if (im) im.style.opacity = String(o[l]); }
       }
       // the lights ease on (or off) over a couple of seconds
-      f.lights += ((doneRef.current ? 1 : 0) - f.lights) * (reduced ? 1 : 0.035);
+      const lightTarget = choice.lights === 'auto' ? Number(doneRef.current) : Number(choice.lights === 'on');
+      f.lights += (lightTarget - f.lights) * (reduced ? 1 : 0.035);
       f.cat = state.mode === "watch" || state.mode === "awake" ? "listen" : state.mode === "happy" ? "happy" : "sleep";
       if (f.cat === "happy" && now - lastHeart > 1400) { lastHeart = now; f.hearts.push({ x: 250, y: 740, born: f.t, drift: Math.random() - 0.5 }); }
       place(now);
@@ -141,8 +150,8 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
       if (!cam.current.inside || cam.current.flying) paint(g, f);
       last = now;
     };
+    const on = redraw.current = () => step(performance.now());
     if (reduced) {
-      const on = redraw.current = () => step(performance.now());
       on();
       // the light of day still moves on, just without animation
       const id = window.setInterval(() => { lastLight = -1e9; on(); }, 30000);
@@ -155,7 +164,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    return () => { redraw.current = () => {}; cancelAnimationFrame(raf); };
   }, [reduced]);
 
   // The cat says hello when you arrive: an ear flick, a tail swish, a little bubble.
@@ -222,11 +231,16 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   return (
     <div className={`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`} aria-hidden={inside} onPointerDown={onPoint} onPointerMove={onHover}>
       <div className={settledAtStart ? "room-stage settled" : "room-stage"} ref={stage} style={{ width: W, height: H }}>
+        <div className="room-paint" data-light={appearance.light}>
         {LIGHTS.map((l) => (
           <img key={l} ref={(el) => { arts.current[l] = el; }} className="room-art" src={roomUrl(l)} alt="" draggable={false}
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />
         ))}
+        {appearance.decor !== 'original' && <img className="room-monitor-art" src={ROOM_DECOR[appearance.decor]} alt="" draggable={false}
+          style={{ transform: quadMatrix(520, 300, SIDE_SCREEN) }} />}
         <canvas ref={canvas} className="room-fx" width={W} height={H} />
+        <div className="room-color-wash" style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
+        </div>
         <svg className="room-screen-light" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
           <defs><filter id={screenGlowId} x="820" y="280" width="370" height="240" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="7" /></filter></defs>
           <polygon className="room-screen-bloom" points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="none" stroke="#a8dfff" strokeWidth="10" filter={`url(#${screenGlowId})`} />

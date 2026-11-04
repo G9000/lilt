@@ -1,51 +1,23 @@
 # Lilt: validation report
 
-## 4 November 2026: warm sketch art-style comparison
+## 4 November 2026: original room customization
 
-Added `#/sketched-corner` alongside the original `#/painted-corner`, with links between them.
-Warm sketch uses original generated watercolor/ink textures and scenery, warm lighting and
-fine brown silhouette outlines. Both versions use the same geometry and interactions; style
-changes reset the view and session controls. The reference illustration itself is not shipped.
+Removed the rejected painted/sketched 3D experiments, their routes, generated assets and
+Three.js dependencies. The original illustrated home now offers Make it yours: automatic
+or fixed painted lighting, a subtle warmth wash, fairy-light controls, and existing local
+artwork on the side monitor. Choices are validated and kept in browser storage.
 
-Verified: each style passes the isolated Chrome suite, including direct entry without practice
-API calls, actual visual differences when switching styles, object picking, visible lamp and fan
-effects, camera/reset, motion pause, mobile comparison links, saved themes, reduced motion,
-missing assets/WebGL, context recovery and repeated StrictMode mounting. Desktop and narrow
-screenshots were inspected. Outline shader materials are explicitly released on cleanup.
+Verified with the real room in isolated Chrome: actual fairy-light pixel changes, matching
+painted light layers, warmth and monitor decor, reload persistence, reset, cross-tab changes,
+keyboard dismissal/focus return, computer hit-target alignment, and 390/768px layouts.
+The full home was also tested with practice APIs blocked: its card stack does not cover the
+panel, and keyboard entry to Practice closes the panel. Desktop/mobile screenshots inspected.
+No owner practice data or server on port 7878 was used.
 
-Root typecheck, 103 web tests, production build, server formatting/strict Clippy/70 tests,
-Python (47 passed, one skip), and desktop formatting/release Clippy pass. The lazy 3D chunk is
-about 588 kB / 154 kB gzip; the bundle-size advisory remains. No owner practice data or server
-on port 7878 was used. Safari, real phones and low-end GPU performance remain untested.
-
-## 4 November 2026: painted 3D corner preview
-
-The optional `#/painted-corner` loads a Three.js scene separately from the practice app. The
-desk, fan, lamp, window and curtains are modeled geometry, with painted surface textures and
-a distant landscape painting. This is an initial art study, not an exact reproduction of the
-approved concept illustration. The usual illustrated home remains the default.
-
-Verified on Windows with Chrome, against an isolated Vite instance with practice APIs blocked:
-
-- The preview makes no practice API requests. Lamp illumination changes actual scene pixels;
-  lamp and fan geometry can be clicked directly, and the fan's blades visibly turn.
-- Keyboard camera movement changes perspective; reset restores the original view within a
-  0.1% pixel tolerance for rasterization. Dragging over an object does not activate it.
-- Pause freezes the scene. Simulated document visibility events stop and restart GPU drawing.
-  Three StrictMode unmount/remount cycles leave no drawing after unmount and one canvas on entry.
-- Mobile controls fit at 390px and 768px, the camera reframes at the narrow breakpoint, reduced
-  motion starts paused, and explicit theme choices override the opposite OS theme.
-- Missing artwork, unavailable WebGL, and deliberate context loss show a retry and exit;
-  retry successfully rebuilds the scene after recoverable failures.
-- Root typecheck, all 103 web unit tests and production build pass. Build retains the existing
-  main-bundle size advisory and reports the lazy-loaded 3D chunk (about 582 kB / 152 kB gzip).
-- Server formatting, strict Clippy and all 70 server tests pass. Python: 47 passed, one macOS-only
-  skip. Desktop formatting and release Clippy pass. Restricted temporary-file access initially
-  blocked Python/server tests; both passed with normal access to their scratch folders.
-
-No owner practice data or server on port 7878 was used. Real phones, Safari, Mac packaging and
-low-end GPU performance have not been tested. Preview choices are deliberately session-only;
-there is no audio, microphone access or full room walkthrough.
+Web typecheck, 106 unit tests and production build pass. Server formatting, strict Clippy and
+70 tests, Python (47 passed, one platform skip), and desktop formatting/release Clippy passed
+in the same work session; no native or analysis source changed. The existing main-bundle size
+advisory remains; the separate 3D bundle is gone. Real phones and Safari remain untested.
 
 ## 4 November 2026: one development command
 
