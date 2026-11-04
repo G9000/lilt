@@ -6,13 +6,14 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const shots = process.argv[2];
+const density = Number(process.env.LILT_TEST_DPR ?? 1);
 if (shots) await mkdir(shots, { recursive: true });
 const server = await createServer({ server: { host: '127.0.0.1', port: 0 }, logLevel: 'error' });
 await server.listen();
 let browser;
 try {
   browser = await chromium.launch({ channel: 'chrome', headless: true });
-  const page = await browser.newPage({ viewport: { width: 1880, height: 920 }, reducedMotion: 'reduce' });
+  const page = await browser.newPage({ viewport: { width: 1880, height: 920 }, deviceScaleFactor: density, reducedMotion: 'reduce' });
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   const deck = { local_date: '2026-11-05', paused: false, counts: { new: 5, review: 0, again: 0 }, open_stage: 1, cap: 5,
@@ -51,7 +52,7 @@ try {
         neighbours: widgets.filter(other => other !== el && overlaps(el.querySelector('.fl-nudge').getBoundingClientRect(), other.querySelector('.fl-nudge').getBoundingClientRect())).map(other => other.querySelector('[aria-label]').getAttribute('aria-label')),
       }));
     });
-    if (shots) await page.screenshot({ path: path.join(shots, `layout-${label}.png`) });
+    if (shots) await page.screenshot({ path: path.join(shots, `layout-${label}${density === 1 ? '' : `-${density}x`}.png`) });
     console.log(label, result);
     for (const widget of result) {
       assert.equal(widget.hidden, false, `${label}: ${widget.name} must remain available after reset`);
@@ -60,8 +61,17 @@ try {
     }
   };
   await inspect('wide');
-  for (const [width, height] of [[1440,950],[1024,768],[1024,1366]]) {
+  const sizes = density === 1
+    ? [[2560,1440],[3440,1440],[3840,2160],[1440,950],[1024,768],[1024,1366]]
+    : [[1920,1080]]; // A 4K display at 200% scaling has a 1920×1080 CSS viewport.
+  for (const [width, height] of sizes) {
     await page.setViewportSize({width,height});
+    await page.evaluate(async () => {
+      const { setSpot } = await import('/src/desk/Floaters.tsx');
+      setSpot('stack', { x: -70, y: -30 });
+      setSpot('yarn', { x: 1300, y: 220 });
+    });
+    await page.getByRole('button', {name:'Reset layout',exact:true}).click();
     await inspect(`${width}-${height}`);
   }
   await page.setViewportSize({width:1024,height:768});

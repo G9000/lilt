@@ -1,5 +1,15 @@
 # Lilt: validation report
 
+## 5 November 2026: Larger-screen reset follow-up
+
+Extended the isolated room layout suite to reset at every tested size, including
+2560×1440, ultrawide 3440×1440 and 3840×2160 CSS viewports. All seven widgets remained
+visible with no widget/widget or widget/practice-stack intersections. Ultrawide and
+4K screenshots were inspected. `LILT_TEST_DPR=2` additionally checks 1880×920 and
+1920×1080 CSS viewports at double pixel density (including a 4K-equivalent display
+at 200% scaling); reset, drag and reload checks passed. These are browser-emulated
+sizes and pixel density, not physical-monitor acceptance. No app code changed.
+
 ## 5 November 2026: Room reset spacing
 
 The isolated `web/e2e/room-layout.mjs` reproduced Yarn disappearing behind today's
