@@ -1,5 +1,18 @@
 # Lilt: validation report
 
+## 5 November 2026: Room reset spacing
+
+The isolated `web/e2e/room-layout.mjs` reproduced Yarn disappearing behind today's
+practice after Reset layout, and Flashcards doing the same at 1440×950. New defaults
+and nearby free-space placement keep all seven widgets visible and separate from the
+practice stack and each other at 1880×920, 1440×950, 1024×768 and 1024×1366. Dragging an
+automatically nudged note, reloading and resetting again passed; desktop screenshots
+were inspected. Existing room appearance/interaction checks, including phone controls,
+also passed. Web typecheck, 108 unit tests and build, server formatting/Clippy/70 tests,
+Python 47 tests (one platform skip), and desktop formatting/release Clippy passed.
+Existing build-size and Windows incremental-cache warnings remain. No owner practice
+data or recording service was changed.
+
 ## 4 November 2026: Music layout cleanup
 
 Removed expand/restore controls and the square cover obscuring the disc. The full

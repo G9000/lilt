@@ -8,6 +8,7 @@ import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
 import { Illustration } from "../components/Illustrations";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
+import { freeWidgetSpot, type Box } from "./widget-layout";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
@@ -15,16 +16,15 @@ import { CURRENT, shortVersion } from "../release";
  * days you practised this week) by the potted plant, Settings (theme, AI connection and
  * everything else, over the room) on the window beside the clock, and What's new (this version and
  * what came with it, from release.ts) up by the hanging lights, and Flashcards (the chapter you're
- * going through, a card at a time) beside the plant, and Yarn (the voice game) on the desk under the
- * screen. Drag them anywhere; each remembers its
+ * going through, a card at a time) beside the plant, and Yarn (the voice game) in the right-hand
+ * window, clear of today's practice. Drag them anywhere; each remembers its
  * spot in the painting (in this browser), so it rides the room's camera. One near the edge slides
- * inward to stay on screen; one left at home that would cover today's cards steps out of the way.
+ * inward to stay on screen; one left at home finds free space around today's cards and its neighbours.
  */
 
 type Spot = { x: number; y: number };
-// Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
-// 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 } };
+// Preferred painting positions. The fit pass separates them when a smaller viewport gets tight.
+const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 490, y: 830 }, yarn: { x: 1360, y: 300 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -63,7 +63,12 @@ function Widget({ id, delay, label, still, children }: { id: string; delay: numb
     const inv = stage ? parseFloat(getComputedStyle(stage).getPropertyValue("--inv")) || 1 : 1;
     const dx = x.get() * inv, dy = y.get() * inv;
     if (Math.hypot(dx, dy) < 2) { x.set(0); y.set(0); return; }
-    setSpot(id, { x: Math.round(spot.x + dx), y: Math.round(spot.y + dy) });
+    // Include automatic spacing in the saved position, so picking up a nudged widget never jumps.
+    const nx = (parseFloat(el.current?.style.getPropertyValue("--nudge") ?? "") || 0) * inv;
+    const ny = (parseFloat(el.current?.style.getPropertyValue("--nudge-y") ?? "") || 0) * inv;
+    el.current?.style.setProperty("--nudge", "0px");
+    el.current?.style.setProperty("--nudge-y", "0px");
+    setSpot(id, { x: Math.round(spot.x + dx + nx), y: Math.round(spot.y + dy + ny) });
   };
   return (
     <div className={`fl${store[id] ? " moved" : ""}${dragging ? " dragging" : ""}`} ref={el} style={{ left: spot.x, top: spot.y, ["--d" as string]: `${delay}s` }}>
@@ -236,8 +241,7 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
     try { const p = await api.profile(); await api.saveProfile({ ...p, room_note: t }); } catch { /* the note stays on screen; it saves next time */ }
   };
 
-  // Stay on screen: slide inward; hide only if it can't fit, or if a widget still at home would
-  // sit on today's cards (one you moved stays where you put it).
+  // Default widgets find nearby space around the cards and each other. Saved placements stay put.
   useEffect(() => {
     const check = () => {
       // While the camera is at the desk or flying, the widgets are hidden: measuring them then
@@ -245,6 +249,12 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
       if (!box.current?.closest(".room-stage.settled")) return;
       const stack = document.querySelector(".cs")?.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
+      const occupied: Box[] = stack ? [stack] : [];
+      document.querySelectorAll<HTMLElement>(".room-hit, .room-object, .room-object-shortcuts").forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.width && r.height) occupied.push(r);
+      });
+      box.current?.querySelectorAll<HTMLElement>(".fl.moved .fl-nudge").forEach(el => occupied.push(el.getBoundingClientRect()));
       box.current?.querySelectorAll<HTMLElement>(".fl").forEach((el) => {
         if (el.classList.contains("dragging")) return;
         el.classList.remove("off");
@@ -253,15 +263,16 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
         const was = [parseFloat(el.style.getPropertyValue("--nudge")) || 0, parseFloat(el.style.getPropertyValue("--nudge-y")) || 0];
         const r = el.querySelector<HTMLElement>(".fl-nudge")!.getBoundingClientRect();
         const card = { left: r.left - was[0], right: r.right - was[0], top: r.top - was[1], bottom: r.bottom - was[1] };
-        const nx = card.left < 12 ? 12 - card.left : card.right > vw - 12 ? vw - 12 - card.right : 0;
-        const ny = card.top < 44 ? 44 - card.top : card.bottom > vh - 12 ? vh - 12 - card.bottom : 0;
+        let nx = card.left < 12 ? 12 - card.left : card.right > vw - 12 ? vw - 12 - card.right : 0;
+        let ny = card.top < 44 ? 44 - card.top : card.bottom > vh - 12 ? vh - 12 - card.bottom : 0;
+        const moved = el.classList.contains("moved");
+        const free = moved ? null : freeWidgetSpot(card, { left: 12, top: 44, right: vw - 12, bottom: vh - 12 }, occupied);
+        if (free) { nx = free.left - card.left; ny = free.top - card.top; occupied.push(free); }
         if (Math.abs(nx - was[0]) > 0.5) el.style.setProperty("--nudge", `${nx}px`);
         if (Math.abs(ny - was[1]) > 0.5) el.style.setProperty("--nudge-y", `${ny}px`);
         const b = { left: card.left + nx, right: card.right + nx, top: card.top + ny, bottom: card.bottom + ny };
         const outside = b.right - b.left > vw - 24 || b.bottom - b.top > vh - 56;
-        // once you've placed the cards yourself, nothing hides for them: it just sits behind
-        const onCards = !layout.stack && !el.classList.contains("moved") && stack && !(b.right < stack.left - 8 || b.left > stack.right + 8 || b.bottom < stack.top - 8 || b.top > stack.bottom);
-        el.classList.toggle("off", outside || !!onCards);
+        el.classList.toggle("off", outside || (!moved && !free));
       });
     };
     check();
