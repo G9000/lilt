@@ -438,7 +438,10 @@ authentication.
 | `LILT_MCP_TOKEN` | unset | If set, `/mcp` on this computer requires `Authorization: Bearer <token>` (apps connecting through the public address sign in with OAuth instead) |
 
 The timezone (default `Asia/Kuala_Lumpur`), reminder time, session length and comparison window are
-in **Settings**. Lilt stores UTC timestamps alongside local dates.
+in **Settings**. Changes save automatically; **Saved** confirms your latest edit. If you leave and
+reopen Settings while a save is pending, the pane waits for it before loading your settings.
+In Practice settings, separate the qualities you want with commas, such as `soft, bright`.
+Lilt stores UTC timestamps alongside local dates.
 
 **Models:** the optional in-app coach selects from the connected ChatGPT account's model list.
 Deterministic practice analysis does not use a cloud model.
@@ -457,6 +460,7 @@ cd server && cargo test --all-targets --all-features  # includes the real analys
 cd analysis && uv run --locked pytest      # analysis tests on fixed fixtures
 cd analysis && uv run --locked python scripts/evaluate.py   # regenerates EVALUATION.md
 cd web && node --test src/pitch.test.ts     # live pitch tracker (YIN) on synthetic tones
+cd web && node --test e2e/settings-comparison.mjs  # starts its own test server: delayed saves, typing and comparison switches
 cd web && LILT_URL=http://127.0.0.1:5173 node --test e2e/recording-lock.mjs  # Vite running: real browser locks/recorder, fake mic and stubbed API
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/safari.mjs  # disposable test server on :7979; open :5175 in Safari and click each tab's audio button
 cd web && node --test src/insight.test.ts   # the note in words after each take

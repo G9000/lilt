@@ -12,6 +12,10 @@ const OUTCOME: Record<Comparison["outcome"], string> = {
 };
 
 export function ComparePage({ a, b }: { a: string; b: string }) {
+  return <ComparisonForPair key={JSON.stringify([a, b])} a={a} b={b} />;
+}
+
+function ComparisonForPair({ a, b }: { a: string; b: string }) {
   const [ta, setTa] = useState<Take | null>(null);
   const [tb, setTb] = useState<Take | null>(null);
   const [cmp, setCmp] = useState<Comparison | null>(null);
@@ -20,10 +24,12 @@ export function ComparePage({ a, b }: { a: string; b: string }) {
 
   useEffect(() => {
     if (!a || !b) return;
+    let live = true;
     Promise.all([api.take(a), api.take(b), api.compare(a, b)])
-      .then(([x, y, c]) => { setTa(x); setTb(y); setCmp(c); })
-      .catch((e) => setErr(e.message));
-    Promise.all([api.analysis(a).catch(() => null), api.analysis(b).catch(() => null)]).then((x) => setAn(x as [any, any]));
+      .then(([x, y, c]) => { if (live) { setTa(x); setTb(y); setCmp(c); } })
+      .catch((e) => { if (live) setErr(e.message); });
+    Promise.all([api.analysis(a).catch(() => null), api.analysis(b).catch(() => null)]).then((x) => { if (live) setAn(x as [any, any]); });
+    return () => { live = false; };
   }, [a, b]);
 
   if (!a || !b) return <div className="dv"><p className="dv-empty">Pick two takes to compare from <a href="#/progress">Progress</a> or <a href="#/history">Recordings</a>.</p></div>;

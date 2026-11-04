@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "Settings that keep your edits", body: "Quick changes save in order, even when you leave and reopen Settings. Commas stay put as you type your qualities, and comparisons clear the previous pair's results when you choose other takes.", to: "/studio/settings" },
       { title: "Resonance and weight, rewritten", body: "Two chapters now say plainly what to do: a smaller space for your voice, and a light, clear sound you borrow from little sounds and carry into words. Never by squeezing.", to: "/studio/resonance" },
       { title: "Ball of yarn", body: "A calm game: lift a ball of yarn with your voice, humming or speaking, in your own range. No scores.", to: "/yarn" },
       { title: "Play my note", body: "The recorder plays the middle of your range, to hum along to before you start." },

@@ -1,5 +1,28 @@
 # Lilt: validation report
 
+## 4 November 2026: settings saves and comparison switches
+
+Settings saves are ordered across closing and reopening the pane. Only confirmation of the latest
+edit shows Saved; an older failure cannot replace the newer edit's status. Qualities preserve commas
+and spaces while you type. Changing a comparison pair clears its recordings, measurements and errors,
+and late responses from the old pair are ignored.
+
+Verified on Windows with isolated browser fixtures and simulated API responses:
+
+- `node --test e2e/settings-comparison.mjs`: nine browser regressions pass, covering overlapping
+  saves, leaving/reopening, older failures, typed qualities, pair switches and late results/analyses.
+  The original seven cases failed before the fixes; the additional reopening case caught and
+  verified a correction to the first implementation.
+- Existing feedback browser regression, 103 frontend unit tests, TypeScript and production web
+  build pass. The existing large-bundle advisory remains.
+- All 70 server tests pass with the real Python helper and a writable scratch temp folder.
+  Server formatting and strict Clippy pass; the compiler reports its existing hard-link cache fallback.
+- Python: 47 passed, one skipped (macOS `say`). Desktop formatting passes. Desktop release Clippy
+  could not run offline because locked `tauri-plugin-opener` 2.7.2 is absent from the local cache.
+
+No owner recordings or server on port 7878 were used for testing. Safari and the Mac desktop build
+were not validated in this pass.
+
 ## 3 November 2026: width controls removed
 
 Removed the experimental section width/column controls, document grouping and expanded-layout

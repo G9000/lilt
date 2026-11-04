@@ -1,6 +1,6 @@
 import "../styles/texts.css";
 import "../styles/settings.css";
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api, Profile, TextItem } from "../api";
 import { idLabel } from "../chapters";
 import { applyTextSize, readTextSize, readThemeMode, TEXT_SIZES, type TextSize, type ThemeMode } from "../App";
@@ -76,6 +76,9 @@ export function Row({ label, help, htmlFor, children, stack }: { label: string; 
   );
 }
 
+// A closing settings pane may still be saving when another one opens.
+let profileSaves: Promise<void> = Promise.resolve();
+
 /** The profile, saved a moment after each change, as System Settings does: no Save button. */
 export function useProfileDraft() {
   const [p, setP] = useState<Profile | null>(null);
@@ -83,18 +86,33 @@ export function useProfileDraft() {
   const [err, setErr] = useState<string | null>(null);
   const dirty = useRef(false);
   const latest = useRef<Profile | null>(null);
-  useEffect(() => { void api.profile().then(setP); }, []);
+  const save = useCallback((next: Profile) => {
+    // Keep writes in edit order, including the final draft flushed when leaving.
+    profileSaves = profileSaves.then(() => api.saveProfile(next)).then(() => {
+      if (latest.current !== next) return;
+      dirty.current = false;
+      setSaved("saved");
+      setErr(null);
+    }, (e) => {
+      if (latest.current !== next) return;
+      setSaved("error");
+      setErr(e instanceof Error ? e.message : String(e));
+    });
+  }, []);
+  useEffect(() => {
+    let live = true;
+    void profileSaves.then(() => api.profile()).then((value) => { if (live) setP(value); });
+    return () => { live = false; };
+  }, []);
   // Leaving within the moment before a save (a tick, then straight off to practise) still keeps the change.
-  useEffect(() => () => { if (dirty.current && latest.current) void api.saveProfile(latest.current).catch(() => undefined); }, []);
+  useEffect(() => () => { if (dirty.current && latest.current) save(latest.current); }, [save]);
   useEffect(() => {
     if (!p || !dirty.current) return;
     setSaved("saving");
-    const id = window.setTimeout(() => {
-      api.saveProfile(p).then(() => { dirty.current = false; setSaved("saved"); setErr(null); }, (e) => { setSaved("error"); setErr(e instanceof Error ? e.message : String(e)); });
-    }, 600);
+    const id = window.setTimeout(() => save(p), 600);
     return () => window.clearTimeout(id);
-  }, [p]);
-  const edit = (next: Profile) => { dirty.current = true; latest.current = next; setP(next); };
+  }, [p, save]);
+  const edit = (next: Profile) => { dirty.current = true; latest.current = next; setSaved("saving"); setErr(null); setP(next); };
   return { p, edit, saved, err };
 }
 
@@ -218,6 +236,7 @@ const HERO: Record<PaneId, string> = {
  */
 export function PracticeSettings() {
   const { p, edit, saved, err } = useProfileDraft();
+  const [descriptors, setDescriptors] = useState<string | null>(null);
   // The warm-ups you can pin to the start of each day (the cool-down always closes it).
   const [warmups, setWarmups] = useState<TextItem[]>([]);
   useEffect(() => { void api.texts().then((t) => setWarmups(t.levels.find((l) => l.id === "warmup")?.items.filter((i) => i.id !== "cool-down") ?? []), () => {}); }, []);
@@ -235,7 +254,7 @@ export function PracticeSettings() {
             <textarea id="goal" value={p.goal.summary} onChange={(e) => edit({ ...p, goal: { ...p.goal, summary: e.target.value } })} />
           </Row>
           <Row label="Qualities you're aiming for" htmlFor="desc" help="Separate them with commas." stack>
-            <input id="desc" type="text" value={p.goal.descriptors.join(", ")} onChange={(e) => edit({ ...p, goal: { ...p.goal, descriptors: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) } })} />
+            <input id="desc" type="text" value={descriptors ?? p.goal.descriptors.join(", ")} onChange={(e) => { setDescriptors(e.target.value); edit({ ...p, goal: { ...p.goal, descriptors: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) } }); }} />
           </Row>
         </div>
       </section>
