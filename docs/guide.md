@@ -448,6 +448,25 @@ Deterministic practice analysis does not use a cloud model.
 
 ## Development and tests
 
+The repository is a Bun workspace: the root `package.json` includes `web`, and the root
+`bun.lock` pins its JavaScript dependencies. Use Bun 1.4.2 and Node 22.18 or later. Bun installs
+packages and runs scripts; Node runs Vite and the existing `node:test` suites, including TypeScript
+tests. Rust and Python still use Cargo and uv with their own lockfiles.
+
+From the repository root:
+
+```bash
+bun install --frozen-lockfile
+bun run dev        # UI on :5173, proxies /api to :7878
+bun run typecheck
+bun run test       # frontend unit tests using Node
+bun run build      # static app in web/dist
+```
+
+Use `bun run test`, not `bun test`, to run the project's configured Node test suite. Workspace
+scripts also work from `web` (for example, `bun run dev`). To change web dependencies, run
+`bun add <package>` or `bun add --dev <package>` there, and commit the root lockfile with the manifest.
+
 Install the analysis environment before running Rust tests: they use the real local Python helper.
 From the repository root, `uv sync --locked --project analysis` installs the pinned dependencies
 and pytest into `analysis/.venv` on Windows, macOS and Linux. The app and Rust tests select the
@@ -465,7 +484,7 @@ cd web && LILT_URL=http://127.0.0.1:5173 node --test e2e/recording-lock.mjs  # V
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/safari.mjs  # disposable test server on :7979; open :5175 in Safari and click each tab's audio button
 cd web && node --test src/insight.test.ts   # the note in words after each take
 cd web && node --test src/room/scene.test.ts  # room: monitor warp, light blending, zoom box
-cd web && pnpm dev                          # UI on :5173, proxies to a server on :7878
+cd web && bun run dev                       # UI on :5173, proxies to a server on :7878
 # Browser end-to-end with Chrome's fake microphone (server running on :7979 with a scratch data dir):
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flow.mjs /tmp/shots   # MOBILE=1 for phone size
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # the Practice window; needs a fresh data dir

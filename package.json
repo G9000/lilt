@@ -1,0 +1,16 @@
+{
+  "name": "lilt",
+  "private": true,
+  "packageManager": "bun@1.4.2",
+  "engines": {
+    "bun": ">=1.4.2",
+    "node": ">=22.18.0"
+  },
+  "workspaces": ["web"],
+  "scripts": {
+    "dev": "bun run --filter lilt-web dev",
+    "build": "bun run --filter lilt-web build",
+    "typecheck": "bun run --filter lilt-web typecheck",
+    "test": "bun run --filter lilt-web test"
+  }
+}

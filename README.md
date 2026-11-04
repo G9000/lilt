@@ -25,7 +25,8 @@ comes back on a schedule you set, and every recording stays on your computer.
 **Mac app:** build `Lilt.dmg` with `desktop/build.sh`, open it and drag Lilt to Applications. It
 needs nothing else installed. See [the Mac app](docs/guide.md#the-mac-app) for the first open.
 
-From the repo, on macOS, with Rust, Node + pnpm and [uv](https://docs.astral.sh/uv/) installed:
+From the repo, on macOS, with Rust, [Bun 1.4.2](https://bun.sh/), Node 22.18+ and
+[uv](https://docs.astral.sh/uv/) installed:
 
 ```bash
 ./lilt.sh
@@ -39,6 +40,10 @@ docker compose up -d --build
 
 Then open <http://127.0.0.1:7878>. The first run builds everything; later runs start straight away.
 Data lives in `~/Lilt/data` (Docker: `./lilt-data`), and Lilt only listens on your own computer.
+
+For web development, run `bun install --frozen-lockfile` from the repository root, then
+`bun run dev`. Root commands also include `bun run build`, `bun run typecheck` and `bun run test`.
+See [development and tests](docs/guide.md#development-and-tests) for the full setup.
 
 ## Good to know
 

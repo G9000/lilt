@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build Lilt.app and Lilt.dmg for this Mac (Apple silicon or Intel, whichever this is).
-# Needs what ./lilt.sh needs (Rust, Node + pnpm, uv); people who install the .dmg need none of it.
+# Needs what ./lilt.sh needs (Rust, Bun + Node, uv); people who install the .dmg need none of it.
 # Output: desktop/dist/Lilt.app and desktop/dist/Lilt-<version>-<arch>.dmg
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -17,7 +17,7 @@ if [ -z "${DEVELOPER_DIR:-}" ] && ! cc --version >/dev/null 2>&1 && [ -d /Librar
 fi
 
 echo "==> Web app"
-(cd "$ROOT/web" && pnpm install --frozen-lockfile && pnpm build)
+(cd "$ROOT" && bun install --frozen-lockfile && bun run build)
 echo "==> Server"
 (cd "$ROOT/server" && cargo build --release)
 
@@ -46,7 +46,7 @@ PYTHONPATH="$RT/analysis" PYTHONDONTWRITEBYTECODE=1 "$RT/python/bin/python3" -c 
   || { echo "The bundled measuring helper doesn't import; not building." >&2; exit 1; }
 
 echo "==> Lilt.app"
-npx -y "$TAURI_CLI" build --bundles app
+bunx "$TAURI_CLI" build --bundles app
 APP="$DESKTOP/target/release/bundle/macos/Lilt.app"
 # Tauri's resource copier doesn't keep Python's symlinks, so the runtime goes in with ditto.
 ditto "$RT" "$APP/Contents/Resources/runtime"

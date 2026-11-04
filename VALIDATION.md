@@ -1,5 +1,28 @@
 # Lilt: validation report
 
+## 4 November 2026: Bun workspace
+
+The private root workspace manages `web` with Bun 1.4.2. All 221 dependency name/version pairs
+match the previous pnpm lockfile. The launcher, Docker web stage and Mac build use the root
+workspace; Node still runs Vite and the existing tests.
+
+Verified on Windows with Bun 1.4.2 and Node 24.22.1:
+
+- A fresh `bun install --frozen-lockfile` succeeds with the old pnpm installation moved aside.
+  Repeating it after removing both pnpm lockfiles makes no changes.
+- Root `bun run typecheck`, `bun run build` and `bun run test` pass (103 frontend tests).
+  Vite still reports the existing large-bundle advisory.
+- All nine settings/comparison browser regressions and the feedback browser check pass against
+  isolated Vite fixtures with the Bun-installed dependencies.
+- Server formatting, strict Clippy and all 70 tests pass with the real Python helper.
+  Python has 47 passing tests and one macOS-only skip. Desktop formatting and release Clippy
+  pass after fetching the locked dependencies. Rust still reports its hard-link cache fallback.
+- Both Bash build scripts pass syntax checks. A temporary launcher copy with a failing Bun
+  command exits with that failure before attempting to build or start the server.
+
+Docker's engine was unavailable, so the container build was not run. Mac app/DMG packaging was
+not run on Windows. No owner practice data or server on port 7878 was used.
+
 ## 4 November 2026: settings saves and comparison switches
 
 Settings saves are ordered across closing and reopening the pane. Only confirmation of the latest

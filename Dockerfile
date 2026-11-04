@@ -2,12 +2,13 @@
 # Lilt: Rust server + React UI + Python/Praat analysis helper in one image.
 
 FROM node:22-bookworm-slim AS web
-WORKDIR /src/web
-RUN corepack enable
-COPY web/package.json web/pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-COPY web/ ./
-RUN pnpm build
+COPY --from=oven/bun:1.4.2 /usr/local/bin/bun /usr/local/bin/bun
+WORKDIR /src
+COPY package.json bun.lock ./
+COPY web/package.json ./web/package.json
+RUN bun install --frozen-lockfile
+COPY web/ ./web/
+RUN bun run build
 
 FROM rust:1.94-bookworm AS server
 WORKDIR /src/server

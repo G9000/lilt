@@ -3,7 +3,10 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 if [ ! -x analysis/.venv/bin/python ]; then (cd analysis && uv sync --no-dev); fi
-if [ ! -f web/dist/index.html ]; then (cd web && pnpm install --frozen-lockfile && pnpm build); fi
+if [ ! -f web/dist/index.html ]; then
+  bun install --frozen-lockfile
+  bun run build
+fi
 if [ ! -x server/target/release/lilt ] || [ -n "$(find server/src -newer server/target/release/lilt 2>/dev/null | head -1)" ]; then
   # Building needs Apple's compiler. If Xcode is installed but its licence was never accepted, the
   # compiler refuses to run; the Command Line Tools work without it (and without a password).

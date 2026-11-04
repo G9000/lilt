@@ -31,7 +31,8 @@ says how to stop. Keep that in every feature and every line of copy.
 
 ```bash
 ./lilt.sh                                   # builds what's missing, serves http://127.0.0.1:7878
-cd web && pnpm dev                          # UI on :5173, proxies /api to :7878
+bun install --frozen-lockfile              # root Bun workspace; Bun 1.4.2 and Node 22.18+
+bun run dev                                # UI on :5173, proxies /api to :7878
 desktop/build.sh                            # Mac app: desktop/dist/Lilt.app and Lilt-<version>-<arch>.dmg
 ```
 
@@ -55,8 +56,9 @@ without saying so.
 Run the ones that cover what you changed, and all of them before calling a feature done.
 
 ```bash
-cd web && npx tsc --noEmit -p .                                  # types
-cd web && node --test src/*.test.ts src/room/*.test.ts           # unit tests
+bun run typecheck                                               # web types, from the repo root
+bun run test                                                    # web unit tests (Node runner)
+bun run build                                                   # production web app
 cd server && cargo fmt --all -- --check
 cd server && cargo clippy --all-targets --all-features -- -D warnings
 cd server && cargo test --all-targets --all-features             # uses the real Python helper (uv sync --locked --project analysis first)
@@ -77,7 +79,7 @@ Every suite passes on a fresh data folder (4 November 2026). Most need nothing e
   `cards/state.json` must hold `text.warmup.lip-trill` as a due review with `"reps": 3` (it's the
   eyes-off card).
 - `markdown.mjs` and `feedback.mjs` start their own Vite server with a stubbed API: no `LILT_URL`.
-- `recording-lock.mjs` runs with `node --test` against `pnpm dev` on :5173, and stubs every API call.
+- `recording-lock.mjs` runs with `node --test` against `bun run dev` on :5173, and stubs every API call.
 
 When the app's flow changes on purpose (what sitting down opens, which details fold away, labels),
 update the suites in the same change.
