@@ -1,5 +1,27 @@
 # Lilt: validation report
 
+## 5 November 2026: Restore manual room placement
+
+The automatic free-space placement introduced in `eef3671` was rejected after the
+owner reported broken layout behavior. It has been removed and Floaters.tsx restored
+to the implementation from `36d68f8`. The older landscape override that moved today's
+practice toward the middle was also removed, restoring its original lower-right corner.
+The earlier geometric overlap checks below
+did not establish satisfactory visual behavior and do not validate the restored layout.
+Reset layout now stays visible after resetting; small screens show its reset-arrow icon.
+The room-layout browser suite now checks the original default anchors, manual dragging,
+saved positions after reload and the reset control remaining reachable across screen sizes.
+The compact card size now applies below 900px high so the lower-right stack leaves the
+painted camera clickable at 1440×844 without moving toward the center.
+
+Passed: isolated layout/reset checks at 1880×920, 2560×1440, 3440×1440, 3840×2160,
+1440×950, 1024×768, 1024×1366 and 390×844, plus 1920×1080 at 2× pixel density.
+Inspected the ultrawide and 4K screenshots and the restored live preview. Room appearance
+and Music browser suites passed; the appearance suite checks the real camera and microphone
+links. Web types, 108 unit tests and production build passed (existing bundle-size warning).
+Server formatting, strict Clippy and 70 tests, Python (47 passed, one skipped), and desktop
+formatting/release Clippy also passed. No owner practice data was used.
+
 ## 5 November 2026: Larger-screen reset follow-up
 
 Extended the isolated room layout suite to reset at every tested size, including

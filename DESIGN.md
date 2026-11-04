@@ -31,12 +31,9 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
 - **Room** (`#/`): the painting full screen in the light of the hour (morning, day, sunset,
   night), with its small animations (birds, dust, the sleeping cat). Today's cards sit
   lower in the room as a swipeable stack (folder-style cards, one per practice card, Motion springs);
-  tapping the top card starts it. In landscape, the default stack sits toward the chair to
-  leave the camera clear. A few small widgets float in the painting (clock, note), riding
-  the camera and draggable (Motion); default positions find nearby free space around
-  the stack, other widgets and the room's clickable objects. Flashcards starts below
-  the plant and Yarn in the right window. Reset layout restores these defaults; dragging
-  an automatically adjusted widget saves its visible position. The
+  tapping the top card starts it. The default stack sits in the lower-right corner on desktop
+  and lower-center on phones. A few small widgets float in the painting (clock, note), riding
+  the camera and draggable (Motion); they step aside rather than cover the stack. The
   computer itself is the other way in: its middle monitor has a steady glow following its painted edges,
   and a visible "Click the screen" cue ("Tap" on touch devices). Hover and keyboard focus make the
   edge clearer. The glow does not pulse. The glow and cue hide when entering.
@@ -44,7 +41,9 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   screen fills the view, the desktop fades up out of a blur. Leaving reverses it. No rectangles
   are drawn over the painting during the move.
 - **Menu bar** (room and desk alike): 30px, dark glass, the mark and app name left; now playing,
-  notifications, date and time right. **Notification Center** slides in from the right edge (368px,
+  notifications, date and time right. The room's Reset layout action stays visible even at the
+  default layout; on small screens it uses a reset-arrow icon with the same accessible name.
+  **Notification Center** slides in from the right edge (368px,
   greeting + date on top, one frosted card per notification, "Clear all"); a soft scrim dims the
   room behind it (a full blur on phones). An orange dot on the envelope means unread; never a count.
 - **The room reacts, never scores**: the cat greets you on arrival; string lights and a warm lamp

@@ -283,11 +283,9 @@
 .cs-dots { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; justify-content: center; gap: 6px; }
 .cs-dots i { width: 6px; height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.4); transition: width 0.35s var(--ease), background-color 0.35s; }
 .cs-dots i.on { width: 18px; background: #fff; }
-@media (max-width: 1100px), (max-height: 760px) { .cs { --fs: 0.86; right: 24px; bottom: 20px; } }
+@media (max-width: 1100px), (max-height: 900px) { .cs { --fs: 0.86; right: 24px; bottom: 20px; } }
 @media (max-width: 900px) and (min-width: 761px), (max-height: 620px) { .cs { --fs: 0.74; right: 18px; bottom: 14px; } }
 @media (max-width: 760px) { .cs { left: 50%; right: auto; bottom: 16px; translate: -50% 0; transform-origin: 50% 100%; } }
-/* Leave the painted camera clear; the half-width follows the cards' smaller-screen scale. */
-@media (min-width: 768px) and (min-aspect-ratio: 4/3) { .cs { right: calc(40% - 150px * var(--fs, 1)); } }
 
 /* ===== Little things floating in the room, pinned to the painting ===== */
 .fls { position: absolute; inset: 0; pointer-events: none; transition: opacity 0.3s; }

@@ -1,4 +1,4 @@
-// Reset and resize the real room against disposable API fixtures, never practice data.
+// Verify manual placement and the always-available reset against disposable API fixtures.
 import { chromium } from 'playwright-core';
 import { createServer } from 'vite';
 import assert from 'node:assert/strict';
@@ -38,27 +38,30 @@ try {
     setSpot('yarn', { x: 1300, y: 220 });
   });
   await page.getByRole('button', { name: 'Reset layout', exact: true }).click();
-  await page.waitForFunction(() => !document.querySelector('.ds-reset'));
+  assert.equal(await page.getByRole('button', {name:'Reset layout',exact:true}).isVisible(), true, 'reset stays available after resetting');
   const inspect = async label => {
     await page.waitForTimeout(650); // Let the card spring and widget fit interval settle.
     const result = await page.evaluate(() => {
-      const stack = document.querySelector('.cs').getBoundingClientRect();
-      const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
       const widgets = [...document.querySelectorAll('.fl')];
       return widgets.map(el => ({
         name: el.querySelector('[aria-label]').getAttribute('aria-label'),
-        hidden: el.classList.contains('off'),
-        overlap: overlaps(el.querySelector('.fl-nudge').getBoundingClientRect(), stack),
-        neighbours: widgets.filter(other => other !== el && overlaps(el.querySelector('.fl-nudge').getBoundingClientRect(), other.querySelector('.fl-nudge').getBoundingClientRect())).map(other => other.querySelector('[aria-label]').getAttribute('aria-label')),
+        x: parseFloat(el.style.left), y: parseFloat(el.style.top), moved: el.classList.contains('moved'),
       }));
     });
     if (shots) await page.screenshot({ path: path.join(shots, `layout-${label}${density === 1 ? '' : `-${density}x`}.png`) });
-    console.log(label, result);
+    const defaults = { "What's new":[680,170], Settings:[1090,180], Clock:[930,270], 'This week':[490,630], Flashcards:[800,640], 'Ball of yarn':[1060,720], Note:[460,260] };
     for (const widget of result) {
-      assert.equal(widget.hidden, false, `${label}: ${widget.name} must remain available after reset`);
-      assert.equal(widget.overlap, false, `${label}: Today's practice must not cover ${widget.name}`);
-      assert.deepEqual(widget.neighbours, [], `${label}: ${widget.name} must not cover another widget`);
+      assert.deepEqual([widget.x,widget.y], defaults[widget.name], `${label}: ${widget.name} returns to its original home`);
+      assert.equal(widget.moved, false, `${label}: saved placement is cleared`);
     }
+    const reset = page.getByRole('button', {name:'Reset layout',exact:true});
+    if (page.viewportSize().width >= 1200) {
+      const stack = await page.locator('.cs').boundingBox();
+      assert.ok(page.viewportSize().width - stack.x - stack.width <= 41, `${label}: today's practice returns to the right corner`);
+    }
+    assert.equal(await reset.isVisible(), true, `${label}: reset remains visible`);
+    assert.equal(await reset.evaluate(el => { const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }), true, `${label}: reset is reachable`);
+    console.log(`PASS ${label}: original positions restored; Reset layout remains available`);
   };
   await inspect('wide');
   const sizes = density === 1
@@ -84,7 +87,7 @@ try {
   await page.mouse.up();
   await page.waitForTimeout(650);
   const after = await note.boundingBox();
-  assert.ok(Math.abs(after.x - before.x - 60) < 3 && Math.abs(after.y - before.y - 35) < 3, 'dragging an automatically spaced widget must not jump');
+  assert.ok(Math.abs(after.x - before.x - 60) < 3 && Math.abs(after.y - before.y - 35) < 3, 'manual dragging keeps the chosen position');
   await page.reload();
   await page.locator('.fl-cards').waitFor();
   await page.waitForTimeout(650);
@@ -92,6 +95,9 @@ try {
   assert.ok(Math.abs(restored.x - after.x) < 3 && Math.abs(restored.y - after.y) < 3, 'dragged positions survive reload');
   await page.getByRole('button', {name:'Reset layout',exact:true}).click();
   await inspect('reset-again');
+  await page.setViewportSize({width:390,height:844});
+  await page.getByRole('button', {name:'Reset layout',exact:true}).click();
+  await inspect('phone-reset');
   assert.deepEqual(errors, []);
-  console.log('PASS: reset keeps room widgets separate from today’s cards across desktop sizes.');
+  console.log('PASS: original manual layout, drag persistence and reset visibility at desktop and phone sizes.');
 } finally { await browser?.close(); await server.close(); }

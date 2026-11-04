@@ -94,10 +94,9 @@ Music navigation and playback have a separate isolated check:
      the server (`room_note` in the profile). **Drag either one anywhere**; it remembers its spot
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
-     everything back. Flashcards starts below the plant and Ball of yarn in the right-hand window,
-     clear of today's practice. Default widgets find nearby space around the cards, other widgets
-     and clickable room objects as the window resizes. Your dragged positions stay yours. Widgets
-     near an edge slide inward; when space runs out on a phone, the stack and room shortcuts stay.
+     everything back and stays available after resetting (a reset-arrow icon on phones).
+     Widgets near an edge slide inward rather than disappear. A widget whose spot
+     is cropped off a small screen steps aside; a phone keeps the stack and room shortcuts.
    - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
      <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,
      full screen, laid out like a writing app: chapters in a sidebar, the chapter as a page of

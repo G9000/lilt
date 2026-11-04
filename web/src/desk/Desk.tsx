@@ -6,7 +6,7 @@ import { CAT_URL, currentLight, Light, roomUrl } from "../room/scene";
 import { RoomAppearance } from '../room/RoomAppearance';
 import { MusicMini, MusicWindow } from "./Music";
 import { openMusic } from "./musicState";
-import { resetLayout, useLayoutMoved } from "./Floaters";
+import { resetLayout } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
 import { PICTURES } from "./pictures";
 import { pinnedPicture, pinPicture, shufflePicture, usePhotos, visiblePictures } from "./photos";
@@ -278,14 +278,16 @@ export const ShuffleIcon = () => (
 /** The room's menu bar, the same as the desk's: the mark, what's playing, notifications, date and time. */
 export function RoomTop({ inbox }: { inbox: InboxState }) {
   const now = useNow();
-  const moved = useLayoutMoved();
   return (
     <header className="ds-roomtop">
       <span className="ds-rt-mark"><Mark />Lilt</span>
       <span className="ds-rt-r">
         <RoomAppearance />
         <MusicMini />
-        {moved && <button className="ds-mb-btn ds-reset" onClick={resetLayout}>Reset layout</button>}
+        <button className="ds-mb-btn ds-reset" aria-label="Reset layout" title="Reset layout" onClick={resetLayout}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6a5 5 0 1 1 0 4M3 2v4h4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <span className="ds-hide-s">Reset layout</span>
+        </button>
         <InboxButton inbox={inbox} />
         <SettingsButton />
         <span className="ds-hide-s">{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>

@@ -13,7 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
-      { title: "Room widgets stay clear", body: "Reset layout now keeps Flashcards and Ball of yarn clear of today's practice. Widgets find nearby free space when the window changes size, and you can still drag them where you like." },
+      { title: "Your room layout, restored", body: "The original widget positions and dragging are back. Reset layout stays available, including after you reset." },
       { title: "Music has its own app", body: "Open the painted player for a full CD with artwork and an aligned mood library. Close it and keep listening with compact controls in the top bar.", to: "/music" },
       { title: "A desk you can use", body: "The left monitor is now a small music player. Click it for lo-fi or Spotify, click the camera for Photos, and click the microphone to open Practice." },
       { title: "A clearer, calmer room", body: "Refined artwork keeps your familiar room with cleaner details, a softly lit night, and a repaired sleeping cat. Make it yours now changes the main and side monitor pictures independently." },
