@@ -41,9 +41,35 @@ docker compose up -d --build
 Then open <http://127.0.0.1:7878>. The first run builds everything; later runs start straight away.
 Data lives in `~/Lilt/data` (Docker: `./lilt-data`), and Lilt only listens on your own computer.
 
-For web development, run `bun install --frozen-lockfile` from the repository root, then
-`bun run dev`. Root commands also include `bun run build`, `bun run typecheck` and `bun run test`.
-See [development and tests](docs/guide.md#development-and-tests) for the full setup.
+## Development
+
+JavaScript packages are managed as a **Bun workspace**. The root `package.json` includes `web/`,
+and the root `bun.lock` keeps dependency versions fixed. Rust lives in `server/` and Python in
+`analysis/`, each with its own dependencies and lockfile.
+
+With Bun 1.4.2 and Node 22.18+ installed, run these commands from the repository root:
+
+```bash
+bun install --frozen-lockfile
+bun run dev
+```
+
+Open <http://127.0.0.1:5173>. The development UI reloads as you edit and connects to the Rust
+server on port 7878; start the server separately with `./lilt.sh` on macOS.
+
+| Command (from the repository root) | What it does |
+| --- | --- |
+| `bun run dev` | Start the web development server on port 5173 |
+| `bun run build` | Check TypeScript and build the web app into `web/dist/` |
+| `bun run typecheck` | Check web TypeScript without building the app |
+| `bun run test` | Run the frontend unit tests using Node |
+
+Use `bun run test` for the configured test suite. Bun installs dependencies and runs the workspace
+commands; Node runs Vite and the tests. To add a web dependency, run `bun add <package>` from `web/`
+and commit both `web/package.json` and the root `bun.lock`.
+
+For Rust, Python and browser checks, see [development and tests](docs/guide.md#development-and-tests).
+Keep test recordings in a scratch data folder on another port, as described in [AGENTS.md](AGENTS.md).
 
 ## Good to know
 
