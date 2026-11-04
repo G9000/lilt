@@ -1,0 +1,37 @@
+/* ===== The room in 3D (a test) ===== */
+.r3 { position: fixed; inset: 0; z-index: 0; background: #0b0d13; font-family: var(--font); color: #fff; }
+.r3 > div:first-child { position: absolute !important; inset: 0; }
+.r3-top { position: fixed; top: 12px; left: 16px; right: 16px; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: none; }
+.r3-top > * { pointer-events: auto; }
+.r3-title { font-size: 14px; font-weight: 600; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45); }
+.r3-title span { margin-left: 6px; font-weight: 500; opacity: 0.75; }
+
+/* dark glass, as the room's labels */
+.r3-pill, .r3-bar, .r3-list { background: rgba(16, 16, 24, 0.66); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 10px 30px -10px rgba(0, 0, 0, 0.6); }
+.r3 button { min-height: 28px; height: 28px; padding: 0 12px; border: 0; border-radius: 999px; box-shadow: none; color: #fff; background: transparent;
+  font: 500 13px var(--font); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s ease-out; }
+.r3 button:hover { background: rgba(255, 255, 255, 0.12); }
+.r3 button:active { transform: scale(0.97); }
+.r3 button:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.85); outline-offset: 1px; }
+.r3 button[aria-pressed="true"] { background: #fff; color: #17171d; }
+.r3-pill { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; font-size: 13px; }
+button.r3-pill { padding: 0 14px 0 10px; height: 34px; min-height: 34px; }
+.r3-pill svg { width: 15px; height: 15px; }
+
+.r3-bar { position: fixed; left: 50%; bottom: 20px; z-index: 2; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; padding: 5px 5px 5px 16px;
+  border-radius: 999px; font-size: 13px; white-space: nowrap; max-width: calc(100vw - 32px); }
+.r3-bar > span { overflow: hidden; text-overflow: ellipsis; margin-right: 6px; }
+.r3-bar button { background: rgba(255, 255, 255, 0.1); }
+.r3 .r3-done { background: #fff; color: #17171d; font-weight: 600; }
+.r3 .r3-done:hover { background: #fff; }
+
+/* every thing by name, for keyboards (arrows move it, R turns it, C changes it) */
+.r3-list { position: fixed; left: 16px; top: 50%; z-index: 2; transform: translateY(-50%); display: grid; gap: 2px; padding: 6px; border-radius: 16px; }
+.r3-list button { justify-content: flex-start; }
+
+@media (max-width: 760px) {
+  .r3-title, .r3-list { display: none; }
+  .r3-top { flex-wrap: wrap; }
+  .r3-bar { white-space: normal; flex-wrap: wrap; justify-content: center; border-radius: 18px; padding: 8px 10px; }
+}
