@@ -54,6 +54,16 @@ responds when you pet it. On wide displays the camera includes the whole cat whe
 computer can also fit. Both monitor choices save independently; older side-monitor choices
 are preserved. Artwork provenance and prompts live in `web/public/room/CREDITS.md`.
 
+**Use the things on your desk.** The small left monitor is now a cassette music player;
+the main and right monitors keep their own picture choices. Click the player for Music:
+start or pause lo-fi, choose the previous/next mood, adjust volume, or use the existing
+Spotify option. Opening the panel does not start music. Escape or a click outside closes
+the panel while playback continues. The camera opens your Photos gallery; the microphone
+opens Practice using the same next-card/Start here entry as the computer. On phones a small
+Photos/Practice/Music row keeps these actions available even when the objects are cropped;
+portrait tablets get the same shortcuts. In landscape, the default card stack sits toward
+the chair so it leaves the painted camera clear. You can still drag the cards.
+
 The isolated browser check uses the actual painting and controls, with no practice backend:
 `cd web && node e2e/room-appearance.mjs [screenshot-folder]`.
 
@@ -63,7 +73,7 @@ The isolated browser check uses the actual painting and controls, with no practi
      arrow, to practise that one first. The others stay in today's run. The stack deals in when
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
      Built with Motion (springs and drag).
-   - **Floating in the room**, over spots in the painting: the lo-fi radio over the speaker, a
+   - **Floating in the room**, over spots in the painting: a
      clock in the window, the plant by the potted plant, a sticky note taped to the photo wall, and
      **What's new**: the version you're running (now 0.2) and what came with it, with a dot until
      you've opened it; each item opens the feature. New releases go at the top of
@@ -81,7 +91,7 @@ The isolated browser check uses the actual painting and controls, with no practi
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back. Widgets near an edge slide inward rather than disappear. A widget whose spot
-     is cropped off a small screen steps aside; a phone shows just the stack.
+     is cropped off a small screen steps aside; a phone keeps the stack and room shortcuts.
    - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
      <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,
      full screen, laid out like a writing app: chapters in a sidebar, the chapter as a page of
@@ -93,7 +103,7 @@ The isolated browser check uses the actual painting and controls, with no practi
    sitting down opens Start here instead of Today.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
      with your clock. Birds cross the windows by day; stars and city lights come out at night. The
-     cat sleeps on the bed and breathes; when you arrive it flicks an ear and says hello, and tapping
+     cat sleeps on the bed and breathes; when you arrive it says hello, and tapping
      it gets a purr and hearts.
    - **Lights on when you're done:** once today's cards are finished, the string lights along the
      beam light up one by one and the desk lamp glows warmer. It's a quiet "nice work", never a score.
@@ -103,21 +113,22 @@ The isolated browser check uses the actual painting and controls, with no practi
      stage opened, your reminder time, resting today, recordings recovered from a closed page. Never
      streaks or missed days. Read and cleared notifications are remembered in this browser only.
    - **The desk** shows today's practice as a folder (the cards waiting and Start). The clock, the
-     plant (a leaf for each day you practised this week; it never shrinks or scolds) and the lo-fi
-     radio live in the room instead, as floating widgets you can drag.
-   - **Lo-fi radio:** three moods ("Rain on the window", "Desk lamp", "City at dusk") made live in
-     the browser: electric-piano chords, a soft bass, swung drums, and rain on one mood. Both
-     radios have a volume slider and a mute button, remembered in this browser. Nothing is
-     downloaded or sent anywhere. The record spins while it plays, and the track shows in the menu
+     plant (a leaf for each day you practised this week; it never shrinks or scolds) live in the
+     room instead, as floating widgets you can drag. Music opens from the painted player.
+   - **Lo-fi radio:** nine moods, including "Rain on the window", "Desk lamp" and "City at dusk", made live in
+     the browser: electric-piano chords, a soft bass, swung drums and ambient textures. The
+     radio has a volume slider and a mute button, remembered in this browser. Nothing is
+     downloaded or sent anywhere. The current mood shows in the menu
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live
      pitch), so music never reaches a take or a pitch reading, then picks up again.
    - **The iced coffee** on the desk opens Buy Me a Coffee (`COFFEE_URL` in
      `web/src/room/scene.ts`). Pointing at it lights the cup with a warm glow and says "Buy me a
      coffee"; clicking flashes it, sends hearts up out of the cup and has the cat say thank you,
      then opens the page in a new tab a moment later (⌘/Ctrl-click opens it at once).
-   - The artwork lives in `web/public/room/` (WebP files: four room lights, and the cat's body,
-     tail and ear in each light). Swap them for other art of the same size, then re-measure the
-     screen corners and the coffee's box in `web/src/room/scene.ts`. The look is documented in `DESIGN.md`.
+   - The artwork lives in `web/public/room/` (four `room-*-v3.webp` lights and the complete
+     `cat-v2.webp` cutout). Swap them for other art of the same size, then re-measure the
+     screen/coffee targets in `web/src/room/scene.ts` and object targets in
+     `web/src/room/room-objects.css`. The look is documented in `DESIGN.md`.
 2. **Today** is your **voice deck**: Anki-style spaced repetition, but for your voice. The deck
    holds the daily reference phrase, any cards due for review, and a couple of new cards (2 a day
    by default, `new_cards_per_day` in the profile). **Start** opens the Practice window: say the

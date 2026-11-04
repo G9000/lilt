@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "A desk you can use", body: "The left monitor is now a small music player. Click it for lo-fi or Spotify, click the camera for Photos, and click the microphone to open Practice." },
       { title: "A clearer, calmer room", body: "Refined artwork keeps your familiar room with cleaner details, a softly lit night, and a repaired sleeping cat. Make it yours now changes the main and side monitor pictures independently." },
       { title: "Make the room yours", body: "Keep the original illustrated room and choose its light, color warmth, fairy lights and side-monitor picture. Your choices stay in this browser, with one button to return to the original look." },
       { title: "Settings that keep your edits", body: "Quick changes save in order, even when you leave and reopen Settings. Commas stay put as you type your qualities, and comparisons clear the previous pair's results when you choose other takes.", to: "/studio/settings" },

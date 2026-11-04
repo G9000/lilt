@@ -5,6 +5,7 @@ import {
 } from "./scene";
 import { useRoomAppearance } from './appearance';
 import { ROOM_DECOR, roomWeights } from './appearance-settings';
+import { RoomObjects } from './RoomObjects';
 
 /**
  * The illustrated room. Outside, it is the whole screen; the middle monitor is a way in. Inside,
@@ -272,6 +273,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
           style={{ left: COFFEE.x, top: COFFEE.y, width: COFFEE.w, height: COFFEE.h }} onPointerDown={(e) => e.stopPropagation()}>
           <span>Buy me a coffee</span>
         </a>
+        <RoomObjects inside={inside} onEnter={onEnter} />
         {children}
       </div>
       <div className="room-shade" />

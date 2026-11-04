@@ -1,5 +1,27 @@
 # Lilt: validation report
 
+## 4 November 2026: painted music player and desk actions
+
+Four v3 room backgrounds replace the small left monitor with a cassette player while
+retaining main/right screen customization and the repaired cat. Camera opens Photos;
+microphone follows the existing Practice entry. Music reuses lo-fi, volume and Spotify.
+The duplicate floating radio is removed. Landscape cards leave the camera clear, and
+mobile/portrait shortcuts keep cropped objects accessible. The room cannot scroll when
+focus moves to an object.
+
+Isolated Chrome checks pass: real home camera/Practice navigation, no autoplay on opening,
+previous/next mood, saved volume, play/pause, microphone claim/release ducking and resume,
+playback retained after panel close, Escape focus return, outside/route dismissal, Spotify
+setup availability, mobile panel fit and portrait tablet Photos shortcut. Existing lighting,
+independent monitor settings, persistence/reset, cross-tab, cat/framing checks also pass.
+Four lighting variants and the rendered music panel were visually inspected.
+
+Web types, 108 tests and build pass; server formatting/strict Clippy and 70 tests pass;
+analysis has 47 passes and one platform skip; desktop formatting/release Clippy pass.
+Restricted temporary/cache permissions initially blocked native tests; they passed when
+rerun with normal test-folder access. No owner data or port 7878 was used. Spotify real-account
+playback, physical audio hardware and Safari are not newly tested. Existing bundle advisory remains.
+
 ## 4 November 2026: artwork and cat repair, independent monitors
 
 Versioned generated paintings preserve the familiar room with simpler coherent props and

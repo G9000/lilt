@@ -1,9 +1,6 @@
 import { motion, useDragControls, useMotionValue } from "motion/react";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { api, Deck, Texts } from "../api";
-import { radio, useRadio } from "./lofi";
-import { SpotifyRadio } from "./Spotify";
-import { Volume } from "./Volume";
 import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
 import { SettingsAppIcon } from "./icons";
@@ -14,7 +11,7 @@ import { CURRENT, shortVersion } from "../release";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
- * radio over the speaker, a note on the wall of photos, a clock in the window, the plant (the
+ * note on the wall of photos, a clock in the window, the plant (the
  * days you practised this week) by the potted plant, Settings (theme, AI connection and
  * everything else, over the room) on the window beside the clock, and What's new (this version and
  * what came with it, from release.ts) up by the hanging lights, and Flashcards (the chapter you're
@@ -27,7 +24,7 @@ import { CURRENT, shortVersion } from "../release";
 type Spot = { x: number; y: number };
 // Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
 // 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { radio: { x: 1380, y: 320 }, note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 } };
+const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -224,14 +221,6 @@ function YarnWidget() {
 }
 
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
-  const r = useRadio();
-  // The radio plays Lilt's own lo-fi, or your Spotify; the choice is kept in this browser.
-  const [source, setSource] = useState<"lofi" | "spotify">(() => { try { return localStorage.getItem("lilt.radio.source") === "spotify" ? "spotify" : "lofi"; } catch { return "lofi"; } });
-  const pick = (s: "lofi" | "spotify") => {
-    setSource(s);
-    try { localStorage.setItem("lilt.radio.source", s); } catch { /* private mode */ }
-    if (s === "spotify" && (r.playing || r.ducked)) void radio.toggle();
-  };
   const [note, setNote] = useState<string | null>(null);
   const [texts, setTexts] = useState<Texts | null>(null);
   // Read again each time you come back to the room, so the widget shows where you got to.
@@ -283,31 +272,6 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
 
   return (
     <div className={`fls${inside ? " away" : ""}`} ref={box}>
-      <Widget id="radio" delay={0} label="Radio">
-        <div className="fl-src" role="tablist" aria-label="Radio source">
-          <button role="tab" aria-selected={source === "lofi"} onClick={() => pick("lofi")}>Lo-fi</button>
-          <button role="tab" aria-selected={source === "spotify"} onClick={() => pick("spotify")}>Spotify</button>
-        </div>
-        {source === "spotify" ? <div className="fl-spotify"><SpotifyRadio /></div> : (
-        <div className={`fl-radio${r.playing ? " playing" : ""}`}>
-          <div className="ds-disc fl-disc" aria-hidden="true"><div className="ds-label" /></div>
-          <div className="fl-r-info">
-            <span className="ds-r-k">{r.playing && <span className="ds-eq" aria-hidden="true"><i /><i /><i /></span>}{r.ducked ? "Paused while the mic is on" : r.playing ? "Now playing" : "Lo-fi radio"}</span>
-            <b>{r.mood}</b>
-            <div className="ds-r-ctl">
-              <button className="ds-r-skip" onClick={() => radio.skip(-1)} aria-label="Previous mood"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3v10M13 3L6 8l7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
-              <button className="ds-r-play" onClick={() => void radio.toggle()} aria-label={r.playing || r.ducked ? "Pause lo-fi radio" : "Start lo-fi radio"}>
-                {r.playing || r.ducked
-                  ? <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5h2.2v9H3zM6.8 1.5H9v9H6.8z" fill="currentColor" /></svg>
-                  : <svg viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: 2 }}><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>}
-              </button>
-              <button className="ds-r-skip" onClick={() => radio.skip(1)} aria-label="Next mood"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12 3v10M3 3l7 5-7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
-              <Volume />
-            </div>
-          </div>
-        </div>
-        )}
-      </Widget>
       <Widget id="news" delay={-0.6} label="What's new">
         <NewsWidget />
       </Widget>

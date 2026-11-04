@@ -10,7 +10,7 @@ const FAIRY_LIGHTS: { value: RoomAppearancePrefs["lights"]; label: string }[] = 
   { value: "auto", label: "Automatic" }, { value: "on", label: "On" }, { value: "off", label: "Off" },
 ];
 const DECOR: { value: RoomAppearancePrefs["decor"]; label: string; image: string }[] = [
-  { value: "original", label: "Original", image: "room/room-day-v2.webp" },
+  { value: "original", label: "Original", image: "room/room-day-v3.webp" },
   { value: "leaves", label: "Leaves", image: "pictures/plant-fern.webp" },
   { value: "stars", label: "Stars", image: "pictures/nebula-cliffs.webp" },
   { value: "cat", label: "Sleepy cat", image: "pictures/cat-window-nap.webp" },

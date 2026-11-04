@@ -1,0 +1,80 @@
+.room-object {
+  position: absolute; z-index: 2; display: block; padding: 0; border: 0; border-radius: 12px;
+  background: transparent; cursor: pointer; transform: translate(-50%, -50%);
+  min-width: calc(44px * var(--inv, 1)); min-height: calc(44px * var(--inv, 1));
+}
+.room-camera { left: 1292.5px; top: 560px; width: 95px; height: 60px; }
+.room-microphone { left: 779px; top: 332.5px; width: 106px; height: 119px; }
+.room-music { left: 732.5px; top: 472.5px; width: 185px; height: 95px; }
+.room-object:active:not(:disabled) { transform: translate(-50%, -50%); }
+.room-object::before { content: ""; position: absolute; inset: -12px; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 45%, transparent), transparent);
+  backdrop-filter: brightness(1.2); -webkit-backdrop-filter: brightness(1.2); transition: opacity .2s ease; }
+.room-object:hover::before, .room-object:focus-visible::before { opacity: 1; }
+.room-object:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.room-object > span { position: absolute; left: 50%; bottom: 100%; margin-bottom: 5px; padding: 7px 12px;
+  transform: translateX(-50%) scale(var(--inv, 1)); transform-origin: 50% 100%; border-radius: 11px;
+  background: var(--panel); color: var(--ink); border: 1px solid var(--hair); font: 600 12px var(--font);
+  white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .2s ease; }
+.room-object:hover > span, .room-object:focus-visible > span { opacity: 1; }
+.room.inside .room-object, .room-stage:not(.settled) .room-object { visibility: hidden; pointer-events: none; }
+.room-object-shortcuts { display: none; }
+
+.room-music-panel { position: fixed; z-index: 40; top: 44px; left: 50%; transform: translateX(-50%);
+  width: min(350px, calc(100vw - 24px)); max-height: calc(100dvh - 60px); overflow-y: auto; box-sizing: border-box;
+  padding: 20px; border: 1px solid var(--hair); border-radius: 22px; background: var(--panel); color: var(--ink);
+  backdrop-filter: blur(30px) saturate(1.7); -webkit-backdrop-filter: blur(30px) saturate(1.7);
+  box-shadow: 0 18px 50px -18px rgba(5, 5, 20, .45); font: 400 13px/1.5 var(--font); text-align: left; }
+.room-music-panel[hidden] { display: none; }
+.room-music-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.room-music-heading h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.035em; line-height: 1.2; }
+.room-music-panel button { min-width: 44px; min-height: 44px; color: var(--ink); }
+.room-music-close { width: 44px; height: 44px; padding: 12px; border-radius: 50%; background: var(--fill); }
+.room-music-close svg { display: block; width: 20px; height: 20px; }
+.room-music-source { min-width: 0; margin: 0 0 20px; padding: 0; border: 0; }
+.room-music-source legend { margin-bottom: 6px; color: var(--ink-2); }
+.room-music-source > div { display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--fill); }
+.room-music-source label { position: relative; flex: 1; cursor: pointer; }
+.room-music-source input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.room-music-source span { display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 9px; color: var(--ink-2); }
+.room-music-source input:checked + span { background: var(--panel); color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, .1); }
+.room-music-status { margin: 0 0 3px; color: var(--ink-2); }
+.room-music-mood { display: block; font-size: 18px; font-weight: 600; }
+.room-music-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 18px; }
+.room-music-controls button { display: grid; place-items: center; width: 44px; height: 44px; padding: 12px; border-radius: 50%; background: var(--fill); }
+.room-music-controls svg { width: 18px; height: 18px; }
+.room-music-panel .room-music-play { background: var(--ink); color: var(--panel); }
+.room-music-panel .vol { display: flex; width: 100%; margin: 12px 0 0; gap: 10px; }
+.room-music-panel .vol-icon { width: 44px; height: 44px; background: var(--fill); }
+.room-music-panel .vol input[type="range"] { height: 44px; }
+.room-music-panel .vol input[type="range"]::-webkit-slider-runnable-track { background: linear-gradient(90deg, var(--ink) var(--v), var(--fill-2) var(--v)); }
+.room-music-panel .vol input[type="range"]::-moz-range-track { background: var(--fill-2); }
+.room-music-panel .vol input[type="range"]::-moz-range-progress,
+.room-music-panel .vol input[type="range"]::-moz-range-thumb { background: var(--ink); }
+.room-music-panel .vol input[type="range"]::-webkit-slider-thumb { background: var(--ink); }
+.room-music-panel .sp input { height: 44px; background: var(--fill); color: var(--ink); }
+.room-music-panel .sp button { min-width: 44px; min-height: 44px; }
+.room-music-panel .sp input::placeholder { color: var(--ink-3); }
+.room-music-panel .sp :is(small, .sp-steps, .sp-change, .sp-empty, .sp-what small) { color: var(--ink-2); }
+.room-music-panel .sp :is(a, .sp-copy span) { color: var(--accent-ink); }
+.room-music-panel .sp :is(.sp-chip, .sp-copy, .sp-lists, .sp-lists button:hover, .sp-art, .ds-r-skip) { background: var(--fill); }
+.room-music-panel .sp :is(.ds-r-play, .sp-signin) { background: var(--ink); color: var(--panel); }
+.room-music-panel .sp :is(.sp-art i, .sp-lists button) { color: var(--ink); }
+.room-music-panel .sp-ctl { flex-wrap: wrap; }
+.room-music-panel .sp-err { color: var(--rec); }
+.room-music-panel button:hover:not(:disabled) { filter: brightness(.95); }
+.room-music-panel :is(button, input):focus-visible,
+.room-music-source input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .room-object::before, .room-object > span { transition: none; } }
+@media (max-width: 767px), (max-aspect-ratio: 4/3) {
+  .room-object { display: none; }
+  .room-object-shortcuts { position: fixed; z-index: 5; top: 44px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 3px; padding: 3px; max-width: calc(100vw - 24px); border: 1px solid var(--hair); border-radius: 16px;
+    background: var(--panel); color: var(--ink); box-shadow: 0 8px 24px -12px rgba(5, 5, 20, .4); }
+  .room-object-shortcuts :is(a, button) { display: inline-flex; align-items: center; justify-content: center;
+    min-width: 44px; min-height: 44px; padding: 8px 14px; border: 0; border-radius: 12px;
+    color: var(--ink); background: transparent; text-decoration: none; font: 600 13px var(--font); }
+  .room-object-shortcuts :is(a, button):hover { background: var(--fill); }
+  .room-object-shortcuts :is(a, button):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .room-music-panel { top: 106px; max-height: calc(100dvh - 122px); }
+}

@@ -1,6 +1,6 @@
 /**
  * The illustrated room: one painting in four lights (morning, day, sunset, night) that fade with
- * the clock, a sleeping cat cut into pieces so it can breathe, and small details drawn on top
+ * the clock, a sleeping cat that gently breathes, and small details drawn on top
  * (birds in the windows, dust, city lights, glows). Coordinates are in the painting's pixels.
  */
 
@@ -19,7 +19,7 @@ export const CAT_SPOT = { x: 345, y: 735 };
 export const COFFEE = { x: 1150, y: 455, w: 56, h: 120 };
 export const COFFEE_URL = "https://buymeacoffee.com/animaos";
 
-export const roomUrl = (l: Light) => `room/room-${l}-v2.webp`;
+export const roomUrl = (l: Light) => `room/room-${l}-v3.webp`;
 export const CAT_URL = 'room/cat-v2.webp';
 
 /** The window panes (outlines of the glass): birds, clouds, stars and city lights stay inside them. */
@@ -98,7 +98,7 @@ export interface Frame {
   t: number;
   w: Weights;
   cat: CatMood;
-  /** Seconds (on the t clock) when the cat was last poked; it flicks its ear and tail. */
+  /** Seconds (on the t clock) when the cat was last poked. */
   poked: number;
   hearts: { x: number; y: number; born: number; drift: number }[];
   /** 0–1: the string lights and the warm lamp, on once today's cards are done. */

@@ -1,9 +1,51 @@
 # Refined room artwork, 4 November 2026
 
+## Cassette player edit
+
+The built-in OpenAI image-generation tool edited `room-day-v2.webp` into
+`room-day-v3.webp`, then made matching `room-morning-v3.webp`, `room-sunset-v3.webp`
+and `room-night-v3.webp`. PNG outputs were converted to WebP with FFmpeg quality 92.
+The runtime uses these four backgrounds with the existing `cat-v2.webp` cutout.
+
+Day prompt: Use case: precise-object-edit. Edit target: attached Lilt painted room
+background. Change ONLY the small LEFT computer monitor (left of the large central
+cherry blossom monitor, under suspended microphone) and its stand: remove both
+completely, restoring the window/city behind, and put a small cozy vintage cream and
+charcoal cassette music player on the desk in that place, roughly x640-820,y425-510
+in this 1672x941 image. Player has a clearly legible cassette window, two circular
+speaker grilles, a few simple physical buttons, no text or brand. Keep it compact
+and grounded on desktop, behind the pink chair back. Keep EXACT camera, framing,
+furniture and perspective, bed empty of animals, microphone and popfilter, camera in
+front of right monitor, main and right monitor corners and pictures, coffee cups,
+lighting and every other object unchanged. Preserve this detailed hand-painted anime
+background style. Do not redesign room. Exactly TWO desktop monitors remain plus the
+existing small tablet at far right. No added objects, no UI labels, no cats.
+Maintain original wide aspect ratio.
+
+Lighting prompt: Use case: lighting-weather. Edit the attached painted Lilt room for
+the selected light. Change ONLY lighting and sky. Preserve EXACT composition,
+camera/framing, furniture, object silhouettes and all positions, including the small
+cream cassette music player left of the main screen, two computer monitors plus tablet,
+suspended microphone, camera at right, empty pink bed, chair and plants. Same detailed
+hand-painted anime style. No animals, no fairy lights, no added objects or text. Keep
+same wide aspect ratio. Main and side screen art and corners must stay precisely
+aligned with source.
+
+- Morning: soft early morning light, pale apricot sun and gentle lavender-blue city,
+  cozy pastel interior.
+- Sunset: golden sunset, pink-orange sky with purple city, warm peach sun across bed
+  and desk. Keep readable midtones.
+- Night: cozy readable night, deep blue evening city and scattered lit windows, warm
+  globe lamp illuminating bed and desk, softly glowing screens. Interior should remain
+  clearly visible in warm midtones, never crushed dark. Bed, chair, cassette player,
+  camera, microphone all easily identifiable.
+
+## Earlier v2 artwork
+
 The five `*-v2.webp` files were made with the built-in OpenAI image-generation tool in this
 workspace's chat. The existing Lilt `room-day.webp` was the edit reference. The four room
 backgrounds leave the bed empty; `cat-v2.webp` is a single transparent, anatomically connected
-cat. Original assets remain alongside them for comparison and rollback. The runtime uses v2.
+cat. Original assets remain alongside them for comparison and rollback.
 Generated PNGs were converted to WebP with FFmpeg (room quality 92, cat quality 94); no manual
 raster paintover or third-party artwork was substituted. The generation instructions below
 describe the requested craft improvements; they are not a claim that a human illustrator made

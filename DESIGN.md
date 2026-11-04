@@ -11,16 +11,22 @@ wash, set fairy lights to automatic/on/off, and swap the side monitor's picture.
 controls and a labeled slider work by keyboard; Escape closes and returns focus. Choices stay
 in this browser and Reset room restores the default look. Both monitors have independent
 picture choices. The original furniture arrangement remains; the 3D experiments have been removed.
-The refined v2 paintings reduce repeated props and ambiguous details while keeping the cozy
+The refined paintings reduce repeated props and ambiguous details while keeping the cozy
 palette and composition. Night has visible midtones and warm interior light. The cat is one
 connected alpha cutout over empty bedding, gently breathing; it no longer rotates fragments
 over a baked-in duplicate. Desktop framing includes the cat where possible while keeping
-the main monitor's navigation target visible, including tall displays.
+the main monitor's navigation target visible, including tall displays. The small left monitor
+is replaced with a painted cassette player. Clicking it opens Music with lo-fi and Spotify;
+the camera opens Photos and the microphone opens the same Practice entry as the computer.
+Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music row
+keeps these actions reachable when their painted objects are cropped. Music opens without
+playing, closes with Escape or a click outside, and keeps playing when its panel closes.
 
 - **Room** (`#/`): the painting full screen in the light of the hour (morning, day, sunset,
   night), with its small animations (birds, dust, the sleeping cat). Today's cards sit in the
-  bottom-right as a swipeable stack (folder-style cards, one per practice card, Motion springs);
-  tapping the top card starts it. A few small widgets float in the painting (radio, note), riding
+  lower in the room as a swipeable stack (folder-style cards, one per practice card, Motion springs);
+  tapping the top card starts it. In landscape, the default stack sits toward the chair to
+  leave the camera clear. A few small widgets float in the painting (clock, note), riding
   the camera and draggable (Motion); they step aside rather than cover the stack. The
   computer itself is the other way in: its middle monitor has a steady glow following its painted edges,
   and a visible "Click the screen" cue ("Tap" on touch devices). Hover and keyboard focus make the
