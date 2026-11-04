@@ -21,6 +21,10 @@ const MOODS: Mood[] = [
   { name: "Bedroom cassette", bpm: 78, rain: false, vinyl: 0.8, prog: [[51, 55, 58, 62], [55, 58, 62, 65], [48, 51, 55, 58], [46, 51, 53, 58]] },
   { name: "Library, after hours", bpm: 64, rain: true, drums: "soft", prog: [[50, 53, 57, 60], [46, 50, 53, 57], [55, 58, 62, 65], [57, 61, 64, 67]] },
 ];
+export const radioMoods = MOODS.map(({ name, bpm, rain, drums }, index) => ({
+  name, index, description: rain ? "Soft keys and rain" : drums === "none" ? "Quiet keys, no drums" : drums === "soft" ? "Soft keys and brushed drums" : "Warm keys and a gentle beat",
+  bpm,
+}));
 const mtof = (m: number) => 440 * Math.pow(2, (m - 69) / 12);
 function loadVolume() {
   try { const v = parseFloat(localStorage.getItem("lilt.radio.volume") ?? ""); return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0.8; } catch { return 0.8; }
@@ -36,6 +40,7 @@ class Engine {
   private timer = 0;
   private next = 0;
   private step = 0;
+  private playVersion = 0;
   mood = 0;
   playing = false;
   volume = loadVolume();
@@ -135,9 +140,11 @@ class Engine {
 
   /** False (and silent) if the mic was claimed while the context woke up: the caller ducks instead. */
   async play() {
+    const version = ++this.playVersion;
     if (!this.ctx) this.init();
     const ctx = this.ctx!;
     await ctx.resume();
+    if (version !== this.playVersion) return false;
     if (micInUse()) { if (!this.playing) void ctx.suspend(); return false; }
     if (!this.timer) { this.next = ctx.currentTime + 0.08; this.timer = window.setInterval(this.tick, 25); }
     this.master.gain.cancelScheduledValues(ctx.currentTime);
@@ -148,8 +155,10 @@ class Engine {
   }
 
   pause() {
+    this.playVersion++;
     const ctx = this.ctx;
-    if (!ctx || !this.playing) return;
+    if (!ctx) return;
+    if (!this.playing) { void ctx.suspend(); return; }
     this.playing = false;
     this.master.gain.cancelScheduledValues(ctx.currentTime);
     this.master.gain.setTargetAtTime(0, ctx.currentTime, 0.12);
@@ -172,15 +181,28 @@ class Engine {
 
 const engine = new Engine();
 let ducked = false;
+let pending = false;
+let intent = 0;
 const listeners = new Set<() => void>();
 const changed = () => listeners.forEach((f) => f());
+const pause = () => { intent++; pending = false; ducked = false; engine.pause(); changed(); };
+const start = async () => {
+  const request = ++intent;
+  pending = true;
+  try {
+    const playing = await engine.play();
+    if (request === intent) { pending = false; ducked = !playing; changed(); }
+  } catch {
+    if (request === intent) { pending = false; ducked = false; changed(); }
+  }
+};
 
 // The radio steps aside while the microphone is in use, then comes back.
 if (typeof window !== "undefined") {
   window.addEventListener("lilt:mic", async (e) => {
     const busy = (e as CustomEvent<boolean>).detail;
     if (busy && engine.playing) { ducked = true; engine.pause(); }
-    else if (!busy && ducked) { ducked = false; if (!await engine.play()) ducked = true; }
+    else if (!busy && ducked) { ducked = false; await start(); }
     changed();
   });
 }
@@ -189,12 +211,18 @@ export interface RadioState { playing: boolean; ducked: boolean; mood: string; v
 const snapshot = (): RadioState => ({ playing: engine.playing, ducked, mood: MOODS[engine.mood].name, volume: engine.volume });
 
 export const radio = {
+  pause,
   async toggle() {
-    if (engine.playing || ducked) { ducked = false; engine.pause(); }
-    else if (micInUse() || !await engine.play()) ducked = true; // it will start as soon as the mic is free
+    if (engine.playing || ducked || pending) pause();
+    else if (micInUse()) ducked = true; // it will start as soon as the mic is free
+    else await start();
     changed();
   },
   skip(d: number) { engine.skip(d); changed(); },
+  selectMood(index: number) {
+    if (!Number.isInteger(index) || index < 0 || index >= MOODS.length) return;
+    engine.skip(index - engine.mood); changed();
+  },
   setVolume(v: number) { engine.setVolume(v); changed(); },
 };
 

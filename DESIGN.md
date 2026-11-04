@@ -16,14 +16,17 @@ palette and composition. Night has visible midtones and warm interior light. The
 connected alpha cutout over empty bedding, gently breathing; it no longer rotates fragments
 over a baked-in duplicate. Desktop framing includes the cat where possible while keeping
 the main monitor's navigation target visible, including tall displays. The small left monitor
-is replaced with a painted cassette player. Clicking it opens Music with lo-fi and Spotify;
+is replaced with a painted cassette player. Clicking it opens the Music app with lo-fi and Spotify;
 the camera opens Photos and the microphone opens the same Practice entry as the computer.
 Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music row
 keeps these actions reachable when their painted objects are cropped. Music opens without
-playing, closes with Escape or a click outside, and keeps playing when its panel closes.
+playing, in its own window with an expand/restore control, record artwork and a mood library.
+Closing or pressing Escape returns to the previous view while music continues. A compact
+player in both menu bars shows the selection with a separate play/pause button; clicking
+its artwork/title reopens Music, even when paused. Spotify stays mounted across navigation.
 
 - **Room** (`#/`): the painting full screen in the light of the hour (morning, day, sunset,
-  night), with its small animations (birds, dust, the sleeping cat). Today's cards sit in the
+  night), with its small animations (birds, dust, the sleeping cat). Today's cards sit
   lower in the room as a swipeable stack (folder-style cards, one per practice card, Motion springs);
   tapping the top card starts it. In landscape, the default stack sits toward the chair to
   leave the camera clear. A few small widgets float in the painting (clock, note), riding

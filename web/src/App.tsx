@@ -69,7 +69,7 @@ export function applyTheme(t: Theme) {
 // Before the first render, so a dark computer never flashes the light theme.
 applyTheme(resolveTheme(readThemeMode()));
 
-const SECTIONS = new Set(["deck", "flashcards", "photos", "yarn", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses"]);
+const SECTIONS = new Set(["deck", "flashcards", "photos", "yarn", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses", "music"]);
 
 export function App() {
   const [path, params] = useRoute();

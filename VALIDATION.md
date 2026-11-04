@@ -1,5 +1,24 @@
 # Lilt: validation report
 
+## 4 November 2026: Music app and compact top-bar player
+
+The oversized music popover is replaced by a routed Music app with record artwork,
+nine moods, volume/transport controls and expand/restore. A compact player stays in
+both top bars after closing, including while paused. Music is also in the dock.
+The Spotify host remains mounted across navigation, expansion and source changes.
+
+Isolated Chrome checks cover opening without autoplay, mood selection/skip, mute and
+volume persistence, close/reopen and return route, animated room focus return, compact play/pause, lo-fi mic ducking,
+expand/restore, mobile/dark layout and the existing room regressions. A mocked Spotify
+iframe controller verifies real UI play/pause actions and that closing, expanding and
+source switching do not destroy/recreate its host. Delayed AudioContext resume verifies
+that switching away cannot leave a late lo-fi start playing. This does not establish
+real Spotify account/provider playback or physical audio-device behavior.
+
+Web types, 108 unit tests/build, server formatting/strict Clippy/70 tests, Python
+(47 passed, one platform skip) and desktop formatting/release Clippy pass. Owner data
+and port 7878 were untouched. Existing bundle advisory remains; Safari is untested.
+
 ## 4 November 2026: painted music player and desk actions
 
 Four v3 room backgrounds replace the small left monitor with a cassette player while

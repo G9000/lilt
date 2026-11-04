@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { micInUse } from "../micuse";
+import { publishSpotify, resetSpotify, spotifySelected } from "./musicState";
 import { accessToken, clientId, redirectUri, setClientId, signedIn, signIn, signOut, spotify } from "./spotifyAuth";
 
 /**
@@ -51,19 +52,34 @@ function Player({ uri }: { uri: string }) {
       const el = document.createElement("div");
       host.current.replaceChildren(el);
       IFrameAPI.createController(el, { uri, width: "100%", height: 80 }, (c: Controller) => {
+        if (!live) { c.destroy(); return; }
         ctl = c;
+        const report = () => publishSpotify({ title: SUGGESTED.find(item => item.uri === uri)?.label ?? "Spotify", art: null, playing, ducked });
+        publishSpotify({ toggle: () => {
+          if (playing || ducked) { playing = false; ducked = false; c.pause(); }
+          else if (micInUse()) ducked = true;
+          else c.resume();
+          report();
+        }, pause: () => { playing = false; ducked = false; c.pause(); report(); } });
+        report();
         // Started while the mic is on (from the player, or a resume racing a new take): wait for it.
-        c.addListener("playback_update", (e: any) => { playing = !e?.data?.isPaused; if (playing && micInUse()) { ducked = true; playing = false; c.pause(); } });
+        c.addListener("playback_update", (e: any) => {
+          if (!live) return;
+          playing = !e?.data?.isPaused;
+          if (playing && (!spotifySelected() || micInUse())) { ducked = spotifySelected(); playing = false; c.pause(); }
+          report();
+        });
       });
     });
     // Out of the way while you record or listen, back afterwards.
     const onMic = (e: Event) => {
       const busy = (e as CustomEvent<boolean>).detail;
-      if (busy && playing) { ducked = true; ctl?.pause(); }
-      else if (!busy && ducked) { ducked = false; playing = true; ctl?.resume(); }
+      if (busy && playing) { ducked = true; playing = false; ctl?.pause(); }
+      else if (!busy && ducked) { ducked = false; if (spotifySelected()) ctl?.resume(); }
+      publishSpotify({ playing, ducked });
     };
     window.addEventListener("lilt:mic", onMic);
-    return () => { live = false; window.removeEventListener("lilt:mic", onMic); ctl?.destroy(); };
+    return () => { live = false; window.removeEventListener("lilt:mic", onMic); ctl?.destroy(); resetSpotify(); };
   }, [uri]);
   return <div className="sp-player" ref={host} />;
 }
@@ -114,7 +130,7 @@ function MySpotify() {
       p.addListener("initialization_error", ({ message }: { message: string }) => live && setErr(message));
       p.addListener("player_state_changed", (st: any) => {
         if (!live || !st) return;
-        if (!st.paused && micInUse()) { ducked.current = true; void p.pause(); }
+        if (!st.paused && (!spotifySelected() || micInUse())) { ducked.current = spotifySelected(); void p.pause(); }
         const t = st.track_window?.current_track;
         setTrack(t ? { name: t.name, artists: t.artists.map((a: any) => a.name).join(", "), art: t.album?.images?.[0]?.url ?? null, paused: st.paused } : null);
       });
@@ -124,28 +140,34 @@ function MySpotify() {
     const onMic = (e: Event) => {
       const busy = (e as CustomEvent<boolean>).detail, p = player.current, d = ducked.current;
       if (!p) return;
-      if (!busy && d) { ducked.current = false; if (d === true) void p.resume(); else later.current(d); }
-      else if (busy) void p.getCurrentState().then((st: any) => { if (st && !st.paused && micInUse()) { ducked.current = true; void p.pause(); } });
+      if (!busy && d) { ducked.current = false; if (spotifySelected()) { if (d === true) void p.resume(); else later.current(d); } publishSpotify({ ducked: false }); }
+      else if (busy) void p.getCurrentState().then((st: any) => { if (live && st && !st.paused && micInUse()) { ducked.current = spotifySelected(); void p.pause(); publishSpotify({ playing: false, ducked: !!ducked.current }); } });
     };
     window.addEventListener("lilt:mic", onMic);
-    return () => { live = false; window.removeEventListener("lilt:mic", onMic); player.current?.disconnect(); player.current = null; };
+    return () => { live = false; window.removeEventListener("lilt:mic", onMic); player.current?.disconnect(); player.current = null; resetSpotify(); };
   }, []);
 
   const play = async (uri: string) => {
-    if (!device) return;
+    if (!device || !spotifySelected()) return;
     setPicking(false); setErr(null);
     try { localStorage.setItem(LAST, uri); } catch { /* private mode */ }
-    if (micInUse()) { ducked.current = uri; return; }
+    if (micInUse()) { ducked.current = uri; publishSpotify({ ducked: true }); return; }
     try { await spotify(`/me/player/play?device_id=${device}`, { method: "PUT", body: JSON.stringify({ context_uri: uri }) }); }
     catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
   };
   later.current = (uri) => void play(uri);
   const toggle = async () => {
-    if (track && track.paused && micInUse()) { ducked.current = !ducked.current; return; } // starts (or not) once the mic is free
+    if (ducked.current) { ducked.current = false; publishSpotify({ ducked: false }); return; }
+    if (track && track.paused && micInUse()) { ducked.current = true; publishSpotify({ ducked: true }); return; } // starts once the mic is free
     if (track) return void player.current?.togglePlay();
     const last = (() => { try { return localStorage.getItem(LAST); } catch { return null; } })() ?? lists?.[0]?.uri;
     if (last) await play(last); else setPicking(true);
   };
+  useEffect(() => {
+    publishSpotify({ title: track?.name ?? "Spotify", art: track?.art ?? null, playing: !!track && !track.paused && !ducked.current,
+      ducked: !!ducked.current, toggle: device ? () => { void toggle(); } : null,
+      pause: () => { ducked.current = false; void player.current?.pause(); publishSpotify({ playing: false, ducked: false }); } });
+  }, [track, device, lists]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="sp sp-me">

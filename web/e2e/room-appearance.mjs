@@ -64,42 +64,9 @@ try {
   await page.getByRole('button',{name:/Sit down at the computer/}).click();
   assert.equal(await page.evaluate(()=>window.entered),1,'computer hit target remains aligned');
   await page.setViewportSize({width:1440,height:950});
-  const music=page.getByRole('button',{name:'Open music player',exact:true});
-  await music.click();
-  const player=page.getByRole('dialog',{name:'Music',exact:true});
-  assert.equal(await player.getByRole('button',{name:'Start lo-fi radio'}).count(),1,'opening music never autoplays');
-  const firstMood=await player.locator('.room-music-mood').textContent();
-  await player.getByRole('button',{name:'Next mood'}).click();
-  assert.notEqual(await player.locator('.room-music-mood').textContent(),firstMood);
-  await player.getByRole('button',{name:'Previous mood'}).click();
-  assert.equal(await player.locator('.room-music-mood').textContent(),firstMood);
-  await player.getByRole('slider',{name:'Radio volume'}).fill('27');
-  assert.equal(await page.evaluate(()=>localStorage.getItem('lilt.radio.volume')),'0.27');
-  await player.getByRole('button',{name:'Start lo-fi radio'}).click();
-  await page.waitForFunction(()=>document.querySelector('.room-music-status')?.textContent==='Now playing');
-  await page.evaluate(async()=>{const {claimMic}=await import('/src/micuse.ts');window.releaseTestMic=claimMic();});
-  await page.waitForFunction(()=>document.querySelector('.room-music-status')?.textContent==='Paused while the mic is on');
-  await page.evaluate(()=>window.releaseTestMic());
-  await page.waitForFunction(()=>document.querySelector('.room-music-status')?.textContent==='Now playing');
-  await page.keyboard.press('Escape');
-  assert.equal(await music.evaluate(el=>el===document.activeElement),true);
-  await music.click();
-  assert.equal(await player.getByRole('button',{name:'Pause lo-fi radio'}).count(),1,'closing panel preserves playback');
-  await player.getByRole('button',{name:'Pause lo-fi radio'}).click();
-  await player.getByRole('radio',{name:'Spotify',exact:true}).check();
-  assert.equal(await player.getByRole('textbox',{name:'Spotify Client ID'}).count(),1,'existing Spotify setup remains available');
-  await player.getByRole('radio',{name:'Lo-fi',exact:true}).check();
-  if(shots) await page.screenshot({path:path.join(shots,'room-music.png')});
-  await page.mouse.click(20,200);
-  assert.equal(await player.isVisible(),false,'outside click dismisses music');
   await page.getByRole('button',{name:'Open Practice',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.entered),2,'microphone uses the existing Practice entry');
-  await music.click();
   assert.equal(await page.getByRole('link',{name:'Open Photos',exact:true}).getAttribute('href'),'#/photos');
-  await page.evaluate(()=>{location.hash='/photos';});
-  await page.waitForFunction(()=>document.querySelector('.room-music-panel').hidden);
-  assert.equal(await player.isVisible(),false,'navigation dismisses music');
-  await page.evaluate(()=>{location.hash='';});
   for(const name of ['Daylight','Morning','Sunset','Night']) {
     await page.getByRole('button',{name:'Make it yours',exact:true}).click();
     await page.getByRole('radio',{name,exact:true}).check();
@@ -127,6 +94,10 @@ try {
   assert.deepEqual(oldCatRequests,[],'no detached tail/ear overlays are loaded');
   for(const [width,height] of [[1024,1366],[1000,950]]) {
     await page.setViewportSize({width,height});
+    await page.waitForFunction(()=>{
+      const r=document.querySelector('.room-hit').getBoundingClientRect();
+      return r.x>=0&&r.right<=window.innerWidth;
+    });
     const target=await page.getByRole('button',{name:/Sit down at the computer/}).boundingBox();
     assert.ok(target&&target.x>=0&&target.x+target.width<=width,'cat framing never pushes the main screen off a tall display');
   }
@@ -172,10 +143,11 @@ try {
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.setViewportSize({width:390,height:844});
   await home.getByRole('group',{name:'Room shortcuts'}).getByRole('button',{name:'Music',exact:true}).click();
-  const mobilePlayer=home.getByRole('dialog',{name:'Music',exact:true});
+  await home.waitForFunction(()=>location.hash==='#/music');
+  const mobilePlayer=home.locator('.music-window');
   const mobileBounds=await mobilePlayer.boundingBox();
   assert.ok(mobileBounds&&mobileBounds.x>=0&&mobileBounds.x+mobileBounds.width<=390&&mobileBounds.y+mobileBounds.height<=844,'mobile music fits');
-  await mobilePlayer.getByRole('button',{name:'Close music player'}).click();
+  await mobilePlayer.getByRole('button',{name:'Close Music',exact:true}).click();
   await home.getByRole('button',{name:'Make it yours',exact:true}).click();
   await home.getByRole('button',{name:'Reset room',exact:true}).scrollIntoViewIfNeeded();
   assert.equal(await home.getByRole('button',{name:'Reset room',exact:true}).evaluate(el=>{

@@ -4,7 +4,8 @@ import { go } from "../App";
 import { Icon } from "../components/bits";
 import { CAT_URL, currentLight, Light, roomUrl } from "../room/scene";
 import { RoomAppearance } from '../room/RoomAppearance';
-import { radio, useRadio } from "./lofi";
+import { MusicMini, MusicWindow } from "./Music";
+import { openMusic } from "./musicState";
 import { resetLayout, useLayoutMoved } from "./Floaters";
 import { InboxButton, InboxState } from "./Inbox";
 import { PICTURES } from "./pictures";
@@ -51,14 +52,13 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
 }) {
   const now = useNow();
   const light = currentLight();
-  const r = useRadio();
   const [deck, setDeck] = useState<Deck | null>(null);
   // Refresh the widgets whenever you come back to the desktop.
   const loadDeck = () => api.deck().then(setDeck, () => setDeck(null));
   useEffect(() => { if (inside) void loadDeck(); }, [inside, section]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const win = page ? WINDOWS[section] ?? { title: "Lilt", width: 760 } : null;
-  const appName = win ? win.title : "Lilt";
+  const appName = section === "music" ? "Music" : win ? win.title : "Lilt";
   const dockApp = (to: string, label: string, icon: ReactNode, on: boolean) => (
     <button className={`ds-app${on ? " on" : ""}`} onClick={() => go(to)} aria-label={label} aria-current={on ? "page" : undefined}>
       <span className="ds-tip">{label}</span>{icon}
@@ -66,21 +66,17 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
   );
 
   return (
-    <div className={`ds${inside ? " in" : ""}${instant ? " instant" : ""}${page ? " app-open" : ""}${win?.full ? " app-full" : ""}`} aria-hidden={!inside} {...({ inert: inside ? undefined : "" } as object)}>
+    <div className={`ds${inside ? " in" : ""}${instant ? " instant" : ""}${page || section === "music" ? " app-open" : ""}${win?.full ? " app-full" : ""}`} aria-hidden={!inside} {...({ inert: inside ? undefined : "" } as object)}>
       <div className="ds-wall" style={{ backgroundImage: `url(${roomUrl(light)})` }} />
 
       <header className="ds-menubar ds-boot">
         <Mark />
         <b>{appName}</b>
         <div className="ds-mr">
-          {(r.playing || r.ducked) && (
-            <button className="ds-np" onClick={() => void radio.toggle()} aria-label={r.playing ? `Pause ${r.mood}` : `Resume ${r.mood}`}>
-              {r.playing && <span className="ds-eq" aria-hidden="true"><i /><i /><i /></span>}{r.ducked ? "Paused while the mic is on" : r.mood}
-            </button>
-          )}
+          <MusicMini />
           <InboxButton inbox={inbox} />
           <span className="ds-hide-s">{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
-          <span>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
+          <span className="ds-time">{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
           <button className="ds-mb-btn" onClick={onTheme} aria-label={`Theme: ${theme}. Switch theme`} title={`Theme: ${theme}`}>{theme === "dark" ? Icon.moon : Icon.sun}</button>
           <SettingsButton />
           <button className="ds-leave" onClick={() => go("/")}>
@@ -107,16 +103,22 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         </section>
       )}
 
+      <MusicWindow open={inside && section === "music"} />
+
       <nav className="ds-dock ds-boot" aria-label="Apps">
         {/* Named for what they open. Practice texts and Progress stay reachable by link but aren't
             apps until they offer more than the chapters (and Progress has something to show). */}
-        {dockApp("/deck", "Today", <TodayIcon date={now} />, !page || section === "deck" || section === "guided" || section === "practice" || section === "review")}
+        {dockApp("/deck", "Today", <TodayIcon date={now} />, (!page && section !== "music") || section === "deck" || section === "guided" || section === "practice" || section === "review")}
         {dockApp("/studio", "Practice", <StudioIcon />, section === "studio" || section === "texts" || section === "library")}
         {dockApp("/flashcards", "Flashcards", <FlashcardsIcon />, section === "flashcards")}
         {dockApp("/yarn", "Yarn", <YarnIcon />, section === "yarn")}
         {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
         {dockApp("/photos", "Photos", <PhotosIcon />, section === "photos")}
+        <button className={`ds-app${section === "music" ? " on" : ""}`} onClick={openMusic} aria-label="Music" aria-current={section === "music" ? "page" : undefined}>
+          <span className="ds-tip">Music</span>
+          <svg viewBox="0 0 54 54" aria-hidden="true"><rect width="54" height="54" rx="12" fill="#e0643c" /><circle cx="27" cy="27" r="20" fill="#25252a" /><circle cx="27" cy="27" r="15" fill="none" stroke="#4c4c58" /><circle cx="27" cy="27" r="9" fill="#f4e5ce" /><circle cx="27" cy="27" r="2" fill="#25252a" /></svg>
+        </button>
         <span className="ds-sep" />
         {dockApp("/", "Back to the room", <LeaveIcon />, false)}
       </nav>
@@ -277,18 +279,17 @@ export const ShuffleIcon = () => (
 export function RoomTop({ inbox }: { inbox: InboxState }) {
   const now = useNow();
   const moved = useLayoutMoved();
-  const r = useRadio();
   return (
     <header className="ds-roomtop">
       <span className="ds-rt-mark"><Mark />Lilt</span>
       <span className="ds-rt-r">
         <RoomAppearance />
-        {r.playing && <button className="ds-np" onClick={() => void radio.toggle()} aria-label={`Pause ${r.mood}`}><span className="ds-eq" aria-hidden="true"><i /><i /><i /></span>{r.mood}</button>}
+        <MusicMini />
         {moved && <button className="ds-mb-btn ds-reset" onClick={resetLayout}>Reset layout</button>}
         <InboxButton inbox={inbox} />
         <SettingsButton />
         <span className="ds-hide-s">{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
-        <span>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
+        <span className="ds-time">{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
       </span>
     </header>
   );

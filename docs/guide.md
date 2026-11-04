@@ -55,10 +55,12 @@ computer can also fit. Both monitor choices save independently; older side-monit
 are preserved. Artwork provenance and prompts live in `web/public/room/CREDITS.md`.
 
 **Use the things on your desk.** The small left monitor is now a cassette music player;
-the main and right monitors keep their own picture choices. Click the player for Music:
-start or pause lo-fi, choose the previous/next mood, adjust volume, or use the existing
-Spotify option. Opening the panel does not start music. Escape or a click outside closes
-the panel while playback continues. The camera opens your Photos gallery; the microphone
+the main and right monitors keep their own picture choices. Click the player for the Music app:
+record artwork, a list of lo-fi moods, playback and volume controls, and the existing
+Spotify option. Expand the window for more room, or restore its regular size. Opening
+Music does not start playback. Close or Escape returns to the previous view while music
+continues. The compact player in the top bar shows your selection and play/pause; click
+the artwork or title to reopen Music, including when paused. The camera opens your Photos gallery; the microphone
 opens Practice using the same next-card/Start here entry as the computer. On phones a small
 Photos/Practice/Music row keeps these actions available even when the objects are cropped;
 portrait tablets get the same shortcuts. In landscape, the default card stack sits toward
@@ -66,6 +68,8 @@ the chair so it leaves the painted camera clear. You can still drag the cards.
 
 The isolated browser check uses the actual painting and controls, with no practice backend:
 `cd web && node e2e/room-appearance.mjs [screenshot-folder]`.
+Music navigation and playback have a separate isolated check:
+`cd web && node e2e/music.mjs [screenshot-folder]`.
 
 1. **The room and the desk.** Lilt opens on an illustrated anime room above a city.
    - **Today's cards are a stack** in the corner, one card per practice card left. Swipe the top
