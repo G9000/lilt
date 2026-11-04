@@ -131,9 +131,6 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
         )
         .into());
     }
-    if !crate::practice::model::room_items_ok(&p.room_items) {
-        return Err(anyhow::anyhow!("room items must be a few short ids").into());
-    }
     p.schema = "lilt.profile/1".into();
     p.updated_utc = util::now_utc();
     store::write_json(&app.paths.profile(), &p)?;

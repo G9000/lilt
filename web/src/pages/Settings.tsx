@@ -6,7 +6,6 @@ import { idLabel } from "../chapters";
 import { applyTextSize, readTextSize, readThemeMode, TEXT_SIZES, type TextSize, type ThemeMode } from "../App";
 import { Callout } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
-import { arrangeRoom } from "../room/Room";
 
 const ZONES = ["Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Jakarta", "Asia/Bangkok", "Asia/Tokyo", "Australia/Sydney", "Europe/London", "Europe/Berlin", "America/New_York", "America/Los_Angeles", "UTC"];
 
@@ -43,7 +42,7 @@ type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy";
 
 /** Each pane: its sidebar icon (a white glyph on a coloured tile, as in System Settings) and words to search by. */
 const PANES: { id: PaneId; title: string; words: string; tile: string; glyph: ReactNode }[] = [
-  { id: "appearance", title: "Appearance", words: "theme dark light mode text size font bigger smaller room screen picture wallpaper arrange lamp plant bed colour color", tile: "#4a4a55,#1f1f26",
+  { id: "appearance", title: "Appearance", words: "theme dark light mode text size font bigger smaller", tile: "#4a4a55,#1f1f26",
     glyph: <><circle cx="10" cy="10" r="6" /><path d="M10 4a6 6 0 0 1 0 12z" fill="currentColor" stroke="none" /></> },
   { id: "ai", title: "AI connections", words: "ai claude chatgpt mcp connect agent assistant desktop code tunnel", tile: "#f59a6c,#e0643c",
     glyph: <path d="M10 3l1.5 4 4 1.5-4 1.5L10 14l-1.5-4-4-1.5 4-1.5zM15 13l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="currentColor" stroke="none" /> },
@@ -143,9 +142,6 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
       <div className="sx-group">
         <Row label="Theme" help="Auto follows your computer's light or dark setting. The sun or moon button in the menu bar picks one." stack><ThemeChoice /></Row>
         <Row label="Text size" help="For the practice texts, your recordings and these pages." stack><TextSizeChoice /></Row>
-        <Row label="The room" help="Change the pictures on the screens, the lamps' colour, the plant's leaves and the bed cover: click one to show the next.">
-          <button className="btn-secondary sx-btn" onClick={() => { onClose?.(); window.location.hash = "#/"; arrangeRoom(); }}>Arrange the room</button>
-        </Row>
       </div>
     );
     if (id === "ai") return <ConnectAI />;
@@ -227,7 +223,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
 }
 
 const HERO: Record<PaneId, string> = {
-  appearance: "How Lilt looks: light or dark, how big the text is, and how the room is arranged.",
+  appearance: "How Lilt looks: light or dark, and how big the text is.",
   ai: "Let an AI assistant read your practice, write reviews, and rewrite your own copy of the chapters. Lilt's original chapters stay as they are, and every change can be undone.",
   notifications: "How Lilt can get your attention while it's open.",
   time: "The time zone your practice days and reminders follow.",

@@ -22,12 +22,6 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
   room behind it (a full blur on phones). An orange dot on the envelope means unread; never a count.
 - **The room reacts, never scores**: the cat greets you on arrival; string lights and a warm lamp
   come on once today's cards are done.
-- **Arranging the room** (Settings › Appearance): the two desk screens, the lamps, the plant and the
-  bed each get a thin white line round their shape, and a small dark-glass pill under the menu bar
-  says "Click anything outlined to change it" with a white Done button. A click shows the next look:
-  a picture fades onto a screen (warped to its corners, toned for the light); the lamps, plant and
-  bed are the painting recoloured in its own light, never a flat fill. The widgets fade back and the
-  way in is paused until Done or Escape.
 - **Desktop** (`#/desk` and every other route): wallpaper is the same painting, blurred
   (34px) and slightly darkened. A menu bar on top (app name, now playing, date and time, Leave
   desk), a dock at the bottom, widgets in the middle, and at most one app window open on top.

@@ -13,7 +13,6 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
-      { title: "Arrange the room", body: "Settings › Appearance › Arrange the room: click a screen for a galaxy, a cat or a plant; the lamps for rose, lilac or moonlight; the plant for autumn leaves; the bed for a blue, sage or cream cover. Kept with your profile." },
       { title: "Settings that keep your edits", body: "Quick changes save in order, even when you leave and reopen Settings. Commas stay put as you type your qualities, and comparisons clear the previous pair's results when you choose other takes.", to: "/studio/settings" },
       { title: "Resonance and weight, rewritten", body: "Two chapters now say plainly what to do: a smaller space for your voice, and a light, clear sound you borrow from little sounds and carry into words. Never by squeezing.", to: "/studio/resonance" },
       { title: "Ball of yarn", body: "A calm game: lift a ball of yarn with your voice, humming or speaking, in your own range. No scores.", to: "/yarn" },
