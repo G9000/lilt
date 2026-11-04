@@ -2,7 +2,9 @@ import "../styles/deck.css";
 import "../styles/voice.css";
 import "../styles/editor.css";
 import "../styles/stationery-deck.css";
+import "../styles/desk-recorder.css";
 import { DeckIllustration } from "../components/DeckIllustration";
+import { RecorderPlayback } from "../components/RecorderPlayback";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
@@ -19,13 +21,12 @@ import { HistoryPage } from "./History";
 import { TextHistory } from "./TextHistory";
 import { setRoom } from "../room/Room";
 import { CAT_URL, currentLight, roomUrl } from "../room/scene";
-import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
+import { AudioPlayer, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
 import { Measured, ResonanceNote, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
 import type { CardKind } from "../insight";
 import { useLivePitch } from "../components/LivePitch";
 import { PianoRoll, PitchPoint } from "../components/PianoRoll";
-import { useTakeAudio } from "../components/takeAudio";
 import { useMic } from "../components/Recording";
 import { ReadAlong, ReadNotes } from "../components/ReadAlong";
 import { cleanContour, noteName, recentMedian, steadinessSt } from "../pitch";
@@ -680,6 +681,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const rec = useRef<TakeRecorder | null>(null);
   const box = useRef<HTMLElement>(null);
   const starting = useRef(false);
+  const [preparing, setPreparing] = useState(false);
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -770,6 +772,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const start = async () => {
     if (!metaRef.current || starting.current) return;
     starting.current = true;
+    setPreparing(true);
     try {
       setErr(null); setListening(false);
       const stream = mic.stream ?? (await mic.request());
@@ -786,13 +789,13 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
     } catch (e: any) {
       // No take was captured when starting failed; let the learner retry Record.
       setState("idle"); setErr(e.message);
-    } finally { starting.current = false; }
+    } finally { starting.current = false; if (mounted.current) setPreparing(false); }
   };
   const stop = async () => {
     try { onSaved(await rec.current!.stop()); } catch (e: any) { setErr(e.message); }
   };
   // After an error a new take can start; audio held from the failed one is recovered separately.
-  const canStart = !!meta && (state === "idle" || state === "error" || (allowRetake && state === "saved"));
+  const canStart = !!meta && !preparing && (state === "idle" || state === "error" || (allowRetake && state === "saved"));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -833,27 +836,25 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const showResult = idle && !!result;
   // Each new take folds the chart again once it's saved.
   const [chartOpen, setChartOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   useEffect(() => { if (recording) setChartOpen(false); }, [recording]);
   const canFold = foldChart && idle && state === "saved";
   const folded = canFold && !chartOpen;
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   const showBright = brightness && (recording || listening);
   return (
-    <section ref={box} className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}${folded ? " folded" : ""}${showBright ? " bright" : ""}`} aria-label="Recorder">
+    <section ref={box} className={`ve-dock dr-recorder${shown.length ? " has-pitch" : ""}${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}${folded ? " folded" : ""}${showBright ? " bright" : ""}`} aria-label="Recorder">
       {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
-      <div className="ve-now" aria-live="off">
-        <div className={`ve-now-read${nowHeld.held ? " held" : ""}`}>
-          <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
-          <span>{now ? (nowHeld.held ? `Last heard · ${noteName(now)}` : noteName(now)) : "Your pitch now"}</span>
-        </div>
-        <span className={`ve-state ${recording ? "rec" : listening ? "live" : state}`}><i aria-hidden="true" />{status}</span>
+      <div className="dr-header">
+        <div><span className="dr-title">Desk recorder</span><span className="dr-status" role="status"><i aria-hidden="true" />{preparing ? "Getting the microphone ready…" : mic.error ? "Microphone unavailable" : recording || listening || state === "saving" || state === "error" || state === "saved" ? status : !meta ? "Getting ready…" : mic.stream?.active ? "Microphone ready" : "Ready when you are"}</span></div>
+        <span className="dr-timer" aria-label={`Recording time ${clock(elapsed)}`}>{clock(elapsed)}</span>
       </div>
       <div className="ve-scope">
         <PianoRoll live points={shown} duration={shown.length ? shown[shown.length - 1].t : 0} band={band} range={[LO, HI]}
           levels={amps.current} compact={narrow} height="100%" label="Your pitch, live, over the last eight seconds" />
         {!active && <span className="ve-scope-idle">{idleHint}</span>}
         {eyesOff && active && <span className="ve-eyes">Eyes off: listen to yourself, not the line</span>}
-        {inBand !== null && <span className={`ve-inrange${inBand ? " ok" : ""}`}>{inBand ? "In your range" : "Outside your range"}</span>}
+        {detailsOpen && !eyesOff && inBand !== null && <span className="ve-inrange">{inBand ? "In your range" : "Outside your range"}</span>}
       </div>
       {showBright && (
         <div className="ve-bright">
@@ -867,16 +868,25 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
           <p className="ve-bright-note">Works best on a steady sound on one note: a hum, a held vowel, a whisper. Not on speech.</p>
         </div>
       )}
+      {!eyesOff && (recording || listening) && <div className="dr-detail-control"><button className="ve-ghost" aria-expanded={detailsOpen} onClick={() => setDetailsOpen(!detailsOpen)}>Pitch details<svg viewBox="0 0 12 12" aria-hidden="true"><path d={detailsOpen ? "M3 8l3-3 3 3" : "M3 4l3 3 3-3"} fill="none" stroke="currentColor" strokeWidth="1.4" /></svg></button><span>Live estimate</span></div>}
+      {!eyesOff && detailsOpen && (recording || listening) && <div className="dr-details">
+      <div className="ve-now" aria-live="off">
+        <div className={`ve-now-read${nowHeld.held ? " held" : ""}`}>
+          <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
+          <span>{now ? (nowHeld.held ? "Last heard" : "Your pitch now") + ` · ${noteName(now)}` : "Your pitch now"}</span>
+        </div>
+      </div>
       <div className="ve-stats" aria-live="off" title="Live estimate. Saved takes are measured with Praat.">
         <div className="ve-stat"><span>Middle</span><b>{mid ? <>{Math.round(mid)}<small>Hz</small></> : dash}</b><i>{mid ? noteName(mid) : ""}</i></div>
         <div className="ve-stat"><span>Usual range</span><b>{range ? <>{Math.round(range[0])}–{Math.round(range[1])}</> : dash}</b><i>{range ? "Hz" : ""}</i></div>
         <div className="ve-stat"><span>Steadiness</span><b>{sd !== null ? <>{sd.toFixed(1)}<small>st</small></> : dash}</b><i>{sd === null ? "" : sd < 0.3 ? "smooth" : sd < 0.8 ? "a little wobbly" : "moving"}</i></div>
       </div>
+      </div>}
       <button className={`ve-rec${recording ? " on" : ""}`} onClick={() => void (recording ? stop() : start())} disabled={!recording && !canStart}
         aria-label={recording ? "Stop recording" : "Start recording"}>
         <i aria-hidden="true" />
-        {recording ? <>Stop<span className="ve-clock">{clock(elapsed)}</span></>
-          : state === "saving" ? "Saving…"
+        {recording ? "Stop"
+          : preparing ? "Starting…" : state === "saving" ? "Saving…"
           : (state === "saved" && allowRetake) || retake ? "Record again" : "Record"}
         {(recording || canStart) && <kbd aria-hidden="true">Space</kbd>}
       </button>
@@ -1474,25 +1484,8 @@ function BeforeAfter({ take, item, onDone, onAgain, onHurt }: { take: Take; item
   );
 }
 
-const PlayIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>;
-const PauseIcon = () => <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /><rect x="7.1" y="1.5" width="2.4" height="9" rx=".8" fill="currentColor" /></svg>;
 export function ListenBack({ src }: { src: string }) {
-  const play = useTakeAudio(src);
-  const [bars, setBars] = useState<number[]>([]);
-  useEffect(() => {
-    let live = true;
-    void loadPeaks(src, 72).then((p) => { if (!live || !p) return; const max = Math.max(0.01, ...Array.from(p)); setBars(Array.from(p, (v) => 0.12 + 0.88 * (v / max))); });
-    return () => { live = false; };
-  }, [src]);
-  const pos = play.dur > 0 && !play.ended ? play.t / play.dur : 0;
-  return (
-    <div className="prc-player">
-      <button className="play-btn" onClick={play.toggle} aria-label={play.playing ? "Pause" : "Play your recording"}>{play.playing ? <PauseIcon /> : <PlayIcon />}</button>
-      <div className="prc-wave" aria-hidden="true">
-        {(bars.length ? bars : Array(72).fill(0.15)).map((h, i, arr) => <i key={i} className={i / arr.length < pos ? "on" : ""} style={{ transform: `scaleY(${h.toFixed(3)})` }} />)}
-      </div>
-    </div>
-  );
+  return <RecorderPlayback src={src} />;
 }
 
 function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {

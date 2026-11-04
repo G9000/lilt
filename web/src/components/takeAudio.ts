@@ -28,7 +28,9 @@ export function useTakeAudio(src: string) {
     return el;
   }, [src]);
   const [, bump] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
+    setError(null);
     const on = () => bump((n) => n + 1);
     let raf = 0;
     // While playing, follow every frame so the playhead glides rather than stepping.
@@ -41,12 +43,18 @@ export function useTakeAudio(src: string) {
     return () => { evs.forEach((e) => a.removeEventListener(e, on)); a.removeEventListener("play", onPlay); cancelAnimationFrame(raf); };
   }, [a]);
   const pauseOthers = () => players.forEach((p) => { if (p !== a) p.pause(); });
+  const start = () => {
+    setError(null); pauseOthers();
+    void a.play().catch(e => { if (e?.name !== "AbortError") setError("Couldn't play this recording. Try again."); });
+  };
   return {
+    error,
     playing: !a.paused,
     t: a.currentTime,
     dur: isFinite(a.duration) ? a.duration : 0,
-    toggle: () => { if (a.paused) { pauseOthers(); void a.play(); } else a.pause(); },
-    seek: (t: number) => { a.currentTime = Math.max(0, t); if (a.paused) { pauseOthers(); void a.play(); } },
+    toggle: () => { if (a.paused) start(); else a.pause(); },
+    seek: (t: number) => { a.currentTime = Math.max(0, t); if (a.paused) start(); },
+    scrub: (t: number) => { a.currentTime = Math.max(0, Math.min(isFinite(a.duration) ? a.duration : 0, t)); bump(n => n + 1); },
     ended: a.ended,
   };
 }

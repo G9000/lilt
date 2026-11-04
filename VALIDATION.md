@@ -1,5 +1,27 @@
 # Lilt: validation report
 
+## 5 November 2026: Desk recorder
+
+The shared recorder now uses an ivory/charcoal surface, separate elapsed timer, microphone
+status and a stable Record/Stop control. Live numerical details open on demand; eyes-off
+concealment remains intact. Replay has duration and a native keyboard seek slider. Paused
+scrubbing stays paused, playback failures are visible, and intentional cancellation is ignored.
+
+Extended `web/e2e/stationery-deck.mjs` passed with isolated APIs, byte-range audio fixtures and
+Chrome's fake microphone. Checked ready and recording at 390×844, 1024×768, 1440×950,
+3440×1440 and 3840×2160, including Record/Stop position and size within the recorder.
+Inspected phone, desktop, 4K dark, expanded details and playback screenshots. Existing daily
+deck review/retry/comparison/comfort-stop checks still pass. Added keyboard seeking, paused
+playback, cancellation, playback failure/retry, pending/blocked microphone recovery, Studio
+live mode, save failure/retry, saved pitch-line reopening and resonance on a phone. Large-text
+and long-prompt checks remain in the suite. Review caught the saved Studio canvas being
+hidden and cancellation incorrectly showing a playback failure; both were corrected.
+
+Web types, 109 unit tests and production build passed; server formatting, strict Clippy and
+70 tests, Python 47 tests (one skipped), and desktop formatting/release Clippy passed. Existing
+bundle-size and Windows hard-link cache warnings remain. Sizes are emulated Chrome viewports,
+not physical-device acceptance. Audio was synthetic; no owner data or running backend changed.
+
 ## 5 November 2026: Stationery daily deck
 
 Today shows one paper card with a small drawn illustration, a larger reading prompt, optional
