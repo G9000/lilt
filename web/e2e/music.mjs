@@ -34,6 +34,14 @@ try {
   await music.waitFor({state:'visible'});
   assert.equal(await page.locator('.room-music-panel').count(),0,'old popover is removed');
   const title=music.locator('h1');
+  const rows=await music.locator('.music-moods button').evaluateAll(buttons=>buttons.map(button=>({
+    image:button.querySelector('img').getBoundingClientRect().left,
+    title:button.querySelector('b').getBoundingClientRect().left,
+  })));
+  assert.ok(rows.every(row=>Math.abs(row.image-rows[0].image)<1&&Math.abs(row.title-rows[0].title)<1),'selected and unselected mood rows share aligned artwork and titles');
+  assert.equal(await music.locator('.music-cover').count(),0,'square sleeve no longer hides the disc');
+  const disc=await music.locator('.music-record').boundingBox();
+  assert.ok(disc&&Math.abs(disc.width-disc.height)<1,'full disc remains circular');
   assert.equal(await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).count(),1,'opening never autoplays');
   await music.getByRole('button',{name:'Next mood',exact:true}).click();
   assert.match(await title.textContent(),/Desk lamp/);
@@ -51,11 +59,7 @@ try {
   await music.getByRole('slider',{name:'Radio volume'}).fill('27');
   await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).click();
   await music.getByRole('button',{name:'Pause lo-fi radio',exact:true}).waitFor();
-  const before=await music.boundingBox();
-  await music.getByRole('button',{name:'Expand Music window',exact:true}).click();
-  const expanded=await music.boundingBox();
-  assert.ok(expanded.width>before.width,'expansion increases available room');
-  await music.getByRole('button',{name:'Restore Music window',exact:true}).click();
+  assert.equal(await music.getByRole('button',{name:/Expand|Restore/}).count(),0,'music has no expand/restore controls');
   if(shots) await page.screenshot({path:path.join(shots,'music-app.png')});
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
   await page.waitForFunction(()=>location.hash==='#/');
@@ -89,13 +93,12 @@ try {
   await music.getByRole('button',{name:'Or paste a playlist link',exact:true}).click();
   await music.getByRole('button',{name:'lofi beats',exact:true}).click();
   await music.getByRole('button',{name:'Play test Spotify',exact:true}).click();
-  await music.getByRole('button',{name:'Expand Music window',exact:true}).click();
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
   await page.waitForFunction(()=>location.hash==='#/photos');
   const deskMini=page.locator('.ds-menubar .music-mini');
   await deskMini.getByRole('button',{name:'Pause Spotify',exact:true}).click();
   await deskMini.getByRole('button',{name:'Play Spotify',exact:true}).click();
-  assert.equal(await page.evaluate(()=>window.spotifyProbe.destroyed),0,'closing and expanding preserve Spotify host');
+  assert.equal(await page.evaluate(()=>window.spotifyProbe.destroyed),0,'closing preserves Spotify host');
   await deskMini.locator('.music-mini-open').click();
   await music.getByRole('radio',{name:'Lo-fi',exact:true}).check();
   const pauses=await page.evaluate(()=>window.spotifyProbe.paused);
@@ -113,7 +116,6 @@ try {
   await page.evaluate(()=>window.finishMusicResume());
   await music.getByRole('radio',{name:'Lo-fi',exact:true}).check();
   assert.equal(await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).count(),1,'late audio resume cannot restart the source that was left');
-  await music.getByRole('button',{name:'Restore Music window',exact:true}).click();
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
   await page.evaluate(()=>{location.hash='/';});
   await page.setViewportSize({width:390,height:844});
@@ -135,5 +137,5 @@ try {
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
   await page.waitForFunction(()=>location.hash==='#/'&&document.activeElement?.classList.contains('room-music'));
   assert.deepEqual(errors,[]);
-  console.log('PASS: Music app navigation, no autoplay, controls, expansion, persistent mini player, microphone ducking and phone layout.');
+  console.log('PASS: Music app navigation, aligned mood rows, no autoplay, controls, persistent mini player, microphone ducking and phone layout.');
 } finally {await browser?.close();await server.close();}

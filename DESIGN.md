@@ -20,7 +20,10 @@ is replaced with a painted cassette player. Clicking it opens the Music app with
 the camera opens Photos and the microphone opens the same Practice entry as the computer.
 Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music row
 keeps these actions reachable when their painted objects are cropped. Music opens without
-playing, in its own window with an expand/restore control, record artwork and a mood library.
+playing, in a responsive window with a fully visible metallic CD and a mood library.
+There are no expand/restore controls. Mood rows use fixed artwork, text and checkmark
+columns, so choosing one never shifts the others. The CD spins gently only during
+playback and remains still with reduced motion.
 Closing or pressing Escape returns to the previous view while music continues. A compact
 player in both menu bars shows the selection with a separate play/pause button; clicking
 its artwork/title reopens Music, even when paused. Spotify stays mounted across navigation.

@@ -32,9 +32,8 @@ export function MusicMini() {
   </span>;
 }
 
-/** Stays in the same place in Desktop, so closing or expanding never replaces a Spotify player. */
+/** Stays in the same place in Desktop, so closing never replaces a Spotify player. */
 export function MusicWindow({ open }: { open: boolean }) {
-  const [expanded, setExpanded] = useState(false);
   const music = useMusic();
   const close = useRef<HTMLButtonElement>(null);
   const id = useId();
@@ -49,17 +48,13 @@ export function MusicWindow({ open }: { open: boolean }) {
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
   }, [open]);
-  return <section className={`ds-win music-window${expanded ? " music-expanded" : ""}`} hidden={!open} aria-label="Music">
+  return <section className="ds-win music-window" hidden={!open} aria-label="Music">
     <div className="ds-tb">
       <div className="ds-lights">
         <button ref={close} className="ds-l1" onClick={closeMusic} aria-label="Close Music" />
         <button className="ds-l2" onClick={closeMusic} aria-label="Minimize Music" />
-        <button className="ds-l3" onClick={() => setExpanded(value => !value)} aria-label={expanded ? "Restore Music window" : "Expand Music window"} aria-pressed={expanded} />
       </div>
       <div className="ds-title">Music</div>
-      <button className="music-size" onClick={() => setExpanded(value => !value)} aria-label={expanded ? "Restore window size" : "Expand window"}>
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d={expanded ? "M3 7h4V3m10 4h-4V3M3 13h4v4m10-4h-4v4" : "M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4"} /></svg>
-      </button>
     </div>
     <main id={open ? "main" : undefined} tabIndex={-1} className="ds-body music-body">
       <fieldset className="music-source">
@@ -89,7 +84,6 @@ function LofiPlayer() {
     <section className="music-now" aria-label="Lo-fi radio">
       <div className="music-sleeve" aria-hidden="true">
         <div className={`music-record${r.playing ? " playing" : ""}`}><img src={cover(r.mood)} alt="" /><i /></div>
-        <img className="music-cover" src={cover(r.mood)} alt="" />
       </div>
       <p className="music-status" aria-live="polite">{r.ducked ? "Paused while the mic is on" : r.playing ? "Now playing" : "Ready when you are"}</p>
       <h1>{r.mood}</h1>
@@ -108,7 +102,7 @@ function LofiPlayer() {
       <ul>{radioMoods.map(mood => <li key={mood.name}>
         <button onClick={() => radio.selectMood(mood.index)} aria-pressed={r.mood === mood.name}>
           <img src={cover(mood.name)} alt="" /><span><b>{mood.name}</b><small>{mood.description}</small></span>
-          {r.mood === mood.name && <span className="music-selected" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m3 8 3 3 7-7" /></svg></span>}
+          <span className="music-selected" aria-hidden="true">{r.mood === mood.name && <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m3 8 3 3 7-7" /></svg>}</span>
         </button>
       </li>)}</ul>
     </section>

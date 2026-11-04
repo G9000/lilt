@@ -56,8 +56,8 @@ are preserved. Artwork provenance and prompts live in `web/public/room/CREDITS.m
 
 **Use the things on your desk.** The small left monitor is now a cassette music player;
 the main and right monitors keep their own picture choices. Click the player for the Music app:
-record artwork, a list of lo-fi moods, playback and volume controls, and the existing
-Spotify option. Expand the window for more room, or restore its regular size. Opening
+a full CD with artwork, an aligned list of lo-fi moods, playback and volume controls,
+and the existing Spotify option. The window fits your screen without resize controls. Opening
 Music does not start playback. Close or Escape returns to the previous view while music
 continues. The compact player in the top bar shows your selection and play/pause; click
 the artwork or title to reopen Music, including when paused. The camera opens your Photos gallery; the microphone

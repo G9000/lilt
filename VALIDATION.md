@@ -1,5 +1,15 @@
 # Lilt: validation report
 
+## 4 November 2026: Music layout cleanup
+
+Removed expand/restore controls and the square cover obscuring the disc. The full
+CD has a metallic surface, artwork label and center ring. Mood rows now have fixed
+artwork/text/checkmark columns instead of inheriting centered button alignment.
+The new alignment assertion reproduced the original defect before the fix and passes
+afterward. The Music browser suite also verifies circular disc geometry, absence of
+resize controls, retained playback/Spotify host behavior, and phone layout. Desktop
+and dark phone screenshots were inspected; reduced motion still disables disc spin.
+
 ## 4 November 2026: Music app and compact top-bar player
 
 The oversized music popover is replaced by a routed Music app with record artwork,
