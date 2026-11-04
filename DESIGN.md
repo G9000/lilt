@@ -5,6 +5,8 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+- **Painted corner preview** (`#/painted-corner`): a separate, optional 3D study reached from the room's menu bar. Cool summer shade, worn painted wood, a leafy window and dappled sunlight. The camera turns within a small range; the lamp and fan respond directly to touch, with equivalent buttons below. Motion can be paused, and starts paused for reduced-motion preferences. This is a study of the window and desk, not a replacement for the illustrated home. The preview does not open the microphone or request practice data.
+
 - **Room** (`#/`): the painting full screen in the light of the hour (morning, day, sunset,
   night), with its small animations (birds, dust, the sleeping cat). Today's cards sit in the
   bottom-right as a swipeable stack (folder-style cards, one per practice card, Motion springs);

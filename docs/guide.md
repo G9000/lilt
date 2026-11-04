@@ -38,6 +38,23 @@ its own window; quitting stops the server.
 
 ## Using it
 
+**Try the painted 3D corner.** The room's menu bar has **Try the 3D corner** (`#/painted-corner`).
+It opens an optional window-and-desk study in cool summer light. Drag to look around; scroll or
+pinch to move closer. Click the lamp to switch its light on or off, and click the fan to cycle
+off, low and high. The buttons below do the same things. With the scene focused, arrow keys turn
+the view, +/− zoom, and Home resets it. **Reset view** brings you back to the starting position.
+**Pause motion** stills the fan, curtains and sun patches; reduced-motion preferences start it
+paused. **Back to Lilt** returns to your usual room. There is no audio, microphone access or
+practice-data request in this preview, and its choices reset when you leave.
+
+The furniture, curtains and window are real 3D geometry; the distant view is a painting. Painted
+surface textures and dappled light explore the art direction, rather than reproducing the concept
+image exactly. A browser with WebGL 2 is needed. If graphics or artwork cannot load, the preview
+offers a retry and a way back. It loads its 3D code only when opened.
+
+The isolated browser check starts its own Vite server and needs no backend:
+`cd web && node e2e/painted-corner.mjs [screenshot-folder]`.
+
 1. **The room and the desk.** Lilt opens on an illustrated anime room above a city.
    - **Today's cards are a stack** in the corner, one card per practice card left. Swipe the top
      card away (or use the arrow keys) and it tucks in at the back; tap the card on top, or its

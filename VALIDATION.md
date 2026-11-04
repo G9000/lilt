@@ -1,5 +1,34 @@
 # Lilt: validation report
 
+## 4 November 2026: painted 3D corner preview
+
+The optional `#/painted-corner` loads a Three.js scene separately from the practice app. The
+desk, fan, lamp, window and curtains are modeled geometry, with painted surface textures and
+a distant landscape painting. This is an initial art study, not an exact reproduction of the
+approved concept illustration. The usual illustrated home remains the default.
+
+Verified on Windows with Chrome, against an isolated Vite instance with practice APIs blocked:
+
+- The preview makes no practice API requests. Lamp illumination changes actual scene pixels;
+  lamp and fan geometry can be clicked directly, and the fan's blades visibly turn.
+- Keyboard camera movement changes perspective; reset restores the original view within a
+  0.1% pixel tolerance for rasterization. Dragging over an object does not activate it.
+- Pause freezes the scene. Simulated document visibility events stop and restart GPU drawing.
+  Three StrictMode unmount/remount cycles leave no drawing after unmount and one canvas on entry.
+- Mobile controls fit at 390px and 768px, the camera reframes at the narrow breakpoint, reduced
+  motion starts paused, and explicit theme choices override the opposite OS theme.
+- Missing artwork, unavailable WebGL, and deliberate context loss show a retry and exit;
+  retry successfully rebuilds the scene after recoverable failures.
+- Root typecheck, all 103 web unit tests and production build pass. Build retains the existing
+  main-bundle size advisory and reports the lazy-loaded 3D chunk (about 582 kB / 152 kB gzip).
+- Server formatting, strict Clippy and all 70 server tests pass. Python: 47 passed, one macOS-only
+  skip. Desktop formatting and release Clippy pass. Restricted temporary-file access initially
+  blocked Python/server tests; both passed with normal access to their scratch folders.
+
+No owner practice data or server on port 7878 was used. Real phones, Safari, Mac packaging and
+low-end GPU performance have not been tested. Preview choices are deliberately session-only;
+there is no audio, microphone access or full room walkthrough.
+
 ## 4 November 2026: one development command
 
 `bun dev` runs the Rust server and Vite together using Bun's parallel script runner. The server

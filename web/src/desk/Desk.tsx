@@ -283,6 +283,7 @@ export function RoomTop({ inbox }: { inbox: InboxState }) {
     <header className="ds-roomtop">
       <span className="ds-rt-mark"><Mark />Lilt</span>
       <span className="ds-rt-r">
+        <button className="ds-mb-btn" onClick={() => go('/painted-corner')}>Try the 3D corner</button>
         {r.playing && <button className="ds-np" onClick={() => void radio.toggle()} aria-label={`Pause ${r.mood}`}><span className="ds-eq" aria-hidden="true"><i /><i /><i /></span>{r.mood}</button>}
         {moved && <button className="ds-mb-btn ds-reset" onClick={resetLayout}>Reset layout</button>}
         <InboxButton inbox={inbox} />
