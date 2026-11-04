@@ -96,20 +96,24 @@ its own window; quitting stops the server.
      `web/src/room/scene.ts`). Pointing at it lights the cup with a warm glow and says "Buy me a
      coffee"; clicking flashes it, sends hearts up out of the cup and has the cat say thank you,
      then opens the page in a new tab a moment later (⌘/Ctrl-click opens it at once).
-   - **The room in 3D (a test)** at `#/room-3d`: the room built in Three.js (React Three Fiber),
-     toon-shaded with ink outlines, with the painted skyline in its window. Drag the bed, rug,
-     desk, chair, lamp, plant and bookshelf around the floor (they snap to a 25 cm grid, stay inside
-     the room and never overlap, though anything can stand on the rug); drag the poster and the
-     small frame along either wall (never over the window). Click a thing for **Change colour** (or
-     **Change picture**), **Turn** and **Done**; the list on the left picks things by name, then the
-     arrow keys move it, <kbd>R</kbd> turns it, <kbd>C</kbd> changes it and <kbd>Esc</kbd> lets go.
-     **Now / Morning / Day / Sunset / Night** sets the light (the lamp glows after dark). The
-     layout is kept in this browser only. The furniture is Kenney's Furniture Kit (CC0, credited in
-     `web/public/room3d/models/CREDITS.md`): the bed, desk with its monitor and keyboard, chair,
-     lamp, plant, rug and a bookcase with books, scaled up about 1.9× and redrawn in the toon
-     shading; changing a colour repaints the cover, seat, shade, leaves, rug or wood. The logic is
-     in `web/src/room3d/layout.ts` (tested beside it, with each footprint matching its model) and
-     the scene in `Room3D.tsx`, which loads only when you open the page.
+   - **The room in 3D (a test)** at `#/room-3d`: the painted room rebuilt in Three.js (React Three
+     Fiber), seen from where the painting is, in soft toon shading. The shelves of cat figures with
+     the globe lamp, synth and audio rack at the back left; the tall window onto a sky and a city of
+     buildings (sun at sunset, lit windows at night); the long desk with the three screens showing
+     the painting's city, cherry blossom and sleeping cat, the mic on its arm, speakers, keyboard,
+     iced coffee, tablet and flowers; the chair with its pink blanket; the bed with the cat asleep
+     and the cat-face cushion; string lights along the beam and vines hanging down. Drag the bed,
+     the chair, the tall plant and the cabinets about the floor (a 25 cm grid; never into the desk,
+     the shelves or each other); drag the poster and the small frame along the back or left wall
+     (never over the window or the shelves). Click a thing for **Change colour** (or **Change
+     picture**), **Turn** and **Done**; the keyboard, globe lamps and flowers change colour where
+     they are. The list on the left picks things by name, then the arrow keys move it, <kbd>R</kbd>
+     turns it, <kbd>C</kbd> changes it and <kbd>Esc</kbd> lets go. **Now / Morning / Day / Sunset /
+     Night** sets the light. The layout is kept in this browser only. Some furniture is Kenney's
+     Furniture Kit (CC0, credited in `web/public/room3d/models/CREDITS.md`); the rest is built from
+     shapes. The rules are in `web/src/room3d/layout.ts` (tested beside it), the scenery in
+     `scenery.tsx`, the shared pieces in `parts.tsx` and the page in `Room3D.tsx`, which loads only
+     when you open it.
    - The artwork lives in `web/public/room/` (WebP files: four room lights, and the cat's body,
      tail and ear in each light). Swap them for other art of the same size, then re-measure the
      screen corners and the coffee's box in `web/src/room/scene.ts`. The look is documented in `DESIGN.md`.
