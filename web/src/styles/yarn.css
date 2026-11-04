@@ -16,13 +16,27 @@
 .yn-name small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- the stage ---------- */
-.yn-stage { position: relative; min-height: 0; overflow: hidden; margin: 0 14px 14px; border-radius: 22px; background: var(--yn-sky); box-shadow: 0 0 0 1px var(--hair); }
+.yn-stage { position: relative; min-height: 0; width: min(calc(100% - 28px), 1920px); height: calc(100% - 14px); max-height: 1100px; justify-self: center; align-self: center; overflow: hidden; margin-bottom: 14px; border-radius: 22px; background: var(--yn-sky); box-shadow: 0 0 0 1px var(--hair); }
 .yn-stage.playing { display: grid; grid-template-rows: minmax(0, 1fr) auto; }
 .yn-scene { position: absolute; inset: 0; }
 .yn-stage.playing .yn-scene { position: relative; inset: auto; grid-row: 1; min-height: 0; }
 .yn-scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .yn-over { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; padding: 24px; overflow: auto; }
 .yn-over.dim { background: color-mix(in srgb, var(--page) 38%, transparent); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+
+/* The introduction shares the room with a small, separate setup sheet. */
+.yn-intro { position: absolute; z-index: 2; top: 10%; left: 7%; width: min(38%, 540px); color: #39483e; pointer-events: none; }
+.yn-intro h1 { margin: 0 0 16px; max-width: 8em; font: 500 clamp(34px, 3.5vw, 64px)/1.08 "Newsreader Variable", Georgia, serif; letter-spacing: -.035em; text-wrap: balance; }
+.yn-intro p { margin: 0; font-size: clamp(15px, 1.15vw, 19px); line-height: 1.6; }
+:root[data-theme="dark"] .yn-intro { color: #f2e7ce; }
+.yn-setup .yn-over { place-items: center end; padding: clamp(24px, 4vw, 80px); pointer-events: none; }
+.yn-setup .yn-card { pointer-events: auto; width: min(42%, 460px); }
+.yn-setup-card .yn-body { padding: 30px; gap: 20px; }
+.yn-setup-card .yn-row, .yn-setup-card .yn-primary { width: 100%; }
+.yn .yn-help { margin: 0; border-radius: 0; background: none; font-size: 13.5px; color: var(--ink-2); border: 0; border-block: 1px solid var(--hair); padding: 12px 0; }
+.yn-help summary { cursor: pointer; font-weight: 500; }
+.yn-help .yn-how { background: none; padding: 12px 0 8px; }
+.yn-range { padding-block: 2px; }
 
 /* ---------- cards ---------- */
 .yn-card { position: relative; width: min(100%, 520px); max-height: 100%; overflow: auto; border-radius: 26px; background: var(--yn-card); color: var(--ink);
@@ -87,7 +101,7 @@
   border-top: 1px solid var(--hair); }
 .yn-tip { min-width: 0; flex: 1 1 260px; font-size: 13px; color: var(--ink-2); }
 .yn-acts { display: flex; flex-wrap: wrap; gap: 6px; }
-.yn-pill { min-height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 13px; border-radius: 99px; background: var(--fill); color: var(--ink); font-size: 13px; font-weight: 500;
+.yn-pill { min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 15px; border-radius: 99px; background: var(--fill); color: var(--ink); font-size: 13px; font-weight: 500;
   transition: transform 0.15s var(--ease), background-color 0.2s ease; }
 .yn-pill:hover { background: var(--fill-2); }
 .yn-pill:active { transform: scale(0.97); }
@@ -105,7 +119,7 @@
 
 @media (max-width: 760px) {
   .yn-top { padding: 10px 14px; }
-  .yn-stage { margin: 0 8px 8px; border-radius: 18px; }
+  .yn-stage { width: calc(100% - 16px); height: calc(100% - 8px); margin-bottom: 8px; border-radius: 18px; }
   .yn-over { padding: 12px; place-items: start center; }
   .yn-head { height: 110px; }
   .yn-body { padding: 4px 18px 18px; }
@@ -116,7 +130,25 @@
   .yn-tip { font-size: 12.5px; }
   .yn-hint { font-size: 14px; }
 }
-@media (max-width: 420px) { .yn-modes { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  .yn-setup { overflow-y: auto; }
+  .yn-setup .yn-scene { bottom: auto; height: 280px; }
+  .yn-intro { position: relative; top: auto; left: auto; width: auto; height: 280px; padding: 24px; box-sizing: border-box; }
+  .yn-intro h1 { font-size: 32px; max-width: none; margin-bottom: 8px; }
+  .yn-intro p { font-size: 14px; }
+  .yn-setup .yn-over { position: relative; inset: auto; padding: 0 14px 20px; overflow: visible; place-items: center; }
+  .yn-setup .yn-card { width: min(100%, 540px); max-height: none; }
+  .yn-setup-card .yn-body { padding: 22px; gap: 16px; }
+  .yn-bar { padding: 12px; gap: 10px; }
+  .yn-acts { width: 100%; }
+  .yn-acts .yn-pill { flex: 1 1 auto; }
+}
+@media (max-width: 420px) {
+  .yn-modes { grid-template-columns: 1fr; }
+  .yn-intro h1 { font-size: 29px; }
+  .yn-acts .hurt { flex-basis: 100%; justify-content: center; }
+  .yn-hint { max-width: calc(100% - 24px); white-space: normal; text-align: center; border-radius: 14px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .yn-mode, .yn-primary, .yn-ghost, .yn-pill, .yn-hint, .yn-listen svg circle + circle { transition: none; }
   .yn-breathe i { animation: none; scale: 0.85; }

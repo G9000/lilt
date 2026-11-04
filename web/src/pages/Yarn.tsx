@@ -6,6 +6,7 @@ import { go } from "../App";
 import { useMic } from "../components/Recording";
 import { Art, Illustration, wash } from "../components/Illustrations";
 import { claimMic } from "../micuse";
+import { paintYarnBall, paintYarnCat, paintYarnRoom } from "../yarn-art";
 import { ContourPoint, noteName, trackLiveFine } from "../pitch";
 import {
   breakDue, cueDue, describePlay, follower, HUM_READINGS, Loop, loopMaker, Mode, noisyRoom, passLoops, playRange, rangeFromHums,
@@ -86,19 +87,26 @@ export function YarnPage() {
         <Play range={range} mode={mode} cue={cue} sentences={sentences} stream={mic.stream} reduced={reduced} tone={tones.play}
           onHurt={() => setPhase("hurt")} onStop={(lines) => { setSummary(lines); setPhase("summary"); }} />
       ) : (
-        <main className="yn-stage">
-          <Scene range={phase === "setup" ? range : null} reduced={reduced} />
+        <main className={`yn-stage${phase === "setup" ? " yn-setup" : ""}`}>
+          <Scene range={phase === "setup" ? range : null} reduced={reduced} preview={phase === "setup"} />
+          {phase === "setup" && <div className="yn-intro">
+            <h1>A little room to play</h1>
+            <p>Lift the yarn with your voice.<br />The cat will keep you company.</p>
+          </div>}
           <div className="yn-over">
             <AnimatePresence mode="wait" initial={false}>
               {phase === "setup" ? (
-                <Card key="setup" art="yarn" chip="Play">
-                  <h2 className="yn-title">Steer the yarn with your voice</h2>
-                  <p className="yn-p">Go higher and it floats up; lower, and it drifts down. Thread it through the loops if you like. Nothing is counted, and the cat doesn&rsquo;t mind.</p>
+                <Card key="setup" art="yarn" chip="Play" setup>
+                  <h2 className="yn-title">Play at your own pace</h2>
+                  <p className="yn-p">Higher lifts the yarn; lower lets it drift down. Follow the loops if you like. Nothing is counted.</p>
                   <div className="yn-modes" role="radiogroup" aria-label="How to play">
                     <ModeButton on={mode === "hum"} onClick={() => setMode("hum")} title="Hum or lip trill" body="Easy on the throat; good for breath" />
                     <ModeButton on={mode === "speak"} onClick={() => setMode("speak")} title="Speak sentences" body="Everyday lines, real speech" />
                   </div>
-                  <p className="yn-how">{mode === "hum" ? TRILL : "A short line shows at the top. Say it in your everyday voice; the yarn follows the tune of it and waits between words."}</p>
+                  <details className="yn-help"><summary>How to play</summary>
+                    <p className="yn-how">{mode === "hum" ? TRILL : "A short line shows at the top. Say it in your everyday voice; the yarn follows the tune of it and waits between words."}</p>
+                    <p className="yn-foot">Stay comfortable. Stop if anything hurts or feels strained.</p>
+                  </details>
                   {!loaded ? <p className="yn-quiet">Getting your range…</p> : range ? (
                     <div className="yn-range">
                       <span>Your range: <b>{rangeWords(range)}</b></span>
@@ -159,21 +167,29 @@ export function YarnPage() {
 
 function ModeButton({ on, onClick, title, body }: { on: boolean; onClick: () => void; title: string; body: string }) {
   return (
-    <button role="radio" aria-checked={on} className={`yn-mode${on ? " on" : ""}`} onClick={onClick}>
+    <button role="radio" aria-checked={on} tabIndex={on ? 0 : -1} className={`yn-mode${on ? " on" : ""}`} onClick={onClick}
+      onKeyDown={(e) => {
+        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) return;
+        e.preventDefault();
+        const choices = [...e.currentTarget.parentElement!.querySelectorAll<HTMLButtonElement>('[role="radio"]')];
+        const next = e.key === "Home" ? choices[0] : e.key === "End" ? choices[choices.length - 1] : choices.find((el) => el !== e.currentTarget);
+        next?.focus(); next?.click();
+      }}>
       <b>{title}</b><span>{body}</span>
     </button>
   );
 }
 
-function Card({ art, chip, children }: { art: Art; chip: string; children: ReactNode }) {
+function Card({ art, chip, children, setup = false }: { art: Art; chip: string; children: ReactNode; setup?: boolean }) {
+  const reduced = useReducedMotion();
   return (
-    <motion.section className="yn-card" initial={{ y: 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -8, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 320, damping: 30 }}>
-      <div className="yn-head">
+    <motion.section className={`yn-card${setup ? " yn-setup-card" : ""}`} initial={{ y: reduced ? 0 : 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: reduced ? 0 : -8, opacity: 0 }}
+      transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 30 }}>
+      {!setup && <div className="yn-head">
         <div className="yn-wash" style={{ background: wash(art) }} />
         <Illustration art={art} className="yn-illo" />
         <span className="yn-chip">{chip}</span>
-      </div>
+      </div>}
       <div className="yn-body">{children}</div>
     </motion.section>
   );
@@ -361,7 +377,7 @@ function Play({ range, mode, cue, sentences, stream, reduced, tone, onHurt, onSt
       </p>
       {noisy && !breathing && <p className="yn-noise" role="status">It sounds a bit busy here. A quieter room helps the yarn follow you.</p>}
       <footer className="yn-bar">
-        <span className="yn-tip">{mode === "hum" ? TRILL : "Say it like you would to a friend. The yarn waits between words."}</span>
+        <span className="yn-tip">{mode === "hum" ? "A gentle hum is enough. Let the yarn rest whenever you need." : "Use your everyday voice. The yarn waits between words."}</span>
         <span className="yn-acts">
           <button className="yn-pill" onClick={() => setBreathing(true)}>Take a breath</button>
           <button className="yn-pill" onClick={stop}>Stop</button>
@@ -373,7 +389,7 @@ function Play({ range, mode, cue, sentences, stream, reduced, tone, onHurt, onSt
       </footer>
       <AnimatePresence>
         {breathing && (
-          <motion.div className="yn-over dim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+          <motion.div className="yn-over dim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.3 }}>
             <section className="yn-card yn-breath" aria-label="Breathing break">
               <div className={`yn-breathe${reduced ? " still" : ""}`} aria-hidden="true"><i /></div>
               <h2 className="yn-title">Time for a breath</h2>
@@ -394,20 +410,18 @@ function Play({ range, mode, cue, sentences, stream, reduced, tone, onHurt, onSt
 /* ------------------------------------------------------------------ drawing */
 
 const PAL = {
-  light: { guide: "rgba(90,55,75,0.2)", label: "rgba(80,50,65,0.62)", floor: "#ecd0b4", floorTop: "#dcb894", seam: "rgba(130,85,55,0.14)", wire: "rgba(90,60,60,0.38)",
-    hang: "rgba(90,60,70,0.28)", thread: "#e0643c", cat: "#2f2c36", catLight: "#fbf4ee", rim: "rgba(0,0,0,0)", ball: ["#ff9a72", "#d9542c"], strand: "rgba(255,214,190,0.9)" },
-  dark: { guide: "rgba(255,236,224,0.16)", label: "rgba(255,236,224,0.6)", floor: "#3a2e3c", floorTop: "#4b3a4c", seam: "rgba(0,0,0,0.22)", wire: "rgba(255,230,210,0.26)",
-    hang: "rgba(255,230,210,0.22)", thread: "#ff8a5c", cat: "#1f1c25", catLight: "#e9e0d8", rim: "rgba(255,226,205,0.32)", ball: ["#ff9a72", "#d9542c"], strand: "rgba(255,214,190,0.9)" },
+  light: { guide: "rgba(90,75,55,0.2)", label: "#6d6251", wire: "rgba(90,60,60,0.38)", hang: "rgba(90,75,55,0.28)", thread: "#c76840" },
+  dark: { guide: "rgba(255,236,224,0.16)", label: "#d8cbb4", wire: "rgba(255,230,210,0.26)", hang: "rgba(255,230,210,0.22)", thread: "#eaa679" },
 };
-const LOOP_COLORS = ["#f5b041", "#6fbf95", "#ef8fb1", "#93a9ff"];
+const LOOP_COLORS = ["#c39952", "#75a28b", "#c98e92", "#849bb0"];
 
 /**
  * The canvas: string lights along the top, the floor, the loops, the thread the yarn has drawn (your
  * pitch line, really), the yarn, and the cat. Without a game it's the room at rest: the yarn on the
  * floor and the cat beside it. Runs at the display's frame rate; React isn't involved per frame.
  */
-function Scene({ game, range, running = false, cue = false, reduced, events }: {
-  game?: { current: Game }; range?: [number, number] | null; running?: boolean; cue?: boolean; reduced: boolean;
+function Scene({ game, range, running = false, cue = false, reduced, preview = false, events }: {
+  game?: { current: Game }; range?: [number, number] | null; running?: boolean; cue?: boolean; reduced: boolean; preview?: boolean;
   events?: { current: { cue: (hz: number) => void; afloat: (on: boolean) => void; breath: () => void; said: () => void } };
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -415,19 +429,23 @@ function Scene({ game, range, running = false, cue = false, reduced, events }: {
   const [rest] = useState(() => newGame(range ?? null, "hum"));
   const idle = useRef<Game>(rest);
   if (!game && idle.current.range !== (range ?? null)) idle.current = newGame(range ?? null, "hum");
-  const live = useRef({ running, cue, reduced });
-  live.current = { running, cue, reduced };
+  const live = useRef({ running, cue, reduced, preview });
+  live.current = { running, cue, reduced, preview };
 
   useEffect(() => {
     const canvas = cvs.current!, el = box.current!;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const backdrop = document.createElement("canvas");
+    const back = backdrop.getContext("2d")!;
+    let backdropKey = "";
     let W = 0, H = 0, dpr = 1;
     const size = () => {
       const r = el.getBoundingClientRect();
       dpr = Math.min(2, window.devicePixelRatio || 1);
       W = Math.max(1, r.width); H = Math.max(1, r.height);
       canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      (game?.current ?? idle.current).catX = null;
     };
     size();
     const ro = new ResizeObserver(size);
@@ -437,13 +455,22 @@ function Scene({ game, range, running = false, cue = false, reduced, events }: {
       const dt = Math.min(0.05, Math.max(0, (ms - last) / 1000));
       last = ms;
       const G = game?.current ?? idle.current;
-      const { running, cue, reduced } = live.current;
-      const floorY = H - Math.max(30, Math.min(70, H * 0.1));
+      const { running, cue, reduced, preview } = live.current;
+      const floorY = H - Math.max(30, Math.min(130, H * 0.14));
       const F = floorY;
       const bx = W * (W < 640 ? 0.34 : 0.3);
-      const R = Math.max(11, Math.min(22, F * 0.045));
+      const R = Math.max(15, Math.min(38, F * 0.055));
       const speed = Math.max(45, Math.min(110, W * 0.085)) * (reduced ? 0.8 : 1);
       const wall = ms / 1000;
+      const dark = document.documentElement.getAttribute("data-theme") === "dark";
+      const key = `${W}:${H}:${dpr}:${dark}`;
+      if (backdropKey !== key) {
+        backdrop.width = canvas.width; backdrop.height = canvas.height;
+        back.setTransform(dpr, 0, 0, dpr, 0, 0);
+        paintYarnRoom(back, W, H, floorY, dark);
+        backdropKey = key;
+      }
+      if (!game) G.y = preview ? .65 + (reduced ? 0 : Math.sin(wall * .7) * .025) : REST_Y;
       if (running && G.f) {
         G.now += dt; G.played += dt;
         const s = G.f.step(wall, dt);
@@ -482,7 +509,7 @@ function Scene({ game, range, running = false, cue = false, reduced, events }: {
         }
         if (!reduced) { G.spin += dt * (speed / R) * 0.6; G.walk += dt * 7; }
       }
-      draw(ctx, G, { W, H, dpr, F, floorY, bx, R, speed }, document.documentElement.getAttribute("data-theme") === "dark" ? PAL.dark : PAL.light, reduced, running, wall);
+      draw(ctx, G, { W, H, dpr, F, floorY, bx, R, speed }, dark ? PAL.dark : PAL.light, reduced, running, wall, backdrop, dark, preview);
       // where the yarn is (0 top, 1 floor), a few times a second, for the browser tests
       if (wall - told > 0.2) { told = wall; el.dataset.y = G.y.toFixed(3); }
       raf = requestAnimationFrame(frame);
@@ -501,21 +528,19 @@ function Scene({ game, range, running = false, cue = false, reduced, events }: {
 type Dims = { W: number; H: number; dpr: number; F: number; floorY: number; bx: number; R: number; speed: number };
 type Pal = typeof PAL.light;
 
-function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: boolean, running: boolean, wall: number) {
+function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: boolean, running: boolean, wall: number, backdrop: HTMLCanvasElement, dark: boolean, preview: boolean) {
   const { W, H, dpr, F, floorY, bx, R, speed } = d;
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  c.clearRect(0, 0, W, H);
-  const scroll = reduced ? 0 : G.now * speed;
+  c.drawImage(backdrop, 0, 0, W, H);
 
-  // string lights, sagging between hooks, drifting slowly by
+  // The room stays still; only the yarn, cat, and loops move.
   const span = 240, sag = Math.min(26, H * 0.04), y0 = 6;
-  const wireY = (x: number) => { const s = (((x + scroll * 0.3) % span) + span) % span / span; return y0 + sag * 4 * s * (1 - s); };
+  const wireY = (x: number) => { const s = ((x % span) + span) % span / span; return y0 + sag * 4 * s * (1 - s); };
   c.strokeStyle = P.wire; c.lineWidth = 1.4;
   c.beginPath();
   for (let x = 0; x <= W; x += 6) (x ? c.lineTo(x, wireY(x)) : c.moveTo(x, wireY(x)));
   c.stroke();
-  const off = (scroll * 0.3) % 40;
-  for (let x = -off; x < W + 40; x += 40) {
+  for (let x = 0; x < W + 40; x += 40) {
     const y = wireY(x) + 5, tw = reduced ? 1 : 0.85 + 0.15 * Math.sin(wall * 1.3 + x * 0.05);
     const g = c.createRadialGradient(x, y, 0, x, y, 16);
     g.addColorStop(0, `rgba(255,200,120,${0.5 * tw})`); g.addColorStop(1, "rgba(255,200,120,0)");
@@ -524,24 +549,20 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: bo
   }
 
   // the two ends of your range, faintly, with their notes
-  if (G.range) {
+  if (G.range && !preview) {
     c.font = `500 ${W < 640 ? 11 : 12}px "Geist Variable", system-ui, sans-serif`;
     c.setLineDash([4, 6]); c.strokeStyle = P.guide; c.lineWidth = 1;
     for (const [u, word] of [[1, "High"], [0, "Low"]] as const) {
       const y = uToY(u) * F;
       c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
+      const label = `${word} · ${noteName(u ? G.range[1] : G.range[0])}`, labelY = u ? y - 7 : y + 16;
+      c.fillStyle = dark ? "#303b3a" : "#ede4d2";
+      c.fillRect(8, labelY - 14, c.measureText(label).width + 12, 20);
       c.fillStyle = P.label;
-      c.fillText(`${word} · ${noteName(u ? G.range[1] : G.range[0])}`, 14, u ? y - 7 : y + 16);
+      c.fillText(label, 14, labelY);
     }
     c.setLineDash([]);
   }
-
-  // the floor, its boards passing under the cat
-  c.fillStyle = P.floor; c.fillRect(0, floorY, W, H - floorY);
-  c.fillStyle = P.floorTop; c.fillRect(0, floorY, W, 3);
-  c.strokeStyle = P.seam; c.lineWidth = 1;
-  const board = 110, bo = scroll % board;
-  for (let x = -bo; x < W; x += board) { c.beginPath(); c.moveTo(x, floorY + 3); c.lineTo(x - 18, H); c.stroke(); }
 
   // loops: the back of each, then the yarn and its thread, then their fronts over it
   const loopsOnScreen = G.loops.map((l) => ({ l, x: bx + (l.at - G.now) * speed, y: uToY(l.u) * F, ry: l.r * F })).filter((o) => o.x > -40 && o.x < W + 40);
@@ -574,17 +595,12 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: bo
 
   // the yarn
   const by = Math.min(G.y * F, floorY - R);
-  const bg = c.createRadialGradient(bx - R * 0.35, by - R * 0.4, R * 0.1, bx, by, R);
-  bg.addColorStop(0, P.ball[0]); bg.addColorStop(1, P.ball[1]);
-  c.fillStyle = bg; c.beginPath(); c.arc(bx, by, R, 0, Math.PI * 2); c.fill();
-  c.save(); c.beginPath(); c.arc(bx, by, R - 0.5, 0, Math.PI * 2); c.clip();
-  c.translate(bx, by); c.rotate(G.spin);
-  c.strokeStyle = P.strand; c.lineWidth = 1.3;
-  for (let k = -2; k <= 2; k++) { c.beginPath(); c.ellipse(0, k * R * 0.32, R * 1.05, R * 0.5, 0.35, Math.PI * 1.05, Math.PI * 1.95); c.stroke(); }
-  c.rotate(1.2);
-  c.globalAlpha = 0.6;
-  for (let k = -1; k <= 1; k++) { c.beginPath(); c.ellipse(0, k * R * 0.4, R, R * 0.42, 0, Math.PI * 1.1, Math.PI * 1.9); c.stroke(); }
-  c.restore();
+  if (preview) {
+    c.strokeStyle = P.thread; c.lineWidth = 2; c.lineCap = "round";
+    c.beginPath(); c.moveTo(bx - R, by + R * .4);
+    c.bezierCurveTo(bx - 80, by + 20, bx - 20, floorY - 12, bx - 100, floorY - 5); c.stroke();
+  }
+  paintYarnBall(c, bx, by, R, G.spin);
 
   for (const o of loopsOnScreen) half(o, true);
 
@@ -600,60 +616,12 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: bo
   c.globalAlpha = 1;
 
   // the cat pads along behind the yarn, closer when it rests on the floor, and looks up at it
-  const s = Math.max(36, Math.min(78, F * 0.13, W * 0.12));
+  const s = Math.max(40, Math.min(150, F * 0.22, W * 0.18));
   const resting = G.y > REST_Y - 0.03;
   const goal = resting ? bx - R - s * 0.72 : bx - R - s * 1.35;
-  G.catX = Math.max(s * 0.8, G.catX === null ? goal : G.catX + (goal - G.catX) * Math.min(1, 0.04 * (running ? 1 : 3)));
+  G.catX = Math.max(s * 0.8, G.catX === null || reduced ? goal : G.catX + (goal - G.catX) * Math.min(1, 0.04 * (running ? 1 : 3)));
   const moving = running && !reduced;
   const hx = G.catX + s * 0.44, hy = floorY - s * 0.56;
   const look = Math.max(-0.6, Math.min(0.28, Math.atan2(by - hy, bx - hx) * 0.6));
-  drawCat(c, G.catX, floorY, s, G.walk, look, P, moving, !G.range);
-}
-
-function drawCat(c: CanvasRenderingContext2D, x: number, fy: number, s: number, phase: number, look: number, P: Pal, moving: boolean, dozing: boolean) {
-  const bob = moving ? Math.abs(Math.cos(phase)) * s * 0.02 : 0;
-  const bodyY = fy - s * 0.36 - bob;
-  c.lineCap = "round"; c.lineJoin = "round";
-  // tail, curling up behind
-  const sway = moving ? Math.sin(phase * 0.45) * s * 0.07 : 0;
-  c.strokeStyle = P.cat; c.lineWidth = s * 0.085;
-  c.beginPath(); c.moveTo(x - s * 0.4, bodyY - s * 0.04);
-  c.bezierCurveTo(x - s * 0.72, bodyY, x - s * 0.72 + sway, bodyY - s * 0.42, x - s * 0.56 + sway, bodyY - s * 0.56);
-  c.stroke();
-  // legs: pairs swing opposite ways as it walks
-  const swing = moving ? Math.sin(phase) * s * 0.09 : 0;
-  c.lineWidth = s * 0.11;
-  for (const [lx, sw] of [[-0.3, swing], [-0.18, -swing], [0.22, -swing], [0.34, swing]] as const) {
-    c.beginPath(); c.moveTo(x + lx * s, bodyY + s * 0.06); c.lineTo(x + lx * s + sw, fy - s * 0.04); c.stroke();
-  }
-  // body, with a white tummy
-  c.fillStyle = P.cat;
-  c.beginPath(); c.ellipse(x, bodyY, s * 0.45, s * 0.2, 0, 0, Math.PI * 2); c.fill();
-  if (P.rim !== PAL.light.rim) { c.strokeStyle = P.rim; c.lineWidth = 1.2; c.beginPath(); c.ellipse(x, bodyY, s * 0.45, s * 0.2, 0, Math.PI * 1.1, Math.PI * 1.9); c.stroke(); }
-  c.fillStyle = P.catLight;
-  c.beginPath(); c.ellipse(x + s * 0.16, bodyY + s * 0.09, s * 0.2, s * 0.08, 0, 0, Math.PI * 2); c.fill();
-  // head, turned towards the yarn
-  c.save();
-  c.translate(x + s * 0.44, bodyY - s * 0.18);
-  c.rotate(look);
-  c.fillStyle = P.cat;
-  c.beginPath(); c.moveTo(-s * 0.15, -s * 0.07); c.lineTo(-s * 0.15, -s * 0.31); c.lineTo(-s * 0.01, -s * 0.16); c.closePath(); c.fill();
-  c.beginPath(); c.moveTo(s * 0.04, -s * 0.16); c.lineTo(s * 0.15, -s * 0.31); c.lineTo(s * 0.18, -s * 0.06); c.closePath(); c.fill();
-  c.fillStyle = "#e9a0b4";
-  c.beginPath(); c.moveTo(-s * 0.125, -s * 0.12); c.lineTo(-s * 0.125, -s * 0.24); c.lineTo(-s * 0.05, -s * 0.16); c.closePath(); c.fill();
-  c.fillStyle = P.cat;
-  c.beginPath(); c.arc(0, 0, s * 0.19, 0, Math.PI * 2); c.fill();
-  if (P.rim !== PAL.light.rim) { c.strokeStyle = P.rim; c.lineWidth = 1.2; c.beginPath(); c.arc(0, 0, s * 0.19, Math.PI * 1.15, Math.PI * 1.85); c.stroke(); }
-  c.fillStyle = P.catLight;
-  c.beginPath(); c.ellipse(s * 0.09, s * 0.07, s * 0.1, s * 0.075, 0, 0, Math.PI * 2); c.fill();
-  if (dozing) {
-    c.strokeStyle = "#e8d36a"; c.lineWidth = s * 0.022;
-    c.beginPath(); c.arc(s * 0.07, -s * 0.035, s * 0.032, 0.15 * Math.PI, 0.85 * Math.PI); c.stroke();
-  } else {
-    c.fillStyle = "#e8d36a"; c.beginPath(); c.arc(s * 0.07, -s * 0.04, s * 0.036, 0, Math.PI * 2); c.fill();
-    c.fillStyle = "#1a1820"; c.beginPath(); c.ellipse(s * 0.078, -s * 0.04, s * 0.012, s * 0.028, 0, 0, Math.PI * 2); c.fill();
-  }
-  c.fillStyle = "#e48aa0";
-  c.beginPath(); c.moveTo(s * 0.17, s * 0.02); c.lineTo(s * 0.2, s * 0.045); c.lineTo(s * 0.16, s * 0.055); c.closePath(); c.fill();
-  c.restore();
+  paintYarnCat(c, G.catX, floorY, s, G.walk, look, dark, moving, !G.range && !preview);
 }

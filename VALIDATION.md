@@ -1,5 +1,26 @@
 # Lilt: validation report
 
+## 5 November 2026: Cozy Ball of yarn
+
+Replaced the empty play backdrop with a cached illustrated room, woven yarn and a connected
+tuxedo cat. Setup sits beside the scene or scrolls below it on narrow screens. Instructions
+expand on demand; keyboard mode selection, breathing, Stop and comfort-stop controls remain
+reachable. The play field caps at 1920×1100 CSS pixels on large displays. Range labels have
+opaque theme-safe backing so curtains cannot wash out their text.
+
+The isolated `web/e2e/yarn-ui.mjs` suite uses stubbed APIs and Chrome's fake microphone.
+Passed: setup and play controls at 390×844, 844×390, 1440×950, 3440×1440 and 3840×2160,
+plus setup at 1024×768; voice lifts the yarn, keyboard mode changes, instruction disclosure,
+breathing/resume, descriptive summary, speaking, comfort stop, and two-hum calibration
+without saving a profile. Light/dark and reduced-motion screenshots were inspected,
+including phone, ultrawide and 4K. Review caught and corrected low-contrast range labels.
+
+Web typecheck, 109 unit tests and production build passed; the existing bundle-size warning
+remains. Server formatting, strict Clippy and 70 tests, Python 47 tests (one skipped), and
+desktop formatting/release Clippy passed. No owner data or running backend was changed.
+Browser sizes are emulated Chrome viewports, not physical-monitor or real-phone acceptance;
+microphone verification used recorded synthetic input, not a natural-voice quality study.
+
 ## 5 November 2026: Media on the room monitors
 
 Each monitor accepts a browser-local still picture, GIF or silent looping MP4/WebM.

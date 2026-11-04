@@ -10,10 +10,11 @@
 import { chromium } from "playwright-core";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const BASE = process.env.LILT_URL ?? "http://127.0.0.1:7979";
 const SHOTS = process.argv[2] ?? null;
-const wav = path.resolve(path.dirname(new URL(import.meta.url).pathname), "fake-mic.wav");
+const wav = fileURLToPath(new URL("./fake-mic.wav", import.meta.url));
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 
 const results = [];
@@ -106,6 +107,7 @@ async function main() {
   await page.getByText("Your range:").waitFor();
   await shot(page, "yarn-setup-light");
   await page.getByRole("radio", { name: /Hum or lip trill/ }).click();
+  await page.locator('.yn-help summary').click();
   check("hum mode explains a lip trill in one line", /Lip trill:/.test(await page.locator(".yn-how").innerText()));
   await page.evaluate(() => window.addEventListener("lilt:mic", (e) => { window.__mic = e.detail; }));
   await page.getByRole("button", { name: "Start playing" }).click();

@@ -241,10 +241,10 @@ Monitor uploads and playback have an isolated check with locally generated media
      progress. **Full chapter** opens it in Practice at that text; <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
      is rated or scheduled, and where you are in each chapter is kept in this browser.
    - **Yarn** (`#/yarn`, in the dock, or the Ball of yarn card on the desk in the room) is a calm
-     voice game: your pitch lifts a ball of yarn across an evening room while the cat pads after
+     voice game: your pitch lifts a woven ball of yarn through an illustrated window-side room while the cat pads after
      it, and loops of yarn drift by to thread it through if you like. Higher floats it up, lower
      lets it down, and the thread it leaves behind is your pitch line. Play by **humming or a lip
-     trill** (easy on the throat, good breath practice; the how-to is one line on screen) or by
+     trill** (open **How to play** for the lip-trill instructions) or by
      **speaking** short everyday sentences from the course's phrases chapters (the yarn follows
      the tune and waits between words). It plays in your **comfortable range** (the ends are
      marked with their notes, with room to spare either side); with no range yet, two easy hums,
@@ -254,7 +254,11 @@ Monitor uploads and playback have an isolated check with locally generated media
      how long you kept the yarn afloat and where in your range your voice mostly was. Every two
      minutes it pauses for a breath; **It hurts or feels strained** stops it with Lilt's rest
      advice. It shows a hint when the room sounds noisy. Nothing is recorded or saved, and the
-     lo-fi radio steps aside while you play. <kbd>Esc</kbd> closes it.
+     lo-fi radio steps aside while you play. Setup sits beside the illustration on desktop and
+     below it on phones; scroll to reach its start button. The play area stays within a comfortable
+     size on ultrawide and 4K displays. Light and dark themes have their own scenery, and reduced
+     motion keeps decorative movement still while the yarn continues following your voice.
+     <kbd>Esc</kbd> closes it.
 8. **Texts** has 131 texts across 16 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, and real life. Each chapter explains the technique in a few numbered steps (how to

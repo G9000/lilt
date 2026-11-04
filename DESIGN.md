@@ -250,6 +250,14 @@ button to AI connections). Updates open in the same window, with "Back to the co
 
 ## Tokens (light; dark theme swaps the window and ink colours)
 
+**Ball of yarn** uses a quiet illustrated window-side scene: sage hills, linen curtains,
+warm wood, a woven coral ball and a connected tuxedo-cat silhouette. Static scenery is cached
+separately from the voice-driven yarn and loops. Setup shares the scene with a compact sheet;
+on narrow screens it scrolls below the illustration. How-to instructions expand on demand.
+The play field caps at 1920×1100 CSS pixels on large screens, with a persistent bottom row
+for a breathing break, Stop and the comfort stop. Light/dark scenes stay legible, and reduced
+motion stops the preview float, yarn spin, cat walk and light shimmer.
+
 | Token | Value | Use |
 | --- | --- | --- |
 | `--font` | Geist Variable | everything except texts you read aloud |

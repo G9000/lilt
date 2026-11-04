@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "A cozier Ball of yarn", body: "Play beside an illustrated window with a woven yarn ball and a curious cat. Setup is simpler, instructions open when you need them, and play controls stay within reach on small and large screens.", to: "/yarn" },
       { title: "A little motion on your screens", body: "Make it yours now lets each monitor show your own picture, GIF or silent looping video. Preview, pause or remove it whenever you like. Files stay in this browser." },
       { title: "Your room layout, restored", body: "The original widget positions and dragging are back. Reset layout stays available, including after you reset." },
       { title: "Music has its own app", body: "Open the painted player for a full CD with artwork and an aligned mood library. Close it and keep listening with compact controls in the top bar.", to: "/music" },
