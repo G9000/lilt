@@ -46,6 +46,19 @@ in this browser. **Reset room** returns the original colors, artwork and automat
 The panel closes with Escape or a click outside. Your bed, computer, microphone and animated
 cat stay in the original illustration. The experimental 3D views have been removed.
 
+**Put something on your screens.** Under **Main monitor** or **Side monitor**, choose
+**Picture**, **GIF** or **Video** to pick a local file. Each screen keeps its own upload,
+preview and Play/Pause control. Videos loop silently; pausing a GIF shows a still, and
+Play restarts it. Picture uploads are still images, including animated PNG/WebP files.
+You can try a built-in picture and choose **Use upload** to return, or **Remove** it.
+Choose PNG/JPG/WebP, GIF, or a playable MP4/WebM, up to 25 MB and 4096 × 4096 pixels.
+Reduced motion starts with a still until you press Play. Motion pauses while you are
+inside the desk or the browser tab is hidden.
+
+These files stay in this browser for this Lilt address; they are not sent to the server
+or added to Photos. Clearing browser storage can remove them; choose the file again if
+that happens. **Reset room** removes both uploads. **Reset layout** only moves widgets.
+
 The room artwork has a quieter second pass: fewer repeated trinkets, clearer recording
 equipment and furniture, and matching morning/day/sunset/night versions. Night keeps the
 bed and desk visible in warm lamplight. The cat is a complete transparent cutout on empty
@@ -63,13 +76,15 @@ continues. The compact player in the top bar shows your selection and play/pause
 the artwork or title to reopen Music, including when paused. The camera opens your Photos gallery; the microphone
 opens Practice using the same next-card/Start here entry as the computer. On phones a small
 Photos/Practice/Music row keeps these actions available even when the objects are cropped;
-portrait tablets get the same shortcuts. In landscape, the default card stack sits toward
-the chair so it leaves the painted camera clear. You can still drag the cards.
+portrait tablets get the same shortcuts. The default card stack sits in the lower-right
+corner and becomes smaller on shorter screens. You can still drag the cards.
 
 The isolated browser check uses the actual painting and controls, with no practice backend:
 `cd web && node e2e/room-appearance.mjs [screenshot-folder]`.
 Music navigation and playback have a separate isolated check:
 `cd web && node e2e/music.mjs [screenshot-folder]`.
+Monitor uploads and playback have an isolated check with locally generated media:
+`cd web && node e2e/monitor-media.mjs [screenshot-folder]`.
 
 1. **The room and the desk.** Lilt opens on an illustrated anime room above a city.
    - **Today's cards are a stack** in the corner, one card per practice card left. Swipe the top

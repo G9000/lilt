@@ -1,5 +1,33 @@
 # Lilt: validation report
 
+## 5 November 2026: Media on the room monitors
+
+Each monitor accepts a browser-local still picture, GIF or silent looping MP4/WebM.
+Existing screen perspective and room layout are preserved. Cache Storage holds file
+bytes and still previews; localStorage holds validated identifiers and preferences.
+Web Locks serialize preference commits and obsolete-file cleanup across tabs. Uploads
+validate size, signature, decoding and dimensions before replacing a saved selection.
+
+Passed in isolated Chrome with generated WebM/GIF/PNG fixtures and stubbed practice APIs:
+independent screens, silent inline playback, pause/restart, reload, preset/upload switching,
+malformed and undecodable files, oversize rejection, cache and preference write failures,
+temporary appearance choices when persistence fails, reduced motion, desk/tab suspension,
+cross-tab removal and reset during a pending upload, missing-cache fallback and retained
+re-upload messages, reset cleanup, and reachable controls at 390×844, 1440×844,
+3440×1440 and 3840×2160. Phone and desktop screenshots were inspected. No media upload
+requests were made. The existing room appearance, room layout and Music suites passed.
+
+Web types, 109 unit tests and production build passed (existing bundle-size warning).
+Server format/strict Clippy and 70 tests, Python 47 tests (one skipped), and desktop
+format/release Clippy passed. The initial restricted server/Python runs were blocked by
+Windows temporary-directory permissions; both passed when rerun with those permissions.
+No owner practice data or running backend was changed. Browser verification was Chrome
+on Windows; Safari/native desktop media codec compatibility has not been exercised here.
+
+GIF pause shows a saved still rather than resuming an exact frame. PNG/WebP uploads are
+flattened to still pictures. Files are specific to this browser/origin and may disappear
+when browser storage is cleared; the panel asks for the file again in that case.
+
 ## 5 November 2026: Restore manual room placement
 
 The automatic free-space placement introduced in `eef3671` was rejected after the

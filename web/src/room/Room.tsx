@@ -1,10 +1,11 @@
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
   CAT_BOX, CAT_SPOT, CAT_URL, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
-  quadMatrix, roomUrl, SIDE_SCREEN, W,
+  quadMatrix, roomUrl, W,
 } from "./scene";
 import { useRoomAppearance } from './appearance';
-import { ROOM_DECOR, roomWeights } from './appearance-settings';
+import { roomWeights } from './appearance-settings';
+import { MonitorScreen } from './MonitorMedia';
 import { RoomObjects } from './RoomObjects';
 
 /**
@@ -250,10 +251,8 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
           <img key={l} ref={(el) => { arts.current[l] = el; }} className="room-art" src={roomUrl(l)} alt="" draggable={false}
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />
         ))}
-        {appearance.mainDecor !== 'original' && <img className="room-monitor-art" data-monitor="main" src={ROOM_DECOR[appearance.mainDecor]} alt="" draggable={false}
-          style={{ transform: quadMatrix(520, 300, MAIN_SCREEN) }} />}
-        {appearance.decor !== 'original' && <img className="room-monitor-art" data-monitor="side" src={ROOM_DECOR[appearance.decor]} alt="" draggable={false}
-          style={{ transform: quadMatrix(520, 300, SIDE_SCREEN) }} />}
+        <MonitorScreen monitor="main" appearance={appearance} inside={inside} />
+        <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
         <canvas ref={canvas} className="room-fx" width={W} height={H} />
         <div className="room-color-wash" style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
         </div>

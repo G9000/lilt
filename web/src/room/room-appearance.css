@@ -34,6 +34,21 @@
 .room-appearance-thumb-original { background-size: 690% auto; background-position: 82% 45%; }
 .room-appearance-decor-main .room-appearance-thumb-original { background-size: 575% auto; background-position: 62% 41%; }
 .room-appearance-thumb-cat { background-position: center 27%; }
+.room-media-upload { display: flex; gap: 6px; margin-top: 12px; }
+.room-media-upload label { position: relative; flex: 1; min-width: 0; cursor: pointer; }
+.room-media-upload input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.room-media-upload label > span { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 4px; border-radius: 9px; background: var(--fill); color: var(--ink); }
+.room-media-upload svg { width: 15px; height: 15px; }
+.room-media-upload input:disabled + span { opacity: .5; cursor: wait; }
+.room-media-hint { margin: 7px 0 0; color: var(--ink-2); font-size: 11px; white-space: normal; }
+.room-media-current { margin-top: 12px; }
+.room-media-preview { display: block; width: 100%; aspect-ratio: 26 / 15; object-fit: cover; border-radius: 9px; background: var(--fill); }
+.room-media-name { display: block; margin: 7px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); font-size: 12px; }
+.room-media-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.room-media-actions button { min-height: 44px; padding: 6px 11px; border-radius: 9px; background: var(--fill); color: var(--ink); }
+.room-media-actions button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-ink); }
+.room-media-actions button:disabled { opacity: .5; }
+.room-media-error { margin: 8px 0 0; color: var(--ink); font-size: 12px; white-space: normal; }
 .room-appearance-reset { min-height: 44px; padding: 6px 12px; border-radius: 9px; background: var(--fill); color: var(--ink-2); font-size: 13px; }
 .room-appearance-close:hover, .room-appearance-reset:hover { background: var(--fill-2); }
 .room-appearance :is(button, input[type="range"]):focus-visible, .room-appearance input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }

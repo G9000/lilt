@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { resetRoomAppearance, setRoomAppearance, useRoomAppearance, type RoomAppearancePrefs } from "./appearance";
+import { resetRoomAppearance, setRoomAppearance, useRoomAppearance, uploadMonitorMedia, removeMonitorMedia, pauseMonitorMedia, type RoomAppearancePrefs } from "./appearance";
+import type { MonitorMedia as Media } from './appearance-settings';
+import { MonitorMedia, allowMonitorMotion, useMonitorIssue, useMonitorPaused } from './MonitorMedia';
 import "./room-appearance.css";
 
 const LIGHTS: { value: RoomAppearancePrefs["light"]; label: string }[] = [
@@ -16,27 +18,64 @@ const DECOR: { value: RoomAppearancePrefs["decor"]; label: string; image: string
   { value: "cat", label: "Sleepy cat", image: "pictures/cat-window-nap.webp" },
 ];
 
-function MonitorChoices({ id, monitor, value, onChange }: {
+function MonitorChoices({ id, monitor, value, media, onChange }: {
   id: string;
   monitor: "main" | "side";
   value: RoomAppearancePrefs["decor"];
-  onChange: (value: RoomAppearancePrefs["decor"]) => void;
+  media?: Media;
+  onChange: (value: RoomAppearancePrefs["decor"]) => Promise<void>;
 }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const issue = useMonitorIssue(media?.id);
+  const paused = useMonitorPaused(media);
+  const change = async (action: () => void | Promise<void>) => { try { await action(); setError(''); } catch (e) { setError(e instanceof Error ? e.message : 'This change could not be saved.'); } };
+  const upload = async (file?: File) => {
+    if (!file) return;
+    setBusy(true); setError('');
+    try { await uploadMonitorMedia(monitor, file); } catch (e) { setError(e instanceof Error ? e.message : 'This file could not be saved. Try another.'); }
+    finally { setBusy(false); }
+  };
   return <fieldset>
     <legend>{monitor === "main" ? "Main monitor" : "Side monitor"}</legend>
     <div className={`room-appearance-decor room-appearance-decor-${monitor}`}>
       {DECOR.map(({ value: choice, label, image }) => <label key={choice}>
         <input type="radio" name={`${id}-${monitor}-decor`} value={choice} checked={value === choice}
-          onChange={() => onChange(choice)} />
+          onChange={() => change(() => onChange(choice))} />
         <span><span className={`room-appearance-thumb room-appearance-thumb-${choice}`} style={{ backgroundImage: `url(${image})` }} aria-hidden="true" />{label}</span>
       </label>)}
     </div>
+    <div className="room-media-upload" aria-label={`Upload to ${monitor} monitor`}>
+      {([['picture', 'Picture', 'image/png,image/jpeg,image/webp'], ['gif', 'GIF', 'image/gif'], ['video', 'Video', 'video/mp4,video/webm']] as const).map(([kind, label, accept]) =>
+        <label key={kind}>
+          <input type="file" accept={accept} disabled={busy} aria-label={`Upload ${monitor} monitor ${kind}`}
+            onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; void upload(file); }} />
+          <span>{label}<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M8 11V2m-3 3 3-3 3 3M3 10v4h10v-4" /></svg></span>
+        </label>)}
+    </div>
+    <p className="room-media-hint">{busy ? 'Opening and saving…' : 'Choose a file · up to 25 MB. Video plays silently.'}</p>
+    {media && <div className="room-media-current">
+      <MonitorMedia key={media.id} media={media} monitor={monitor} active={value === 'custom'} className="room-media-preview" />
+      <span className="room-media-name" title={media.name}>{media.name}</span>
+      <div className="room-media-actions">
+        <button type="button" aria-pressed={value === 'custom'} onClick={() => change(() => onChange('custom'))}>{value === 'custom' ? 'On screen' : 'Use upload'}</button>
+        {media.kind !== 'picture' && <button type="button" disabled={value !== 'custom'} onClick={() => change(async () => {
+          await pauseMonitorMedia(monitor, media.id, !paused);
+          if (paused) allowMonitorMotion(media.id);
+        })}>{paused ? 'Play' : 'Pause'}</button>}
+        <button type="button" onClick={() => change(() => removeMonitorMedia(monitor))}>Remove</button>
+      </div>
+      {media.kind === 'gif' && <p className="room-media-hint">Pausing shows a still. Play restarts the GIF.</p>}
+    </div>}
+    {(error || issue) && <p className="room-media-error" role="alert">{error || issue}</p>}
   </fieldset>;
 }
 
 export function RoomAppearance() {
   const prefs = useRoomAppearance();
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState('');
+  const change = (patch: Partial<RoomAppearancePrefs>) => { void setRoomAppearance(patch).catch(e => setError(e instanceof Error ? e.message : 'This change could not be saved.')); };
   const trigger = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const close = useRef<HTMLButtonElement>(null);
@@ -92,7 +131,7 @@ export function RoomAppearance() {
           <div className="room-appearance-segments room-appearance-light">
             {LIGHTS.map(({ value, label }) => <label key={value}>
               <input type="radio" name={`${id}-light`} value={value} checked={prefs.light === value}
-                onChange={() => setRoomAppearance({ light: value })} />
+                onChange={() => change({ light: value })} />
               <span>{label}</span>
             </label>)}
           </div>
@@ -100,7 +139,7 @@ export function RoomAppearance() {
         <div className="room-appearance-warmth">
           <label htmlFor={`${id}-warmth`}>Warmth</label>
           <input id={`${id}-warmth`} type="range" min={-100} max={100} step={1} value={prefs.warmth}
-            aria-valuetext={warmth} onChange={event => setRoomAppearance({ warmth: Number(event.target.value) })} />
+            aria-valuetext={warmth} onChange={event => change({ warmth: Number(event.target.value) })} />
           <div className="room-appearance-range-labels" aria-hidden="true"><span>Cool</span><span>Warm</span></div>
         </div>
         <fieldset>
@@ -108,14 +147,17 @@ export function RoomAppearance() {
           <div className="room-appearance-segments">
             {FAIRY_LIGHTS.map(({ value, label }) => <label key={value}>
               <input type="radio" name={`${id}-lights`} value={value} checked={prefs.lights === value}
-                onChange={() => setRoomAppearance({ lights: value })} />
+                onChange={() => change({ lights: value })} />
               <span>{label}</span>
             </label>)}
           </div>
         </fieldset>
-        <MonitorChoices id={id} monitor="main" value={prefs.mainDecor} onChange={mainDecor => setRoomAppearance({ mainDecor })} />
-        <MonitorChoices id={id} monitor="side" value={prefs.decor} onChange={decor => setRoomAppearance({ decor })} />
-        <button type="button" className="room-appearance-reset" onClick={resetRoomAppearance}>Reset room</button>
+        <MonitorChoices id={id} monitor="main" value={prefs.mainDecor} media={prefs.mainMedia} onChange={mainDecor => setRoomAppearance({ mainDecor }, true)} />
+        <MonitorChoices id={id} monitor="side" value={prefs.decor} media={prefs.sideMedia} onChange={decor => setRoomAppearance({ decor }, true)} />
+        <button type="button" className="room-appearance-reset" onClick={async () => {
+          try { await resetRoomAppearance(); setError(''); } catch (e) { setError(e instanceof Error ? e.message : 'The room could not be reset.'); }
+        }}>Reset room</button>
+        {error && <p className="room-media-error" role="alert">{error}</p>}
       </div>}
     </>
   );

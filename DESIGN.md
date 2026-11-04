@@ -10,7 +10,14 @@ the painting visible: choose automatic/morning/day/sunset/night light, adjust a 
 wash, set fairy lights to automatic/on/off, and swap the side monitor's picture. Native radio
 controls and a labeled slider work by keyboard; Escape closes and returns focus. Choices stay
 in this browser and Reset room restores the default look. Both monitors have independent
-picture choices. The original furniture arrangement remains; the 3D experiments have been removed.
+picture choices. Each monitor also accepts a local picture, GIF or video through three
+compact upload actions below the presets. A preview, filename, Use upload, Play/Pause and
+Remove stay inside the appearance panel. Videos loop muted; GIF pause uses a still and
+Play restarts it. Animated PNG/WebP uploads are flattened into still pictures. Reduced
+motion starts media paused until explicitly played; hidden tabs and the desk suspend it.
+Files stay in browser Cache Storage, with bounded media and metadata, no server upload.
+Reset room removes them; Reset layout does not affect them.
+The original furniture arrangement remains; the 3D experiments have been removed.
 The refined paintings reduce repeated props and ambiguous details while keeping the cozy
 palette and composition. Night has visible midtones and warm interior light. The cat is one
 connected alpha cutout over empty bedding, gently breathing; it no longer rotates fragments

@@ -4,6 +4,10 @@ import { createServer } from 'vite';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
+const choose = async control => {
+  await control.click();
+  await control.page().waitForFunction(el => el.checked, await control.elementHandle());
+};
 const shots = process.argv[2];
 if (shots) await mkdir(shots, {recursive:true});
 const server = await createServer({server:{host:'127.0.0.1',port:0},logLevel:'error'});
@@ -21,21 +25,21 @@ try {
   const url=`${server.resolvedUrls.local[0]}e2e/fixtures/room-appearance.html`;
   await page.goto(url);
   await page.getByRole('button',{name:'Make it yours',exact:true}).click();
-  await page.getByRole('radio',{name:'Night',exact:true}).check();
+  await choose(page.getByRole('radio',{name:'Night',exact:true}));
   assert.equal(await page.locator('.room-paint').getAttribute('data-light'),'night');
   assert.equal(await page.locator('img[src="room/room-night-v3.webp"]').evaluate(el=>el.style.opacity),'1');
   await page.waitForFunction(()=>[...document.querySelectorAll('.room-art')].every(im=>im.complete&&im.naturalWidth));
   const canvas = page.locator('.room-fx');
   const unlit=await canvas.evaluate(c=>c.toDataURL());
-  await page.getByRole('radio',{name:'On',exact:true}).check();
+  await choose(page.getByRole('radio',{name:'On',exact:true}));
   assert.notEqual(await canvas.evaluate(c=>c.toDataURL()),unlit,'fairy lights change actual scene pixels with motion reduced');
   await page.getByRole('slider',{name:'Warmth'}).fill('65');
   assert.ok(Number(await page.locator('.room-color-wash').evaluate(el=>el.style.opacity))>0);
-  await page.getByRole('group',{name:'Side monitor',exact:true}).getByRole('radio',{name:'Leaves',exact:true}).check();
-  await page.getByRole('group',{name:'Main monitor',exact:true}).getByRole('radio',{name:'Stars',exact:true}).check();
+  await choose(page.getByRole('group',{name:'Side monitor',exact:true}).getByRole('radio',{name:'Leaves',exact:true}));
+  await choose(page.getByRole('group',{name:'Main monitor',exact:true}).getByRole('radio',{name:'Stars',exact:true}));
   assert.equal(await page.locator('[data-monitor="side"]').getAttribute('src'),'pictures/plant-fern.webp');
   assert.equal(await page.locator('[data-monitor="main"]').getAttribute('src'),'pictures/nebula-cliffs.webp');
-  await page.getByRole('radio',{name:'Sunset',exact:true}).check();
+  await choose(page.getByRole('radio',{name:'Sunset',exact:true}));
   if(shots) await page.screenshot({path:path.join(shots,'room-customize.png')});
   await page.keyboard.press('Escape');
   assert.equal(await page.getByRole('button',{name:'Make it yours',exact:true}).evaluate(el=>el===document.activeElement),true);
@@ -57,6 +61,7 @@ try {
     if(shots) await page.screenshot({path:path.join(shots,`room-${width}.png`)});
   }
   await page.getByRole('button',{name:'Reset room',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('.room-paint').dataset.light==='auto');
   assert.equal(await page.locator('.room-paint').getAttribute('data-light'),'auto');
   assert.equal(await page.getByRole('slider',{name:'Warmth'}).inputValue(),'0');
   assert.equal(await page.locator('.room-monitor-art').count(),0);
@@ -69,7 +74,7 @@ try {
   assert.equal(await page.getByRole('link',{name:'Open Photos',exact:true}).getAttribute('href'),'#/photos');
   for(const name of ['Daylight','Morning','Sunset','Night']) {
     await page.getByRole('button',{name:'Make it yours',exact:true}).click();
-    await page.getByRole('radio',{name,exact:true}).check();
+    await choose(page.getByRole('radio',{name,exact:true}));
     await page.keyboard.press('Escape');
     if(shots) await page.screenshot({path:path.join(shots,`art-${name.toLowerCase()}.png`)});
   }
@@ -104,7 +109,7 @@ try {
   // Other tabs can update or clear the same browser preferences.
   const other=await page.context().newPage(); await other.goto(url);
   await other.getByRole('button',{name:'Make it yours',exact:true}).click();
-  await other.getByRole('radio',{name:'Morning',exact:true}).check();
+  await choose(other.getByRole('radio',{name:'Morning',exact:true}));
   await page.waitForFunction(()=>document.querySelector('.room-paint').dataset.light==='morning');
   await other.evaluate(()=>localStorage.removeItem('lilt.room.appearance'));
   await page.waitForFunction(()=>document.querySelector('.room-paint').dataset.light==='auto');
@@ -129,7 +134,7 @@ try {
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.setViewportSize({width:1440,height:844});
   await home.getByRole('button',{name:'Make it yours',exact:true}).click();
-  await home.getByRole('radio',{name:'Sunset',exact:true}).check();
+  await choose(home.getByRole('radio',{name:'Sunset',exact:true}));
   const reset=home.getByRole('button',{name:'Reset room',exact:true});
   await reset.scrollIntoViewIfNeeded();
   assert.equal(await reset.evaluate(el=>{

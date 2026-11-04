@@ -30,3 +30,13 @@ test('a chosen light stays fixed while automatic lighting follows the clock', ()
   assert.equal(roomWeights('auto', 800).day, 1);
   assert.equal(roomWeights('auto', 100).night, 1);
 });
+
+test('custom monitor media is independent and accepts only local media identifiers', () => {
+  const mainMedia = { id: '7b331b44-7f18-4d3a-b19a-497800344487', name: 'Rain.webm', kind: 'video', paused: true };
+  const sideMedia = { ...mainMedia, id: 'eaa8469d-1aa5-4b44-861b-2eefc044d029', name: 'Cat.gif', kind: 'gif', paused: false };
+  assert.deepEqual(readAppearance(JSON.stringify({ mainDecor: 'custom', decor: 'custom', mainMedia, sideMedia })),
+    { ...DEFAULT_APPEARANCE, mainDecor: 'custom', decor: 'custom', mainMedia, sideMedia });
+  for (const invalid of [null, [], { ...mainMedia, id: 'https://example.com/track.mp4' }, { ...mainMedia, kind: 'html' }, { ...mainMedia, paused: 'false' }]) {
+    assert.deepEqual(readAppearance(JSON.stringify({ mainDecor: 'custom', mainMedia: invalid })), DEFAULT_APPEARANCE);
+  }
+});
