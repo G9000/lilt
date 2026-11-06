@@ -2,7 +2,8 @@ import { roomStyles } from "./roomStyles";
 import { motion, useDragControls, useMotionValue } from "motion/react";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { api, Deck, Texts } from "../api";
-import { ClockWidget, PlantWidget } from "./Desk";
+import { ClockWidget } from "./Desk";
+import { PlantWidget } from "../room/PlantWidget";
 import { openSettings } from "./SettingsSheet";
 import { SettingsAppIcon } from "./icons";
 import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
@@ -428,7 +429,7 @@ export function RoomFloaters({ deck, inside, course = DEFAULT_COURSE }: { deck?:
       </Widget>
       {deck && (
         <Widget id="plant" delay={-3.4} label="This week">
-          <PlantWidget days={deck.participation?.days_this_week ?? 0} />
+          <PlantWidget days={deck.participation?.days_this_week ?? 0} inside={inside} />
         </Widget>
       )}
       {texts && (

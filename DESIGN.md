@@ -5,6 +5,13 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+**Weekly plant** keeps its existing place by the painted plant and the same footprint. Clicking
+it opens a compact light/dark picker: Original sprout, Monstera, Fern and Succulent, with the
+current week's growth in every preview. Each day fills a leaf or frond; zero days says “A new
+week.” Choices change only the art and stay in browser storage. The original warm paper tile
+remains, with a quiet Choose plant cue. Keyboard dismissal restores focus, dragging never
+opens the picker, and reduced motion keeps the leaves still.
+
 **Tea break** is a draggable illustrated mug beside the painted desk mug, with cream stoneware, sage, blue stripes
 and sleepy cat designs. Its compact modal offers 3, 5 or 10 minutes and an optional soft clink
 (off by default, suppressed during recording). Steam moves only during a break and respects

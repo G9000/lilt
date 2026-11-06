@@ -177,31 +177,6 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
   );
 }
 
-/** A plant that grows a leaf for each day you practised this week. It never shrinks or scolds. */
-const LEAVES: [number, number, number][] = [[61, 74, -1], [60, 64, 1], [60, 54, -1], [61, 45, 1], [61, 37, -1], [61, 31, 1], [61, 27, 0]];
-export function PlantWidget({ days }: { days: number }) {
-  return (
-    <article className={cx(["ds-w ds-plant", roomStyles["ds-w"], roomStyles["ds-plant"]].join(" "), practice["ds-w"])} aria-label={days ? `Practised ${days} day${days === 1 ? "" : "s"} this week` : "A new week: the plant grows a leaf each day you practise"}>
-      <svg viewBox="22 14 76 94" aria-hidden="true">
-        <defs><linearGradient id="ds-pot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e98a62" /><stop offset="1" stopColor="#c8623c" /></linearGradient></defs>
-        <path d="M60 84 C60 66 58 50 61 30" stroke="#3f7a45" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-        {LEAVES.map(([x, y, side], i) => {
-          const d = side === 0 ? `M${x} ${y} c-6 -8 -2 -16 0 -18 c2 2 6 10 0 18z`
-            : side < 0 ? `M${x} ${y} c-10 -2 -18 -8 -20 -14 c8 -2 16 2 20 14z` : `M${x} ${y} c10 -2 18 -8 20 -14 c-8 -2 -16 2 -20 14z`;
-          return i < days
-            ? <path key={i} className="leaf" d={d} fill={i % 2 ? "#5aa860" : "#4b9752"} style={{ transformOrigin: `${x}px ${y}px`, animationDelay: `${-i * 0.6}s` }} />
-            : <path key={i} className="bud" d={d} />;
-        })}
-        <path d="M40 82h40l-5 24H45z" fill="url(#ds-pot)" /><rect x="37" y="78" width="46" height="8" rx="3" fill="#f0a07a" />
-      </svg>
-      {/* A fresh week isn't a zero: it's a sprout waiting. */}
-      <div className={["ds-p-text", roomStyles["ds-p-text"]].join(" ")}>{days
-        ? <><b>{days} day{days === 1 ? "" : "s"}</b><span>this week. It grows when you practise.</span></>
-        : <><b>A new week</b><span>It grows a leaf each day you practise.</span></>}</div>
-    </article>
-  );
-}
-
 /** The time over a picture: a different photo each time you come in, or the one you picked. Click for Photos. */
 export function ClockWidget() {
   const now = useNow();

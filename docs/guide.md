@@ -192,6 +192,13 @@ Monitor uploads and playback have an isolated check with locally generated media
      the countdown. Reset layout moves the mug home without changing the timer or your mug.
      Like the other floating widgets, the mug hides on phone-width screens. Reduced motion
      keeps its steam still. No timer data is sent to the server or included in practice backups.
+     Click the **weekly plant** to choose **Original sprout, Monstera, Fern or Succulent**.
+     Each preview shows this week's growth; choosing one keeps the same practice days and fills
+     one more leaf or frond each day you practise. A fresh week still says **A new week**.
+     Your choice stays in this browser (`lilt.room.plant`), including after Reset layout, and
+     doesn't change your practice data. The plant stays by the painted plant unless you drag it.
+     **Done**, <kbd>Esc</kbd> or a click outside closes the picker. If the browser cannot save,
+     the choice still works for this visit and the picker tells you it won't be kept.
      Widgets near an edge slide inward rather than disappear. On smaller or squarer screens they
      shrink a little, and one still at home slides just clear of its neighbours and of the Photos,
      Practice and Music shortcuts under the menu bar. A widget whose spot
