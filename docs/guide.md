@@ -181,7 +181,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back and stays available after resetting (a reset-arrow icon on phones).
-     **Tea break** is a little mug beside the monitor. Click it to choose cream stoneware, sage,
+     **Tea break** sits beside the painted mug on the desk. Click it to choose cream stoneware, sage,
      blue stripes or sleepy cat, then start a **3, 5 or 10 minute** break. Drag it anywhere like
      the other widgets. Steam rises while the timer runs; when it ends, the mug quietly says
      “Whenever you're ready.” **End break** clears the timer whenever you like. An optional soft

@@ -49,7 +49,7 @@ try {
       }));
     });
     if (shots) await page.screenshot({ path: path.join(shots, `layout-${label}${density === 1 ? '' : `-${density}x`}.png`) });
-    const defaults = { "What's new":[680,170], Settings:[1090,180], Clock:[930,270], 'This week':[490,630], Flashcards:[800,640], 'Ball of yarn':[1060,720], Note:[460,260], 'Tea break timer':[1240,460] };
+    const defaults = { "What's new":[680,170], Settings:[1090,180], Clock:[930,270], 'This week':[490,630], Flashcards:[800,640], 'Ball of yarn':[1060,720], Note:[460,260], 'Tea break timer':[935,540] };
     for (const widget of result) {
       assert.deepEqual([widget.x,widget.y], defaults[widget.name], `${label}: ${widget.name} returns to its original home`);
       assert.equal(widget.moved, false, `${label}: saved placement is cleared`);

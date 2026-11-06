@@ -5,7 +5,7 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
-**Tea break** is a draggable illustrated mug in the room, with cream stoneware, sage, blue stripes
+**Tea break** is a draggable illustrated mug beside the painted desk mug, with cream stoneware, sage, blue stripes
 and sleepy cat designs. Its compact modal offers 3, 5 or 10 minutes and an optional soft clink
 (off by default, suppressed during recording). Steam moves only during a break and respects
 reduced motion. At the end it settles and says “Whenever you're ready.” No automatic navigation,
