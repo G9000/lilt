@@ -1,4 +1,5 @@
 /** Illustrations for Yarn, independent of microphone input and the game rules. */
+import { artReady, type YarnArt } from './yarn-assets';
 type Pen = CanvasRenderingContext2D;
 const oval = (c: Pen, x: number, y: number, rx: number, ry: number, color: string, angle = 0) => {
   c.fillStyle = color; c.beginPath(); c.ellipse(x, y, rx, ry, angle, 0, Math.PI * 2); c.fill();
@@ -8,7 +9,14 @@ function box(c: Pen, x: number, y: number, w: number, h: number, r: number, colo
 }
 
 /** Static scenery is painted to a separate canvas only when its size or theme changes. */
-export function paintYarnRoom(c: Pen, W: number, H: number, floor: number, dark: boolean) {
+export function paintYarnRoom(c: Pen, W: number, H: number, floor: number, dark: boolean, image?: HTMLImageElement) {
+  if (image && artReady(image)) {
+    const scale = Math.max(W / image.naturalWidth, H / image.naturalHeight);
+    const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
+    // Keep the window in portrait crops and the floor beneath the kitten in every aspect ratio.
+    c.drawImage(image, (W - width) * .3, H - height, width, height);
+    return;
+  }
   const wall = dark ? '#303b3a' : '#f4e8d6', wood = dark ? '#827259' : '#b98c62';
   c.fillStyle = wall; c.fillRect(0, 0, W, H);
   // Soft plaster marks stay quiet behind the playing field.
@@ -134,6 +142,12 @@ export function paintYarnBall(c: Pen, x: number, y: number, r: number, spin: num
       c.strokeStyle = '#b96950'; c.lineWidth = r * .19; c.stroke();
       c.strokeStyle = ['#efa07b', '#e98f6c', '#f3ab85'][group]; c.lineWidth = r * .135; c.stroke();
       c.strokeStyle = 'rgba(255,222,180,.65)'; c.lineWidth = Math.max(.6, r * .025); c.stroke();
+      // Short diagonal fibers follow each wrap, like softly twisted plies of wool.
+      c.strokeStyle = 'rgba(255,235,205,.45)'; c.lineWidth = Math.max(.35, r * .012);
+      for (let k = -9; k <= 9; k++) {
+        const xx = k * r * .12, curve = yy - r * .36 * (1 - (xx / (r * 1.15)) ** 2);
+        c.beginPath(); c.moveTo(xx - r * .025, curve + r * .025); c.lineTo(xx + r * .025, curve - r * .025); c.stroke();
+      }
     }
     c.restore();
   }
@@ -142,9 +156,25 @@ export function paintYarnBall(c: Pen, x: number, y: number, r: number, spin: num
   c.fillStyle = shade; c.fillRect(-r, -r, r * 2, r * 2);
   c.restore();
   c.strokeStyle = '#b66c51'; c.lineWidth = 1; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.stroke();
+  c.strokeStyle = 'rgba(240,181,143,.65)'; c.lineWidth = .6;
+  for (let i = 0; i < 48; i++) {
+    const a = i * 2.39996 + spin * .22, reach = r + 1 + (i % 3) * .5;
+    c.beginPath(); c.moveTo(x + Math.cos(a) * (r - .7), y + Math.sin(a) * (r - .7));
+    c.quadraticCurveTo(x + Math.cos(a + .015) * reach, y + Math.sin(a + .015) * reach, x + Math.cos(a + .03) * reach, y + Math.sin(a + .03) * reach); c.stroke();
+  }
 }
 
-export function paintYarnCat(c: Pen, x: number, floor: number, s: number, phase: number, look: number, dark: boolean, moving: boolean, dozing: boolean, pose = { hop: 0, reach: 0, blink: false }) {
+export function paintYarnCat(c: Pen, x: number, floor: number, s: number, phase: number, look: number, dark: boolean, moving: boolean, dozing: boolean, pose = { hop: 0, reach: 0, blink: false }, art?: YarnArt) {
+  const sprite = art && (dozing ? art.rest : pose.reach > .25 || pose.hop > .3 ? art.reach : art.kitten);
+  if (sprite && artReady(sprite)) {
+    c.save(); c.translate(x, floor);
+    oval(c, 0, s * .015, s * (.68 - pose.hop * .1), s * .075, dark ? 'rgba(12,18,20,.32)' : 'rgba(65,43,26,.24)');
+    const bob = moving ? Math.sin(phase * 2) * s * .018 : 0;
+    c.translate(0, bob - pose.hop * s * .12);
+    c.scale(1 + pose.hop * .018, 1 - pose.hop * .025);
+    c.drawImage(sprite, -s * .95, -s * 1.3, s * 2, s * 4 / 3);
+    c.restore(); return;
+  }
   const fur = dark ? '#707d7c' : '#536361', cream = '#fff0d9', shade = dark ? '#536160' : '#405350';
   c.save(); c.translate(x, floor); c.scale(s, s);
   c.lineCap = 'round'; c.lineJoin = 'round';

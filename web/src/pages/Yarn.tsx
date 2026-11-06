@@ -7,6 +7,7 @@ import { useMic } from "../components/Recording";
 import { Art, Illustration, wash } from "../components/Illustrations";
 import { claimMic } from "../micuse";
 import { paintYarnBall, paintYarnCat, paintYarnRoom } from "../yarn-art";
+import { artReady, loadYarnArt, type YarnArt } from "../yarn-assets";
 import { ContourPoint, noteName, trackLiveFine } from "../pitch";
 import {
   breakDue, catReaction, cueDue, describePlay, follower, HUM_READINGS, Loop, loopMaker, Mode, noisyRoom, passLoops, playRange, rangeFromHums,
@@ -457,6 +458,7 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
     const backdrop = document.createElement("canvas");
     const back = backdrop.getContext("2d")!;
     let backdropKey = "";
+    const art = loadYarnArt(() => { backdropKey = ""; });
     let W = 0, H = 0, dpr = 1;
     const size = () => {
       const r = el.getBoundingClientRect();
@@ -485,7 +487,7 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
       if (backdropKey !== key) {
         backdrop.width = canvas.width; backdrop.height = canvas.height;
         back.setTransform(dpr, 0, 0, dpr, 0, 0);
-        paintYarnRoom(back, W, H, floorY, dark);
+        paintYarnRoom(back, W, H, floorY, dark, dark ? art.images.night : art.images.day);
         backdropKey = key;
       }
       if (!game) G.y = preview ? .65 + (reduced ? 0 : Math.sin(wall * .7) * .025) : REST_Y;
@@ -528,7 +530,8 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
         }
         if (!reduced) { G.spin += dt * (speed / R) * 0.6; G.walk += dt * 7; }
       }
-      draw(ctx, G, { W, H, dpr, F, floorY, bx, R, speed }, dark ? PAL.dark : PAL.light, reduced, running, wall, dt, backdrop, dark, preview);
+      draw(ctx, G, { W, H, dpr, F, floorY, bx, R, speed }, dark ? PAL.dark : PAL.light, reduced, running, wall, dt, backdrop, dark, preview, art.images);
+      el.dataset.art = Object.values(art.images).every(artReady) ? 'ready' : 'fallback';
       // where the yarn is (0 top, 1 floor), a few times a second, for the browser tests
       if (wall - told > 0.2) {
         told = wall; el.dataset.y = G.y.toFixed(3);
@@ -538,7 +541,7 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); art.dispose(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -551,7 +554,7 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
 type Dims = { W: number; H: number; dpr: number; F: number; floorY: number; bx: number; R: number; speed: number };
 type Pal = typeof PAL.light;
 
-function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: boolean, running: boolean, wall: number, dt: number, backdrop: HTMLCanvasElement, dark: boolean, preview: boolean) {
+function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: boolean, running: boolean, wall: number, dt: number, backdrop: HTMLCanvasElement, dark: boolean, preview: boolean, art: YarnArt) {
   const { W, H, dpr, F, floorY, bx, R, speed } = d;
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   c.drawImage(backdrop, 0, 0, W, H);
@@ -579,10 +582,12 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: bo
       const y = uToY(u) * F;
       c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
       const label = `${word} · ${noteName(u ? G.range[1] : G.range[0])}`, labelY = u ? y - 7 : y + 16;
+      const labelWidth = c.measureText(label).width;
+      const labelX = W < 640 ? W - labelWidth - 14 : 14;
       c.fillStyle = dark ? "#303b3a" : "#ede4d2";
-      c.fillRect(8, labelY - 14, c.measureText(label).width + 12, 20);
+      c.fillRect(labelX - 6, labelY - 14, labelWidth + 12, 20);
       c.fillStyle = P.label;
-      c.fillText(label, 14, labelY);
+      c.fillText(label, labelX, labelY);
     }
     c.setLineDash([]);
   }
@@ -594,9 +599,13 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: bo
     const age = G.now - o.l.at;
     const unfurl = !reduced && o.l.state === "through" && age < .8 ? Math.sin(age / .8 * Math.PI) * .13 : 0;
     c.globalAlpha = o.l.state === "by" ? 0.45 : 1;
-    c.strokeStyle = col; c.lineWidth = W < 640 ? 4 : 6; c.lineCap = "round";
+    const thickness = W < 640 ? 4 : 6;
+    c.lineCap = "round";
+    c.beginPath(); c.ellipse(o.x, o.y, o.ry * (.42 + unfurl), o.ry * (1 + unfurl), 0, front ? -Math.PI / 2 : Math.PI / 2, front ? Math.PI / 2 : Math.PI * 1.5);
+    c.strokeStyle = 'rgba(255,244,219,.8)'; c.lineWidth = thickness + 2; c.stroke();
+    c.strokeStyle = col; c.lineWidth = thickness;
     if (o.l.state === "through") { c.shadowColor = col; c.shadowBlur = reduced ? 0 : 10; }
-    c.beginPath(); c.ellipse(o.x, o.y, o.ry * (.42 + unfurl), o.ry * (1 + unfurl), 0, front ? -Math.PI / 2 : Math.PI / 2, front ? Math.PI / 2 : Math.PI * 1.5); c.stroke();
+    c.stroke();
     c.shadowBlur = 0;
     // a twist in the wool
     c.strokeStyle = "rgba(255,255,255,0.35)"; c.lineWidth = 1.4; c.setLineDash([3, 5]); c.stroke(); c.setLineDash([]);
@@ -656,5 +665,5 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: bo
   const hx = G.catX + s * 0.44, hy = floorY - s * 0.56;
   const look = Math.max(-0.6, Math.min(0.28, Math.atan2(by - hy, bx - hx) * 0.6));
   const pose = catReaction(preview ? wall : G.now, G.threadedAt, G.y, reduced);
-  paintYarnCat(c, G.catX, floorY, s, G.walk, look, dark, moving, !G.range && !preview, pose);
+  paintYarnCat(c, G.catX, floorY, s, G.walk, look, dark, moving, !G.range && !preview, pose, art);
 }

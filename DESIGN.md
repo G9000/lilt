@@ -303,16 +303,21 @@ button to AI connections). Updates open in the same window, with "Back to the co
 
 ## Tokens (light; dark theme swaps the window and ink colours)
 
-**Ball of yarn** uses a playful illustrated window-side scene: sage hills, linen curtains,
-warm wood, broad overlapping coral wool wraps and a rounded tuxedo cat with an expressive face.
-The cat walks when changing position, reaches for nearby yarn, briefly perks up after threading
+**Ball of yarn** uses painted day/night window-side scenes with garden foliage, embroidered linen,
+wood grain, a braided rug, books and a knitting basket. A fluffy grey-and-cream kitten has separate
+watching, reaching and resting artwork; the coral yarn has overlapping wraps, twisted fibers and fuzz.
+The cat bobs when changing position, reaches for nearby yarn, briefly perks up after threading
 a loop and curls up at rest. Free play leaves out loops and their note cues. Static scenery is cached
 separately from the voice-driven yarn and loops. Setup shares the scene with a compact sheet;
 on narrow screens it scrolls below the illustration. How-to instructions expand on demand.
 The play field caps at 1920×1100 CSS pixels on large screens, with a persistent bottom row
 for a breathing break, Stop and the comfort stop. Light/dark scenes stay legible, and reduced
-motion stops the preview float, yarn spin, cat walk, blinks, reaching, hops and light shimmer.
+motion stops the preview float, yarn spin, cat bobbing, reaching, hops and light shimmer.
 Breathing breaks freeze decorative game time as well as play.
+Local WebP art loads without blocking play; the drawn room and cat remain as a fallback. The
+background is painted to a separate cached canvas on resize, theme change or image load. Intro
+copy and sentence controls have their own quiet surfaces, and loops have a fine cream edge so
+they remain readable over the detailed painting. Prompts and provenance are in `web/public/yarn/CREDITS.md`.
 
 | Token | Value | Use |
 | --- | --- | --- |

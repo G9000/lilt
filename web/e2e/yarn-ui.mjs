@@ -27,6 +27,7 @@ try {
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(`${server.resolvedUrls.local[0]}#/yarn`);
   await page.getByRole('button', { name: 'Start playing', exact: true }).waitFor();
+  await page.locator('.yn-scene[data-art="ready"]').waitFor();
   if (shots) await page.screenshot({ path: path.join(shots, 'yarn-initial.png') });
   assert.equal(await page.locator('.yn-intro').count(), 1, 'setup has an illustrated introduction beside its controls');
   assert.equal(await page.getByRole('checkbox', { name: /Free play/ }).count(), 1, 'free play can be chosen before opening the microphone');
@@ -148,6 +149,16 @@ try {
   await page.getByRole('button', { name: 'Just for this game' }).click();
   await page.getByRole('button', { name: 'Start playing', exact: true }).waitFor();
   assert.equal(profile.comfort_range_hz, null, 'temporary calibration does not save a profile');
+  // Missing artwork must leave a usable drawn scene, not block the microphone or setup.
+  await page.route('**/yarn/*.webp', route => route.abort());
+  await page.reload();
+  await page.locator('.yn-scene[data-art="fallback"]').waitFor();
+  await fits(page.getByRole('button', { name: 'Find my range', exact: true }));
+  assert.ok(await page.locator('.yn-scene canvas').evaluate(canvas => {
+    const pixel = canvas.getContext('2d').getImageData(canvas.width / 2, canvas.height / 2, 1, 1).data;
+    return pixel[3] === 255;
+  }), 'fallback scenery is painted when all artwork requests fail');
+  if (shots) await page.screenshot({ path: path.join(shots, 'yarn-art-fallback.png') });
   assert.deepEqual(errors, []);
   console.log('PASS: Yarn setup/play controls, fake voice input, breaks, summary, hurt stop and phone through 4K layout');
 } finally { await browser?.close(); await server.close(); }

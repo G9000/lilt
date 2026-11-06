@@ -321,8 +321,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      below it on phones; scroll to reach its start button. The play area stays within a comfortable
      size on ultrawide and 4K displays. Light and dark themes have their own scenery, and reduced
      motion keeps decorative movement still while the yarn continues following your voice.
-     The cartoon cat watches the yarn, reaches when it is nearby, perks up when you thread a
-     loop, and curls up when you finish. It walks only when changing position. Choose **Free play**
+     The painted room has embroidered curtains, a garden view, a woven rug and a knitting corner.
+     A fluffy kitten watches the yarn, reaches when it is nearby, perks up when you thread a
+     loop, and curls up when you finish. It bobs gently while following the yarn. Choose **Free play**
      at setup for just your voice, yarn and cat, without loops or their note cues; the choice is
      remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
      work in either style of play.
