@@ -40,7 +40,10 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   lower in the room as a swipeable stack (folder-style cards, one per practice card, Motion springs);
   tapping the top card starts it. The default stack sits in the lower-right corner on desktop
   and lower-center on phones. A few small widgets float in the painting (clock, note), riding
-  the camera and draggable (Motion); they step aside rather than cover the stack. The
+  the camera and draggable (Motion); they step aside rather than cover the stack. The sticky note
+  is paper, not UI: six soft papers and six washi tapes drawn in CSS (no images), chosen in a small
+  `--win` tray that appears under it only while you write; the selection gets a 2px `--accent` ring,
+  and a round handle on its top-right corner resizes it (130–300px wide). The
   computer itself is the other way in: its middle monitor has a steady glow following its painted edges,
   and a visible "Click the screen" cue ("Tap" on touch devices). Hover and keyboard focus make the
   edge clearer. The glow does not pulse. The glow and cue hide when entering.

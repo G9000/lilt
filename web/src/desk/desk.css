@@ -301,22 +301,54 @@
 .fl.dragging .fl-drag { cursor: grabbing; }
 .fl.dragging .fl-bob { animation-play-state: paused; }
 .fl.dragging { z-index: 5; }
-.fl-sticky { position: relative; pointer-events: auto; width: 160px; padding: 16px 13px 15px; background: linear-gradient(170deg, #fff7bf, #fff0a0); color: #4a3f10; font: 500 15px/1.25 var(--font); rotate: -4deg; cursor: default;
+.fl-note { position: relative; pointer-events: auto; }
+.fl-sticky { position: relative; pointer-events: auto; display: flex; flex-direction: column; box-sizing: border-box; width: 160px; padding: 16px 13px 15px;
+  background: linear-gradient(170deg, var(--note-top, #fff7bf), var(--note-bottom, #fff0a0)); color: var(--note-ink, #4a3f10); font: 500 15px/1.25 var(--font); rotate: -4deg; cursor: default;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 14px 26px -12px rgba(0, 0, 0, 0.6);
-  transition: rotate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; }
-/* a strip of washi tape holds it to the wall */
-.fl-washi { position: absolute; left: 50%; top: -9px; width: 74px; height: 20px; margin-left: -37px; rotate: 3deg; opacity: 0.88;
-  background: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.35) 0 4px, transparent 4px 9px), linear-gradient(#f5a3b8, #ef8fa8);
+  transition: rotate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, background 0.3s ease, color 0.3s ease; }
+/* a strip of washi tape holds it to the wall; each tape is a pattern in --tape */
+.fl-washi { position: absolute; left: 50%; top: -9px; width: clamp(64px, 46%, 112px); height: 20px; translate: -50% 0; rotate: 3deg; opacity: 0.9;
+  background: var(--tape);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); clip-path: polygon(0 8%, 4% 0, 9% 10%, 14% 0, 100% 0, 96% 12%, 100% 24%, 96% 38%, 100% 52%, 96% 66%, 100% 80%, 96% 92%, 100% 100%, 6% 100%, 0 90%, 4% 76%, 0 62%, 4% 48%, 0 34%, 4% 20%); }
+.tape-stripes { --tape: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.35) 0 4px, transparent 4px 9px), linear-gradient(#f5a3b8, #ef8fa8); }
+.tape-dots { --tape: radial-gradient(circle at 4px 4px, rgba(255, 255, 255, 0.85) 0 1.6px, transparent 2.2px) 0 0 / 8px 8px, linear-gradient(#a3dbb7, #8acda1); }
+.tape-gingham { --tape: linear-gradient(90deg, rgba(255, 255, 255, 0.42) 50%, transparent 0) 0 0 / 8px 8px, linear-gradient(rgba(255, 255, 255, 0.42) 50%, transparent 0) 0 0 / 8px 8px, linear-gradient(#bea9e8, #a992dc); }
+.tape-grid { --tape: linear-gradient(90deg, rgba(255, 255, 255, 0.6) 1px, transparent 0) 0 0 / 7px 7px, linear-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 0) 0 0 / 7px 7px, linear-gradient(#98c6ee, #80b4e4); }
+.tape-kraft { --tape: repeating-linear-gradient(100deg, rgba(90, 60, 20, 0.08) 0 1px, transparent 1px 5px), linear-gradient(#dcbd8f, #cdab79); }
+.tape-confetti { --tape: radial-gradient(circle at 3px 4px, #ef8fa8 0 1.5px, transparent 2px) 0 0 / 14px 10px, radial-gradient(circle at 10px 7px, #7fb3e3 0 1.5px, transparent 2px) 0 0 / 14px 10px, radial-gradient(circle at 7px 2px, #e8b23a 0 1.3px, transparent 1.8px) 0 0 / 14px 10px, linear-gradient(#fffaf0, #f6eedb); }
 /* on hover (and while you write) it lifts a little and straightens */
 .fl-note-text { margin: 0; white-space: pre-wrap; overflow-wrap: break-word; }
-.fl-note-text.empty { color: #9a8a3c; font-style: italic; }
+.fl-note-text.empty { color: var(--note-faint, #9a8a3c); font-style: italic; }
 .fl-sticky.editing { rotate: -1deg; cursor: text; }
-.fl-sticky textarea { display: block; width: 100%; min-height: 84px; margin: 0; padding: 0; border: 0; outline: none; resize: none; background: transparent; color: inherit; font: inherit; box-shadow: none; }
+.fl-sticky textarea { display: block; flex: 1; width: 100%; min-height: 84px; margin: 0; padding: 0; border: 0; outline: none; resize: none; background: transparent; color: inherit; font: inherit; box-shadow: none; }
 .fl-sticky textarea:focus { box-shadow: none; border: 0; }
-.fl-note-hint { display: block; margin-top: 6px; font-size: 10.5px; color: #8a7a2c; }
+.fl-note-hint { display: block; margin-top: 6px; font-size: 10.5px; color: var(--note-faint, #8a7a2c); }
 .fl-sticky:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .fl-sticky:not(.editing):hover, .fl-sticky.editing { rotate: -1.5deg; translate: 0 -4px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 22px 30px -14px rgba(0, 0, 0, 0.65); }
+/* the corner you drag to resize it (it hangs from its bottom edge, so the top-right corner moves) */
+.fl-note-size { position: absolute; top: -9px; right: -9px; display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 999px; cursor: nesw-resize; touch-action: none;
+  background: var(--win); color: var(--ink-2); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.2), 0 4px 10px -4px rgba(0, 0, 0, 0.45); }
+/* the app's buttons are 42px tall; these are small swatches and handles */
+.fl-note-size, .fl-swatch, .fl-tape-pick, .fl-note-reset { min-height: 0; flex: none; }
+.fl-note-size svg { width: 11px; height: 11px; }
+.fl-note-size:hover { color: var(--ink); }
+.fl-note-size:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* while you write: a small tray under the note for its paper and tape */
+.fl-note-tools { position: absolute; top: calc(100% + 14px); left: 50%; translate: -50% 0; display: grid; gap: 8px; width: max-content; padding: 10px 12px; border-radius: 14px; cursor: default;
+  background: var(--win); -webkit-backdrop-filter: blur(30px) saturate(1.7); backdrop-filter: blur(30px) saturate(1.7); color: var(--ink-2); font: 500 12px/1 var(--font);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 18px 36px -18px rgba(0, 0, 0, 0.6); animation: fl-tools-in 0.22s var(--ease, ease-out) both; }
+@keyframes fl-tools-in { from { opacity: 0; translate: -50% -4px; } }
+.fl-note-row { display: flex; align-items: center; gap: 7px; }
+.fl-note-row > span { width: 38px; color: var(--ink-3); }
+.fl-swatch { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 999px; cursor: pointer; background: linear-gradient(170deg, var(--sw-top), var(--sw-bottom)); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.fl-tape-pick { display: grid; place-items: center; width: 34px; height: 22px; padding: 0; border: 0; border-radius: 6px; cursor: pointer; background: transparent; }
+.fl-tape-pick i { display: block; width: 30px; height: 12px; border-radius: 2px; background: var(--tape); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.15); rotate: -4deg; }
+.fl-tape-pick:hover { background: var(--fill-2); }
+.fl-swatch[aria-pressed="true"], .fl-tape-pick[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fl-swatch:focus-visible, .fl-tape-pick:focus-visible, .fl-note-reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fl-note-reset { justify-self: start; padding: 2px 0; border: 0; background: none; color: var(--ink-2); font: inherit; cursor: pointer; }
+.fl-note-reset:hover { color: var(--ink); text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) { .fl-note-tools { animation: none; } }
 /* the room's radio is the desk's radio, smaller */
 .fl-radio { pointer-events: auto; position: relative; width: 268px; height: 104px; border-radius: 22px; overflow: hidden; color: #fff; display: grid; grid-template-columns: 86px 1fr; align-items: center;
   background: linear-gradient(135deg, #24212d, #121118); box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 22px 40px -18px rgba(0, 0, 0, 0.8); }

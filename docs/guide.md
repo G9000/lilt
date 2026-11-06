@@ -106,7 +106,10 @@ Monitor uploads and playback have an isolated check with locally generated media
      the file (and logs it in `deletions.jsonl`). Deleting one of Lilt's own only hides it, until
      Restore.
      The note starts as your goal; click it to write anything (up to 280 characters), click away to keep it. It's saved on
-     the server (`room_note` in the profile). **Drag either one anywhere**; it remembers its spot
+     the server (`room_note` in the profile). While you write, a small tray under it picks its paper (butter, peach,
+     blush, lilac, sky or mint) and its washi tape (pink stripes, mint dots, lilac gingham, blue grid, kraft paper or
+     confetti), and the round handle at its top-right corner resizes it (drag it, or use the arrow keys). Its look
+     stays in this browser (`lilt.room.note`); **Back to the original note** puts back the yellow note with pink tape. **Drag either one anywhere**; it remembers its spot
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back and stays available after resetting (a reset-arrow icon on phones).

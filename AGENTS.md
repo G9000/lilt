@@ -97,7 +97,7 @@ Every suite passed on fresh data folders on 6 November 2026 (Windows). They come
   as a due review with `"reps": 3` (it's the eyes-off card).
 - **Their own Vite server with a stubbed API** (no `LILT_URL`): `markdown`, `feedback`,
   `monitor-media`, `music`, `room-appearance`, `room-layout`, `settings-comparison`,
-  `stationery-deck`, `yarn-ui`. `room-layout` can fail once while Vite optimises a dependency; run it again.
+  `stationery-deck`, `sticky-note`, `yarn-ui`. `room-layout` can fail once while Vite optimises a dependency; run it again.
 - **Its own server**: `course-review` starts `server/target/debug/lilt` on :17979 with a temporary data
   folder (set `LILT_WEB_DIR` to test a web build other than `web/dist`).
 - **`node --test`**: `recording-lock` runs against `bun run dev` on :5173 (or `LILT_URL`) and stubs

@@ -8,6 +8,7 @@ import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
 import { Illustration } from "../components/Illustrations";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
+import { DEFAULT_NOTE, isDefaultNote, NOTE_KEY, NOTE_PAPERS, NOTE_TAPES, NoteStyle, NotePaper, NoteTape, readNoteStyle, resized } from "../room/note-style";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
@@ -66,7 +67,7 @@ function Widget({ id, delay, label, still, children }: { id: string; delay: numb
     setSpot(id, { x: Math.round(spot.x + dx), y: Math.round(spot.y + dy) });
   };
   return (
-    <div className={`fl${store[id] ? " moved" : ""}${dragging ? " dragging" : ""}`} ref={el} style={{ left: spot.x, top: spot.y, ["--d" as string]: `${delay}s` }}>
+    <div className={`fl${store[id] ? " moved" : ""}${dragging ? " dragging" : ""}${still ? " still" : ""}`} ref={el} style={{ left: spot.x, top: spot.y, ["--d" as string]: `${delay}s` }}>
       <motion.div className="fl-drag" aria-label={label} role="group" style={{ x, y }}
         drag={!still} dragListener={false} dragControls={controls}
         onPointerDown={(e) => { if (!still && !(e.target as HTMLElement).closest("input, textarea")) controls.start(e); }}
@@ -80,12 +81,23 @@ function Widget({ id, delay, label, still, children }: { id: string; delay: numb
 
 const MAX_NOTE = 280;
 
-/** The sticky note: click to write on it, click away to keep it. It starts as your goal. */
+const loadNoteStyle = (): NoteStyle => { try { return readNoteStyle(localStorage.getItem(NOTE_KEY)); } catch { return DEFAULT_NOTE; } };
+const saveNoteStyle = (s: NoteStyle) => {
+  try { if (isDefaultNote(s)) localStorage.removeItem(NOTE_KEY); else localStorage.setItem(NOTE_KEY, JSON.stringify(s)); } catch { /* private mode: forget on reload */ }
+};
+
+/**
+ * The sticky note: click to write on it, click away to keep it. It starts as your goal. While you
+ * write, a small tray under it picks its paper and washi tape, and its corner resizes it.
+ */
 function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) => void; onEditing: (on: boolean) => void }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(text);
+  const [look, setLook] = useState(loadNoteStyle);
   const down = useRef<{ x: number; y: number } | null>(null);
   const area = useRef<HTMLTextAreaElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const sticky = useRef<HTMLDivElement>(null);
   useEffect(() => { if (!editing) setDraft(text); }, [text, editing]);
   useEffect(() => { onEditing(editing); if (editing) { const a = area.current; a?.focus(); a?.setSelectionRange(a.value.length, a.value.length); } }, [editing]); // eslint-disable-line react-hooks/exhaustive-deps
   const done = (keep: boolean) => {
@@ -93,29 +105,94 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
     const t = draft.trim();
     if (keep && t !== text) onSave(t); else setDraft(text);
   };
+  const choose = (s: NoteStyle) => { setLook(s); saveNoteStyle(s); };
+
+  // The note hangs from its spot by its bottom edge, centred, so the top-right corner follows the
+  // pointer when the width grows by twice the sideways move and the height by the upward one.
+  const startResize = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (e.button !== 0) return;
+    e.preventDefault(); e.stopPropagation();
+    const el = sticky.current, box = root.current;
+    if (!el || !box) return;
+    const scale = box.getBoundingClientRect().width / box.offsetWidth || 1;
+    const from = { x: e.clientX, y: e.clientY, w: el.offsetWidth, h: el.offsetHeight }, start = look;
+    let last = look;
+    const handle = e.currentTarget;
+    handle.setPointerCapture(e.pointerId);
+    const move = (ev: PointerEvent) => {
+      last = resized(start, from.w + (2 * (ev.clientX - from.x)) / scale, from.h - (ev.clientY - from.y) / scale);
+      setLook(last);
+    };
+    const up = () => {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
+      handle.removeEventListener("pointercancel", up);
+      saveNoteStyle(last);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+    handle.addEventListener("pointercancel", up);
+  };
+  const nudgeSize = (e: React.KeyboardEvent) => {
+    const step = { ArrowRight: [10, 0], ArrowLeft: [-10, 0], ArrowUp: [0, 10], ArrowDown: [0, -10] }[e.key];
+    if (!step) return;
+    e.preventDefault();
+    const el = sticky.current;
+    choose(resized(look, look.width + step[0], (look.height ?? el?.offsetHeight ?? 120) + step[1]));
+  };
+
+  const paper = NOTE_PAPERS[look.paper];
   return (
-    <div className={`fl-sticky${editing ? " editing" : ""}`}
-      role={editing ? undefined : "button"} tabIndex={editing ? -1 : 0}
-      aria-label={editing ? undefined : `Note: ${text || "empty"}. Press Enter to write on it.`}
-      onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }}
-      onClick={(e) => {
-        const d = down.current; down.current = null;
-        if (!editing && d && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) setEditing(true);
-      }}
-      onKeyDown={(e) => { if (!editing && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setEditing(true); } }}>
-      <i className="fl-washi" aria-hidden="true" />
-      {editing ? (
-        <>
-          <textarea ref={area} value={draft} maxLength={MAX_NOTE} aria-label="Note" rows={4}
-            onChange={(e) => setDraft(e.target.value)} onBlur={() => done(true)}
-            onPointerDown={(e) => e.stopPropagation()}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); done(false); }
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); done(true); }
-            }} />
-          <small className="fl-note-hint">{draft.length > MAX_NOTE - 40 ? `${MAX_NOTE - draft.length} left` : "Click away to keep it"}</small>
-        </>
-      ) : text ? <p className="fl-note-text">{text}</p> : <p className="fl-note-text empty">Write yourself a note</p>}
+    <div className={`fl-note${editing ? " editing" : ""}`} ref={root}
+      onBlur={(e) => { if (editing && !root.current?.contains(e.relatedTarget as Node | null)) done(true); }}
+      onKeyDown={(e) => { if (editing && e.key === "Escape") { e.preventDefault(); e.stopPropagation(); done(false); } }}>
+      <div ref={sticky} className={`fl-sticky${editing ? " editing" : ""}`}
+        style={{ width: look.width, minHeight: look.height ?? undefined, ["--note-top" as string]: paper.top, ["--note-bottom" as string]: paper.bottom, ["--note-ink" as string]: paper.ink, ["--note-faint" as string]: paper.faint }}
+        role={editing ? undefined : "button"} tabIndex={editing ? -1 : 0}
+        aria-label={editing ? undefined : `Note: ${text || "empty"}. Press Enter to write on it.`}
+        onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }}
+        onClick={(e) => {
+          const d = down.current; down.current = null;
+          if (!editing && d && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) setEditing(true);
+        }}
+        onKeyDown={(e) => { if (!editing && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setEditing(true); } }}>
+        <i className={`fl-washi tape-${look.tape}`} aria-hidden="true" />
+        {editing ? (
+          <>
+            <textarea ref={area} value={draft} maxLength={MAX_NOTE} aria-label="Note" rows={4}
+              onChange={(e) => setDraft(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); done(true); } }} />
+            <small className="fl-note-hint">{draft.length > MAX_NOTE - 40 ? `${MAX_NOTE - draft.length} left` : "Click away to keep it"}</small>
+            <button type="button" className="fl-note-size" onPointerDown={startResize} onMouseDown={(e) => e.preventDefault()} onKeyDown={nudgeSize}
+              aria-label="Resize the note. Left and right arrows change its width, up and down its height" title="Drag to resize">
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2h6v6M10 2 2 10M2 4v6h6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+          </>
+        ) : text ? <p className="fl-note-text">{text}</p> : <p className="fl-note-text empty">Write yourself a note</p>}
+      </div>
+      {editing && (
+        // Choosing keeps the cursor in the note (no focus change on click), so you can go on writing.
+        <div className="fl-note-tools" role="group" aria-label="How the note looks"
+          onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }} onMouseDown={(e) => e.preventDefault()}>
+          <div className="fl-note-row" role="group" aria-label="Paper">
+            <span aria-hidden="true">Paper</span>
+            {(Object.keys(NOTE_PAPERS) as NotePaper[]).map((id) => (
+              <button key={id} type="button" className="fl-swatch" aria-pressed={look.paper === id} aria-label={NOTE_PAPERS[id].label} title={NOTE_PAPERS[id].label}
+                style={{ ["--sw-top" as string]: NOTE_PAPERS[id].top, ["--sw-bottom" as string]: NOTE_PAPERS[id].bottom }}
+                onClick={() => choose({ ...look, paper: id })} />
+            ))}
+          </div>
+          <div className="fl-note-row" role="group" aria-label="Washi tape">
+            <span aria-hidden="true">Tape</span>
+            {(Object.keys(NOTE_TAPES) as NoteTape[]).map((id) => (
+              <button key={id} type="button" className="fl-tape-pick" aria-pressed={look.tape === id} aria-label={NOTE_TAPES[id]} title={NOTE_TAPES[id]}
+                onClick={() => choose({ ...look, tape: id })}><i className={`tape-${id}`} /></button>
+            ))}
+          </div>
+          {!isDefaultNote(look) && <button type="button" className="fl-note-reset" onClick={() => choose(DEFAULT_NOTE)}>Back to the original note</button>}
+        </div>
+      )}
     </div>
   );
 }
@@ -246,7 +323,8 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
       const stack = document.querySelector(".cs")?.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
       box.current?.querySelectorAll<HTMLElement>(".fl").forEach((el) => {
-        if (el.classList.contains("dragging")) return;
+        // Being dragged or written on (the note): leave it where it is until you're done.
+        if (el.classList.contains("dragging") || el.classList.contains("still")) return;
         el.classList.remove("off");
         // the card slides inward (and below the menu bar) to stay fully on screen; measure where it
         // would be without the current slide, so nothing resets or flickers between checks
