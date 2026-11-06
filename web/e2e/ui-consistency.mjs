@@ -84,6 +84,15 @@ try {
     await page.evaluate(() => document.documentElement.dataset.text = 'normal');
     await page.keyboard.press('Escape');
     await page.locator('.ss[aria-hidden="true"]').waitFor({ state: 'attached' });
+    await page.goto(`${url}#/studio/free`);
+    await page.locator('.ve-note').waitFor();
+    await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+    assert.ok(await page.locator('.ve-col').first().evaluate(el => {
+      const rect = el.getBoundingClientRect(), parent = el.parentElement.getBoundingClientRect();
+      return Math.abs((rect.left + rect.right) / 2 - (parent.left + parent.right) / 2) <= 1;
+    }), 'practice reading column stays centered');
+    assert.equal(await page.locator('.ve-note').first().evaluate(el => getComputedStyle(el).paddingTop), '0px', 'pitch-note control keeps its compact padding');
+    await capture(`free-practice-${width}-${theme}`);
     await page.goto(`${url}#/desk`);
     await page.locator('.ds-today').waitFor();
     await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
@@ -99,5 +108,5 @@ try {
     await capture(`guided-${width}-${theme}`);
   }
   assert.deepEqual(errors, []);
-  console.log('PASS: Course Home, Today, Settings, desktop Today and guided practice in both themes and phone/desktop sizes.');
+  console.log('PASS: Course Home, Today, Settings, free practice, desktop Today and guided practice in both themes and phone/desktop sizes.');
 } finally { await browser?.close(); await server?.close(); }

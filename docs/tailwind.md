@@ -20,10 +20,13 @@ component. Compose complete class strings with `cx`; do not build a utility name
 For example, choose between complete `text-ink` and `text-accent-ink` strings.
 
 The migration retains marker classes used by interactions, tests and state selectors. Recipes
-are explicitly attached to their elements; there is no runtime class-name registry. A guarded
-recipe such as `shared['btn-primary']` needs the `btn-primary` marker alongside it. Selectors
-inside arbitrary variants preserve existing descendant and state behavior. Avoid adding new
-marker-based styling when a direct utility or a small shared component expresses it clearly.
+are explicitly attached to their elements; there is no runtime class-name registry. Prefer bare
+utilities in recipes: a redundant `:where(.component)` guard produces a separate CSS rule for
+every component instead of sharing utilities. Keep genuine ancestor, descendant and state
+conditions. The reading column retains a small guarded recipe to preserve its verified cascade.
+Compose named recipes as static class text, rather than assembling arrays of utility strings
+at runtime. Avoid adding new marker-based styling when a direct utility or a small shared
+component expresses it clearly.
 
 ## Theme and interaction rules
 
@@ -58,6 +61,9 @@ regenerates it. Keep the generated updater CSS in sync with its HTML and theme i
 Run `bun run typecheck`, `bun run test`, and the relevant isolated browser suites after changes.
 `bun run --cwd web test:styles` checks that every reusable recipe generates CSS, catching
 source-scanning mistakes that TypeScript cannot detect.
+`bun run --cwd web test:bundle` builds in a disposable directory and checks the total CSS/JS
+sizes, including gzip. The budgets leave room for ordinary changes while detecting a return
+to duplicated component-specific utilities. Review measured size changes before raising them.
 Use a scratch output directory while testing web builds. Inspect narrow and wide screens in
 light/dark themes, and exercise states rather than relying only on static screenshots.
 
