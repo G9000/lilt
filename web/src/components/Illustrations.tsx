@@ -103,13 +103,16 @@ const DRAW: Record<Art, () => JSX.Element> = {
       <path d="M22 70 C40 70 46 52 62 50 S84 62 96 50" fill="none" stroke={PAPER} strokeWidth="2.6" strokeLinecap="round" opacity=".9" />
       <ellipse cx="150" cy="40" rx="9" ry="19" fill="none" stroke="#ffd36e" strokeWidth="4.5" />
       <path d="M150 21 L150 4" stroke={PAPER} strokeWidth="1.4" opacity=".7" />
-      <circle cx="110" cy="44" r="19" fill="#e0643c" />
-      <path d="M95 36c8-6 22-7 31 2M93 46c10-8 26-8 34 2M97 56c8-6 20-6 27 0" fill="none" stroke="#ffb08f" strokeWidth="2" strokeLinecap="round" />
-      <path d="M104 27c-6 8-7 22 0 33" fill="none" stroke="#b8461f" strokeWidth="1.8" strokeLinecap="round" opacity=".55" />
-      <path d="M58 96 L62 76 L71 84 Q80 80 89 84 L98 76 L102 96Z" fill="#2c2a33" />
-      <path d="M64 80 L67 87 L62 88Z M96 80 L93 87 L98 88Z" fill="#f3b2c2" />
-      <circle cx="73" cy="90" r="2.3" fill={PAPER} /><circle cx="87" cy="90" r="2.3" fill={PAPER} />
-      <circle cx="73.6" cy="89.4" r="1" fill="#2c2a33" /><circle cx="87.6" cy="89.4" r="1" fill="#2c2a33" />
+      <circle cx="110" cy="44" r="20" fill="#e99b75" />
+      <path d="M94 33q15 1 32 15M98 29q15 2 30 13M105 25q13 4 24 12M91 42q18-1 34 13M91 47q17-2 30 13M94 54q12-3 22 9" fill="none" stroke="#b97052" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M94 33q15 1 32 15M98 29q15 2 30 13M105 25q13 4 24 12M91 42q18-1 34 13M91 47q17-2 30 13M94 54q12-3 22 9" fill="none" stroke="#ffd2a7" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M57 96q-3-10 2-19l-1-14q1-4 14 9q9-4 18 0q15-14 15-9l-1 17q4 12-2 16Z" fill="#536361" />
+      <path d="M62 69l2 10 6-5M100 69l-2 10-6-5" fill="#e1a598" />
+      <path d="M81 74q-1 10-10 13q-7 9 10 9q18 0 11-9q-9-4-11-13" fill="#fff0d9" />
+      <ellipse cx="70" cy="83" rx="4.3" ry="5.5" fill="#f6e5b5" /><ellipse cx="92" cy="83" rx="4.3" ry="5.5" fill="#f6e5b5" />
+      <ellipse cx="71" cy="83" rx="2.2" ry="3.6" fill="#283f3b" /><ellipse cx="93" cy="83" rx="2.2" ry="3.6" fill="#283f3b" />
+      <circle cx="72" cy="81" r="1.2" fill="#fff" /><circle cx="94" cy="81" r="1.2" fill="#fff" />
+      <path d="M78 89q3-2 6 0l-3 3Z" fill="#c57d72" />
       <Sparkle x={170} y={66} r={4} o={0.75} /><Sparkle x={130} y={12} r={3.5} o={0.7} /><Sparkle x={34} y={40} />
     </>
   ),

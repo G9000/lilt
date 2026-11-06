@@ -3,12 +3,30 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { hzToMidi, midiToHz } from "./pitch.ts";
 import {
-  breakDue, cueDue, describePlay, duration, follower, loopMaker, MARGIN, MIN_SPAN_ST, noisyRoom, passLoops, pitchToU, pitchToY,
+  breakDue, catReaction, cueDue, describePlay, duration, follower, loopMaker, MARGIN, MIN_SPAN_ST, noisyRoom, passLoops, pitchToU, pitchToY,
   playRange, rangeFromHums, REST_Y, saidIt, sentencesFrom, SENTENCES, threads, uToHz, uToY, type Loop,
 } from "./yarn.ts";
 
 const RANGE: [number, number] = [150, 300]; // an octave
 const close = (a: number, b: number, eps = 1e-6) => assert.ok(Math.abs(a - b) <= eps, `${a} ≈ ${b}`);
+
+test("the cat perks up once after threading, then settles", () => {
+  assert.equal(catReaction(10, -Infinity, .5, false).hop, 0);
+  assert.equal(catReaction(10, 11, .5, false).hop, 0);
+  assert.ok(catReaction(10.3, 10, .5, false).hop > .5);
+  assert.equal(catReaction(12, 10, .5, false).hop, 0);
+  assert.equal(catReaction(0, -Infinity, .5, false).hop, 0, "a fresh game has no leftover reaction");
+});
+
+test("the cat reaches for nearby yarn without asking for higher notes", () => {
+  assert.ok(catReaction(2, -Infinity, .94, false).reach > .8);
+  assert.equal(catReaction(2, -Infinity, .4, false).reach, 0);
+});
+
+test("reduced motion keeps cat decorations still across time and events", () => {
+  assert.deepEqual(catReaction(10.3, 10, .95, true), { hop: 0, reach: 0, blink: false });
+  assert.deepEqual(catReaction(45, 44.9, .95, true), catReaction(0, -Infinity, .4, true));
+});
 
 test("the ends of your range sit inside the field, with room above and below", () => {
   close(pitchToY(150, RANGE), 1 - MARGIN);

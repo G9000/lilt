@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "A more playful Ball of yarn", body: "A rounder cartoon cat watches, reaches and perks up as you play with softly wound wool. Choose Free play for just you, the yarn and the cat, without loops.", to: "/yarn" },
       { title: "The cat practises with you", body: "The room's cat curls up on the edge of your card, listens while you record and sends up a heart when you stop. Finished cards make a little pile, and the day ends with a paper slip of what you said.", to: "/deck" },
       { title: "Eight new moods on the radio", body: "Strummed strings, a music box, a kalimba, slow pads and a walking jazz bass, with the sea, a fire, crickets or birdsong around them. Find them under Strings, tines and pads in Music.", to: "/music" },
       { title: "Soft sounds, if you like", body: "Turn on soft sounds in Settings → Appearance for a paper rustle as a card is put away, a pencil as you keep a note and a small chime when the deck is done. They're off until you choose them, and never play while the microphone is on." },

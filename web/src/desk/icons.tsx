@@ -161,14 +161,15 @@ export const PhotosIcon = () => (
 export const YarnIcon = () => (
   <svg viewBox="0 0 52 52" aria-hidden="true">
     <defs>
-      <linearGradient id="di-yarn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#6a5aa8" /><stop offset="1" stopColor="#2c2448" /></linearGradient>
-      <radialGradient id="di-yarn-b" cx=".38" cy=".32" r=".75"><stop offset="0" stopColor="#ff9a72" /><stop offset="1" stopColor="#d04f2a" /></radialGradient>
+      <linearGradient id="di-yarn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#9eafa0" /><stop offset="1" stopColor="#4b6860" /></linearGradient>
+      <radialGradient id="di-yarn-b" cx=".38" cy=".32" r=".75"><stop offset="0" stopColor="#ffc49f" /><stop offset="1" stopColor="#c87556" /></radialGradient>
     </defs>
     <rect width="52" height="52" rx="12" fill="url(#di-yarn)" />
     <circle cx="11" cy="12" r="1.3" fill="#ffd9a8" /><circle cx="20" cy="9" r="1" fill="#ffd9a8" opacity=".7" /><circle cx="44" cy="10" r="1.2" fill="#ffd9a8" opacity=".85" />
     <path d="M6 37c5 0 7-9 12-9s6 7 11 6" fill="none" stroke="#ffe3cf" strokeWidth="2" strokeLinecap="round" />
-    <circle cx="35" cy="28" r="10" fill="url(#di-yarn-b)" />
-    <path d="M27 24c4-3 11-4 16 1M26.5 29c5-4 13-4 17.5 1M28.5 34c4-3 10-3 13.5 0" fill="none" stroke="#ffc2a6" strokeWidth="1.4" strokeLinecap="round" />
+    <circle cx="33" cy="27" r="13" fill="url(#di-yarn-b)" />
+    <path d="M24 18q12 3 21 14M28 15q9 3 17 11M21 25q13-1 22 10M21 29q10-2 19 9M24 34q8-1 12 5" fill="none" stroke="#b97052" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M24 18q12 3 21 14M28 15q9 3 17 11M21 25q13-1 22 10M21 29q10-2 19 9M24 34q8-1 12 5" fill="none" stroke="#ffd6ae" strokeWidth="1" strokeLinecap="round" />
     <path d="M6 44h40" stroke="#fff" strokeOpacity=".22" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );

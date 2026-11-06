@@ -1,5 +1,28 @@
 # Lilt: validation report
 
+## 6 November 2026: Playful Ball of yarn
+
+Refreshed the canvas scene, wound wool, expressive cartoon cat, room illustration and dock
+icon. The cat walks when changing position, reaches for nearby yarn, reacts once to a threaded
+loop and curls up after play. Optional Free play is remembered locally and removes loops and
+their note cues. Decorative reaction time freezes during breathing breaks; reduced motion
+disables hops, reaches, blinks and loop expansion.
+
+The isolated Yarn browser suite passed with stubbed APIs and Chrome's fake microphone:
+threaded-event wiring, pause/resume without retriggering, voice following, free-play persistence,
+absence of loops/cues, replay reset, restoration of loop-sound preference, calibration, keyboard
+mode selection, breathing/comfort stops, and reachable controls from 390px through 4K.
+Compared canvas pixels to check live reduced-motion preference changes. Inspected the actual
+happy cat hop, light/dark play, setup, summary and phone screenshots. These are emulated viewports
+and synthetic audio, not physical-device or natural-voice acceptance.
+
+Web types, 129 unit tests and a scratch production build passed. Server formatting, strict
+Clippy and 71 tests passed; Python had 47 passed and one skipped; desktop formatting and
+release Clippy passed. Server tests initially hit a Windows temporary-folder access error;
+rerunning with TMP/TEMP inside the scratch target directory passed all 71. Existing web
+bundle-size warnings remain. Builds used separate target/output directories. The owner's
+running server, web/dist and practice data were not changed.
+
 ## 5 November 2026: Stationery daily deck
 
 Today shows one paper card with a small drawn illustration, a larger reading prompt, optional

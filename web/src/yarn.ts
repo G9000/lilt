@@ -5,6 +5,15 @@ import { cleanContour, type ContourPoint, hzToMidi, midiToHz, noteName, recentMe
 
 export type Mode = "hum" | "speak";
 
+/** Decorative poses use game time, so a breathing break freezes them along with the yarn. */
+export function catReaction(now: number, threadedAt: number, y: number, reduced: boolean) {
+  if (reduced) return { hop: 0, reach: 0, blink: false };
+  const age = now - threadedAt;
+  const hop = age > 0 && age < 1.1 ? Math.sin(age / 1.1 * Math.PI) ** 2 : 0;
+  const reach = Math.min(1, Math.max(0, (y - .78) / .16));
+  return { hop, reach, blink: now % 5.7 > 5.5 };
+}
+
 /** A comfortable range narrower than this (semitones) is widened around its middle, so the yarn isn't twitchy. */
 export const MIN_SPAN_ST = 5;
 /** Room above the top of your range and below the bottom, as a fraction of the field: both ends are reachable without straining. */

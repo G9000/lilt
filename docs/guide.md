@@ -288,6 +288,11 @@ Monitor uploads and playback have an isolated check with locally generated media
      below it on phones; scroll to reach its start button. The play area stays within a comfortable
      size on ultrawide and 4K displays. Light and dark themes have their own scenery, and reduced
      motion keeps decorative movement still while the yarn continues following your voice.
+     The cartoon cat watches the yarn, reaches when it is nearby, perks up when you thread a
+     loop, and curls up when you finish. It walks only when changing position. Choose **Free play**
+     at setup for just your voice, yarn and cat, without loops or their note cues; the choice is
+     remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
+     work in either style of play.
      <kbd>Esc</kbd> closes it.
 8. **Texts** has 131 texts across 16 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
