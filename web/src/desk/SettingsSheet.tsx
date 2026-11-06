@@ -1,3 +1,4 @@
+import { roomStyles } from "./roomStyles";
 import { useEffect, useState } from "react";
 import { SettingsPage } from "../pages/Settings";
 import { Icon } from "../components/bits";
@@ -31,8 +32,8 @@ export function SettingsSheet() {
     <>
       {/* A click outside only closes Settings: the scrim takes it, so it never also opens the
           computer, a card or the radio underneath. */}
-      <div className={`ss-scrim${open ? " on" : ""}`} aria-hidden="true" onClick={() => setOpen(false)} />
-      <section className={`ss${open ? " open" : ""}`} role="dialog" aria-label="Settings" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
+      <div className={[`ss-scrim${open ? " on" : ""}`, roomStyles["ss-scrim"]].join(" ")} aria-hidden="true" onClick={() => setOpen(false)} />
+      <section className={[`ss${open ? " open" : ""}`, roomStyles["ss"]].join(" ")} role="dialog" aria-label="Settings" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
         {open && <SettingsPage start={at} onClose={() => setOpen(false)} />}
       </section>
     </>
@@ -41,5 +42,5 @@ export function SettingsSheet() {
 
 /** The settings button in the menu bar. */
 export function SettingsButton() {
-  return <button className="ds-mb-btn ss-open" onClick={() => openSettings()} aria-label="Settings">{Icon.settings}</button>;
+  return <button className={["ds-mb-btn ss-open", roomStyles["ds-mb-btn"]].join(" ")} onClick={() => openSettings()} aria-label="Settings">{Icon.settings}</button>;
 }

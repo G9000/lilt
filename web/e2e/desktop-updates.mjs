@@ -317,7 +317,7 @@ test('the bundled page without a native bridge explains how to open it', async t
   const page = await browser.newPage();
   t.after(() => page.close());
   await page.goto(uiUrl);
-  await page.getByText('Open this window from the installed Mac app.', { exact: true }).waitFor();
+  await page.getByText(/^Open this window from the installed (?:Lilt|Mac) app\.$/).waitFor();
   assert.equal(await page.getByRole('button', { name: 'Check for updates', exact: true }).isDisabled(), true);
 });
 

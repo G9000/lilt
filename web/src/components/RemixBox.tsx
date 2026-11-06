@@ -1,3 +1,6 @@
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { FormEvent, useEffect, useState } from "react";
 import { api } from "../api";
 import { openSettings } from "../desk/SettingsSheet";
@@ -31,31 +34,31 @@ export function RemixBox({ course, chapter, chapterTitle, onDone }: { course?: s
   };
 
   if (!REMIX_AVAILABLE) return (
-    <div className="rx rx-off">
+    <div className={cx(pages.rx, pages.rxOff, "rx rx-off")}>
       <p>Remix is coming soon. Choose the AI app you want to use in settings.</p>
-      <button type="button" className="btn-primary" disabled>Remix · Coming soon</button>
-      <button type="button" className="btn-secondary ss-open" onClick={() => openSettings("ai")}>Configure your AI settings</button>
+      <button type="button" className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} disabled>Remix · Coming soon</button>
+      <button type="button" className={["btn-secondary ss-open", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => openSettings("ai")}>Configure your AI settings</button>
     </div>
   );
   if (connected === null) return null;
   if (!connected) return (
-    <div className="rx rx-off">
+    <div className={cx(pages.rx, pages.rxOff, "rx rx-off")}>
       <p>Choose the AI app you want to use in settings.</p>
-      <button type="button" className="btn-secondary ss-open" onClick={() => openSettings("ai")}>Configure your AI settings</button>
+      <button type="button" className={["btn-secondary ss-open", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => openSettings("ai")}>Configure your AI settings</button>
     </div>
   );
   return (
-    <form className="rx" onSubmit={(e) => void remix(e)}>
+    <form className={cx(pages.rx, "rx")} onSubmit={(e) => void remix(e)}>
       <label htmlFor={`rx-${chapter ?? "all"}`}>{chapterTitle ? `Remix ${chapterTitle}` : "What should change?"}</label>
       <textarea id={`rx-${chapter ?? "all"}`} rows={2} maxLength={1000} value={draft} disabled={busy} onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }}
         placeholder={chapterTitle ? "e.g. make these shorter, or add two texts about ordering coffee" : "e.g. make the warm-ups shorter and gentler"} />
-      <div className="rx-foot">
-        <span className="rx-note">{busy ? "Remixing with your AI… this can take up to a minute." : "Your AI rewrites it into your mixtape. The original stays as it is."}</span>
-        <button className="btn-primary" disabled={busy || !draft.trim()}>{busy ? "Remixing…" : "Remix"}</button>
+      <div className={cx(pages.rxFoot, "rx-foot")}>
+        <span className={cx(pages.rxNote, "rx-note")}>{busy ? "Remixing with your AI… this can take up to a minute." : "Your AI rewrites it into your mixtape. The original stays as it is."}</span>
+        <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} disabled={busy || !draft.trim()}>{busy ? "Remixing…" : "Remix"}</button>
       </div>
-      {done && <p className="rx-done" role="status">{done} <button type="button" className="rx-undo" onClick={() => void undo()} disabled={busy}>Undo</button></p>}
-      {err && <p className="rx-err" role="alert">{err}</p>}
+      {done && <p className={cx(pages.rxDone, "rx-done")} role="status">{done} <button type="button" className="rx-undo" onClick={() => void undo()} disabled={busy}>Undo</button></p>}
+      {err && <p className={cx(pages.rxErr, "rx-err")} role="alert">{err}</p>}
     </form>
   );
 }

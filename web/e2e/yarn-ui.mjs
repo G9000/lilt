@@ -1,6 +1,6 @@
 // Disposable API fixtures and Chrome's fake microphone; never touches the owner's practice.
 import { chromium } from 'playwright-core';
-import { createServer } from 'vite';
+import { createIsolatedVite as createServer } from './isolated-vite.mjs';
 import { fileURLToPath } from 'node:url';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -70,7 +70,7 @@ try {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.getByRole('button', { name: 'Start playing', exact: true }).click();
   await page.locator('.yn-stage.playing').waitFor();
-  await page.waitForFunction(() => Number(document.querySelector('.yn-scene').dataset.y) < .85);
+  await page.waitForFunction(() => Number(document.querySelector('.yn-scene').dataset.y) < .85, null, { timeout: 15000 });
   await page.waitForFunction(() => Number.isFinite(Number(document.querySelector('.yn-scene').dataset.threadedAt)), null, { timeout: 15000 });
   await page.waitForTimeout(250);
   if (shots) await page.screenshot({ path: path.join(shots, 'yarn-cat-reaction.png') });
@@ -125,7 +125,7 @@ try {
   await page.reload();
   assert.ok(await free.isChecked(), 'free play preference survives reopening');
   await page.getByRole('button', { name: 'Start playing', exact: true }).click();
-  await page.waitForFunction(() => Number(document.querySelector('.yn-scene').dataset.y) < .85);
+  await page.waitForFunction(() => Number(document.querySelector('.yn-scene').dataset.y) < .85, null, { timeout: 15000 });
   await page.waitForTimeout(4000);
   assert.equal(await page.locator('.yn-scene').getAttribute('data-loops'), '0', 'free play never deals loops');
   assert.equal(await page.locator('.yn-scene').getAttribute('data-cues'), '0', 'free play never cues loop notes');

@@ -1,5 +1,6 @@
-import "../styles/texts.css";
-import "../styles/settings.css";
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api, Profile, TextItem } from "../api";
 import { idLabel } from "../chapters";
@@ -25,7 +26,7 @@ function ThemeChoice() {
     return () => window.removeEventListener("lilt:theme-mode", on);
   }, []);
   return (
-    <div className="segmented" role="group" aria-label="Theme">
+    <div className={["segmented", shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Theme">
       {(["auto", "light", "dark"] as const).map((x) => (
         <button key={x} aria-pressed={m === x} onClick={() => window.dispatchEvent(new CustomEvent("lilt:theme", { detail: x }))}>{x === "auto" ? "Auto" : x === "light" ? "Light" : "Dark"}</button>
       ))}
@@ -37,7 +38,7 @@ function ThemeChoice() {
 function TextSizeChoice() {
   const [t, setT] = useState<TextSize>(readTextSize);
   return (
-    <div className="segmented" role="group" aria-label="Text size">
+    <div className={["segmented", shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Text size">
       {TEXT_SIZES.map((x) => (
         <button key={x.id} aria-pressed={t === x.id} onClick={() => { applyTextSize(x.id); setT(x.id); }}>{x.label}</button>
       ))}
@@ -50,7 +51,7 @@ function SoundsChoice() {
   const [on, setOn] = useState(soundsOn);
   const choose = (v: boolean) => { setSounds(v); setOn(v); if (v) playSound("chime", true); };
   return (
-    <div className="segmented" role="group" aria-label="Soft sounds">
+    <div className={["segmented", shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Soft sounds">
       <button aria-pressed={!on} onClick={() => choose(false)}>Off</button>
       <button aria-pressed={on} onClick={() => choose(true)}>On</button>
     </div>
@@ -81,7 +82,7 @@ const PANES: { id: PaneId; title: string; words: string; glyph: ReactNode }[] = 
 
 function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number }) {
   return (
-    <span className="sx-tile" style={{ width: size, height: size }} aria-hidden="true">
+    <span className={cx(pages.sxTile, "sx-tile")} style={{ width: size, height: size }} aria-hidden="true">
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{pane.glyph}</svg>
     </span>
   );
@@ -90,12 +91,12 @@ function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number
 /** A labelled row: the label (and a line of help) on the left, the control on the right. */
 export function Row({ label, help, htmlFor, children, stack }: { label: string; help?: ReactNode; htmlFor?: string; children?: ReactNode; stack?: boolean }) {
   return (
-    <div className={`sx-row${stack ? " stack" : ""}`}>
-      <div className="sx-row-l">
-        {htmlFor ? <label htmlFor={htmlFor}>{label}</label> : <span className="sx-label">{label}</span>}
-        {help && <p className="sx-help">{help}</p>}
+    <div className={[cx(pages.sxRow, `sx-row${stack ? " stack" : ""}`), shared["stack"]].filter(Boolean).join(' ')}>
+      <div className={cx(pages.sxRowL, "sx-row-l")}>
+        {htmlFor ? <label htmlFor={htmlFor}>{label}</label> : <span className={cx(pages.sxLabel, "sx-label")}>{label}</span>}
+        {help && <p className={cx(pages.sxHelp, "sx-help")}>{help}</p>}
       </div>
-      {children && <div className="sx-row-c">{children}</div>}
+      {children && <div className={cx(pages.sxRowC, "sx-row-c")}>{children}</div>}
     </div>
   );
 }
@@ -145,11 +146,11 @@ export const savedLabel = (s: ReturnType<typeof useProfileDraft>["saved"]) => (s
 function AppUpdates() {
   const status = useDesktopUpdate();
   return (
-    <div className="sx-group">
+    <div className={cx(pages.sxGroup, "sx-group")}>
       {isDesktop() ? <>
         <Row label="Installed version"><span>{status?.current ?? "Reading app version…"}</span></Row>
         <Row label="Update status" help={<span role="status">{updateStatus(status)}</span>} stack>
-          <button className="btn-secondary sx-btn" onClick={openAppUpdates}>Open app updates</button>
+          <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={openAppUpdates}>Open app updates</button>
         </Row>
       </> : <>
         <Row label="Web version"><span>{CURRENT.version}</span></Row>
@@ -180,10 +181,10 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
 
   const content = (id: PaneId): ReactNode => {
     if (id === "appearance") return (
-      <div className="sx-group">
+      <div className={cx(pages.sxGroup, "sx-group")}>
         <Row label="Theme" help="Auto follows your computer's light or dark setting. The sun or moon button in the menu bar picks one." stack><ThemeChoice /></Row>
         <Row label="Text size" help="For the practice texts, your recordings and these pages." stack><TextSizeChoice /></Row>
-        <div className="sx-row"><AccentPicker /></div>
+        <div className={cx(pages.sxRow, "sx-row")}><AccentPicker /></div>
         <Row label="Soft sounds" help="A paper rustle as a card is put away, a pencil as you keep a note, a small chime when the deck is done. Never while the microphone is on. Kept in this browser." stack><SoundsChoice /></Row>
       </div>
     );
@@ -194,27 +195,27 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
     if (id === "privacy") return (
       <>
         <Callout kind="ok"><p>Recording, saving, playback and local analysis run on this computer. Connecting ChatGPT sends nothing by itself; when Lilt's AI features arrive in Practice, they will say what goes to OpenAI before anything is sent.</p></Callout>
-        <p className="sx-note">If you connect an AI app (such as Claude or ChatGPT) to Lilt, whatever it reads (session details, measurements, notes, and audio clips if it asks for them) goes to that app's provider under its own terms.</p>
+        <p className={cx(pages.sxNote, "sx-note")}>If you connect an AI app (such as Claude or ChatGPT) to Lilt, whatever it reads (session details, measurements, notes, and audio clips if it asks for them) goes to that app's provider under its own terms.</p>
       </>
     );
     if (id === "notifications") return (
       <>
-        <div className="sx-group">
+        <div className={cx(pages.sxGroup, "sx-group")}>
           {notif !== "unsupported" ? (
             <Row label="Browser notifications" help={notif === "granted" ? "On while Lilt is open." : notif === "denied" ? "Blocked for this page. Reminders still appear inside Lilt." : "Off. Lilt can notify you while it's open."}>
-              {notif === "default" && <button className="btn-secondary sx-btn" onClick={() => void Notification.requestPermission().then(setNotif)}>Allow</button>}
+              {notif === "default" && <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void Notification.requestPermission().then(setNotif)}>Allow</button>}
             </Row>
           ) : <Row label="Browser notifications" help="This browser can't show notifications. Reminders still appear inside Lilt." />}
           <Row label="Practice reminder" help="When to be reminded is set in Practice.">
-            <button className="btn-secondary sx-btn" onClick={toPractice}>Practice settings</button>
+            <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={toPractice}>Practice settings</button>
           </Row>
         </div>
-        <p className="sx-note">Nothing is set up in any outside messaging account. If your computer was asleep, you'll see one reminder, not a backlog.</p>
+        <p className={cx(pages.sxNote, "sx-note")}>Nothing is set up in any outside messaging account. If your computer was asleep, you'll see one reminder, not a backlog.</p>
       </>
     );
-    if (!p) return <p className="sx-note">Loading…</p>;
+    if (!p) return <p className={cx(pages.sxNote, "sx-note")}>Loading…</p>;
     return (
-      <div className="sx-group">
+      <div className={cx(pages.sxGroup, "sx-group")}>
         <Row label="Time zone" htmlFor="tz" help="Sets when your practice day starts and when reminders come.">
           <select id="tz" value={p.timezone} onChange={(e) => edit({ ...p, timezone: e.target.value })}>{zones.map((z) => <option key={z}>{z}</option>)}</select>
         </Row>
@@ -223,14 +224,14 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
   };
 
   return (
-    <div className={`sx${pane ? " has-pane" : ""}`}>
-      <h1 className="sr-only">Settings</h1>
-      <nav className="sx-side" aria-label="Settings">
-        <div className="sx-lights">
+    <div className={cx(pages.sx, `sx${pane ? " has-pane" : ""}`)}>
+      <h1 className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Settings</h1>
+      <nav className={cx(pages.sxSide, "sx-side")} aria-label="Settings">
+        <div className={cx(pages.sxLights, "sx-lights")}>
           {onClose ? <button className="sx-l1" onClick={onClose} aria-label="Close settings" /> : <span className="sx-l1" aria-hidden="true" />}
           <span className="sx-l2" aria-hidden="true" /><span className="sx-l3" aria-hidden="true" />
         </div>
-        <label className="sx-search">
+        <label className={cx(pages.sxSearch, "sx-search")}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
           <input type="search" placeholder="Search" aria-label="Search settings" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
@@ -243,21 +244,21 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
             </li>
           ))}
           {/* Your goal, range, warm-up, session length and reminder live in Practice settings. */}
-          {shown.length === 0 && <li className="sx-none">No settings match here. <button className="btn-secondary sx-btn" onClick={toPractice}>Look in Practice settings</button></li>}
+          {shown.length === 0 && <li className={cx(pages.sxNone, "sx-none")}>No settings match here. <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={toPractice}>Look in Practice settings</button></li>}
         </ul>
       </nav>
-      <section className="sx-main" aria-label={cur?.title}>
+      <section className={cx(pages.sxMain, "sx-main")} aria-label={cur?.title}>
         {cur && (
           <>
-            <header className="sx-head">
-              <button className="sx-back" onClick={() => setPane(null)} aria-label="All settings">
+            <header className={cx(pages.sxHead, "sx-head")}>
+              <button className={cx(pages.sxBack, "sx-back")} onClick={() => setPane(null)} aria-label="All settings">
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
               <h2>Settings</h2>
-              <span className={`sx-saved ${saved}`} aria-live="polite">{savedLabel(saved)}</span>
+              <span className={cx(pages.sxSaved, `sx-saved ${saved}`)} aria-live="polite">{savedLabel(saved)}</span>
             </header>
-            <div className="sx-body" key={cur.id}>
-              <header className="sx-hero"><h1>{cur.title}</h1><p>{HERO[cur.id]}</p></header>
+            <div className={cx(pages.sxBody, "sx-body")} key={cur.id}>
+              <header className={cx(pages.sxHero, "sx-hero")}><h1>{cur.title}</h1><p>{HERO[cur.id]}</p></header>
               {content(cur.id)}
               {err && <Callout kind="warn"><p>{err}</p></Callout>}
             </div>
@@ -289,16 +290,16 @@ export function PracticeSettings() {
   // The warm-ups you can pin to the start of each day (the cool-down always closes it).
   const [warmups, setWarmups] = useState<TextItem[]>([]);
   useEffect(() => { void api.texts().then((t) => setWarmups(t.levels.find((l) => l.id === "warmup")?.items.filter((i) => i.id !== "cool-down") ?? []), () => {}); }, []);
-  if (!p) return <p className="sx-note">Loading…</p>;
+  if (!p) return <p className={cx(pages.sxNote, "sx-note")}>Loading…</p>;
   return (
-    <div className="sx sx-app">
-      <header className="sx-app-head">
+    <div className={cx(pages.sx, pages.sxApp, "sx sx-app")}>
+      <header className={cx(pages.sxAppHead, "sx-app-head")}>
         <h1>Practice settings</h1>
-        <span className={`sx-saved ${saved}`} aria-live="polite">{savedLabel(saved)}</span>
+        <span className={cx(pages.sxSaved, `sx-saved ${saved}`)} aria-live="polite">{savedLabel(saved)}</span>
       </header>
       <section aria-labelledby="ps-goal">
         <h2 id="ps-goal">Your goal</h2>
-        <div className="sx-group">
+        <div className={cx(pages.sxGroup, "sx-group")}>
           <Row label="In your words" htmlFor="goal" help="It starts the note on the wall too." stack>
             <textarea id="goal" value={p.goal.summary} onChange={(e) => edit({ ...p, goal: { ...p.goal, summary: e.target.value } })} />
           </Row>
@@ -309,9 +310,9 @@ export function PracticeSettings() {
       </section>
       <section aria-labelledby="ps-routine">
         <h2 id="ps-routine">Routine</h2>
-        <div className="sx-group">
+        <div className={cx(pages.sxGroup, "sx-group")}>
           <Row label="Session length" htmlFor="mins" help="A planning guide, not a timer.">
-            <span className="sx-unit"><input id="mins" type="number" min={2} max={30} value={p.session_minutes} onChange={(e) => edit({ ...p, session_minutes: Number(e.target.value) })} /><span>min</span></span>
+            <span className={cx(pages.sxUnit, "sx-unit")}><input id="mins" type="number" min={2} max={30} value={p.session_minutes} onChange={(e) => edit({ ...p, session_minutes: Number(e.target.value) })} /><span>min</span></span>
           </Row>
           {warmups.length > 0 && (
             <Row label="Daily warm-up" htmlFor="warm" help="Opens Today's cards every day, with the cool-down at the end. It isn't spaced like the others.">
@@ -325,34 +326,34 @@ export function PracticeSettings() {
             <input id="rem" type="time" value={p.reminder_time ?? ""} onChange={(e) => edit({ ...p, reminder_time: e.target.value || null })} />
           </Row>
           <Row label="Comparison window" htmlFor="win" help="How many days of recordings to compare against.">
-            <span className="sx-unit"><input id="win" type="number" min={3} max={90} value={p.comparison_window_days} onChange={(e) => edit({ ...p, comparison_window_days: Number(e.target.value) })} /><span>days</span></span>
+            <span className={cx(pages.sxUnit, "sx-unit")}><input id="win" type="number" min={3} max={90} value={p.comparison_window_days} onChange={(e) => edit({ ...p, comparison_window_days: Number(e.target.value) })} /><span>days</span></span>
           </Row>
         </div>
       </section>
       <section aria-labelledby="ps-range">
         <h2 id="ps-range">Comfortable range</h2>
-        <div className="sx-group">
+        <div className={cx(pages.sxGroup, "sx-group")}>
           <Row label="Low" htmlFor="rlo">
-            <span className="sx-unit"><input id="rlo" type="number" min={60} max={700} placeholder="–" value={p.comfort_range_hz?.[0] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [Number(e.target.value), p.comfort_range_hz?.[1] ?? Number(e.target.value) + 40] : null })} /><span>Hz</span></span>
+            <span className={cx(pages.sxUnit, "sx-unit")}><input id="rlo" type="number" min={60} max={700} placeholder="–" value={p.comfort_range_hz?.[0] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [Number(e.target.value), p.comfort_range_hz?.[1] ?? Number(e.target.value) + 40] : null })} /><span>Hz</span></span>
           </Row>
           <Row label="High" htmlFor="rhi">
-            <span className="sx-unit"><input id="rhi" type="number" min={60} max={700} placeholder="–" value={p.comfort_range_hz?.[1] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [p.comfort_range_hz?.[0] ?? Number(e.target.value) - 40, Number(e.target.value)] : null })} /><span>Hz</span></span>
+            <span className={cx(pages.sxUnit, "sx-unit")}><input id="rhi" type="number" min={60} max={700} placeholder="–" value={p.comfort_range_hz?.[1] ?? ""} onChange={(e) => edit({ ...p, comfort_range_hz: e.target.value ? [p.comfort_range_hz?.[0] ?? Number(e.target.value) - 40, Number(e.target.value)] : null })} /><span>Hz</span></span>
           </Row>
           {p.comfort_range_hz && (
             <Row label={`${p.comfort_range_hz[0]}–${p.comfort_range_hz[1]} Hz`}>
-              <button className="btn-secondary sx-btn" onClick={() => edit({ ...p, comfort_range_hz: null })}>Clear range</button>
+              <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => edit({ ...p, comfort_range_hz: null })}>Clear range</button>
             </Row>
           )}
         </div>
-        <div className="sx-group">
+        <div className={cx(pages.sxGroup, "sx-group")}>
           <Row label="Pitch scale after each take" htmlFor="pscale" help="Off unless you turn it on. Where a take sits between the average man's and woman's speaking pitch: population averages, not targets. Your own range is what matters.">
             <input id="pscale" type="checkbox" checked={p.show_pitch_scale === true} onChange={(e) => { edit({ ...p, show_pitch_scale: e.target.checked }); window.dispatchEvent(new CustomEvent("lilt:pitch-scale", { detail: e.target.checked })); }} />
           </Row>
         </div>
-        <p className="sx-note">Optional. A pitch range that feels comfortable and sounds like you, shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like.</p>
+        <p className={cx(pages.sxNote, "sx-note")}>Optional. A pitch range that feels comfortable and sounds like you, shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like.</p>
       </section>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      <p className="sx-note">Theme, text size, AI connections and notifications are in Lilt's Settings (the gear in the room or the menu bar).</p>
+      <p className={cx(pages.sxNote, "sx-note")}>Theme, text size, AI connections and notifications are in Lilt's Settings (the gear in the room or the menu bar).</p>
     </div>
   );
 }

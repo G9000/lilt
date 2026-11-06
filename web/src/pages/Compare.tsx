@@ -1,4 +1,6 @@
-import "../styles/data.css";
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { useEffect, useState } from "react";
 import { api, Comparison, Take } from "../api";
 import { AudioPlayer } from "../components/AudioPlayer";
@@ -32,24 +34,24 @@ function ComparisonForPair({ a, b }: { a: string; b: string }) {
     return () => { live = false; };
   }, [a, b]);
 
-  if (!a || !b) return <div className="dv"><p className="dv-empty">Pick two takes to compare from <a href="#/progress">Progress</a> or <a href="#/history">Recordings</a>.</p></div>;
-  if (err) return <div className="dv"><Callout kind="warn" icon="!"><p>{err}</p></Callout></div>;
-  if (!ta || !tb || !cmp) return <p className="dv-loading">Loading comparison…</p>;
+  if (!a || !b) return <div className={cx(pages.dv, "dv")}><p className="dv-empty">Pick two takes to compare from <a href="#/progress">Progress</a> or <a href="#/history">Recordings</a>.</p></div>;
+  if (err) return <div className={cx(pages.dv, "dv")}><Callout kind="warn" icon="!"><p>{err}</p></Callout></div>;
+  if (!ta || !tb || !cmp) return <p className={cx(pages.dvLoading, "dv-loading")}>Loading comparison…</p>;
 
   const label = (t: Take, fallback: string) => t.role === "retry" ? "Retry" : t.retry_of ? "Retry" : t.phase === "post" ? "After practice" : t.phase === "pre" ? "Before practice" : fallback;
   const samePrompt = ta.prompt_text === tb.prompt_text;
   const num = (name: string, v: number | null) => v?.toFixed(name.includes("coverage") ? 2 : 1) ?? "unavailable";
 
   return (
-    <div className="dv cmp">
-      <header className="dv-head">
+    <div className={cx(pages.dv, "dv cmp")}>
+      <header className={cx(pages.dvHead, "dv-head")}>
         <h1>Two takes, side by side</h1>
         {samePrompt && <p className="dv-lede">{ta.prompt_text}</p>}
         <p className="dv-cap">Press <kbd>A</kbd> or <kbd>B</kbd> to play either take.</p>
       </header>
-      <div className="ab">
+      <div className={["ab", shared["ab"]].filter(Boolean).join(' ')}>
         {[ta, tb].map((t, i) => (
-          <div key={t.id} className="cmp-side">
+          <div key={t.id} className={cx(pages.cmpSide, "cmp-side")}>
             <AudioPlayer src={t.audio_url} tag={"AB"[i]} label={`${label(t, i ? "Second" : "First")}, ${new Date(t.created_utc).toLocaleDateString(undefined, { day: "numeric", month: "short" })}`} segment={i ? cmp.segment_b : cmp.segment_a} segmentLabel="voiced span" />
             {!samePrompt && <p className="dv-cap">{t.prompt_text}</p>}
             {t.note && <p className="rc-note">Note: {t.note}</p>}
@@ -61,21 +63,21 @@ function ComparisonForPair({ a, b }: { a: string; b: string }) {
           </div>
         ))}
       </div>
-      <section className="dv-sec cmp-result" aria-labelledby="outcome-h">
+      <section className={cx(pages.dvSec, "dv-sec cmp-result")} aria-labelledby="outcome-h">
         <h2 id="outcome-h">{OUTCOME[cmp.outcome]}</h2>
-        {cmp.reasons.map((r, i) => <p key={i} className="cmp-reason">{r}</p>)}
+        {cmp.reasons.map((r, i) => <p key={i} className={cx(pages.cmpReason, "cmp-reason")}>{r}</p>)}
         {cmp.limitations.length > 0 && <ul className="cmp-limits">{cmp.limitations.map((l, i) => <li key={i}>{l}</li>)}</ul>}
         <p className="dv-cap">{cmp.method_status} Your own listening and comfort matter more here than any number.</p>
         <details className="dv-quiet">
           <summary>Measurements</summary>
-          <div className="body">
-            <div className="table-wrap">
+          <div className={["body", shared["body"]].filter(Boolean).join(' ')}>
+            <div className={["table-wrap", shared["table-wrap"]].filter(Boolean).join(' ')}>
               <table className="cmp-table">
                 <thead><tr><th>Measure</th><th>A</th><th>B</th><th>Difference</th></tr></thead>
                 <tbody>
                   {cmp.measures.map((m) => (
                     <tr key={m.name}>
-                      <td><span className="cmp-m">{m.name.replace(/_/g, " ")}</span><span className="dv-cap">{m.definition}</span></td>
+                      <td><span className={cx(pages.cmpM, "cmp-m")}>{m.name.replace(/_/g, " ")}</span><span className="dv-cap">{m.definition}</span></td>
                       <td>{num(m.name, m.a)}</td>
                       <td>{num(m.name, m.b)}</td>
                       <td>{m.delta !== null ? `${m.delta > 0 ? "+" : ""}${m.delta.toFixed(2)} ${m.unit}` : "–"}</td>

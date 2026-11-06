@@ -1,0 +1,22 @@
+@property --tx-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+
+@property --tx-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+
+@keyframes tx-edges {
+  0% { --tx-l: 0px; --tx-r: 36px; }
+  6% { --tx-l: 36px; }
+  94% { --tx-r: 36px; }
+  100% { --tx-l: 36px; --tx-r: 0px; }
+}
+
+@keyframes rp-in { from { opacity: 0; translate: 24px 0; filter: blur(6px); } }
+
+@keyframes rp-msg { from { opacity: 0; translate: 0 6px; } }
+
+@keyframes rp-dot { 0%, 100% { opacity: 0.3; translate: 0 0; } 40% { opacity: 1; translate: 0 -3px; } }
+
+@keyframes rp-up { from { opacity: 0; translate: 0 24px; } }
+
+@keyframes ve-fresh { 0% { opacity: 0; scale: 0.98; } 12%, 45% { opacity: 1; scale: 1; } 100% { opacity: 0; } }
+
+@keyframes ph-in { from { opacity: 0; } }

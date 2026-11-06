@@ -1,6 +1,6 @@
 // Verify manual placement and the always-available reset against disposable API fixtures.
 import { chromium } from 'playwright-core';
-import { createServer } from 'vite';
+import { createIsolatedVite as createServer } from './isolated-vite.mjs';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';

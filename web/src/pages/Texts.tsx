@@ -1,4 +1,6 @@
-import "../styles/texts.css";
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { MouseEvent, useEffect, useState } from "react";
 import { api, Texts } from "../api";
 import { go } from "../App";
@@ -11,7 +13,7 @@ export function TextsPage() {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [open, setOpen] = useState<string>("all");
   useEffect(() => { void api.texts().then(setTexts); }, []);
-  if (!texts) return <p className="tx-loading">Loading texts…</p>;
+  if (!texts) return <p className={cx(pages.txLoading, "tx-loading")}>Loading texts…</p>;
 
   const levels = texts.levels.filter((l) => open === "all" || l.id === open);
   const total = texts.levels.reduce((n, l) => n + l.items.length, 0);
@@ -21,13 +23,13 @@ export function TextsPage() {
   };
 
   return (
-    <div className="tx">
-      <header className="tx-head">
+    <div className={cx(pages.tx, "tx")}>
+      <header className={cx(pages.txHead, "tx-head")}>
         <h1>Start small, build up</h1>
         <p>{texts.note}</p>
       </header>
 
-      <div className="segmented tx-levels" role="group" aria-label="Level filter">
+      <div className={[cx(pages.txLevels, "segmented tx-levels"), shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Level filter">
         <button aria-pressed={open === "all"} onClick={(e) => pick(e, "all")} aria-label={`All levels, ${total} texts`}>All</button>
         {texts.levels.map((l) => (
           <button key={l.id} aria-pressed={open === l.id} onClick={(e) => pick(e, l.id)} aria-label={`Level ${l.level}, ${l.title}, ${l.items.length} texts`}>{l.title}</button>
@@ -35,32 +37,32 @@ export function TextsPage() {
       </div>
 
       {levels.map((l) => (
-        <section key={l.id} aria-labelledby={`lv-${l.id}`} className="tx-level">
-          <div className="tx-level-head">
+        <section key={l.id} aria-labelledby={`lv-${l.id}`} className={cx(pages.txLevel, "tx-level")}>
+          <div className={cx(pages.txLevelHead, "tx-level-head")}>
             <h2 id={`lv-${l.id}`}>{l.title}</h2>
             <p>{l.subtitle}</p>
           </div>
-          <ul className="tx-list">
+          <ul className={cx(pages.txList, "tx-list")}>
             {l.items.map((i) => (
               <li key={i.id}>
-                <button className="tx-row" onClick={() => go(`/studio/${l.id}/${i.id}`)} aria-label={`Practise “${i.text.slice(0, 40)}”`}>
-                  <span className="tx-say">
-                    <span className={`tx-text${l.kind === "passage" ? " passage" : ""}`}>{i.text}</span>
-                    <span className="tx-hint">{i.hint}</span>
+                <button className={cx(pages.txRow, "tx-row")} onClick={() => go(`/studio/${l.id}/${i.id}`)} aria-label={`Practise “${i.text.slice(0, 40)}”`}>
+                  <span className={cx(pages.txSay, "tx-say")}>
+                    <span className={cx(pages.txText, `tx-text${l.kind === "passage" ? " passage" : ""}`)}>{i.text}</span>
+                    <span className={cx(pages.txHint, "tx-hint")}>{i.hint}</span>
                   </span>
-                  <span className="tx-go" aria-hidden="true">Practise</span>
+                  <span className={cx(pages.txGo, "tx-go")} aria-hidden="true">Practise</span>
                 </button>
               </li>
             ))}
           </ul>
-          <p className="tx-credit">
+          <p className={cx(pages.txCredit, "tx-credit")}>
             {l.written_by}
-            {l.source_url && <> <a href={l.source_url} target="_blank" rel="noreferrer">Source on {host(l.source_url)}<span className="sr-only"> (opens in a new tab)</span></a></>}
+            {l.source_url && <> <a href={l.source_url} target="_blank" rel="noreferrer">Source on {host(l.source_url)}<span className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}> (opens in a new tab)</span></a></>}
           </p>
         </section>
       ))}
 
-      <p className="tx-foot">Looking for the guided exercises? They're in <a href="#/library">Exercises</a>, and today's is always waiting on <a href="#/desk">the desk</a>.</p>
+      <p className={cx(pages.txFoot, "tx-foot")}>Looking for the guided exercises? They're in <a href="#/library">Exercises</a>, and today's is always waiting on <a href="#/desk">the desk</a>.</p>
     </div>
   );
 }

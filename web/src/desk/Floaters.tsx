@@ -1,3 +1,4 @@
+import { roomStyles } from "./roomStyles";
 import { motion, useDragControls, useMotionValue } from "motion/react";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { api, Deck, Texts } from "../api";
@@ -68,13 +69,13 @@ function Widget({ id, delay, label, still, children }: { id: string; delay: numb
     setSpot(id, { x: Math.round(spot.x + dx), y: Math.round(spot.y + dy) });
   };
   return (
-    <div className={`fl${store[id] ? " moved" : ""}${dragging ? " dragging" : ""}${still ? " still" : ""}`} ref={el} style={{ left: spot.x, top: spot.y, ["--d" as string]: `${delay}s` }}>
-      <motion.div className="fl-drag" aria-label={label} role="group" style={{ x, y }}
+    <div className={[`fl${store[id] ? " moved" : ""}${dragging ? " dragging" : ""}${still ? " still" : ""}`, roomStyles["fl"]].join(" ")} ref={el} style={{ left: spot.x, top: spot.y, ["--d" as string]: `${delay}s` }}>
+      <motion.div className={["fl-drag", roomStyles["fl-drag"]].join(" ")} aria-label={label} role="group" style={{ x, y }}
         drag={!still} dragListener={false} dragControls={controls}
         onPointerDown={(e) => { if (!still && !(e.target as HTMLElement).closest("input, textarea")) controls.start(e); }}
         dragMomentum={false} onDragStart={() => setDragging(true)} onDragEnd={onDragEnd}
         whileDrag={{ scale: 1.04 }} transition={{ type: "spring", stiffness: 400, damping: 30 }}>
-        <div className="fl-nudge"><div className="fl-bob">{children}</div></div>
+        <div className={["fl-nudge", roomStyles["fl-nudge"]].join(" ")}><div className={["fl-bob", roomStyles["fl-bob"]].join(" ")}>{children}</div></div>
       </motion.div>
     </div>
   );
@@ -156,10 +157,10 @@ function Note({ id, text, onSave, onEditing, startEditing, onAddSecond, onRemove
 
   const paper = NOTE_PAPERS[look.paper];
   return (
-    <div className={`fl-note${editing ? " editing" : ""}`} ref={root}
+    <div className={[`fl-note${editing ? " editing" : ""}`, roomStyles["fl-note"]].join(" ")} ref={root}
       onBlur={(e) => { if (editing && !root.current?.contains(e.relatedTarget as Node | null)) done(true); }}
       onKeyDown={(e) => { if (editing && e.key === "Escape") { e.preventDefault(); e.stopPropagation(); done(false); } }}>
-      <div ref={sticky} className={`fl-sticky${editing ? " editing" : ""}${look.hand ? " hand" : ""}`}
+      <div ref={sticky} className={[`fl-sticky${editing ? " editing" : ""}${look.hand ? " hand" : ""}`, roomStyles["fl-sticky"]].join(" ")}
         style={{ width: look.width, minHeight: look.height ?? undefined, ["--note-top" as string]: paper.top, ["--note-bottom" as string]: paper.bottom, ["--note-ink" as string]: paper.ink, ["--note-faint" as string]: paper.faint }}
         role={editing ? undefined : "button"} tabIndex={editing ? -1 : 0}
         aria-label={editing ? undefined : `${name}: ${text || "empty"}. Press Enter to write on it.`}
@@ -169,52 +170,52 @@ function Note({ id, text, onSave, onEditing, startEditing, onAddSecond, onRemove
           if (!editing && d && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) setEditing(true);
         }}
         onKeyDown={(e) => { if (!editing && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setEditing(true); } }}>
-        <i className={`fl-washi tape-${look.tape}`} aria-hidden="true" />
+        <i className={[`fl-washi tape-${look.tape}`, roomStyles["fl-washi"], roomStyles["tape"]].join(" ")} aria-hidden="true" />
         {editing ? (
           <>
             <textarea ref={area} value={draft} maxLength={MAX_NOTE} aria-label={name} rows={4}
               onChange={(e) => setDraft(e.target.value)}
               onPointerDown={(e) => e.stopPropagation()}
               onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); done(true); } }} />
-            <small className="fl-note-hint">{draft.length > MAX_NOTE - 40 ? `${MAX_NOTE - draft.length} left` : "Click away to keep it"}</small>
-            <button type="button" className="fl-note-size" onPointerDown={startResize} onMouseDown={(e) => e.preventDefault()} onKeyDown={nudgeSize}
+            <small className={["fl-note-hint", roomStyles["fl-note-hint"]].join(" ")}>{draft.length > MAX_NOTE - 40 ? `${MAX_NOTE - draft.length} left` : "Click away to keep it"}</small>
+            <button type="button" className={["fl-note-size", roomStyles["fl-note-size"]].join(" ")} onPointerDown={startResize} onMouseDown={(e) => e.preventDefault()} onKeyDown={nudgeSize}
               aria-label="Resize the note. Left and right arrows change its width, up and down its height" title="Drag to resize">
               <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2h6v6M10 2 2 10M2 4v6h6" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
           </>
-        ) : text ? <p className="fl-note-text">{text}</p> : <p className="fl-note-text empty">Write yourself a note</p>}
+        ) : text ? <p className={["fl-note-text", roomStyles["fl-note-text"]].join(" ")}>{text}</p> : <p className={["fl-note-text empty", roomStyles["fl-note-text"]].join(" ")}>Write yourself a note</p>}
       </div>
       {editing && (
         // Choosing keeps the cursor in the note (no focus change on click), so you can go on writing.
-        <div className="fl-note-tools" role="group" aria-label="How the note looks"
+        <div className={["fl-note-tools", roomStyles["fl-note-tools"]].join(" ")} role="group" aria-label="How the note looks"
           onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }} onMouseDown={(e) => e.preventDefault()}>
-          <div className="fl-note-row" role="group" aria-label="Paper">
+          <div className={["fl-note-row", roomStyles["fl-note-row"]].join(" ")} role="group" aria-label="Paper">
             <span aria-hidden="true">Paper</span>
             {(Object.keys(NOTE_PAPERS) as NotePaper[]).map((id) => (
-              <button key={id} type="button" className="fl-swatch" aria-pressed={look.paper === id} aria-label={NOTE_PAPERS[id].label} title={NOTE_PAPERS[id].label}
+              <button key={id} type="button" className={["fl-swatch", roomStyles["fl-swatch"]].join(" ")} aria-pressed={look.paper === id} aria-label={NOTE_PAPERS[id].label} title={NOTE_PAPERS[id].label}
                 style={{ ["--sw-top" as string]: NOTE_PAPERS[id].top, ["--sw-bottom" as string]: NOTE_PAPERS[id].bottom }}
                 onClick={() => choose({ ...look, paper: id })} />
             ))}
           </div>
-          <div className="fl-note-row" role="group" aria-label="Writing">
+          <div className={["fl-note-row", roomStyles["fl-note-row"]].join(" ")} role="group" aria-label="Writing">
             <span aria-hidden="true">Writing</span>
-            <button type="button" className="fl-hand-pick" aria-pressed={!look.hand} onClick={() => choose({ ...look, hand: false })}>Neat</button>
-            <button type="button" className="fl-hand-pick hand" aria-pressed={look.hand} onClick={() => choose({ ...look, hand: true })}>Handwritten</button>
+            <button type="button" className={["fl-hand-pick", roomStyles["fl-hand-pick"]].join(" ")} aria-pressed={!look.hand} onClick={() => choose({ ...look, hand: false })}>Neat</button>
+            <button type="button" className={["fl-hand-pick hand", roomStyles["fl-hand-pick"]].join(" ")} aria-pressed={look.hand} onClick={() => choose({ ...look, hand: true })}>Handwritten</button>
           </div>
-          <div className="fl-note-row" role="group" aria-label="Washi tape">
+          <div className={["fl-note-row", roomStyles["fl-note-row"]].join(" ")} role="group" aria-label="Washi tape">
             <span aria-hidden="true">Tape</span>
             {(Object.keys(NOTE_TAPES) as NoteTape[]).map((id) => (
-              <button key={id} type="button" className="fl-tape-pick" aria-pressed={look.tape === id} aria-label={NOTE_TAPES[id]} title={NOTE_TAPES[id]}
-                onClick={() => choose({ ...look, tape: id })}><i className={`tape-${id}`} /></button>
+              <button key={id} type="button" className={["fl-tape-pick", roomStyles["fl-tape-pick"]].join(" ")} aria-pressed={look.tape === id} aria-label={NOTE_TAPES[id]} title={NOTE_TAPES[id]}
+                onClick={() => choose({ ...look, tape: id })}><i className={[`tape-${id}`, roomStyles["tape"]].join(" ")} /></button>
             ))}
           </div>
-          <div className="fl-note-foot">
-            {onAddSecond && <button type="button" className="fl-note-reset" onClick={() => { done(true); onAddSecond(); }}>Add a second note</button>}
-            {!isDefaultNote(look, base) && <button type="button" className="fl-note-reset" onClick={() => choose(base)}>Back to the original note</button>}
+          <div className={["fl-note-foot", roomStyles["fl-note-foot"]].join(" ")}>
+            {onAddSecond && <button type="button" className={["fl-note-reset", roomStyles["fl-note-reset"]].join(" ")} onClick={() => { done(true); onAddSecond(); }}>Add a second note</button>}
+            {!isDefaultNote(look, base) && <button type="button" className={["fl-note-reset", roomStyles["fl-note-reset"]].join(" ")} onClick={() => choose(base)}>Back to the original note</button>}
             {/* Taking a note down that has words on it asks once more. */}
             {onRemove && (removing || !text.trim()
-              ? <button type="button" className="fl-note-reset remove" onClick={() => { setEditing(false); onRemove(); }}>{removing ? "Yes, take it down" : "Take this note down"}</button>
-              : <button type="button" className="fl-note-reset" onClick={() => setRemoving(true)}>Take this note down</button>)}
+              ? <button type="button" className={["fl-note-reset remove", roomStyles["fl-note-reset"]].join(" ")} onClick={() => { setEditing(false); onRemove(); }}>{removing ? "Yes, take it down" : "Take this note down"}</button>
+              : <button type="button" className={["fl-note-reset", roomStyles["fl-note-reset"]].join(" ")} onClick={() => setRemoving(true)}>Take this note down</button>)}
           </div>
         </div>
       )}
@@ -225,8 +226,8 @@ function Note({ id, text, onSave, onEditing, startEditing, onAddSecond, onRemove
 /** Settings, in the room: just the app's icon, no label. A click opens every setting. */
 function SettingsWidget() {
   return (
-    <button className="fl-app ss-open" onClick={() => openSettings()} aria-label="Settings">
-      <span className="fl-app-icon" aria-hidden="true"><SettingsAppIcon /></span>
+    <button className={["fl-app ss-open", roomStyles["fl-app"]].join(" ")} onClick={() => openSettings()} aria-label="Settings">
+      <span className={["fl-app-icon", roomStyles["fl-app-icon"]].join(" ")} aria-hidden="true"><SettingsAppIcon /></span>
     </button>
   );
 }
@@ -256,15 +257,15 @@ function NewsWidget() {
   }, [open]);
   const date = new Date(`${CURRENT.date}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
   return (
-    <div className={`fl-news${open ? " open" : ""}`} ref={box}>
-      <button className="fl-news-head" onClick={toggle} aria-expanded={open} aria-controls="fl-news-list">
-        <span className="fl-news-ic" aria-hidden="true">✦</span>
-        <span className="fl-news-t"><b>What's new</b><small>Lilt {shortVersion(CURRENT.version)} · {date}</small></span>
-        {!seen && <i className="fl-news-dot" aria-label="New" />}
-        <svg className="fl-news-chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5L6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    <div className={[`fl-news${open ? " open" : ""}`, roomStyles["fl-news"]].join(" ")} ref={box}>
+      <button className={["fl-news-head", roomStyles["fl-news-head"]].join(" ")} onClick={toggle} aria-expanded={open} aria-controls="fl-news-list">
+        <span className={["fl-news-ic", roomStyles["fl-news-ic"]].join(" ")} aria-hidden="true">✦</span>
+        <span className={["fl-news-t", roomStyles["fl-news-t"]].join(" ")}><b>What's new</b><small>Lilt {shortVersion(CURRENT.version)} · {date}</small></span>
+        {!seen && <i className={["fl-news-dot", roomStyles["fl-news-dot"]].join(" ")} aria-label="New" />}
+        <svg className={["fl-news-chev", roomStyles["fl-news-chev"]].join(" ")} viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5L6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </button>
       {open && (
-        <ul className="fl-news-list" id="fl-news-list">
+        <ul className={["fl-news-list", roomStyles["fl-news-list"]].join(" ")} id="fl-news-list">
           {CURRENT.items.map((it) => (
             <li key={it.title}>
               {it.to ? <button onClick={() => go(it.to!)}><b>{it.title}</b><span>{it.body}</span></button> : <div><b>{it.title}</b><span>{it.body}</span></div>}
@@ -290,15 +291,15 @@ function FlashcardsWidget({ texts }: { texts: Texts }) {
   const cards = chapterCards(level), run = runs[level.id] ?? EMPTY;
   const { got, total } = progress(cards, run);
   return (
-    <button className="fl-cards" onClick={() => go(`/flashcards/${level.id}`)} aria-label={`Flashcards: ${level.title}, ${got} of ${total} cards done`}>
-      <span className="fl-cards-back b2" aria-hidden="true" />
-      <span className="fl-cards-back b1" aria-hidden="true" />
-      <span className="fl-cards-card" aria-hidden="true">
-        <span className="fl-cards-art"><Illustration art="book" /></span>
-        <span className="fl-cards-chip">Flashcards</span>
-        <span className="fl-cards-body">
+    <button className={["fl-cards", roomStyles["fl-cards"]].join(" ")} onClick={() => go(`/flashcards/${level.id}`)} aria-label={`Flashcards: ${level.title}, ${got} of ${total} cards done`}>
+      <span className={["fl-cards-back b2", roomStyles["fl-cards-back"]].join(" ")} aria-hidden="true" />
+      <span className={["fl-cards-back b1", roomStyles["fl-cards-back"]].join(" ")} aria-hidden="true" />
+      <span className={["fl-cards-card", roomStyles["fl-cards-card"]].join(" ")} aria-hidden="true">
+        <span className={["fl-cards-art", roomStyles["fl-cards-art"]].join(" ")}><Illustration art="book" /></span>
+        <span className={["fl-cards-chip", roomStyles["fl-cards-chip"]].join(" ")}>Flashcards</span>
+        <span className={["fl-cards-body", roomStyles["fl-cards-body"]].join(" ")}>
           <b>{level.title}</b>
-          <span className="fl-cards-segs">{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : undefined} />)}</span>
+          <span className={["fl-cards-segs", roomStyles["fl-cards-segs"]].join(" ")}>{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : undefined} />)}</span>
           <small>{got === total ? "Done · go again any time" : got ? `${got} of ${total} cards` : `${total} cards · start`}</small>
         </span>
       </span>
@@ -312,9 +313,9 @@ function FlashcardsWidget({ texts }: { texts: Texts }) {
  */
 function YarnWidget() {
   return (
-    <button className="fl-yarn" onClick={() => go("/yarn")} aria-label="Ball of yarn: a voice game. Hum or speak to steer the yarn">
-      <span className="fl-yarn-art" aria-hidden="true"><Illustration art="yarn" /></span>
-      <span className="fl-yarn-body">
+    <button className={["fl-yarn", roomStyles["fl-yarn"]].join(" ")} onClick={() => go("/yarn")} aria-label="Ball of yarn: a voice game. Hum or speak to steer the yarn">
+      <span className={["fl-yarn-art", roomStyles["fl-yarn-art"]].join(" ")} aria-hidden="true"><Illustration art="yarn" /></span>
+      <span className={["fl-yarn-body", roomStyles["fl-yarn-body"]].join(" ")}>
         <b>Ball of yarn</b>
         <small>Hum or speak to play</small>
       </span>
@@ -407,7 +408,7 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
   }, [note, store]);
 
   return (
-    <div className={`fls${inside ? " away" : ""}`} ref={box}>
+    <div className={[`fls${inside ? " away" : ""}`, roomStyles["fls"]].join(" ")} ref={box}>
       <Widget id="news" delay={-0.6} label="What's new">
         <NewsWidget />
       </Widget>

@@ -1,7 +1,7 @@
+import { markdown } from "../ui/markdown";
 import ReactMarkdown, { defaultUrlTransform, type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useId, useMemo, type KeyboardEvent } from "react";
-import "../styles/markdown.css";
 
 /** Course-local images use the existing media endpoint; arbitrary local paths stay blocked. */
 export const picture = (src: string) => (/^https?:\/\//i.test(src) ? src : /^images\/[\w.-]+$/.test(src) ? `/texts/${src}` : undefined);
@@ -30,9 +30,9 @@ const components: Components = {
   ),
   img: ({ node: _node, src, alt, ...props }) => src
     ? <img {...props} src={src} alt={alt ?? ""} loading="lazy" />
-    : <span className="md-image-fallback">{alt}</span>,
+    : <span className={["md-image-fallback", markdown["md-image-fallback"]].filter(Boolean).join(' ')}>{alt}</span>,
   table: ({ node: _node, ...props }) => (
-    <div className="md-table" role="region" aria-label="Scrollable table" tabIndex={0}><table {...props} /></div>
+    <div className={["md-table", markdown["md-table"]].filter(Boolean).join(' ')} role="region" aria-label="Scrollable table" tabIndex={0}><table {...props} /></div>
   ),
   pre: ({ node: _node, ...props }) => <pre {...props} tabIndex={0} aria-label="Code block" />,
 };
@@ -44,7 +44,7 @@ export function Markdown({ src, className, headingOffset = 0 }: { src: string; c
     ...(headingOffset ? Object.fromEntries([1, 2, 3, 4, 5, 6].map(level => [`h${level}`, `h${Math.min(6, level + headingOffset)}`])) : {}),
   }), [headingOffset]);
   return (
-    <div className={["md", className].filter(Boolean).join(" ")} onKeyDown={readingKeys}>
+    <div className={[["md", className].filter(Boolean).join(" "), markdown["md"]].filter(Boolean).join(' ')} onKeyDown={readingKeys}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         remarkRehypeOptions={{ clobberPrefix: `md-${id}-` }}

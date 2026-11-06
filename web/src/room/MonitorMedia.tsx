@@ -1,3 +1,4 @@
+import { roomStyles } from "../desk/roomStyles";
 import { CSSProperties, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { MonitorMedia as Media, Monitor, ROOM_DECOR, RoomAppearancePrefs } from './appearance-settings';
 import { loadMonitorFile } from './monitor-media';
@@ -76,9 +77,9 @@ export function MonitorScreen({ monitor, appearance, inside }: { monitor: Monito
   const media = monitor === 'main' ? appearance.mainMedia : appearance.sideMedia;
   const style = { transform: quadMatrix(520, 300, monitor === 'main' ? MAIN_SCREEN : SIDE_SCREEN) };
   if (decor === 'original' || (decor === 'custom' && !media)) return null;
-  return <div className="room-monitor-screen" style={style}>
+  return <div className={["room-monitor-screen", roomStyles["room-monitor-screen"]].join(" ")} style={style}>
     {decor === 'custom'
-      ? media && <MonitorMedia key={media.id} media={media} monitor={monitor} active={!inside} className="room-monitor-art" />
-      : <img className="room-monitor-art" data-monitor={monitor} data-decor={decor} src={ROOM_DECOR[decor]} alt="" draggable={false} />}
+      ? media && <MonitorMedia key={media.id} media={media} monitor={monitor} active={!inside} className={["room-monitor-art", roomStyles["room-monitor-art"]].join(" ")} />
+      : <img className={["room-monitor-art", roomStyles["room-monitor-art"]].join(" ")} data-monitor={monitor} data-decor={decor} src={ROOM_DECOR[decor]} alt="" draggable={false} />}
   </div>;
 }

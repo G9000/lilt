@@ -1,6 +1,6 @@
 // Isolated UI and recording flow. All API writes stay in this in-memory fixture.
 import { chromium } from 'playwright-core';
-import { createServer } from 'vite';
+import { createIsolatedVite as createServer } from './isolated-vite.mjs';
 import { fileURLToPath } from 'node:url';
 import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';

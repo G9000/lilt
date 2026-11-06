@@ -1,4 +1,6 @@
-import "../styles/courses.css";
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { ReactNode, useEffect, useState } from "react";
 import { api, Course, CourseChange, CourseFiles } from "../api";
 import { go } from "../App";
@@ -20,9 +22,9 @@ function ago(iso: string) {
 /** At a glance: the original, or your mixtape with how many changes; updates waiting. */
 function Status({ c }: { c: Course }) {
   return (
-    <span className="co-status">
-      <span className={`co-pill${c.using === "mine" ? " mine" : ""}`}>{c.using === "mine" ? `Your mixtape · ${c.changes} ${c.changes === 1 ? "change" : "changes"}` : "Original"}</span>
-      {c.updates_waiting > 0 && <span className="co-pill new">{c.updates_waiting} {c.updates_waiting === 1 ? "update" : "updates"}</span>}
+    <span className={cx(pages.coStatus, "co-status")}>
+      <span className={cx(pages.coPill, `co-pill${c.using === "mine" ? " mine" : ""}`)}>{c.using === "mine" ? `Your mixtape · ${c.changes} ${c.changes === 1 ? "change" : "changes"}` : "Original"}</span>
+      {c.updates_waiting > 0 && <span className={cx(pages.coPill, "co-pill new")}>{c.updates_waiting} {c.updates_waiting === 1 ? "update" : "updates"}</span>}
     </span>
   );
 }
@@ -34,7 +36,7 @@ function Status({ c }: { c: Course }) {
  */
 export function CoursesPage({ id, view }: { id?: string; view?: string }) {
   if (id && view === "updates") {
-    return <div className="co"><UpdatesDoc course={id} back={`#/courses/${id}`} backLabel="Back to the course" /></div>;
+    return <div className={cx(pages.co, "co")}><UpdatesDoc course={id} back={`#/courses/${id}`} backLabel="Back to the course" /></div>;
   }
   return id ? <CoursePage id={id} /> : <CourseList />;
 }
@@ -44,22 +46,22 @@ function CourseList() {
   const [err, setErr] = useState<string | null>(null);
   useEffect(() => { void api.courses().then((r) => setList(r.courses), (e) => setErr(e.message)); }, []);
   return (
-    <div className="co">
-      <header className="co-head">
+    <div className={cx(pages.co, "co")}>
+      <header className={cx(pages.coHead, "co-head")}>
         <h1>Courses</h1>
         <p>Each course is a set of chapters to practise. Your AI can remix any of them into your own mixtape, and you can always go back to the original.</p>
       </header>
-      {err && <p className="co-error" role="alert">{err}</p>}
+      {err && <p className={cx(pages.coError, "co-error")} role="alert">{err}</p>}
       {list && (
-        <ul className="co-list">
+        <ul className={cx(pages.coList, "co-list")}>
           {list.map((c) => (
             <li key={c.id}>
               <button onClick={() => go(`/courses/${c.id}`)}>
                 <KindTile kind={c.kind} />
-                <span className="co-card">
+                <span className={cx(pages.coCard, "co-card")}>
                   <b>{c.title}</b>
                   <small>{kindOf(c.kind).label}{kindOf(c.kind).practice(c) ? "" : " · practice coming later"}</small>
-                  <span className="co-sum">{c.summary}</span>
+                  <span className={cx(pages.coSum, "co-sum")}>{c.summary}</span>
                   <Status c={c} />
                 </span>
               </button>
@@ -67,30 +69,30 @@ function CourseList() {
           ))}
         </ul>
       )}
-      <p className="co-note">Each course is a set of plain Markdown chapters you can read and change. To make a new one, see the README on GitHub.</p>
+      <p className={cx(pages.coNote, "co-note")}>Each course is a set of plain Markdown chapters you can read and change. To make a new one, see the README on GitHub.</p>
     </div>
   );
 }
 
 function CoursePage({ id }: { id: string }) {
   const m = useMixtape(id);
-  if (m.err && !m.c) return <div className="co"><p className="co-error" role="alert">{m.err}</p><a href="#/courses">All courses</a></div>;
-  if (!m.c) return <div className="co"><p className="co-note">Loading…</p></div>;
+  if (m.err && !m.c) return <div className={cx(pages.co, "co")}><p className={cx(pages.coError, "co-error")} role="alert">{m.err}</p><a href="#/courses">All courses</a></div>;
+  if (!m.c) return <div className={cx(pages.co, "co")}><p className={cx(pages.coNote, "co-note")}>Loading…</p></div>;
   const c = m.c;
   const open = kindOf(c.kind).practice(c);
   return (
-    <div className="co">
-      <a className="co-back" href="#/courses">
+    <div className={cx(pages.co, "co")}>
+      <a className={cx(pages.coBack, "co-back")} href="#/courses">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>All courses
       </a>
-      <header className="co-hero">
+      <header className={cx(pages.coHero, "co-hero")}>
         <KindTile kind={c.kind} size={64} />
         <div>
           <h1>{c.title}</h1>
           <p>{c.summary}</p>
           <Status c={c} />
         </div>
-        {open && <button className="btn-primary" onClick={() => go(open)}>Practise</button>}
+        {open && <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(open)}>Practise</button>}
       </header>
       <MixtapeSections m={m} updatesHref={`/courses/${id}/updates`} />
     </div>
@@ -135,43 +137,43 @@ type Mixtape = ReturnType<typeof useMixtape>;
 export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixtape; updatesHref: string; remix?: ReactNode }) {
   const [confirm, setConfirm] = useState(false);
   const { c, files, changes, busy } = m;
-  if (!c || !files || !changes) return <p className="co-note">Loading…</p>;
+  if (!c || !files || !changes) return <p className={cx(pages.coNote, "co-note")}>Loading…</p>;
   const chapters = files.files.filter((f) => f.chapter_id);
   const mine = c.using === "mine";
   const latest = changes[0];
   const remix = remixSlot ?? (
-      <section className="co-sec">
+      <section className={cx(pages.coSec, "co-sec")}>
         <h2>Remix it</h2>
         <RemixBox course={c.id} onDone={m.reload} />
-        <p className="co-note">Using Claude Desktop or Claude Code instead? Ask it the same thing; it lands here too.</p>
+        <p className={cx(pages.coNote, "co-note")}>Using Claude Desktop or Claude Code instead? Ask it the same thing; it lands here too.</p>
       </section>
   );
   return (
     <>
-      {m.said && <p className="co-said" role="status">{m.said}</p>}
-      {m.err && <p className="co-error" role="alert">{m.err}</p>}
+      {m.said && <p className={cx(pages.coSaid, "co-said")} role="status">{m.said}</p>}
+      {m.err && <p className={cx(pages.coError, "co-error")} role="alert">{m.err}</p>}
 
       {c.updates_waiting > 0 && (
-        <section className="co-callout">
+        <section className={cx(pages.coCallout, "co-callout")}>
           <div><b>The original has {c.updates_waiting} {c.updates_waiting === 1 ? "update" : "updates"} for your mixtape</b><p>Changes to things you haven't touched come straight in; where you both changed something, you choose.</p></div>
-          <button className="btn-primary" onClick={() => go(updatesHref)}>Review updates</button>
+          <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(updatesHref)}>Review updates</button>
         </section>
       )}
 
-      <section className="co-sec">
+      <section className={cx(pages.coSec, "co-sec")}>
         <h2>Now playing</h2>
-        <div className="co-box">
-          <div className="co-row">
+        <div className={cx(pages.coBox, "co-box")}>
+          <div className={cx(pages.coRow, "co-row")}>
             <div>
               <b>{mine ? "Your mixtape" : "The original"}</b>
               <p>{mine ? `${c.changes} ${c.changes === 1 ? "change" : "changes"} so far. The original stays as it is.` : "Remix anything and Lilt makes your own copy first: your mixtape. The original stays as it is."}</p>
             </div>
-            {mine && !confirm && <button className="btn-secondary" onClick={() => setConfirm(true)} disabled={busy}>Go back to the original</button>}
+            {mine && !confirm && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => setConfirm(true)} disabled={busy}>Go back to the original</button>}
           </div>
           {confirm && (
-            <div className="co-row co-confirm">
+            <div className={cx(pages.coRow, pages.coConfirm, "co-row co-confirm")}>
               <p>Go back to the original? Your mixtape is kept in the history, so you can undo this.</p>
-              <span className="co-actions"><button className="btn-primary" onClick={() => { setConfirm(false); void m.reset(); }} disabled={busy}>Go back</button><button className="btn-secondary" onClick={() => setConfirm(false)}>Cancel</button></span>
+              <span className={cx(pages.coActions, "co-actions")}><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => { setConfirm(false); void m.reset(); }} disabled={busy}>Go back</button><button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => setConfirm(false)}>Cancel</button></span>
             </div>
           )}
         </div>
@@ -179,17 +181,17 @@ export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixta
 
       {!mine && remix}
 
-      <section className="co-sec">
-        <div className="co-sec-head">
+      <section className={cx(pages.coSec, "co-sec")}>
+        <div className={cx(pages.coSecHead, "co-sec-head")}>
           <h2>History</h2>
-          {latest && <button className="btn-secondary co-small" onClick={() => void m.undo()} disabled={busy} title={`Undo “${latest.note}”`}>Undo last change</button>}
+          {latest && <button className={["btn-secondary co-small", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void m.undo()} disabled={busy} title={`Undo “${latest.note}”`}>Undo last change</button>}
         </div>
         {changes.length === 0 ? (
-          <div className="co-box"><div className="co-row"><p>No changes yet. Each change your AI makes shows up here with its note, and can be undone.</p></div></div>
+          <div className={cx(pages.coBox, "co-box")}><div className={cx(pages.coRow, "co-row")}><p>No changes yet. Each change your AI makes shows up here with its note, and can be undone.</p></div></div>
         ) : (
-          <ol className="co-box co-history">
+          <ol className={cx(pages.coBox, "co-box co-history")}>
             {changes.map((h) => (
-              <li key={h.change} className="co-row">
+              <li key={h.change} className={cx(pages.coRow, "co-row")}>
                 <div>
                   <b>{h.note}</b>
                   <p>{ACTION[h.action] ?? h.action}{h.file ? ` · ${h.file}` : ""}</p>
@@ -201,18 +203,18 @@ export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixta
         )}
       </section>
 
-      <section className="co-sec">
+      <section className={cx(pages.coSec, "co-sec")}>
         <h2>Chapters</h2>
-        <ol className="co-box co-chapters">
+        <ol className={cx(pages.coBox, pages.coChapters, "co-box co-chapters")}>
           {chapters.map((f, i) => (
-            <li key={f.file} className="co-row">
-              <span className="co-n">{i + 1}</span>
+            <li key={f.file} className={cx(pages.coRow, "co-row")}>
+              <span className={cx(pages.coN, "co-n")}>{i + 1}</span>
               <div><b>{f.title}</b><p>{f.texts} {f.texts === 1 ? "text" : "texts"}</p></div>
-              {f.status !== "same" && <span className={`co-pill ${f.status === "added" ? "new" : "mine"}`}>{f.status === "added" ? "Added" : "Remixed"}</span>}
+              {f.status !== "same" && <span className={cx(pages.coPill, `co-pill ${f.status === "added" ? "new" : "mine"}`)}>{f.status === "added" ? "Added" : "Remixed"}</span>}
             </li>
           ))}
         </ol>
-        {files.removed_from_original.length > 0 && <p className="co-note">Left out of your mixtape: {files.removed_from_original.join(", ")}.</p>}
+        {files.removed_from_original.length > 0 && <p className={cx(pages.coNote, "co-note")}>Left out of your mixtape: {files.removed_from_original.join(", ")}.</p>}
       </section>
 
       {mine && remix}

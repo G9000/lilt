@@ -2,7 +2,7 @@
 // Synthetic analysis, no microphone or user recordings. Exercises real React component lifetimes.
 import { chromium } from "playwright-core";
 import assert from "node:assert/strict";
-import { createServer } from "vite";
+import { createIsolatedVite as createServer } from "./isolated-vite.mjs";
 
 const server = await createServer({ server: { host: "127.0.0.1", port: 0, strictPort: false }, logLevel: "error" });
 await server.listen();

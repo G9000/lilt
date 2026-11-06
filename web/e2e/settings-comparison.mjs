@@ -3,7 +3,7 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { chromium } from "playwright-core";
-import { createServer } from "vite";
+import { createIsolatedVite as createServer } from "./isolated-vite.mjs";
 
 let server, browser;
 before(async () => {

@@ -1,3 +1,5 @@
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { openSettings } from "../desk/SettingsSheet";
@@ -101,35 +103,35 @@ export function RemixPanel() {
   const lastFailed = msgs.length > 0 && msgs[msgs.length - 1].failed ? msgs[msgs.length - 1] : null;
 
   return (
-    <aside className="rp" aria-label={`Remix ${scope.title}`}>
-      <header className="rp-head">
-        <span className="rp-ic" aria-hidden="true">
+    <aside className={cx(pages.rp, "rp")} aria-label={`Remix ${scope.title}`}>
+      <header className={cx(pages.rpHead, "rp-head")}>
+        <span className={cx(pages.rpIc, "rp-ic")} aria-hidden="true">
           <svg viewBox="0 0 16 16"><path d={CASSETTE} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </span>
         <div><b>{scope.title}</b><small>{REMIX_AVAILABLE ? "Remixing into your mixtape" : "Remix · Coming soon"}</small></div>
-        <button className="rp-close" onClick={() => setScope(null)} aria-label="Close remix" disabled={busy}>
+        <button className={cx(pages.rpClose, "rp-close")} onClick={() => setScope(null)} aria-label="Close remix" disabled={busy}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
         </button>
       </header>
 
       {!REMIX_AVAILABLE ? <>
-        <div className="rp-msgs">
-          <div className="rp-hello">
-            <p className="rp-ask">Remix is coming soon</p>
-            <p className="rp-sub">You'll be able to make your own version of this course. Your original stays as it is.</p>
+        <div className={cx(pages.rpMsgs, "rp-msgs")}>
+          <div className={cx(pages.rpHello, "rp-hello")}>
+            <p className={cx(pages.rpAsk, "rp-ask")}>Remix is coming soon</p>
+            <p className={cx(pages.rpSub, "rp-sub")}>You'll be able to make your own version of this course. Your original stays as it is.</p>
           </div>
         </div>
-        <div className="rp-off">
+        <div className={cx(pages.rpOff, "rp-off")}>
           <p>Choose the AI app you want to use.</p>
           <button className="rp-btn" onClick={() => openSettings("ai")}>Configure your AI settings</button>
         </div>
       </> : <>
-      <div className="rp-msgs" ref={list} aria-live="polite">
+      <div className={cx(pages.rpMsgs, "rp-msgs")} ref={list} aria-live="polite">
         {msgs.length === 0 && (
-          <div className="rp-hello">
-            <p className="rp-ask">{scope.starter ?? (scope.chapter ? `What would you like to change in ${scope.title}?` : "How would you like your own version of this course to be?")}</p>
-            <p className="rp-sub">Your AI rewrites it into your mixtape, your own copy. The original stays as it is, and every change can be undone.</p>
-            <ul className="rp-try" aria-label="Ideas">
+          <div className={cx(pages.rpHello, "rp-hello")}>
+            <p className={cx(pages.rpAsk, "rp-ask")}>{scope.starter ?? (scope.chapter ? `What would you like to change in ${scope.title}?` : "How would you like your own version of this course to be?")}</p>
+            <p className={cx(pages.rpSub, "rp-sub")}>Your AI rewrites it into your mixtape, your own copy. The original stays as it is, and every change can be undone.</p>
+            <ul className={cx(pages.rpTry, "rp-try")} aria-label="Ideas">
               {(scope.chapter
                 ? ["Make these shorter", "Add two texts about ordering coffee", "Make the hints simpler"]
                 : ["Make everything gentler for a beginner", "Add a chapter about phone calls", "Make it about my work days"]
@@ -143,10 +145,10 @@ export function RemixPanel() {
           </div>
         )}
         {msgs.map((m, i) => (
-          <div key={i} className={`rp-msg ${m.role}${m.failed ? " failed" : ""}`}>
+          <div key={i} className={cx(pages.rpMsg, `rp-msg ${m.role}${m.failed ? " failed" : ""}`)}>
             <p>{m.content}</p>
             {m.note && (
-              <div className={`rp-saved${m.undone ? " undone" : ""}`}>
+              <div className={cx(pages.rpSaved, `rp-saved${m.undone ? " undone" : ""}`)}>
                 <svg viewBox="0 0 16 16" aria-hidden="true">{m.undone
                   ? <path d="M4 6.5h6a3 3 0 010 6H7M6 4L3.5 6.5 6 9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   : <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />}</svg>
@@ -158,29 +160,29 @@ export function RemixPanel() {
           </div>
         ))}
         {busy && (
-          <div className="rp-msg assistant rp-typing" role="status" aria-label="Remixing with your AI">
-            <span className="rp-dots" aria-hidden="true"><i /><i /><i /></span>
+          <div className={cx(pages.rpMsg, pages.rpTyping, "rp-msg assistant rp-typing")} role="status" aria-label="Remixing with your AI">
+            <span className={cx(pages.rpDots, "rp-dots")} aria-hidden="true"><i /><i /><i /></span>
             <small>Remixing with your AI…</small>
           </div>
         )}
       </div>
 
       {connected === false ? (
-        <div className="rp-off">
+        <div className={cx(pages.rpOff, "rp-off")}>
           <p>Choose the AI app you want to use in settings.</p>
           <button className="rp-btn" onClick={() => openSettings("ai")}>Configure your AI settings</button>
         </div>
       ) : (
-        <form className="rp-form" onSubmit={(e) => void send(e)}>
-          <div className="rp-input">
+        <form className={cx(pages.rpForm, "rp-form")} onSubmit={(e) => void send(e)}>
+          <div className={cx(pages.rpInput, "rp-input")}>
             <textarea ref={box} rows={1} maxLength={1000} value={draft} disabled={busy || connected === null} placeholder="Say what to change…" aria-label="What to change"
               onChange={(e) => { setDraft(e.target.value); e.target.style.height = "auto"; e.target.style.height = `${Math.min(e.target.scrollHeight, 140)}px`; }}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} />
-            <button className="rp-send" disabled={busy || !draft.trim()} aria-label="Remix">
+            <button className={cx(pages.rpSend, "rp-send")} disabled={busy || !draft.trim()} aria-label="Remix">
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5L8 3l4.5 4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
           </div>
-          <p className="rp-hint">Enter to remix · Shift+Enter for a new line</p>
+          <p className={cx(pages.rpHint, "rp-hint")}>Enter to remix · Shift+Enter for a new line</p>
         </form>
       )}
       </>}

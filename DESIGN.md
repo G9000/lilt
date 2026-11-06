@@ -341,7 +341,7 @@ they remain readable over the detailed painting. Prompts and provenance are in `
 
 Text size (Settings → Appearance, kept in this browser as `lilt.text`) scales the reading areas as a whole with CSS `zoom` (0.92, 1, 1.12, 1.25): the Practice page column, the windows' contents and the Settings sheet, so their proportions hold. The Practice frame, sidebar, recorder and the room stay at their size.
 
-Settings, Course Home and Today share tokens in `web/src/styles.css`: page titles 28–34px / 600,
+Settings, Course Home and Today share tokens in `web/src/theme/base.css`: page titles 28–34px / 600,
 section headings 18px, body 15px, controls 14px and captions 13px. Help text uses `--ink-2`.
 Weights are 400, 500, 600 and 700 (200 and 300 for big live numbers). The reading serif keeps its
 own sizes. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
@@ -352,6 +352,11 @@ surfaces are opaque `--page` so room artwork does not compete with the text. Cou
 shortcuts are quiet links, and its guide is a disclosure between hairlines.
 
 ## Components
+
+UI components use Tailwind 4 utilities and explicit shared recipes. Runtime theme values are
+mapped through `web/src/theme/tailwind.css`; see [Tailwind conventions](docs/tailwind.md).
+Keep component styles out of separate handwritten stylesheets. The room's custom geometry
+uses the same utilities, while animation keyframes and document defaults stay centralized.
 
 - **Window**: traffic lights (red closes back to the desktop), title or a back button in the
   toolbar, content padded 24–28px, scrolls inside. One window at a time.

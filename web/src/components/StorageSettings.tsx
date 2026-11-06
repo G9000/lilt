@@ -1,3 +1,6 @@
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { useEffect, useRef, useState } from "react";
 import { api, type StorageOverview } from "../api";
 import { Row } from "../pages/Settings";
@@ -58,34 +61,34 @@ export function StorageSettings() {
     }, 15000);
     window.location.href = "lilt://data-folder";
   };
-  return <div className="sx-storage" data-storage-loading={String(loading)} aria-busy={loading}>
-    <div className="sx-storage-total">
+  return <div className={cx(pages.sxStorage, "sx-storage")} data-storage-loading={String(loading)} aria-busy={loading}>
+    <div className={cx(pages.sxStorageTotal, "sx-storage-total")}>
       <div>{summary && <><strong>{summary.complete ? "" : "At least "}{storageSize(summary.total_bytes)}</strong><span>Lilt’s saved files</span></>}
         {loading && <p role="status">Counting saved files…</p>}
       </div>
-      <button className="btn-secondary sx-btn" disabled={loading} onClick={() => void refresh()}>Refresh</button>
+      <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} disabled={loading} onClick={() => void refresh()}>Refresh</button>
     </div>
     {error && <div role="alert"><p>{error}</p>{summary && <p>Showing the previous count. Refresh when you’re ready.</p>}</div>}
     {summary && <>
       {!summary.complete && <p role="status">Some files couldn’t be counted. This is a partial total; linked files and folders aren’t included. Try refreshing when Lilt is quiet.</p>}
-      <div className="sx-group">
+      <div className={cx(pages.sxGroup, "sx-group")}>
         {summary.categories.map(category => <Row key={category.id} label={GROUPS[category.id][0]} help={GROUPS[category.id][1]}>
-          <span className="sx-storage-size">{storageSize(category.bytes)}</span>
+          <span className={cx(pages.sxStorageSize, "sx-storage-size")}>{storageSize(category.bytes)}</span>
         </Row>)}
       </div>
-      <p className="sx-note">Counted {new Date(summary.scanned_utc).toLocaleString()}. These are file sizes, not allocated disk space. They may change while you practise.</p>
-      <div className="sx-group"><Row label="Data folder" help="Your recordings and other saved practice data live here." stack>
-        <code className="sx-storage-path">{summary.data_path}</code>
-        <div className="sx-storage-actions">
-          {isDesktop() && <button className="btn-secondary sx-btn" disabled={opening} onClick={openFolder}>{opening ? "Opening folder…" : "Open data folder"}</button>}
-          <button className="btn-secondary sx-btn" onClick={() => void copyPath()}>Copy folder path</button>
+      <p className={cx(pages.sxNote, "sx-note")}>Counted {new Date(summary.scanned_utc).toLocaleString()}. These are file sizes, not allocated disk space. They may change while you practise.</p>
+      <div className={cx(pages.sxGroup, "sx-group")}><Row label="Data folder" help="Your recordings and other saved practice data live here." stack>
+        <code className={cx(pages.sxStoragePath, "sx-storage-path")}>{summary.data_path}</code>
+        <div className={cx(pages.sxStorageActions, "sx-storage-actions")}>
+          {isDesktop() && <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} disabled={opening} onClick={openFolder}>{opening ? "Opening folder…" : "Open data folder"}</button>}
+          <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void copyPath()}>Copy folder path</button>
         </div>
       </Row><Row label="Backup folder" help="Backup and recovery files are kept separately from practice data." stack>
-        <code className="sx-storage-path">{summary.backup_path}</code>
+        <code className={cx(pages.sxStoragePath, "sx-storage-path")}>{summary.backup_path}</code>
       </Row></div>
       {folderMessage && <p role="status">{folderMessage}</p>}
-      {!isDesktop() && <p className="sx-note">Copy the data folder path to find it on the computer running Lilt.</p>}
+      {!isDesktop() && <p className={cx(pages.sxNote, "sx-note")}>Copy the data folder path to find it on the computer running Lilt.</p>}
     </>}
-    <p className="sx-note">This counts Lilt’s data and backup folders. The installed app, room media stored in your browser, and copies downloaded elsewhere aren’t included.</p>
+    <p className={cx(pages.sxNote, "sx-note")}>This counts Lilt’s data and backup folders. The installed app, room media stored in your browser, and copies downloaded elsewhere aren’t included.</p>
   </div>;
 }

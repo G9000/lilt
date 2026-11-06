@@ -1,3 +1,4 @@
+import { shared } from "./ui/shared";
 import { CoursesPage } from "./pages/Courses";
 import './accent';
 import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
@@ -156,7 +157,7 @@ export function App() {
 
   return (
     <MicProvider>
-      <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
+      <a className={["skip", shared["skip"]].filter(Boolean).join(' ')} href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
       <Room inside={inside} onEnter={() => sitDown.current()} cards={left} done={done}>
         <RoomFloaters deck={deck} inside={inside} />
       </Room>

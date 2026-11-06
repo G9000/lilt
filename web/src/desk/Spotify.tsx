@@ -1,3 +1,4 @@
+import { roomStyles } from "./roomStyles";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { micInUse } from "../micuse";
 import { publishSpotify, resetSpotify, spotifySelected } from "./musicState";
@@ -81,7 +82,7 @@ function Player({ uri }: { uri: string }) {
     window.addEventListener("lilt:mic", onMic);
     return () => { live = false; window.removeEventListener("lilt:mic", onMic); ctl?.destroy(); resetSpotify(); };
   }, [uri]);
-  return <div className="sp-player" ref={host} />;
+  return <div className={["sp-player", roomStyles["sp-player"]].join(" ")} ref={host} />;
 }
 
 /* ------------------------------------------------------------------ signed in: your own Spotify */
@@ -170,28 +171,28 @@ function MySpotify() {
   }, [track, device, lists]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="sp sp-me">
-      <div className="sp-now">
-        <span className={`sp-art${track && !track.paused ? " spin" : ""}`}>{track?.art ? <img src={track.art} alt="" /> : <i aria-hidden="true">♪</i>}</span>
-        <span className="sp-what">
+    <div className={["sp sp-me", roomStyles["sp"]].join(" ")}>
+      <div className={["sp-now", roomStyles["sp-now"]].join(" ")}>
+        <span className={[`sp-art${track && !track.paused ? " spin" : ""}`, roomStyles["sp-art"]].join(" ")}>{track?.art ? <img src={track.art} alt="" /> : <i aria-hidden="true">♪</i>}</span>
+        <span className={["sp-what", roomStyles["sp-what"]].join(" ")}>
           <small>{err ? "Spotify" : !device ? "Connecting to Spotify…" : track ? (track.paused ? "Paused" : "Now playing") : `Signed in${me ? ` as ${me}` : ""}`}</small>
           <b>{track?.name ?? "Pick a playlist"}</b>
           {track && <small>{track.artists}</small>}
         </span>
       </div>
-      <div className="sp-ctl">
-        <button className="ds-r-skip" onClick={() => void player.current?.previousTrack()} disabled={!track} aria-label="Previous track"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3v10M13 3L6 8l7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
-        <button className="ds-r-play" onClick={() => void toggle()} disabled={!device} aria-label={track && !track.paused ? "Pause Spotify" : "Play Spotify"}>
+      <div className={["sp-ctl", roomStyles["sp-ctl"]].join(" ")}>
+        <button className={["ds-r-skip", roomStyles["ds-r-skip"]].join(" ")} onClick={() => void player.current?.previousTrack()} disabled={!track} aria-label="Previous track"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3v10M13 3L6 8l7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
+        <button className={["ds-r-play", roomStyles["ds-r-play"]].join(" ")} onClick={() => void toggle()} disabled={!device} aria-label={track && !track.paused ? "Pause Spotify" : "Play Spotify"}>
           {track && !track.paused
             ? <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5h2.2v9H3zM6.8 1.5H9v9H6.8z" fill="currentColor" /></svg>
-            : <svg viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: 2 }}><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>}
+            : <svg viewBox="0 0 12 12" aria-hidden="true" className="ml-[2px]"><path d="M3 1.5l7.5 4.5L3 10.5z" fill="currentColor" /></svg>}
         </button>
-        <button className="ds-r-skip" onClick={() => void player.current?.nextTrack()} disabled={!track} aria-label="Next track"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12 3v10M3 3l7 5-7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
-        <button className="sp-chip quiet" onClick={() => setPicking((v) => !v)} aria-expanded={picking}>Your playlists</button>
+        <button className={["ds-r-skip", roomStyles["ds-r-skip"]].join(" ")} onClick={() => void player.current?.nextTrack()} disabled={!track} aria-label="Next track"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12 3v10M3 3l7 5-7 5z" fill="currentColor" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg></button>
+        <button className={["sp-chip quiet", roomStyles["sp-chip"]].join(" ")} onClick={() => setPicking((v) => !v)} aria-expanded={picking}>Your playlists</button>
       </div>
       {picking && (
-        <ul className="sp-lists" aria-label="Your playlists">
-          {lists === null ? <li className="sp-empty">Loading…</li> : lists.length === 0 ? <li className="sp-empty">No playlists found.</li>
+        <ul className={["sp-lists", roomStyles["sp-lists"]].join(" ")} aria-label="Your playlists">
+          {lists === null ? <li className={["sp-empty", roomStyles["sp-empty"]].join(" ")}>Loading…</li> : lists.length === 0 ? <li className={["sp-empty", roomStyles["sp-empty"]].join(" ")}>No playlists found.</li>
             : lists.map((p) => (
               <li key={p.id}><button onClick={() => void play(p.uri)} disabled={!device}>
                 {p.image ? <img src={p.image} alt="" /> : <i aria-hidden="true">♪</i>}<span><b>{p.name}</b><small>{p.count} tracks</small></span>
@@ -199,8 +200,8 @@ function MySpotify() {
             ))}
         </ul>
       )}
-      {err && <p className="sp-err" role="alert">{err}</p>}
-      <button className="sp-change" onClick={() => signOut()}>Sign out of Spotify</button>
+      {err && <p className={["sp-err", roomStyles["sp-err"]].join(" ")} role="alert">{err}</p>}
+      <button className={["sp-change", roomStyles["sp-change"]].join(" ")} onClick={() => signOut()}>Sign out of Spotify</button>
     </div>
   );
 }
@@ -213,29 +214,29 @@ function Setup({ onEmbed }: { onEmbed: () => void }) {
   const uri = redirectUri();
   const onLocalhost = location.hostname === "localhost";
   if (clientId()) return (
-    <div className="sp sp-setup">
-      <button className="sp-signin" onClick={() => void signIn()}>
+    <div className={["sp sp-setup", roomStyles["sp"], roomStyles["sp-setup"]].join(" ")}>
+      <button className={["sp-signin", roomStyles["sp-signin"]].join(" ")} onClick={() => void signIn()}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#1ed760" /><path d="M6.5 9.3c3.6-1 7.6-.7 10.9 1M7.2 12.4c3-.8 6.2-.5 8.9.9M7.9 15.3c2.4-.6 4.8-.4 6.9.7" fill="none" stroke="#000" strokeWidth="1.6" strokeLinecap="round" /></svg>
         Sign in with Spotify
       </button>
       <small>Plays your own playlists in Lilt. Needs Spotify Premium.</small>
-      <div className="sp-row"><button type="button" className="sp-chip quiet" onClick={onEmbed}>Paste a link instead</button><button type="button" className="sp-chip quiet" onClick={() => setClientId(null)}>Change Client ID</button></div>
+      <div className={["sp-row", roomStyles["sp-row"]].join(" ")}><button type="button" className={["sp-chip quiet", roomStyles["sp-chip"]].join(" ")} onClick={onEmbed}>Paste a link instead</button><button type="button" className={["sp-chip quiet", roomStyles["sp-chip"]].join(" ")} onClick={() => setClientId(null)}>Change Client ID</button></div>
     </div>
   );
   return (
-    <form className="sp sp-setup" onSubmit={(e) => { e.preventDefault(); if (id.trim()) setClientId(id); }}>
-      <b className="sp-h">Connect your Spotify</b>
+    <form className={["sp sp-setup", roomStyles["sp"], roomStyles["sp-setup"]].join(" ")} onSubmit={(e) => { e.preventDefault(); if (id.trim()) setClientId(id); }}>
+      <b className={["sp-h", roomStyles["sp-h"]].join(" ")}>Connect your Spotify</b>
       {onLocalhost
         ? <small>Spotify only signs in at 127.0.0.1. <a href={location.href.replace("//localhost", "//127.0.0.1")}>Open Lilt there</a> to connect.</small>
-        : <ol className="sp-steps">
+        : <ol className={["sp-steps", roomStyles["sp-steps"]].join(" ")}>
             <li>At <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noreferrer">developer.spotify.com</a>, create an app (Web API and Web Playback SDK).</li>
-            <li>Add this Redirect URI: <button type="button" className="sp-copy" onClick={() => { void navigator.clipboard?.writeText(uri); setCopied(true); }}>{uri}<span>{copied ? "Copied" : "Copy"}</span></button></li>
+            <li>Add this Redirect URI: <button type="button" className={["sp-copy", roomStyles["sp-copy"]].join(" ")} onClick={() => { void navigator.clipboard?.writeText(uri); setCopied(true); }}>{uri}<span>{copied ? "Copied" : "Copy"}</span></button></li>
             <li>Paste the app's Client ID:</li>
           </ol>}
       {!onLocalhost && <input value={id} onChange={(e) => setId(e.target.value)} placeholder="Client ID" aria-label="Spotify Client ID" spellCheck={false} />}
-      <div className="sp-row">
-        {!onLocalhost && <button className="sp-chip" disabled={!id.trim()}>Save</button>}
-        <button type="button" className="sp-chip quiet" onClick={onEmbed}>Or paste a playlist link</button>
+      <div className={["sp-row", roomStyles["sp-row"]].join(" ")}>
+        {!onLocalhost && <button className={["sp-chip", roomStyles["sp-chip"]].join(" ")} disabled={!id.trim()}>Save</button>}
+        <button type="button" className={["sp-chip quiet", roomStyles["sp-chip"]].join(" ")} onClick={onEmbed}>Or paste a playlist link</button>
       </div>
     </form>
   );
@@ -261,18 +262,18 @@ function EmbedRadio({ onUse, onBack }: { onUse?: () => void; onBack: () => void 
   const use = (u: string) => { saveSpotify(u); setUri(u); setEditing(false); setBad(false); setLink(""); onUse?.(); };
   const submit = (e: FormEvent) => { e.preventDefault(); const u = spotifyUri(link); if (u) use(u); else setBad(true); };
   if (uri && !editing) return (
-    <div className="sp">
+    <div className={["sp", roomStyles["sp"]].join(" ")}>
       <Player uri={uri} />
-      <div className="sp-row"><button className="sp-change" onClick={() => setEditing(true)}>Change playlist</button><button className="sp-change" onClick={onBack}>Sign in to your Spotify</button></div>
+      <div className={["sp-row", roomStyles["sp-row"]].join(" ")}><button className={["sp-change", roomStyles["sp-change"]].join(" ")} onClick={() => setEditing(true)}>Change playlist</button><button className={["sp-change", roomStyles["sp-change"]].join(" ")} onClick={onBack}>Sign in to your Spotify</button></div>
     </div>
   );
   return (
-    <form className="sp sp-pick" onSubmit={submit}>
+    <form className={["sp sp-pick", roomStyles["sp"], roomStyles["sp-pick"]].join(" ")} onSubmit={submit}>
       <input value={link} onChange={(e) => { setLink(e.target.value); setBad(false); }} placeholder="Paste a Spotify playlist link" aria-label="Spotify playlist, album or track link" aria-invalid={bad} />
-      <div className="sp-row">
-        {SUGGESTED.map((s) => <button key={s.uri} type="button" className="sp-chip" onClick={() => use(s.uri)}>{s.label}</button>)}
-        {uri && <button type="button" className="sp-chip quiet" onClick={() => setEditing(false)}>Cancel</button>}
-        <button type="button" className="sp-chip quiet" onClick={onBack}>Sign in instead</button>
+      <div className={["sp-row", roomStyles["sp-row"]].join(" ")}>
+        {SUGGESTED.map((s) => <button key={s.uri} type="button" className={["sp-chip", roomStyles["sp-chip"]].join(" ")} onClick={() => use(s.uri)}>{s.label}</button>)}
+        {uri && <button type="button" className={["sp-chip quiet", roomStyles["sp-chip"]].join(" ")} onClick={() => setEditing(false)}>Cancel</button>}
+        <button type="button" className={["sp-chip quiet", roomStyles["sp-chip"]].join(" ")} onClick={onBack}>Sign in instead</button>
       </div>
       <small>{bad ? "That doesn't look like a Spotify link." : "Spotify loads only once you pick something. It pauses while the mic is on."}</small>
     </form>

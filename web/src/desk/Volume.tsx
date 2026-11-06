@@ -1,3 +1,4 @@
+import { roomStyles } from "./roomStyles";
 import { radio, useRadio } from "./lofi";
 
 /** The radio's volume: a speaker you can tap to mute, and a slim slider. Shared by both radios. */
@@ -5,8 +6,8 @@ export function Volume() {
   const { volume } = useRadio();
   const pct = Math.round(volume * 100);
   return (
-    <span className="vol">
-      <button className="vol-icon" onClick={() => radio.setVolume(volume > 0 ? 0 : 0.8)} aria-label={volume > 0 ? "Mute radio" : "Unmute radio"}>
+    <span className={["vol", roomStyles["vol"]].join(" ")}>
+      <button className={["vol-icon", roomStyles["vol-icon"]].join(" ")} onClick={() => radio.setVolume(volume > 0 ? 0 : 0.8)} aria-label={volume > 0 ? "Mute radio" : "Unmute radio"}>
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M2.5 6h2.5l3.5-3v10L5 10H2.5z" fill="currentColor" />
           {volume > 0 && <path d="M10.6 6a2.8 2.8 0 010 4" />}

@@ -1,7 +1,7 @@
-import "../styles/deck.css";
-import "../styles/voice.css";
-import "../styles/editor.css";
-import "../styles/stationery-deck.css";
+import { shared } from "../ui/shared";
+import { cx } from "../ui/cx";
+import { pages } from "../ui/pages";
+import { practice } from "../ui/practice";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
@@ -100,20 +100,21 @@ function Resizer({ className, label, onDrag, onNudge, onReset }: {
     e.preventDefault();
     const el = e.currentTarget;
     el.setPointerCapture(e.pointerId);
-    document.documentElement.classList.add("ve-dragging");
+    const draggingClasses = ["ve-dragging", ...practice["ve-dragging"].split(" ")];
+    document.documentElement.classList.add(...draggingClasses);
     const move = (ev: PointerEvent) => onDrag(ev.clientX);
     const up = () => {
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", up);
-      document.documentElement.classList.remove("ve-dragging");
+      document.documentElement.classList.remove(...draggingClasses);
     };
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", up);
     el.addEventListener("pointercancel", up);
   };
   return (
-    <div className={`ve-resize ${className}`} role="separator" aria-orientation="vertical" aria-label={label} tabIndex={0}
+    <div className={[`ve-resize ${className}`, practice["ve-resize"]].filter(Boolean).join(' ')} role="separator" aria-orientation="vertical" aria-label={label} tabIndex={0}
       onPointerDown={down} onDoubleClick={onReset}
       onKeyDown={(e) => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); onNudge(e.key === "ArrowLeft" ? -1 : 1); } }} />
   );
@@ -188,18 +189,18 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
   useEffect(() => { chips.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ inline: "center", block: "nearest" }); }, [texts, doc, level?.id]);
 
   return (
-    <div className="ve" ref={page}>
-      <button className="ve-side-toggle" onClick={toggleSide} aria-label={layout.collapsed ? "Show sidebar" : "Hide sidebar"} aria-keyshortcuts="Meta+Backslash Control+Backslash"
+    <div className={cx(pages.ve, ["ve", practice["ve"]].filter(Boolean).join(' '))} ref={page}>
+      <button className={["ve-side-toggle", practice["ve-side-toggle"]].filter(Boolean).join(' ')} onClick={toggleSide} aria-label={layout.collapsed ? "Show sidebar" : "Hide sidebar"} aria-keyshortcuts="Meta+Backslash Control+Backslash"
         title={layout.collapsed ? "Show sidebar (⌘\\)" : "Hide sidebar (⌘\\)"}><SidebarIcon /></button>
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <RemixPanel />
       <Sidebar onNewChapter={() => void newChapter()} texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
-      <div className={`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "mixtape" || doc === "settings" ? " solo" : ""}`} ref={docRef}>
+      <div className={[`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "mixtape" || doc === "settings" ? " solo" : ""}`, practice["ve-doc"]].filter(Boolean).join(' ')} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
-          <nav className="ve-chips" aria-label="Chapters" ref={chips}>
+          <nav className={["ve-chips", practice["ve-chips"]].filter(Boolean).join(' ')} aria-label="Chapters" ref={chips}>
             <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
             <button aria-current={doc === "free" ? "page" : undefined} onClick={() => go("/studio/free")} disabled={recording}>Studio</button>
             <button aria-current={doc === "recordings" ? "page" : undefined} onClick={() => go("/history")} disabled={recording}>Recordings</button>
@@ -210,15 +211,15 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
           </nav>
         )}
         {loadErr && !texts
-          ? <div className="ve-page"><article className="ve-col"><p role="alert" className="ve-err">{loadErr}</p></article></div>
+          ? <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}><article className={["ve-col", practice["ve-col"]].filter(Boolean).join(' ')}><p role="alert" className={["ve-err", practice["ve-err"]].filter(Boolean).join(' ')}>{loadErr}</p></article></div>
           : doc === "recordings" || doc === "progress"
-          ? <div className="ve-page"><div className="ve-col ve-embed">{doc === "recordings" ? (text ? <TextHistory key={text} promptId={text} /> : <HistoryPage />) : <ProgressSoon />}</div></div>
+          ? <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}><div className={["ve-col ve-embed", practice["ve-embed"], practice["ve-col"]].filter(Boolean).join(' ')}>{doc === "recordings" ? (text ? <TextHistory key={text} promptId={text} /> : <HistoryPage />) : <ProgressSoon />}</div></div>
           : doc === "updates"
-          ? <div className="ve-page"><div className="ve-col ve-embed"><UpdatesDoc onTexts={setTexts} /></div></div>
+          ? <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}><div className={["ve-col ve-embed", practice["ve-embed"], practice["ve-col"]].filter(Boolean).join(' ')}><UpdatesDoc onTexts={setTexts} /></div></div>
           : doc === "settings"
-          ? <div className="ve-page"><div className="ve-col ve-embed"><PracticeSettings /></div></div>
+          ? <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}><div className={["ve-col ve-embed", practice["ve-embed"], practice["ve-col"]].filter(Boolean).join(' ')}><PracticeSettings /></div></div>
           : doc === "mixtape"
-          ? <div className="ve-page"><div className="ve-col ve-embed"><MixtapeDoc onTexts={setTexts} /></div></div>
+          ? <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}><div className={["ve-col ve-embed", practice["ve-embed"], practice["ve-col"]].filter(Boolean).join(' ')}><MixtapeDoc onTexts={setTexts} /></div></div>
           : doc === "free"
           ? profile && <StudioDoc band={profile.comfort_range_hz ?? null} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "home"
@@ -258,21 +259,21 @@ export function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]>
   const [on, setOn] = useState(false);
   const watch = `https://www.youtube.com/watch?v=${video.id}`;
   if (on) return (
-    <div className="ci-video">
-      <div className="ci-frame"><iframe src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`} title={video.title || "Video"} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen /></div>
-      <p className="ci-vmeta">{video.by && <>{video.by} · </>}<a href={watch} target="_blank" rel="noreferrer">Open on YouTube</a></p>
+    <div className={["ci-video", practice["ci-video"]].filter(Boolean).join(' ')}>
+      <div className={["ci-frame", practice["ci-frame"]].filter(Boolean).join(' ')}><iframe src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`} title={video.title || "Video"} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen /></div>
+      <p className={["ci-vmeta", practice["ci-vmeta"]].filter(Boolean).join(' ')}>{video.by && <>{video.by} · </>}<a href={watch} target="_blank" rel="noreferrer">Open on YouTube</a></p>
     </div>
   );
   // The thumbnail is a copy saved with the course, so showing it asks nothing of YouTube.
   const poster = video.image ? picture(video.image) : undefined;
   // Small until you want it: a thumbnail row; pressing it opens the full player.
   return (
-    <button type="button" className="ci-vrow" onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
-      <span className={`ci-thumb${poster ? "" : " plain"}`}>
+    <button type="button" className={["ci-vrow", practice["ci-vrow"]].filter(Boolean).join(' ')} onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
+      <span className={[`ci-thumb${poster ? "" : " plain"}`, practice["ci-thumb"]].filter(Boolean).join(' ')}>
         {poster && <img src={poster} alt="" loading="lazy" />}
-        <span className="ci-play" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5.5 3.5l7 4.5-7 4.5z" fill="currentColor" /></svg></span>
+        <span className={["ci-play", practice["ci-play"]].filter(Boolean).join(' ')} aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5.5 3.5l7 4.5-7 4.5z" fill="currentColor" /></svg></span>
       </span>
-      <span className="ci-vtext"><small>Video{video.by ? ` · ${video.by}` : ""}</small><b>{video.title || "Watch a video"}</b><small>Plays from YouTube when you press it</small></span>
+      <span className={["ci-vtext", practice["ci-vtext"]].filter(Boolean).join(' ')}><small>Video{video.by ? ` · ${video.by}` : ""}</small><b>{video.title || "Watch a video"}</b><small>Plays from YouTube when you press it</small></span>
     </button>
   );
 }
@@ -291,39 +292,39 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
   const steps = chapterSteps(level.basis);
   const tips = steps?.tips ?? [];
   return (
-    <section className="ci" aria-label="About this chapter">
-      <Markdown src={steps?.lede ?? basis} className={steps ? "ci-lede" : "ci-body"} headingOffset={1} />
+    <section className={["ci", practice["ci"]].filter(Boolean).join(' ')} aria-label="About this chapter">
+      <Markdown src={steps?.lede ?? basis} className={[steps ? "ci-lede" : "ci-body", practice["ci-lede"]].filter(Boolean).join(' ')} headingOffset={1} />
       {tips.length > 0 && open && (
-        <button type="button" className="ci-link ci-skip" onClick={() => document.getElementById(`texts-${level.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+        <button type="button" className={["ci-link ci-skip", practice["ci-skip"], practice["ci-link"]].filter(Boolean).join(' ')} onClick={() => document.getElementById(`texts-${level.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
           Skip to the texts<span aria-hidden="true">↓</span>
         </button>
       )}
       {tips.length > 0 && open && (
-        <ol className="ci-tips" id={`tips-${level.id}`}>
+        <ol className={["ci-tips", practice["ci-tips"]].filter(Boolean).join(' ')} id={`tips-${level.id}`}>
           {tips.map((t, i) => {
             const care = isCare(t.label);
             return (
               <li key={i} className={care ? "care" : undefined}>
                 {care
-                  ? <span className="ci-ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
-                  : <span className="ci-ic ci-n" aria-hidden="true">{tips.slice(0, i + 1).filter((x) => !isCare(x.label)).length}</span>}
+                  ? <span className={["ci-ic", practice["ci-ic"]].filter(Boolean).join(' ')} aria-hidden="true"><svg viewBox="0 0 16 16"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+                  : <span className={["ci-ic ci-n", practice["ci-ic"], practice["ci-n"]].filter(Boolean).join(' ')} aria-hidden="true">{tips.slice(0, i + 1).filter((x) => !isCare(x.label)).length}</span>}
                 <div>{t.label && <b>{t.label}</b>}<Markdown src={t.body} headingOffset={2} /></div>
               </li>
             );
           })}
         </ol>
       )}
-      <div className="ci-foot">
+      <div className={["ci-foot", practice["ci-foot"]].filter(Boolean).join(' ')}>
         {tips.length > 0 && (
-          <button type="button" className="ci-link" aria-expanded={open} aria-controls={`tips-${level.id}`} onClick={() => setOpen((o) => !o)}>
+          <button type="button" className={["ci-link", practice["ci-link"]].filter(Boolean).join(' ')} aria-expanded={open} aria-controls={`tips-${level.id}`} onClick={() => setOpen((o) => !o)}>
             {open ? "Hide tips" : `Show tips (${tips.length})`}<span aria-hidden="true">{open ? "↑" : "↓"}</span>
           </button>
         )}
-        <button type="button" className="ci-link quiet" aria-expanded={sources} onClick={() => setSources((v) => !v)}>
+        <button type="button" className={["ci-link quiet", practice["ci-link"]].filter(Boolean).join(' ')} aria-expanded={sources} onClick={() => setSources((v) => !v)}>
           Sources<span aria-hidden="true">{sources ? "↑" : "↓"}</span>
         </button>
       </div>
-      {sources && <p className="ci-src">{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>}
+      {sources && <p className={["ci-src", practice["ci-src"]].filter(Boolean).join(' ')}>{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>}
       {level.video && <ChapterVideo video={level.video} />}
     </section>
   );
@@ -334,7 +335,7 @@ const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it)
 const nextChapter = (texts: Texts, practised: Set<string>) => texts.levels.find((l) => !chapterDone(l, practised));
 
 const Chevron = ({ open }: { open: boolean }) => (
-  <svg className={`ve-chev${open ? " open" : ""}`} viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  <svg className={[`ve-chev${open ? " open" : ""}`, practice["ve-chev"]].filter(Boolean).join(' ')} viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 const Tick = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l3 3 6-6.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -346,11 +347,11 @@ function Folder({ id, label, extra, current, open, onToggle, onOpen, locked, chi
 }) {
   return (
     <li className={`ve-folder${open ? " open" : ""}`}>
-      <div className="ve-row">
-        <button className="ve-fold" onClick={() => onToggle(id)} aria-expanded={open} aria-label={`${open ? "Fold" : "Unfold"} ${label}`}><Chevron open={open} /></button>
-        <button className="ve-open" onClick={onOpen} disabled={locked} aria-current={current ? "page" : undefined}><span className="t">{label}</span>{extra}</button>
+      <div className={["ve-row", practice["ve-row"]].filter(Boolean).join(' ')}>
+        <button className={["ve-fold", practice["ve-fold"]].filter(Boolean).join(' ')} onClick={() => onToggle(id)} aria-expanded={open} aria-label={`${open ? "Fold" : "Unfold"} ${label}`}><Chevron open={open} /></button>
+        <button className={["ve-open", practice["ve-open"]].filter(Boolean).join(' ')} onClick={onOpen} disabled={locked} aria-current={current ? "page" : undefined}><span className="t">{label}</span>{extra}</button>
       </div>
-      {open && <ul className="ve-files">{children}</ul>}
+      {open && <ul className={["ve-files", practice["ve-files"]].filter(Boolean).join(' ')}>{children}</ul>}
     </li>
   );
 }
@@ -375,20 +376,20 @@ const PLACES = [
 function MixtapeDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
   const m = useMixtape(COURSE, () => void api.texts().then(onTexts));
   return (
-    <div className="co ve-mixtape">
-      <header className="co-head">
+    <div className={cx(pages.co, ["co ve-mixtape", practice["ve-mixtape"]].filter(Boolean).join(' '))}>
+      <header className={cx(pages.coHead, "co-head")}>
         <h1>Your mixtape</h1>
         <p>Your own remix of {m.c ? m.c.title.toLowerCase() : "this course"}. The first change makes your own copy; Practice then plays your version. The original stays as it is, and you can go back any time.</p>
       </header>
       <MixtapeSections m={m} updatesHref="/studio/updates" remix={
-        <section className="co-sec">
+        <section className={cx(pages.coSec, "co-sec")}>
           <h2>{REMIX_AVAILABLE ? "How to remix" : "Remix · Coming soon"}</h2>
-          {!REMIX_AVAILABLE ? <RemixBox /> : <div className="co-box">
-            <div className="co-row"><div><b>A chapter</b><p>Open it and press <b className="co-k">Remix</b> below the chapter title. Say what to change; you can keep going or undo.</p></div></div>
-            <div className="co-row"><div><b>A new chapter</b><p>Press <b className="co-k">New chapter</b> at the end of the chapter list, then say what it should be about.</p></div></div>
-            <div className="co-row">
+          {!REMIX_AVAILABLE ? <RemixBox /> : <div className={cx(pages.coBox, "co-box")}>
+            <div className={cx(pages.coRow, "co-row")}><div><b>A chapter</b><p>Open it and press <b className="co-k">Remix</b> below the chapter title. Say what to change; you can keep going or undo.</p></div></div>
+            <div className={cx(pages.coRow, "co-row")}><div><b>A new chapter</b><p>Press <b className="co-k">New chapter</b> at the end of the chapter list, then say what it should be about.</p></div></div>
+            <div className={cx(pages.coRow, "co-row")}>
               <div><b>The whole course</b><p>Ask for your own version of everything: gentler, shorter, about your own days.</p></div>
-              <button className="btn-secondary" onClick={() => openRemix({ course: COURSE, title: "The whole course" })}>Remix the whole course</button>
+              <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => openRemix({ course: COURSE, title: "The whole course" })}>Remix the whole course</button>
             </div>
           </div>}
         </section>
@@ -399,9 +400,9 @@ function MixtapeDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
 
 /** One piece of the syllabus as you'd read it: a text in the reading serif with its hint, or Markdown. */
 function PieceView({ piece }: { piece: Piece | null }) {
-  if (!piece) return <p className="ve-up-gone">Removed</p>;
-  if (piece.text) return <div className="ve-up-text"><p>{piece.text}</p>{piece.hint && <small>{piece.hint}</small>}</div>;
-  return <Markdown src={piece.markdown.replace(/^---\n[\s\S]*?\n---\n/, "")} className="ve-md ve-up-md" headingOffset={1} />;
+  if (!piece) return <p className={["ve-up-gone", practice["ve-up-gone"]].filter(Boolean).join(' ')}>Removed</p>;
+  if (piece.text) return <div className={["ve-up-text", practice["ve-up-text"]].filter(Boolean).join(' ')}><p>{piece.text}</p>{piece.hint && <small>{piece.hint}</small>}</div>;
+  return <Markdown src={piece.markdown.replace(/^---\n[\s\S]*?\n---\n/, "")} className={["ve-md ve-up-md", practice["ve-md"], practice["ve-up-md"]].filter(Boolean).join(' ')} headingOffset={1} />;
 }
 
 const KIND: Record<SyllabusChange["kind"], string> = { added: "New", changed: "Updated", removed: "Removed" };
@@ -429,20 +430,20 @@ export function UpdatesDoc({ course, onTexts, back = "#/studio", backLabel = "Ba
   });
   const undo = () => run(async () => { await api.undoSyllabus(course); setDone(null); await refresh(); });
 
-  if (!u) return <article className="ve-soon"><h1>Updates from Lilt</h1>{error && <p role="alert">{error}</p>}</article>;
+  if (!u) return <article className={["ve-soon", practice["ve-soon"]].filter(Boolean).join(' ')}><h1>Updates from Lilt</h1>{error && <p role="alert">{error}</p>}</article>;
   const choose = u.changes.filter((c) => c.handling === "choose");
   const coming = u.changes.filter((c) => c.handling === "take");
   const same = u.changes.filter((c) => c.handling === "already").length;
   const ready = choose.every((c) => picks[c.id]);
   const n = choose.length + coming.length;
   return (
-    <article className="ve-soon ve-updates">
+    <article className={["ve-soon ve-updates", practice["ve-soon"], practice["ve-updates"]].filter(Boolean).join(' ')}>
       <h1>Updates from Lilt</h1>
       {done ? (
         <>
           <p className="lede">All up to date.</p>
           <p>{done.taken} {done.taken === 1 ? "update" : "updates"} brought in{done.kept ? `, and ${done.kept} kept as yours` : ""}. Your practice history stays with each text.</p>
-          <p className="ve-up-actions"><a className="ve-up-go" href={back}>{backLabel}</a><button className="ve-up-quiet" onClick={undo} disabled={busy}>Undo</button></p>
+          <p className={["ve-up-actions", practice["ve-up-actions"]].filter(Boolean).join(' ')}><a className={["ve-up-go", practice["ve-up-go"]].filter(Boolean).join(' ')} href={back}>{backLabel}</a><button className={["ve-up-quiet", practice["ve-up-quiet"]].filter(Boolean).join(' ')} onClick={undo} disabled={busy}>Undo</button></p>
         </>
       ) : u.using === "original" ? (
         <p>You're using Lilt's original chapters, so its updates already apply. <a href={back}>{backLabel}</a></p>
@@ -454,15 +455,15 @@ export function UpdatesDoc({ course, onTexts, back = "#/studio", backLabel = "Ba
           {choose.length > 0 && (
             <section>
               <h2>Choose ({choose.length})</h2>
-              <ul className="ve-up-list">
+              <ul className={["ve-up-list", practice["ve-up-list"]].filter(Boolean).join(' ')}>
                 {choose.map((c) => (
                   <li key={c.id}>
-                    <div className="ve-up-head"><b>{c.title}</b><span className="ve-up-kind">{KIND[c.kind]}</span>{c.part && <small>{c.part}</small>}</div>
-                    <div className="ve-up-pick" role="radiogroup" aria-label={c.title}>
+                    <div className={["ve-up-head", practice["ve-up-head"]].filter(Boolean).join(' ')}><b>{c.title}</b><span className={["ve-up-kind", practice["ve-up-kind"]].filter(Boolean).join(' ')}>{KIND[c.kind]}</span>{c.part && <small>{c.part}</small>}</div>
+                    <div className={["ve-up-pick", practice["ve-up-pick"]].filter(Boolean).join(' ')} role="radiogroup" aria-label={c.title}>
                       {(["yours", "original"] as const).map((side) => (
                         <button key={side} role="radio" aria-checked={picks[c.id] === side} className={picks[c.id] === side ? "on" : ""}
                           onClick={() => setPicks((p) => ({ ...p, [c.id]: side }))}>
-                          <span className="ve-up-label">{side === "yours" ? "Keep yours" : "Take Lilt's new version"}</span>
+                          <span className={["ve-up-label", practice["ve-up-label"]].filter(Boolean).join(' ')}>{side === "yours" ? "Keep yours" : "Take Lilt's new version"}</span>
                           <PieceView piece={side === "yours" ? c.yours : c.original} />
                         </button>
                       ))}
@@ -475,11 +476,11 @@ export function UpdatesDoc({ course, onTexts, back = "#/studio", backLabel = "Ba
           {coming.length > 0 && (
             <section>
               <h2>Coming in ({coming.length})</h2>
-              <ul className="ve-up-list">
+              <ul className={["ve-up-list", practice["ve-up-list"]].filter(Boolean).join(' ')}>
                 {coming.map((c) => (
                   <li key={c.id}>
                     <details>
-                      <summary className="ve-up-head"><b>{c.title}</b><span className="ve-up-kind">{KIND[c.kind]}</span>{c.part && <small>{c.part}</small>}</summary>
+                      <summary className={["ve-up-head", practice["ve-up-head"]].filter(Boolean).join(' ')}><b>{c.title}</b><span className={["ve-up-kind", practice["ve-up-kind"]].filter(Boolean).join(' ')}>{KIND[c.kind]}</span>{c.part && <small>{c.part}</small>}</summary>
                       <PieceView piece={c.kind === "removed" ? c.before : c.original} />
                     </details>
                   </li>
@@ -487,14 +488,14 @@ export function UpdatesDoc({ course, onTexts, back = "#/studio", backLabel = "Ba
               </ul>
             </section>
           )}
-          {same > 0 && <p className="ve-up-note">{same} more {same === 1 ? "change matches" : "changes match"} what you'd already done.</p>}
-          {error && <p className="ve-up-error" role="alert">{error}</p>}
-          <p className="ve-up-actions">
-            {choose.length > 1 && !ready && <button className="ve-up-quiet" onClick={() => setPicks(Object.fromEntries(choose.map((c) => [c.id, "original" as const])))}>Take all of Lilt's new versions</button>}
-            <button className="ve-up-go" onClick={apply} disabled={busy || !ready}>Bring in {n} {n === 1 ? "update" : "updates"}</button>
-            {!ready && <span className="ve-up-note">Choose for each one above first.</span>}
+          {same > 0 && <p className={["ve-up-note", practice["ve-up-note"]].filter(Boolean).join(' ')}>{same} more {same === 1 ? "change matches" : "changes match"} what you'd already done.</p>}
+          {error && <p className={["ve-up-error", practice["ve-up-error"]].filter(Boolean).join(' ')} role="alert">{error}</p>}
+          <p className={["ve-up-actions", practice["ve-up-actions"]].filter(Boolean).join(' ')}>
+            {choose.length > 1 && !ready && <button className={["ve-up-quiet", practice["ve-up-quiet"]].filter(Boolean).join(' ')} onClick={() => setPicks(Object.fromEntries(choose.map((c) => [c.id, "original" as const])))}>Take all of Lilt's new versions</button>}
+            <button className={["ve-up-go", practice["ve-up-go"]].filter(Boolean).join(' ')} onClick={apply} disabled={busy || !ready}>Bring in {n} {n === 1 ? "update" : "updates"}</button>
+            {!ready && <span className={["ve-up-note", practice["ve-up-note"]].filter(Boolean).join(' ')}>Choose for each one above first.</span>}
           </p>
-          <p className="ve-up-note">You can undo this afterwards.</p>
+          <p className={["ve-up-note", practice["ve-up-note"]].filter(Boolean).join(' ')}>You can undo this afterwards.</p>
         </>
       )}
     </article>
@@ -504,7 +505,7 @@ export function UpdatesDoc({ course, onTexts, back = "#/studio", backLabel = "Ba
 /** Progress isn't ready to trust yet, so it says so and points at what already works. */
 function ProgressSoon() {
   return (
-    <article className="ve-soon">
+    <article className={["ve-soon", practice["ve-soon"]].filter(Boolean).join(' ')}>
       <h1>Progress</h1>
       <p className="lede">Coming soon.</p>
       <p>A clearer picture of how your voice is changing over weeks is on its way. Until then, everything you need to hear your progress is already here:</p>
@@ -545,28 +546,28 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
   useEffect(() => { if (currentPart && folded.has(currentPart)) fold(currentPart, false); }, [current]); // eslint-disable-line react-hooks/exhaustive-deps
   const file = (key: string, label: string, done: boolean, on: boolean, to: string, disabled = false) => (
     <li key={key}>
-      <button className={`ve-file${done ? " done" : ""}`} onClick={() => go(to)} disabled={locked || disabled} aria-current={on ? "page" : undefined} title={label}>
-        <span className="t">{label}</span>{done && <Tick className="ve-tick" />}
+      <button className={[`ve-file${done ? " done" : ""}`, practice["ve-file"]].filter(Boolean).join(' ')} onClick={() => go(to)} disabled={locked || disabled} aria-current={on ? "page" : undefined} title={label}>
+        <span className="t">{label}</span>{done && <Tick className={["ve-tick", practice["ve-tick"]].filter(Boolean).join(' ')} />}
       </button>
     </li>
   );
   return (
-    <nav className="ve-side" aria-label="Practice">
+    <nav className={["ve-side", practice["ve-side"]].filter(Boolean).join(' ')} aria-label="Practice">
       {/* The list scrolls under a fixed top strip, so nothing slides beneath the sidebar toggle. */}
-      <div className="ve-side-scroll">
+      <div className={["ve-side-scroll", practice["ve-side-scroll"]].filter(Boolean).join(' ')}>
       {PLACES.map((p) => (
-        <button key={p.id} className="ve-home" onClick={() => go(p.to)} disabled={locked} aria-current={current === p.id ? "page" : undefined}>
-          <span className="ve-home-ic"><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+        <button key={p.id} className={["ve-home", practice["ve-home"]].filter(Boolean).join(' ')} onClick={() => go(p.to)} disabled={locked} aria-current={current === p.id ? "page" : undefined}>
+          <span className={["ve-home-ic", practice["ve-home-ic"]].filter(Boolean).join(' ')}><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
           <span className="t">{p.label}</span>
           {p.id === "mixtape" && texts?.edition && (texts.edition.updates
-            ? <span className="ve-mix-tag new">{texts.edition.updates} new</span>
-            : texts.edition.mine ? <span className="ve-mix-tag">{texts.edition.changes}</span> : null)}
+            ? <span className={["ve-mix-tag new", practice["ve-mix-tag"]].filter(Boolean).join(' ')}>{texts.edition.updates} new</span>
+            : texts.edition.mine ? <span className={["ve-mix-tag", practice["ve-mix-tag"]].filter(Boolean).join(' ')}>{texts.edition.changes}</span> : null)}
         </button>
       ))}
-      <ul className="ve-tree">
+      <ul className={["ve-tree", practice["ve-tree"]].filter(Boolean).join(' ')}>
         <Folder id="today" label="Today" current={current === "today"} open={open.has("today")} onToggle={toggle} onOpen={() => go("/deck")} locked={locked}
-          extra={deck && !deck.paused ? (left === 0 && total ? <Tick className="ve-tick" /> : <span className="c">{total - left}/{total}</span>) : null}>
-          {deck?.paused ? <li className="ve-note-row">Resting today</li>
+          extra={deck && !deck.paused ? (left === 0 && total ? <Tick className={["ve-tick", practice["ve-tick"]].filter(Boolean).join(' ')} /> : <span className="c">{total - left}/{total}</span>) : null}>
+          {deck?.paused ? <li className={["ve-note-row", practice["ve-note-row"]].filter(Boolean).join(' ')}>Resting today</li>
             : deck?.items.map((it) => file(it.card.id, textLabel(it.card.front, it.card.id.split(".").pop() ?? ""), it.done_today, false, `/deck?card=${encodeURIComponent(it.card.id)}`, it.done_today))}
         </Folder>
       </ul>
@@ -577,7 +578,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
         return (
         <Fragment key={`${gi}-${g.part ?? ""}`}>
           {(g.part || gi === 0) && (
-            <h6 className="ve-part">
+            <h6 className={["ve-part", practice["ve-part"]].filter(Boolean).join(' ')}>
               <button onClick={() => fold(name, !shut)} aria-expanded={!shut}>
                 <span className="t">{name}</span>
                 <span className="c">{inPart.filter((l) => chapterDone(l, practised)).length} of {inPart.length}</span>
@@ -585,12 +586,12 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
               </button>
             </h6>
           )}
-          {!shut && <ul className="ve-tree">
+          {!shut && <ul className={["ve-tree", practice["ve-tree"]].filter(Boolean).join(' ')}>
             {g.levels.map((l) => {
               const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
               return (
                 <Folder key={l.id} id={l.id} label={l.title} current={current === l.id && !itemId} open={open.has(l.id)} onToggle={toggle} onOpen={() => go(`/studio/${l.id}`)} locked={locked}
-                  extra={d >= n ? <Medal className="ve-medal-s" /> : <span className={l.id === next?.id ? "c next" : "c"} title={l.id === next?.id ? "Next up" : undefined}>{d}/{n}</span>}>
+                  extra={d >= n ? <Medal className={["ve-medal-s", practice["ve-medal-s"]].filter(Boolean).join(' ')} /> : <span className={l.id === next?.id ? "c next" : "c"} title={l.id === next?.id ? "Next up" : undefined}>{d}/{n}</span>}>
                   {l.items.map((it) => file(it.id, textLabel(it.text, it.id), practised.has(textId(COURSE, l.id, it.id)), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
                 </Folder>
               );
@@ -624,14 +625,14 @@ const LO = 80, HI = 400;
 function SleepingCat({ hint, title = "Ready when you are" }: { hint: string; title?: string }) {
   const light = currentLight();
   return (
-    <div className="ve-art">
-      <div className="ve-cat" aria-hidden="true">
-        <div className="ve-cat-stage" style={{ backgroundImage: `url(${roomUrl(light)})` }}>
-          <img className="body" src={CAT_URL} alt="" />
-          <span className="ve-zzz"><i>z</i><i>z</i><i>z</i></span>
+    <div className={["ve-art", practice["ve-art"]].filter(Boolean).join(' ')}>
+      <div className={["ve-cat", practice["ve-cat"]].filter(Boolean).join(' ')} aria-hidden="true">
+        <div className={["ve-cat-stage", practice["ve-cat-stage"]].filter(Boolean).join(' ')} style={{ backgroundImage: `url(${roomUrl(light)})` }}>
+          <img className={["body", shared["body"]].filter(Boolean).join(' ')} src={CAT_URL} alt="" />
+          <span className={["ve-zzz", practice["ve-zzz"]].filter(Boolean).join(' ')}><i>z</i><i>z</i><i>z</i></span>
         </div>
       </div>
-      <p className="ve-art-copy"><b>{title}</b><span>{hint}</span></p>
+      <p className={["ve-art-copy", practice["ve-art-copy"]].filter(Boolean).join(' ')}><b>{title}</b><span>{hint}</span></p>
     </div>
   );
 }
@@ -834,7 +835,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
 
   const startListening = async () => { stopTone(); const s = mic.stream ?? (await mic.request()); if (s) setListening(true); };
 
-  const dash = <span className="ve-none">–</span>;
+  const dash = <span className={["ve-none", practice["ve-none"]].filter(Boolean).join(' ')}>–</span>;
   // Until the microphone is in use, the right half is just the room's window and the record button.
   const idle = !recording && !listening && state !== "saving" && state !== "error";
   const showResult = idle && !!result;
@@ -846,72 +847,72 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const status = recording ? "Recording" : listening ? "Live" : state === "saving" ? "Saving…" : state === "error" ? "Not saved" : state === "saved" ? "Saved" : "Ready";
   const showBright = brightness && (recording || listening);
   return (
-    <section ref={box} className={`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}${folded ? " folded" : ""}${showBright ? " bright" : ""}`} aria-label="Recorder">
-      {showResult ? <div className="ve-result-pane"><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
-      <div className="ve-now" aria-live="off">
-        <div className={`ve-now-read${nowHeld.held ? " held" : ""}`}>
+    <section ref={box} className={[`ve-dock${recording ? " rec" : ""}${listening ? " live" : ""}${idle ? " idle" : ""}${showResult ? " has-result" : idle ? " art" : ""}${quiet ? " quiet" : ""}${eyesOff ? " eyes-off" : ""}${folded ? " folded" : ""}${showBright ? " bright" : ""}`, practice["ve-dock"]].filter(Boolean).join(' ')} aria-label="Recorder">
+      {showResult ? <div className={["ve-result-pane", practice["ve-result-pane"]].filter(Boolean).join(' ')}><h2>Your take</h2>{result}</div> : <SleepingCat hint={idleHint} title={quiet ? "Nice one" : undefined} />}
+      <div className={["ve-now", practice["ve-now"]].filter(Boolean).join(' ')} aria-live="off">
+        <div className={[`ve-now-read${nowHeld.held ? " held" : ""}`, practice["ve-now-read"]].filter(Boolean).join(' ')}>
           <b>{now ? <>{Math.round(now)}<small>Hz</small></> : dash}</b>
           <span>{now ? (nowHeld.held ? `Last heard · ${noteName(now)}` : noteName(now)) : "Your pitch now"}</span>
         </div>
-        <span className={`ve-state ${recording ? "rec" : listening ? "live" : state}`}><i aria-hidden="true" />{status}</span>
+        <span className={[`ve-state ${recording ? "rec" : listening ? "live" : state}`, practice["ve-state"]].filter(Boolean).join(' ')}><i aria-hidden="true" />{status}</span>
       </div>
-      <div className="ve-scope">
+      <div className={["ve-scope", practice["ve-scope"]].filter(Boolean).join(' ')}>
         <PianoRoll live points={shown} duration={shown.length ? shown[shown.length - 1].t : 0} band={band} range={[LO, HI]}
           levels={amps.current} compact={narrow} height="100%" label="Your pitch, live, over the last eight seconds" />
-        {!active && <span className="ve-scope-idle">{idleHint}</span>}
-        {eyesOff && active && <span className="ve-eyes">Eyes off: listen to yourself, not the line</span>}
-        {inBand !== null && <span className={`ve-inrange${inBand ? " ok" : ""}`}>{inBand ? "In your range" : "Outside your range"}</span>}
+        {!active && <span className={["ve-scope-idle", practice["ve-scope-idle"]].filter(Boolean).join(' ')}>{idleHint}</span>}
+        {eyesOff && active && <span className={["ve-eyes", practice["ve-eyes"]].filter(Boolean).join(' ')}>Eyes off: listen to yourself, not the line</span>}
+        {inBand !== null && <span className={[`ve-inrange${inBand ? " ok" : ""}`, practice["ve-inrange"]].filter(Boolean).join(' ')}>{inBand ? "In your range" : "Outside your range"}</span>}
       </div>
       {showBright && (
-        <div className="ve-bright">
-          <div className="ve-bright-track" role="meter" aria-label="Brightness compared with the start of this take" aria-valuemin={-1} aria-valuemax={1}
+        <div className={["ve-bright", practice["ve-bright"]].filter(Boolean).join(' ')}>
+          <div className={["ve-bright-track", practice["ve-bright-track"]].filter(Boolean).join(' ')} role="meter" aria-label="Brightness compared with the start of this take" aria-valuemin={-1} aria-valuemax={1}
             aria-valuenow={bright?.rel != null ? Number(meterPosition(bright.rel).toFixed(2)) : 0} aria-valuetext={brightnessWords(bright)}>
-            <i className="ve-bright-start" />
-            <span className={`ve-bright-pos${bright?.rel == null ? " wait" : bright.voiced ? "" : " held"}`} style={{ transform: `translateX(${(bright?.rel != null ? meterPosition(bright.rel) : 0) * 50}%)` }}><b /></span>
+            <i className={["ve-bright-start", practice["ve-bright-start"]].filter(Boolean).join(' ')} />
+            <span className={[`ve-bright-pos${bright?.rel == null ? " wait" : bright.voiced ? "" : " held"}`, practice["ve-bright-pos"]].filter(Boolean).join(' ')} style={{ transform: `translateX(${(bright?.rel != null ? meterPosition(bright.rel) : 0) * 50}%)` }}><b /></span>
           </div>
-          <div className="rz-labels" aria-hidden="true"><span>Darker</span><span>Where you started</span><span>Brighter</span></div>
-          <p className="ve-bright-words" aria-hidden="true">{brightnessWords(bright)}</p>
-          <p className="ve-bright-note">Works best on a steady sound on one note: a hum, a held vowel, a whisper. Not on speech.</p>
+          <div className={["rz-labels", practice["rz-labels"]].filter(Boolean).join(' ')} aria-hidden="true"><span>Darker</span><span>Where you started</span><span>Brighter</span></div>
+          <p className={["ve-bright-words", practice["ve-bright-words"]].filter(Boolean).join(' ')} aria-hidden="true">{brightnessWords(bright)}</p>
+          <p className={["ve-bright-note", practice["ve-bright-note"]].filter(Boolean).join(' ')}>Works best on a steady sound on one note: a hum, a held vowel, a whisper. Not on speech.</p>
         </div>
       )}
-      <div className="ve-stats" aria-live="off" title="Live estimate. Saved takes are measured with Praat.">
-        <div className="ve-stat"><span>Middle</span><b>{mid ? <>{Math.round(mid)}<small>Hz</small></> : dash}</b><i>{mid ? noteName(mid) : ""}</i></div>
-        <div className="ve-stat"><span>Usual range</span><b>{range ? <>{Math.round(range[0])}–{Math.round(range[1])}</> : dash}</b><i>{range ? "Hz" : ""}</i></div>
-        <div className="ve-stat"><span>Steadiness</span><b>{sd !== null ? <>{sd.toFixed(1)}<small>st</small></> : dash}</b><i>{sd === null ? "" : sd < 0.3 ? "smooth" : sd < 0.8 ? "a little wobbly" : "moving"}</i></div>
+      <div className={["ve-stats", practice["ve-stats"]].filter(Boolean).join(' ')} aria-live="off" title="Live estimate. Saved takes are measured with Praat.">
+        <div className={["ve-stat", practice["ve-stat"]].filter(Boolean).join(' ')}><span>Middle</span><b>{mid ? <>{Math.round(mid)}<small>Hz</small></> : dash}</b><i>{mid ? noteName(mid) : ""}</i></div>
+        <div className={["ve-stat", practice["ve-stat"]].filter(Boolean).join(' ')}><span>Usual range</span><b>{range ? <>{Math.round(range[0])}–{Math.round(range[1])}</> : dash}</b><i>{range ? "Hz" : ""}</i></div>
+        <div className={["ve-stat", practice["ve-stat"]].filter(Boolean).join(' ')}><span>Steadiness</span><b>{sd !== null ? <>{sd.toFixed(1)}<small>st</small></> : dash}</b><i>{sd === null ? "" : sd < 0.3 ? "smooth" : sd < 0.8 ? "a little wobbly" : "moving"}</i></div>
       </div>
-      <button className={`ve-rec${recording ? " on" : ""}`} onClick={() => void (recording ? stop() : start())} disabled={!recording && !canStart}
+      <button className={[`ve-rec${recording ? " on" : ""}`, practice["ve-rec"]].filter(Boolean).join(' ')} onClick={() => void (recording ? stop() : start())} disabled={!recording && !canStart}
         aria-label={recording ? "Stop recording" : "Start recording"}>
         <i aria-hidden="true" />
-        {recording ? <>Stop<span className="ve-clock">{clock(elapsed)}</span></>
+        {recording ? <>Stop<span className={["ve-clock", practice["ve-clock"]].filter(Boolean).join(' ')}>{clock(elapsed)}</span></>
           : state === "saving" ? "Saving…"
           : (state === "saved" && allowRetake) || retake ? "Record again" : "Record"}
         {(recording || canStart) && <kbd aria-hidden="true">Space</kbd>}
       </button>
-      <div className="ve-dock-sub">
-        <span className={`ve-dock-msg${tooQuiet ? " quiet-mic" : ""}`}>
+      <div className={["ve-dock-sub", practice["ve-dock-sub"]].filter(Boolean).join(' ')}>
+        <span className={[`ve-dock-msg${tooQuiet ? " quiet-mic" : ""}`, practice["ve-dock-msg"]].filter(Boolean).join(' ')}>
           {tooQuiet ? "Your mic hears you very quietly. Come a little closer to it."
             : recording ? "Read the highlighted text"
             : listening ? "Listening only. Nothing is saved."
             : state === "saving" ? "Saving to your computer…" : ""}
         </span>
         {note && !quiet && (
-          <button className="ve-ghost ve-note" onClick={() => (toneOn ? stopTone() : playTone(note))} disabled={recording || listening || state === "saving"} aria-pressed={toneOn}
+          <button className={["ve-ghost ve-note", practice["ve-ghost"], practice["ve-note"]].filter(Boolean).join(' ')} onClick={() => (toneOn ? stopTone() : playTone(note))} disabled={recording || listening || state === "saving"} aria-pressed={toneOn}
             title={recording || listening ? "Your note can't play while the microphone is listening" : "A soft tone at the middle of your comfortable range, to hum along to"}>
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6.2h2.2L8 3.4v9.2L4.7 9.8H2.5z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><path d="M10.6 5.6a3.4 3.4 0 010 4.8M12.4 3.9a5.8 5.8 0 010 8.2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
             Play my note · {noteName(note)}
           </button>
         )}
         {children}
-        {canFold && <button className="ve-ghost" aria-expanded={!folded} onClick={() => setChartOpen(!chartOpen)}>{folded ? "Show pitch line" : "Hide pitch line"}</button>}
-        <span className="ve-sp" />
+        {canFold && <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} aria-expanded={!folded} onClick={() => setChartOpen(!chartOpen)}>{folded ? "Show pitch line" : "Hide pitch line"}</button>}
+        <span className={["ve-sp", practice["ve-sp"]].filter(Boolean).join(' ')} />
         {liveButton && !recording && !quiet && (listening
-          ? <button className="ve-ghost" aria-pressed="true" onClick={() => setListening(false)}>Stop listening</button>
-          : <button className="ve-icon" onClick={() => void startListening()} disabled={state === "saving"} aria-label="Show my pitch live" title="Show my pitch live, without recording">
+          ? <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} aria-pressed="true" onClick={() => setListening(false)}>Stop listening</button>
+          : <button className={["ve-icon", practice["ve-icon"]].filter(Boolean).join(' ')} onClick={() => void startListening()} disabled={state === "saving"} aria-label="Show my pitch live" title="Show my pitch live, without recording">
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 9c1.4-3.2 2.6-3.2 3.6 0s2.4 3.2 3.4 0 2.4-3.2 3.5 0 1.9 1.6 2.5 0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>)}
       </div>
-      {mic.error ? <MicHelp error={mic.error} onRetry={() => void mic.request()} /> : err && <p className="ve-err" role="alert">{err}</p>}
-      {state === "error" && rec.current?.onServer && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
+      {mic.error ? <MicHelp error={mic.error} onRetry={() => void mic.request()} /> : err && <p className={["ve-err", practice["ve-err"]].filter(Boolean).join(' ')} role="alert">{err}</p>}
+      {state === "error" && rec.current?.onServer && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
     </section>
   );
 }
@@ -920,7 +921,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
 function MicHelp({ error, onRetry }: { error: string; onRetry: () => void }) {
   const blocked = /blocked/i.test(error);
   return (
-    <div className="ve-mic-help" role="alert">
+    <div className={["ve-mic-help", practice["ve-mic-help"]].filter(Boolean).join(' ')} role="alert">
       <p><b>{blocked ? "Lilt can't use your microphone yet." : "Lilt can't hear your microphone."}</b>{" "}
         {blocked ? "Click the icon just left of the web address, set Microphone to Allow, then try again." : error}</p>
       <button onClick={onRetry}>Try again</button>
@@ -953,9 +954,9 @@ export function FoldedMeasures({ take, band, card, onUseRange, onMeasured }: {
   // the fallback when there's too little voice to count.
   const share = median ? measured!.inRange(band) : null;
   return (
-    <details className="ve-details" open={open} onToggle={(e) => { if (e.currentTarget.open !== open) toggle(e.currentTarget.open); }}>
+    <details className={["ve-details", practice["ve-details"]].filter(Boolean).join(' ')} open={open} onToggle={(e) => { if (e.currentTarget.open !== open) toggle(e.currentTarget.open); }}>
       <summary>Pitch details
-        <span className="ve-sum">{median === undefined ? "Measuring…" : median === null ? "No clear pitch"
+        <span className={["ve-sum", practice["ve-sum"]].filter(Boolean).join(' ')}>{median === undefined ? "Measuring…" : median === null ? "No clear pitch"
           : <>{Math.round(median)} Hz · {noteName(median)}{share !== null ? ` · ${Math.round(share * 100)}% in your range` : inBand !== null && (inBand ? " · in your range" : " · outside your range")}</>}</span>
       </summary>
       <Measures take={take} band={band} card={card} onUseRange={onUseRange} onMeasured={(m) => { setMeasured(m); onMeasured?.(m); }} />
@@ -966,7 +967,7 @@ export function FoldedMeasures({ take, band, card, onUseRange, onMeasured }: {
 /** A free take's summary: listen back, then the measured pitch line and numbers once analysis lands. */
 function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, number] | null; onMeasured?: (m: Measured) => void }) {
   return (
-    <div className="prc ve-result" key={take.id}>
+    <div className={["prc ve-result", practice["prc"], practice["ve-result"]].filter(Boolean).join(' ')} key={take.id}>
       <ListenBack src={take.audio_url} />
       <FoldedMeasures take={take} band={band} onMeasured={onMeasured} />
     </div>
@@ -988,23 +989,23 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
   const next = nextChapter(texts, practised);
   return (
     <>
-      <div className="ve-page">
-        {cover && <div className="ve-cover" style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
-        <article className="ve-col ve-home-col">
-          <header className="ve-head"><h1>Your practice</h1><p className="ve-subtitle">Pick up where you left off, or explore a chapter.</p></header>
+      <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}>
+        {cover && <div className={["ve-cover", practice["ve-cover"]].filter(Boolean).join(' ')} style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
+        <article className={["ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"]].filter(Boolean).join(' ')}>
+          <header className={["ve-head", practice["ve-head"]].filter(Boolean).join(' ')}><h1>Your practice</h1><p className={["ve-subtitle", practice["ve-subtitle"]].filter(Boolean).join(' ')}>Pick up where you left off, or explore a chapter.</p></header>
           {!band ? <StartCard /> : <YourPractice history={history} band={band} next={<NextStep deck={deck} texts={texts} practised={practised} />} />}
-          <nav className="ve-course-jumps" aria-label="Course shortcuts">
+          <nav className={["ve-course-jumps", practice["ve-course-jumps"]].filter(Boolean).join(' ')} aria-label="Course shortcuts">
             {texts.levels.length > 0 && <a href={`#/studio/${next?.id ?? texts.levels[0].id}`}>{practised.size ? "Continue learning" : "First chapter"}</a>}
             <a href="#/deck">Today's practice</a>
             <button type="button" onClick={() => document.getElementById("voice-chapters")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Browse {texts.levels.length} chapters <span aria-hidden="true">↓</span></button>
           </nav>
-          {texts.home && <details className="ve-course-guide"><summary>Course guide<span>Introduction and resources</span></summary><Markdown src={texts.home} className="ve-md" headingOffset={1} /></details>}
-          <section className="ve-md" id="voice-chapters" aria-label="Course chapters">
+          {texts.home && <details className={["ve-course-guide", practice["ve-course-guide"]].filter(Boolean).join(' ')}><summary>Course guide<span>Introduction and resources</span></summary><Markdown src={texts.home} className={["ve-md", practice["ve-md"]].filter(Boolean).join(' ')} headingOffset={1} /></details>}
+          <section className={["ve-md", practice["ve-md"], practice["voice-chapters"]].filter(Boolean).join(' ')} id="voice-chapters" aria-label="Course chapters">
             <h2>The chapters</h2>
             {byPart(texts.levels).map((g, gi) => (
               <div className="ve-part-group" key={`${gi}-${g.part ?? ""}`}>
-                {g.part && <h3 className="ve-part-h">{g.part}</h3>}
-                <ol className="ve-chapters">
+                {g.part && <h3 className={["ve-part-h", practice["ve-part-h"]].filter(Boolean).join(' ')}>{g.part}</h3>}
+                <ol className={["ve-chapters", practice["ve-chapters"]].filter(Boolean).join(' ')}>
                   {g.levels.map((l) => {
                     const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
                     const isNext = l.id === next?.id;
@@ -1012,8 +1013,8 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
                       <li key={l.id}>
                         <a href={`#/studio/${l.id}`} className={isNext ? "next" : undefined}>
                           <span className="n">{l.level}</span>
-                          <span className="t"><b>{l.title}{isNext && <span className="ve-tag next">Next up</span>}</b><small>{l.subtitle}</small></span>
-                          {d >= n ? <Medal className="ve-medal-s" /> : <span className="c">{d}/{n}</span>}
+                          <span className="t"><b>{l.title}{isNext && <span className={["ve-tag next", practice["ve-tag"]].filter(Boolean).join(' ')}>Next up</span>}</b><small>{l.subtitle}</small></span>
+                          {d >= n ? <Medal className={["ve-medal-s", practice["ve-medal-s"]].filter(Boolean).join(' ')} /> : <span className="c">{d}/{n}</span>}
                         </a>
                       </li>
                     );
@@ -1022,7 +1023,7 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
               </div>
             ))}
             {texts.edition?.mine && (
-              <p className="ve-edition">
+              <p className={["ve-edition", practice["ve-edition"]].filter(Boolean).join(' ')}>
                 You're playing your mixtape of these chapters ({texts.edition.changes} {texts.edition.changes === 1 ? "change" : "changes"}).{" "}
                 <a href="#/studio/mixtape">{texts.edition.updates ? `See your mixtape, and ${texts.edition.updates} ${texts.edition.updates === 1 ? "update" : "updates"} from the original →` : "See your mixtape →"}</a>
               </p>
@@ -1044,15 +1045,15 @@ function StudioDoc({ band, onRecording, onTake }: { band: [number, number] | nul
   useEffect(() => { void api.studioSession().then((s) => setStudio(s.id), () => {}); }, []);
   return (
     <>
-      <div className="ve-page">
-        <article className="ve-col">
-          <header className="ve-head"><h1>Studio</h1><p className="ve-subtitle">Free talk. No script, nothing to finish.</p></header>
-          <div className="ve-studio-rec">
+      <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}>
+        <article className={["ve-col", practice["ve-col"]].filter(Boolean).join(' ')}>
+          <header className={["ve-head", practice["ve-head"]].filter(Boolean).join(' ')}><h1>Studio</h1><p className={["ve-subtitle", practice["ve-subtitle"]].filter(Boolean).join(' ')}>Free talk. No script, nothing to finish.</p></header>
+          <div className={["ve-studio-rec", practice["ve-studio-rec"]].filter(Boolean).join(' ')}>
             <Dock key="free" meta={studio ? { session_id: studio, ...FREE } : null} band={band} allowRetake liveButton foldChart
               onSaved={(t) => { onTake(t); setFreeTake(t); }} onRecording={onRecording} idleHint={FREE_HINT} />
           </div>
-          <p className="ci-lede-plain">Talk, hum, sing, try things. Record a take to play back, or press the wave to just watch your pitch. Nothing here counts toward the course; takes are kept in <a href="#/history">Recordings</a>.</p>
-          {freeTake && <section className="ve-free" aria-label="Your take"><h2>Your take</h2><FreeResult take={freeTake} band={band} /></section>}
+          <p className={["ci-lede-plain", practice["ci-lede-plain"]].filter(Boolean).join(' ')}>Talk, hum, sing, try things. Record a take to play back, or press the wave to just watch your pitch. Nothing here counts toward the course; takes are kept in <a href="#/history">Recordings</a>.</p>
+          {freeTake && <section className={["ve-free", practice["ve-free"]].filter(Boolean).join(' ')} aria-label="Your take"><h2>Your take</h2><FreeResult take={freeTake} band={band} /></section>}
         </article>
       </div>
     </>
@@ -1065,12 +1066,12 @@ const REF = { prompt_id: "ref.count-1-10", text: "One, two, three, four, five, s
 
 function StartCard() {
   return (
-    <section className="ve-start-card">
+    <section className={["ve-start-card", practice["ve-start-card"]].filter(Boolean).join(' ')}>
       <span className="ic" aria-hidden="true">
         <svg viewBox="0 0 16 16"><rect x="5.5" y="1.8" width="5" height="8.4" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.4" /><path d="M3.3 7.6a4.7 4.7 0 009.4 0M8 12.3v2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
       </span>
       <p><b>First time here?</b> Record one line in your everyday voice. It becomes your starting point, so later you can hear how far you've come.</p>
-      <button className="btn-primary" onClick={() => go("/studio/start")}>Find my starting voice</button>
+      <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go("/studio/start")}>Find my starting voice</button>
     </section>
   );
 }
@@ -1095,18 +1096,18 @@ function thenAndNow(history: Take[]): [Take, Take] | null {
 function NextStep({ deck, texts, practised }: { deck: Deck | null; texts: Texts; practised: Set<string> }) {
   if (!deck) return null;
   const left = deck.items.filter((i) => !i.done_today);
-  if (deck.paused) return <div className="ve-next"><p><b>Resting today.</b> Your cards are paused until your voice feels ready.</p><button className="btn-secondary" onClick={() => go("/deck")}>Open Today</button></div>;
+  if (deck.paused) return <div className={["ve-next", practice["ve-next"]].filter(Boolean).join(' ')}><p><b>Resting today.</b> Your cards are paused until your voice feels ready.</p><button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => go("/deck")}>Open Today</button></div>;
   if (left.length) return (
-    <div className="ve-next">
+    <div className={["ve-next", practice["ve-next"]].filter(Boolean).join(' ')}>
       <p><b>Today: {left.length} card{left.length === 1 ? "" : "s"}</b>, about {Math.max(1, left.length)} min</p>
-      <button className="btn-primary" onClick={() => go(`/deck?card=${encodeURIComponent(left[0].card.id)}`)}>Start today's cards</button>
+      <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(`/deck?card=${encodeURIComponent(left[0].card.id)}`)}>Start today's cards</button>
     </div>
   );
   const chapter = nextChapter(texts, practised);
   return (
-    <div className="ve-next">
+    <div className={["ve-next", practice["ve-next"]].filter(Boolean).join(' ')}>
       <p><b>Today's cards are done.</b> Anything more is a bonus{chapter ? <>, like the next text in {chapter.title}</> : null}.</p>
-      {chapter && <button className="btn-secondary" onClick={() => go(`/studio/${chapter.id}`)}>Open {chapter.title}</button>}
+      {chapter && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => go(`/studio/${chapter.id}`)}>Open {chapter.title}</button>}
     </div>
   );
 }
@@ -1119,23 +1120,23 @@ function YourPractice({ history, band, next }: { history: Take[]; band: [number,
   const last14 = Array.from({ length: 14 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - 13 + i); return iso(d); });
   const pair = thenAndNow(history);
   return (
-    <section className="ve-practice" aria-label="Your practice">
+    <section className={["ve-practice", practice["ve-practice"]].filter(Boolean).join(' ')} aria-label="Your practice">
       {next}
       {history.length > 0 && <>
-      <div className="ve-days">
+      <div className={["ve-days", practice["ve-days"]].filter(Boolean).join(' ')}>
         <p><b>{thisMonth === 0 ? "A fresh month" : `${thisMonth} day${thisMonth === 1 ? "" : "s"} of practice this month`}</b>{thisMonth > 0 && <span>Every day you show up counts. Missed days don't.</span>}</p>
         <ol aria-label="The last two weeks">{last14.map((d) => <li key={d} className={days.has(d) ? "on" : ""} title={shortDate(d)} />)}</ol>
       </div>
       {pair ? (
-        <div className="ve-then">
-          <p className="ve-then-h"><b>Then and now</b><span>{pair[0].prompt_text}</span></p>
-          <div className="ab">
+        <div className={["ve-then", practice["ve-then"]].filter(Boolean).join(' ')}>
+          <p className={["ve-then-h", practice["ve-then-h"]].filter(Boolean).join(' ')}><b>Then and now</b><span>{pair[0].prompt_text}</span></p>
+          <div className={["ab", shared["ab"]].filter(Boolean).join(' ')}>
             <AudioPlayer src={pair[0].audio_url} tag="A" label={`Day 1 · ${shortDate(dayKey(pair[0]))}`} knownDuration={pair[0].analysis_summary?.duration_s} pitchTakeId={pair[0].analysis_summary ? pair[0].id : undefined} band={band} compact />
             <AudioPlayer src={pair[1].audio_url} tag="B" label={`latest · ${shortDate(dayKey(pair[1]))}`} knownDuration={pair[1].analysis_summary?.duration_s} pitchTakeId={pair[1].analysis_summary ? pair[1].id : undefined} band={band} compact />
           </div>
         </div>
       ) : (
-        <p className="ve-then-wait">Your first takes are saved. Come back on another day and this is where you'll hear them next to your newest ones.</p>
+        <p className={["ve-then-wait", practice["ve-then-wait"]].filter(Boolean).join(' ')}>Your first takes are saved. Come back on another day and this is where you'll hear them next to your newest ones.</p>
       )}
       </>}
     </section>
@@ -1163,33 +1164,33 @@ function StartDoc({ profile, onProfile, onRecording, onTake }: {
       {/* No range is chosen yet, so the take isn't judged against one. */}
       <FreeResult take={take} band={saved ? range : null} onMeasured={(m) => void measured(m)} />
       {range && (saved ? (
-        <div className="ve-start-done">
+        <div className={["ve-start-done", practice["ve-start-done"]].filter(Boolean).join(' ')}>
           <p><b>You're all set.</b> Your comfortable range is {range[0]}–{range[1]} Hz for now, and this take is your Day 1. Once you find your note in the Pitch chapter, move the range up to match in Practice settings.</p>
-          <div><button className="btn-primary" onClick={() => go("/studio/start-here")}>Next: Start here</button><button className="ve-link" onClick={() => go("/deck")}>Start today's cards</button></div>
+          <div><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go("/studio/start-here")}>Next: Start here</button><button className={["ve-link", practice["ve-link"]].filter(Boolean).join(' ')} onClick={() => go("/deck")}>Start today's cards</button></div>
         </div>
       ) : (
-        <div className="ve-start-done">
+        <div className={["ve-start-done", practice["ve-start-done"]].filter(Boolean).join(' ')}>
           <p>Right now you speak at about <b>{range[0]}–{range[1]} Hz</b>. Lilt can shade this behind your pitch line as your comfortable range for now. When you find your note in the Pitch chapter, you'll move it up.</p>
-          <div><button className="btn-primary" onClick={() => void save()}>Use it for now</button><span className="ve-small">You can record it again first, if you like.</span></div>
+          <div><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void save()}>Use it for now</button><span className={["ve-small", practice["ve-small"]].filter(Boolean).join(' ')}>You can record it again first, if you like.</span></div>
         </div>
       ))}
     </>
   );
   return (
     <>
-      <div className="ve-page">
-        <article className="ve-col">
-          <header className="ve-head">
+      <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}>
+        <article className={["ve-col", practice["ve-col"]].filter(Boolean).join(' ')}>
+          <header className={["ve-head", practice["ve-head"]].filter(Boolean).join(' ')}>
             <h1>Find your starting voice</h1>
-            <p className="ve-subtitle">Two minutes, once</p>
+            <p className={["ve-subtitle", practice["ve-subtitle"]].filter(Boolean).join(' ')}>Two minutes, once</p>
           </header>
-          <blockquote className="ve-how"><b>How to do it</b>
+          <blockquote className={["ve-how", practice["ve-how"]].filter(Boolean).join(' ')}><b>How to do it</b>
             Use your everyday voice, the one you have now, not the one you're aiming for. Read the line below at an easy pace, then stop. This is just a starting point, so there's nothing to get right.</blockquote>
-          <ol className="ve-items">
-            <li className="ve-item on">
-              <span className="ve-mk num" aria-hidden="true">1.</span>
-              <p className="readtext ve-read">{REF.text}</p>
-              <p className="ve-hint">An easy pace, in your everyday voice. The daily reference card uses this same line.</p>
+          <ol className={["ve-items", practice["ve-items"]].filter(Boolean).join(' ')}>
+            <li className={cx(pages.veItem, ["ve-item on", practice["ve-item"]].filter(Boolean).join(' '))}>
+              <span className={["ve-mk num", practice["ve-mk"]].filter(Boolean).join(' ')} aria-hidden="true">1.</span>
+              <p className={["readtext ve-read", practice["readtext"]].filter(Boolean).join(' ')}>{REF.text}</p>
+              <p className={["ve-hint", practice["ve-hint"]].filter(Boolean).join(' ')}>An easy pace, in your everyday voice. The daily reference card uses this same line.</p>
               <Dock key="start" meta={studio ? { session_id: studio, role: "reference", prompt_id: REF.prompt_id, prompt_text: REF.text } : null} band={saved ? range : null} allowRetake
         onSaved={(t) => { onTake(t); setTake(t); setRange(null); setSaved(false); }} onRecording={onRecording} idleHint="Press record and count from one to ten"
         />
@@ -1312,51 +1313,51 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
     <Dock key={promptId} meta={sessionId ? { session_id: sessionId, ...FREE, ...(item && { prompt_id: promptId, prompt_text: item.text }) } : null}
             band={band} allowRetake retake={!!(latest || earlier.length)} brightness={level.id === "resonance" && !!item} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
             idleHint={item ? "Press record and read the highlighted text" : FREE_HINT}>
-            <button className="ve-icon" onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1} aria-label={item ? "Next text" : "Start with text 1"} title={`${item ? "Next text" : "Start with text 1"} (↓)`}>
+            <button className={["ve-icon", practice["ve-icon"]].filter(Boolean).join(' ')} onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1} aria-label={item ? "Next text" : "Start with text 1"} title={`${item ? "Next text" : "Start with text 1"} (↓)`}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
           </Dock>
   );
   return (
     <>
-      <div className="ve-page">
-        <article className="ve-col">
-          <header className="ve-head ve-head-remix">
+      <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}>
+        <article className={["ve-col", practice["ve-col"]].filter(Boolean).join(' ')}>
+          <header className={cx(pages.veHeadRemix, ["ve-head ve-head-remix", practice["ve-head"]].filter(Boolean).join(' '))}>
             <h1>{level.title}</h1>
-            <p className="ve-subtitle">{level.subtitle}</p>
-            <p className="ve-meta">{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
-            <div className="ve-head-actions">
+            <p className={["ve-subtitle", practice["ve-subtitle"]].filter(Boolean).join(' ')}>{level.subtitle}</p>
+            <p className={["ve-meta", practice["ve-meta"]].filter(Boolean).join(' ')}>{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
+            <div className={cx(pages.veHeadActions, "ve-head-actions")}>
               <button className="ve-remix-btn" disabled={!REMIX_AVAILABLE || recording} title={!REMIX_AVAILABLE ? "Coming soon" : recording ? "Stop recording first" : undefined} onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               {REMIX_AVAILABLE ? "Remix" : "Remix · Coming soon"}
               </button>
             </div>
             {complete && (
-              <div className={`ve-award${fresh ? " fresh" : ""}`} role={fresh ? "status" : undefined}>
-                <Medal className="ve-award-medal" />
+              <div className={[`ve-award${fresh ? " fresh" : ""}`, practice["ve-award"]].filter(Boolean).join(' ')} role={fresh ? "status" : undefined}>
+                <Medal className={["ve-award-medal", practice["ve-award-medal"]].filter(Boolean).join(' ')} />
                 <div><b>Chapter complete</b><span>You've practised all {n} texts in {level.title}. Come back to any of them whenever you like.</span></div>
               </div>
             )}
           </header>
           <ChapterIntro key={level.id} level={level} started={level.items.some((it) => practised.has(textId(COURSE, level.id, it.id)))} />
-          {freeView && !split && <section className="ve-free" aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
-          <ol className="ve-items" id={`texts-${level.id}`}>
+          {freeView && !split && <section className={["ve-free", practice["ve-free"]].filter(Boolean).join(' ')} aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
+          <ol className={["ve-items", practice["ve-items"]].filter(Boolean).join(' ')} id={`texts-${level.id}`}>
             {level.items.map((it, i) => {
               const on = i === sel;
               return (
-                <li key={it.id} ref={(el) => { itemRefs.current[i] = el; }} className={`ve-item${on ? " on" : ""}${level.kind === "passage" ? " passage" : ""}${remixed.has(it.id) ? " fresh" : ""}`}
+                <li key={it.id} ref={(el) => { itemRefs.current[i] = el; }} className={cx(pages.veItem, [`ve-item${on ? " on" : ""}${level.kind === "passage" ? " passage" : ""}${remixed.has(it.id) ? " fresh" : ""}`, practice["ve-item"]].filter(Boolean).join(' '))}
                   onClick={() => { if (!on) choose(i); }}>
-                  <span className="ve-mk num" aria-hidden="true">{i + 1}.</span>
-                  {it.id === level.check_in && <span className="ve-checkin" title="Record this one each time you visit, so you can hear and see your change">Check-in · record it each visit</span>}
+                  <span className={["ve-mk num", practice["ve-mk"]].filter(Boolean).join(' ')} aria-hidden="true">{i + 1}.</span>
+                  {it.id === level.check_in && <span className={["ve-checkin", practice["ve-checkin"]].filter(Boolean).join(' ')} title="Record this one each time you visit, so you can hear and see your change">Check-in · record it each visit</span>}
                   {/* A long passage gets its title and reading time, so the shelf is easy to browse. */}
-                  {isLong(it.text) && <p className="ve-ptitle">{passageTitle(it.id)}<span>{readingTime(it.text)}</span></p>}
+                  {isLong(it.text) && <p className={["ve-ptitle", practice["ve-ptitle"]].filter(Boolean).join(' ')}>{passageTitle(it.id)}<span>{readingTime(it.text)}</span></p>}
                   {on && !isPrompt
                     ? <ReadAlong text={it.text} levelId={level.id} hint={it.hint} kind={level.kind} stream={mic.stream} active={recording}
                         onStarts={(s) => { starts.current = s; }} alignment={latest?.read_along?.starts ?? null} pitch={latestPitch} />
-                    : <p className="readtext ve-read" aria-label={on ? it.text : undefined}>{it.text}</p>}
-                  <p className="ve-hint">{it.hint}</p>
-                  {on && it.example && <div className="ve-example"><AudioPlayer src={`/texts/${it.example}`} label="Hear an example" compact /></div>}
-                  {!on && <button className="ve-pick sr-only" onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
+                    : <p className={["readtext ve-read", practice["readtext"]].filter(Boolean).join(' ')} aria-label={on ? it.text : undefined}>{it.text}</p>}
+                  <p className={["ve-hint", practice["ve-hint"]].filter(Boolean).join(' ')}>{it.hint}</p>
+                  {on && it.example && <div className={["ve-example", practice["ve-example"]].filter(Boolean).join(' ')}><AudioPlayer src={`/texts/${it.example}`} label="Hear an example" compact /></div>}
+                  {!on && <button className={["ve-pick sr-only", shared["sr-only"]].filter(Boolean).join(' ')} onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && recorder}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
                   {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
@@ -1364,7 +1365,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
               );
             })}
           </ol>
-          <p className="ve-end">{texts.note}</p>
+          <p className={["ve-end", practice["ve-end"]].filter(Boolean).join(' ')}>{texts.note}</p>
         </article>
       </div>
       <Toast text={toast} />
@@ -1385,11 +1386,11 @@ function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card
   useTakeStatus(take, onUpdate);
   const ready = take.status === "review_ready";
   return (
-    <section className="ve-take" aria-label="Your take" onClick={(e) => e.stopPropagation()}>
-      <div className="ve-take-head"><b>Your take</b><StatusBadge status={take.status} /><TakeFlags take={take} /></div>
+    <section className={["ve-take", practice["ve-take"]].filter(Boolean).join(' ')} aria-label="Your take" onClick={(e) => e.stopPropagation()}>
+      <div className={["ve-take-head", practice["ve-take-head"]].filter(Boolean).join(' ')}><b>Your take</b><StatusBadge status={take.status} /><TakeFlags take={take} /></div>
       <TakeInsight take={take} band={band} card={card} />
       {before && (
-        <div className="ve-ab-pick" role="group" aria-label="Play as A">
+        <div className={["ve-ab-pick", practice["ve-ab-pick"]].filter(Boolean).join(' ')} role="group" aria-label="Play as A">
           <span>Compare with</span>
           <button aria-pressed={pick === "last"} onClick={() => onPick("last")}>Last time</button>
           {choices.length > 1 && <button aria-pressed={pick === "first"} onClick={() => onPick("first")}>First take</button>}
@@ -1399,20 +1400,20 @@ function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card
               {[...choices].reverse().map((t) => <option key={t.id} value={t.id}>{takeDate(t)}, {new Date(t.created_utc).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</option>)}
             </select>
           )}
-          <a className="ve-ab-all" href={`#/history?text=${encodeURIComponent(promptId)}`}>All {choices.length + 1} takes</a>
+          <a className={["ve-ab-all", practice["ve-ab-all"]].filter(Boolean).join(' ')} href={`#/history?text=${encodeURIComponent(promptId)}`}>All {choices.length + 1} takes</a>
         </div>
       )}
-      <div className={before ? "ab" : ""}>
+      <div className={[before ? "ab" : "", shared["ab"]].filter(Boolean).join(' ')}>
         {before && <AudioPlayer key={before.id} src={before.audio_url} tag="A" label={`${before.id === choices[0]?.id && choices.length > 1 ? "first take" : before.id === choices.at(-1)?.id ? "last time" : "then"} · ${takeDate(before)}`} knownDuration={before.analysis_summary?.duration_s} pitchTakeId={before.id} band={band} compact />}
         <AudioPlayer key={`${take.id}-${ready}`} src={take.audio_url} tag={before ? "B" : undefined} label="this take" knownDuration={take.analysis_summary?.duration_s} pitchTakeId={ready ? take.id : undefined} band={band} compact={!!before} />
       </div>
-      {!ready && take.status === "analysis_pending" && <p className="ve-small">Measuring your pitch line…</p>}
-      {before && <p className="ve-small">Listen to both. Which feels more like you? Your ear decides.</p>}
+      {!ready && take.status === "analysis_pending" && <p className={["ve-small", practice["ve-small"]].filter(Boolean).join(' ')}>Measuring your pitch line…</p>}
+      {before && <p className={["ve-small", practice["ve-small"]].filter(Boolean).join(' ')}>Listen to both. Which feels more like you? Your ear decides.</p>}
       <ResonanceNote take={take} />
-      <div className="ve-take-actions">
-        <button className="ve-ghost" onClick={() => void api.patchTake(take.id, { favourite: !take.favourite }).then(onUpdate)} aria-pressed={take.favourite}><Star on={take.favourite} />{take.favourite ? "Favourite" : "I like this one"}</button>
-        {ready && <button className="ve-ghost" onClick={() => onUseRange(take)}>Use this take's range as my comfortable range</button>}
-        {before && <button className="ve-ghost" onClick={() => go(`/compare?a=${before.id}&b=${take.id}`)}>Detailed comparison</button>}
+      <div className={["ve-take-actions", practice["ve-take-actions"]].filter(Boolean).join(' ')}>
+        <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} onClick={() => void api.patchTake(take.id, { favourite: !take.favourite }).then(onUpdate)} aria-pressed={take.favourite}><Star on={take.favourite} />{take.favourite ? "Favourite" : "I like this one"}</button>
+        {ready && <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} onClick={() => onUseRange(take)}>Use this take's range as my comfortable range</button>}
+        {before && <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} onClick={() => go(`/compare?a=${before.id}&b=${take.id}`)}>Detailed comparison</button>}
       </div>
     </section>
   );
@@ -1432,7 +1433,7 @@ function DonePile({ n }: { n: number }) {
   if (n === 0) return null;
   const k = Math.min(n, 5);
   return (
-    <span className="sd-pile" aria-hidden="true">
+    <span className={["sd-pile", practice["sd-pile"]].filter(Boolean).join(' ')} aria-hidden="true">
       {Array.from({ length: k }, (_, i) => <i key={i === k - 1 ? `top-${n}` : i} />)}
     </span>
   );
@@ -1442,10 +1443,10 @@ function DonePile({ n }: { n: number }) {
 function DaySlip({ date, cards }: { date: string; cards: DeckItem[] }) {
   const slip = daySlip(cards.map((it) => ({ front: it.card.front, chapter: deckName(it) })));
   return (
-    <section className="sd-slip" aria-label="Today's slip">
+    <section className={["sd-slip", practice["sd-slip"]].filter(Boolean).join(' ')} aria-label="Today's slip">
       <DeckCat mode="happy" />
-      <p className="sd-slip-date">{date}</p>
-      <p className="sd-slip-lede">{slip.lede}</p>
+      <p className={["sd-slip-date", practice["sd-slip-date"]].filter(Boolean).join(' ')}>{date}</p>
+      <p className={["sd-slip-lede", practice["sd-slip-lede"]].filter(Boolean).join(' ')}>{slip.lede}</p>
       {slip.groups.length > 0 && <ul>{slip.groups.map((g) => <li key={g.chapter}><b>{g.chapter}</b><span>{g.fronts.join(" · ")}</span></li>)}</ul>}
     </section>
   );
@@ -1479,15 +1480,15 @@ function BeforeAfter({ take, item, onDone, onAgain, onHurt }: { take: Take; item
   };
   const when = first && new Date(first.created_utc).toLocaleDateString(undefined, { day: "numeric", month: "long" });
   return (
-    <div className="prc ve-result ve-ba" onClick={(e) => e.stopPropagation()}>
-      <p className="ve-ba-l">Now</p>
+    <div className={["prc ve-result ve-ba", practice["prc"], practice["ve-result"]].filter(Boolean).join(' ')} onClick={(e) => e.stopPropagation()}>
+      <p className={["ve-ba-l", practice["ve-ba-l"]].filter(Boolean).join(' ')}>Now</p>
       <ListenBack src={take.audio_url} />
-      {first && <><p className="ve-ba-l">Your first take, {when}</p><ListenBack src={first.audio_url} /></>}
-      {first === null && <p className="ve-small">Your first take of this text isn't here any more, so there's nothing to play beside it.</p>}
+      {first && <><p className={["ve-ba-l", practice["ve-ba-l"]].filter(Boolean).join(' ')}>Your first take, {when}</p><ListenBack src={first.audio_url} /></>}
+      {first === null && <p className={["ve-small", practice["ve-small"]].filter(Boolean).join(' ')}>Your first take of this text isn't here any more, so there's nothing to play beside it.</p>}
       {BEFORE_AFTER_QS.map((x) => (
-        <div className="ve-ba-q" key={x.id} role="group" aria-labelledby={`ba-${x.id}`}>
-          <p className="ve-q" id={`ba-${x.id}`}>{x.q}</p>
-          <div className="ve-ba-scale">
+        <div className={["ve-ba-q", practice["ve-ba-q"]].filter(Boolean).join(' ')} key={x.id} role="group" aria-labelledby={`ba-${x.id}`}>
+          <p className={["ve-q", practice["ve-q"]].filter(Boolean).join(' ')} id={`ba-${x.id}`}>{x.q}</p>
+          <div className={["ve-ba-scale", practice["ve-ba-scale"]].filter(Boolean).join(' ')}>
             <small>{x.lo}</small>
             {["1", "2", "3", "4", "5"].map((n) => (
               <button key={n} aria-pressed={answers[x.id] === n} onClick={() => setAnswers((a) => ({ ...a, [x.id]: n }))}>{n}</button>
@@ -1496,13 +1497,13 @@ function BeforeAfter({ take, item, onDone, onAgain, onHurt }: { take: Take; item
           </div>
         </div>
       ))}
-      <div className="ve-rate-more">
-        <button className="btn-primary" onClick={() => void save()} disabled={busy}>Save and carry on</button>
-        {first && <button className="ve-ghost" onClick={() => go(`/compare?a=${first.id}&b=${take.id}`)}>Detailed comparison</button>}
-        <button className="ve-pill" onClick={onAgain} disabled={busy}>Record it again</button>
-        <button className="ve-pill ouch" onClick={onHurt} disabled={busy}>{HURT}</button>
+      <div className={["ve-rate-more", practice["ve-rate-more"]].filter(Boolean).join(' ')}>
+        <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void save()} disabled={busy}>Save and carry on</button>
+        {first && <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} onClick={() => go(`/compare?a=${first.id}&b=${take.id}`)}>Detailed comparison</button>}
+        <button className={["ve-pill", practice["ve-pill"]].filter(Boolean).join(' ')} onClick={onAgain} disabled={busy}>Record it again</button>
+        <button className={["ve-pill ouch", practice["ve-pill"]].filter(Boolean).join(' ')} onClick={onHurt} disabled={busy}>{HURT}</button>
       </div>
-      {err && <p role="alert" className="ve-err">{err}</p>}
+      {err && <p role="alert" className={["ve-err", practice["ve-err"]].filter(Boolean).join(' ')}>{err}</p>}
     </div>
   );
 }
@@ -1519,9 +1520,9 @@ export function ListenBack({ src }: { src: string }) {
   }, [src]);
   const pos = play.dur > 0 && !play.ended ? play.t / play.dur : 0;
   return (
-    <div className="prc-player">
-      <button className="play-btn" onClick={play.toggle} aria-label={play.playing ? "Pause" : "Play your recording"}>{play.playing ? <PauseIcon /> : <PlayIcon />}</button>
-      <div className="prc-wave" aria-hidden="true">
+    <div className={["prc-player", practice["prc-player"]].filter(Boolean).join(' ')}>
+      <button className={["play-btn", shared["play-btn"]].filter(Boolean).join(' ')} onClick={play.toggle} aria-label={play.playing ? "Pause" : "Play your recording"}>{play.playing ? <PauseIcon /> : <PlayIcon />}</button>
+      <div className={["prc-wave", practice["prc-wave"]].filter(Boolean).join(' ')} aria-hidden="true">
         {(bars.length ? bars : Array(72).fill(0.15)).map((h, i, arr) => <i key={i} className={i / arr.length < pos ? "on" : ""} style={{ transform: `scaleY(${h.toFixed(3)})` }} />)}
       </div>
     </div>
@@ -1646,8 +1647,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   // The chime is for finishing the deck in this visit, not for opening one already done.
   useEffect(() => { if (phase.k === "end" && putAway > 0) playSound("chime"); }, [phase.k]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (err && !deck) return <div className="ve-page"><article className="ve-col"><p role="alert" className="ve-err">{err}</p></article></div>;
-  if (!deck || !session) return <div className="ve-page"><article className="ve-col"><p className="ve-subtitle">Getting your cards…</p></article></div>;
+  if (err && !deck) return <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}><article className={["ve-col", practice["ve-col"]].filter(Boolean).join(' ')}><p role="alert" className={["ve-err", practice["ve-err"]].filter(Boolean).join(' ')}>{err}</p></article></div>;
+  if (!deck || !session) return <div className={[["ve-page", practice["ve-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}><article className={["ve-col", practice["ve-col"]].filter(Boolean).join(' ')}><p className={["ve-subtitle", practice["ve-subtitle"]].filter(Boolean).join(' ')}>Getting your cards…</p></article></div>;
 
   const ended = phase.k === "end" || phase.k === "hurt";
   const earlier = deck.items.filter((i) => i.done_today && !results.some((r) => r.item.card.id === i.card.id));
@@ -1664,20 +1665,20 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   const date = new Date(`${deck.local_date}T12:00:00`).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
   // Listen back, the measured pitch and the rating: under the card, or in the right half when split.
   const rateView = phase.k === "reveal" ? (
-    <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={`r-${phase.take.id}`}>
-      <p className="ve-ba-l">Here's what the pitch did. Did it match what you heard?</p>
+    <div className={["prc ve-result", practice["prc"], practice["ve-result"]].filter(Boolean).join(' ')} onClick={(e) => e.stopPropagation()} key={`r-${phase.take.id}`}>
+      <p className={["ve-ba-l", practice["ve-ba-l"]].filter(Boolean).join(' ')}>Here's what the pitch did. Did it match what you heard?</p>
       <Measures key={phase.take.id} take={phase.take} band={band} card={item?.card} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
-      <div className="ve-rate-more"><button className="btn-primary" onClick={() => advance(phase.q)}>Next card</button></div>
+      <div className={["ve-rate-more", practice["ve-rate-more"]].filter(Boolean).join(' ')}><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => advance(phase.q)}>Next card</button></div>
     </div>
   ) : phase.k === "rate" && item.kind === "before_after" ? (
     <BeforeAfter key={phase.take.id} take={phase.take} item={item} onDone={beforeAfterDone} onAgain={() => setPhase({ k: "say", retryOf: phase.take.id })} onHurt={ouchNow} />
   ) : phase.k === "rate" && (
-    <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={phase.take.id}>
+    <div className={["prc ve-result", practice["prc"], practice["ve-result"]].filter(Boolean).join(' ')} onClick={(e) => e.stopPropagation()} key={phase.take.id}>
       <ListenBack src={phase.take.audio_url} />
       {/* Rate straight after listening; the measured details follow, folded to one line. */}
-      <div className="ve-rate-box">
-        <p className="ve-q" id="feel-q">How did that feel?</p>
-        <div className="vc-rate ve-rate" role="group" aria-labelledby="feel-q">
+      <div className={["ve-rate-box", practice["ve-rate-box"]].filter(Boolean).join(' ')}>
+        <p className={["ve-q", practice["ve-q"]].filter(Boolean).join(' ')} id="feel-q">How did that feel?</p>
+        <div className={["vc-rate ve-rate", practice["ve-rate"]].filter(Boolean).join(' ')} role="group" aria-labelledby="feel-q">
           {RATINGS.map((r, i) => (everyDay(item) && r.r === "again") ? null : (
             <button key={r.r} onClick={() => void rate(r.r)} disabled={busy} aria-keyshortcuts={String(i + 1)} aria-label={everyDay(item) ? r.label : `${r.label}, next ${item.preview[r.r]}`}>
               <span className="l">{r.label}<kbd aria-hidden="true">{i + 1}</kbd></span>
@@ -1685,54 +1686,54 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
             </button>
           ))}
         </div>
-        <div className="ve-rate-more">
-          <button className="ve-pill" onClick={() => setPhase({ k: "say", retryOf: phase.take.id })} disabled={busy}>
+        <div className={["ve-rate-more", practice["ve-rate-more"]].filter(Boolean).join(' ')}>
+          <button className={["ve-pill", practice["ve-pill"]].filter(Boolean).join(' ')} onClick={() => setPhase({ k: "say", retryOf: phase.take.id })} disabled={busy}>
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 11-1.5-3.6M13 2.5v3h-3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             Record it again
           </button>
-          <button className="ve-pill ouch" onClick={() => void rate("ouch")} disabled={busy}>
+          <button className={["ve-pill ouch", practice["ve-pill"]].filter(Boolean).join(' ')} onClick={() => void rate("ouch")} disabled={busy}>
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14s-5.5-3.3-5.5-7A3 3 0 018 5.2 3 3 0 0113.5 7C13.5 10.7 8 14 8 14z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
             {HURT}
           </button>
         </div>
       </div>
       {item.eyes_off
-        ? <p className="ve-small">An eyes-off take: rate it by what you heard. Lilt shows the pitch once you've rated it.</p>
+        ? <p className={["ve-small", practice["ve-small"]].filter(Boolean).join(' ')}>An eyes-off take: rate it by what you heard. Lilt shows the pitch once you've rated it.</p>
         : <FoldedMeasures key={phase.take.id} take={phase.take} band={band} card={item.card} onUseRange={everyDay(item) ? undefined : onUseRange}
             onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />}
     </div>
   );
   return (
     <>
-      <div className="ve-page sd-page">
-        <article className="ve-col sd-deck">
-          <header className="ve-head sd-heading">
+      <div className={[["ve-page sd-page", practice["ve-page"], practice["sd-page"]].filter(Boolean).join(' '), shared["ve-page"]].filter(Boolean).join(' ')}>
+        <article className={["ve-col sd-deck", practice["ve-col"], practice["sd-deck"]].filter(Boolean).join(' ')}>
+          <header className={["ve-head sd-heading", practice["ve-head"], practice["sd-heading"]].filter(Boolean).join(' ')}>
             {phase.k === "end" ? <h1 tabIndex={-1} ref={titleRef}>That's today's deck</h1>
               : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}>Let's stop here</h1>
               : <h1>Your daily deck</h1>}
-            <p className="ve-subtitle">{date}</p>
-            <p className="ve-meta"><DonePile n={doneCount} />{phase.k === "hurt" ? "Paused" : `${doneCount} of ${total} done`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
+            <p className={["ve-subtitle", practice["ve-subtitle"]].filter(Boolean).join(' ')}>{date}</p>
+            <p className={["ve-meta", practice["ve-meta"]].filter(Boolean).join(' ')}><DonePile n={doneCount} />{phase.k === "hurt" ? "Paused" : `${doneCount} of ${total} done`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
           </header>
           {phase.k === "hurt" ? (
             <>
-              <blockquote className="ve-how warn"><b>Rest your voice</b>
+              <blockquote className={["ve-how warn", practice["ve-how"]].filter(Boolean).join(' ')}><b>Rest your voice</b>
                 That card is paused and so is your plan. Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</blockquote>
-              <div className="ve-endbox">
-                <p className="ve-small">When speaking feels easy again, pick up where you left off. The paused card comes back gently.</p>
-                <div className="ve-rate-more">
-                  <button className="btn-primary" onClick={resume}>I feel fine, resume</button>
-                  <button className="ve-ghost" onClick={() => go("/")}>Back to the room</button>
+              <div className={["ve-endbox", practice["ve-endbox"]].filter(Boolean).join(' ')}>
+                <p className={["ve-small", practice["ve-small"]].filter(Boolean).join(' ')}>When speaking feels easy again, pick up where you left off. The paused card comes back gently.</p>
+                <div className={["ve-rate-more", practice["ve-rate-more"]].filter(Boolean).join(' ')}>
+                  <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={resume}>I feel fine, resume</button>
+                  <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} onClick={() => go("/")}>Back to the room</button>
                 </div>
               </div>
             </>
           ) : phase.k === "end" ? (
             <>
             <DaySlip date={date} cards={[...earlier, ...results.filter((r) => r.rating !== "later").map((r) => r.item)]} />
-            <div className="ve-endbox">
-              {comfort ? <p className="ve-note ok" role="status">{comfort === "strain" || comfort === "pain" ? "Noted. Your plan is paused so you can rest." : "Noted. See you tomorrow."}</p> : (
+            <div className={["ve-endbox", practice["ve-endbox"]].filter(Boolean).join(' ')}>
+              {comfort ? <p className={["ve-note ok", practice["ve-note"]].filter(Boolean).join(' ')} role="status">{comfort === "strain" || comfort === "pain" ? "Noted. Your plan is paused so you can rest." : "Noted. See you tomorrow."}</p> : (
                 <>
-                  <p className="ve-q" id="voice-q">How does your voice feel now?</p>
-                  <div className="ve-feel" role="group" aria-labelledby="voice-q">
+                  <p className={["ve-q", practice["ve-q"]].filter(Boolean).join(' ')} id="voice-q">How does your voice feel now?</p>
+                  <div className={["ve-feel", practice["ve-feel"]].filter(Boolean).join(' ')} role="group" aria-labelledby="voice-q">
                     <button onClick={() => void setFeel("comfortable")}>Comfortable</button>
                     <button onClick={() => void setFeel("some_effort")}>A bit tired</button>
                     <button className="hurt" onClick={() => void setFeel("strain")}>Strained</button>
@@ -1740,39 +1741,39 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
                   </div>
                 </>
               )}
-              <p className="ve-small">Your takes are in <a href="#/history">your recordings</a>. Anything more today is a bonus{deck.open_chapter ? <>: read the steps in <a href={`#/studio/${deck.open_chapter.id}`}>{deck.open_chapter.title}</a>, your newest chapter</> : ": try a chapter on the left"}.</p>
-              <div className="ve-rate-more"><button className="ve-ghost" onClick={() => go("/")}>Back to the room</button></div>
+              <p className={["ve-small", practice["ve-small"]].filter(Boolean).join(' ')}>Your takes are in <a href="#/history">your recordings</a>. Anything more today is a bonus{deck.open_chapter ? <>: read the steps in <a href={`#/studio/${deck.open_chapter.id}`}>{deck.open_chapter.title}</a>, your newest chapter</> : ": try a chapter on the left"}.</p>
+              <div className={["ve-rate-more", practice["ve-rate-more"]].filter(Boolean).join(' ')}><button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} onClick={() => go("/")}>Back to the room</button></div>
             </div>
             </>
           ) : (
-            <details className="sd-help"><summary>How to practise</summary>
+            <details className={["sd-help", practice["sd-help"]].filter(Boolean).join(' ')}><summary>How to practise</summary>
               <p>Say the card, listen back, then choose how it felt. Your choice decides when the card comes back; pitch numbers never do. Open the chapter name for its steps.</p>
             </details>
           )}
-          <ol className="ve-items">
+          <ol className={["ve-items", practice["ve-items"]].filter(Boolean).join(' ')}>
             {!ended && queue.slice(idx, idx + 1).map((it, k) => {
               const j = idx + k, on = chosen && k === 0;
               return (
-                <li key={`q-${j}-${it.card.id}`} ref={curRef} tabIndex={-1} aria-label={`Current card: ${it.card.front}`} className="ve-item on sd-current">
+                <li key={`q-${j}-${it.card.id}`} ref={curRef} tabIndex={-1} aria-label={`Current card: ${it.card.front}`} className={cx(pages.veItem, ["ve-item on sd-current", practice["ve-item"], practice["sd-current"]].filter(Boolean).join(' '))}>
                   <DeckCat mode={catMode} say={recOn ? catSay : null} />
-                  <div className="sd-card-top"><span>Card {doneCount + 1} of {total}</span></div>
-                  <p className="ve-kind">{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{kindTag(it) && <span className="ve-tag next">{kindTag(it)}</span>}
-                    {it.eyes_off && <span className="ve-tag">Eyes off</span>}
-                    {!chosen && k === 0 && phase.k === "say" && <span className="ve-tag start">Start here</span>}</p>
+                  <div className={["sd-card-top", practice["sd-card-top"]].filter(Boolean).join(' ')}><span>Card {doneCount + 1} of {total}</span></div>
+                  <p className={["ve-kind", practice["ve-kind"]].filter(Boolean).join(' ')}>{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{kindTag(it) && <span className={["ve-tag next", practice["ve-tag"]].filter(Boolean).join(' ')}>{kindTag(it)}</span>}
+                    {it.eyes_off && <span className={["ve-tag", practice["ve-tag"]].filter(Boolean).join(' ')}>Eyes off</span>}
+                    {!chosen && k === 0 && phase.k === "say" && <span className={["ve-tag start", practice["ve-tag"]].filter(Boolean).join(' ')}>Start here</span>}</p>
                   {on && it.card.kind !== "exercise"
                     ? <ReadAlong text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} kind={it.card.text_kind} stream={mic.stream} active={recOn} />
-                    : <p className="readtext ve-read" aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
-                  {it.card.hint && <p className="ve-hint">{cardHint(it.card.hint)}</p>}
+                    : <p className={["readtext ve-read", practice["readtext"]].filter(Boolean).join(' ')} aria-label={on ? it.card.front : undefined}>{it.card.front}</p>}
+                  {it.card.hint && <p className={["ve-hint", practice["ve-hint"]].filter(Boolean).join(' ')}>{cardHint(it.card.hint)}</p>}
                   {/* The little numbers in the text point to these notes, as in the chapters. */}
                   {on && it.card.kind !== "exercise" && <ReadNotes text={it.card.front} levelId={it.card.level_id} hint={it.card.hint} withHint={false} folded />}
-                  {!on && <button className="ve-pick sr-only" onClick={() => choose(j)} disabled={phase.k !== "say" || recOn}>Practise {it.card.front.slice(0, 40)} next</button>}
-                  <div className="sd-controls">
+                  {!on && <button className={["ve-pick sr-only", shared["sr-only"]].filter(Boolean).join(' ')} onClick={() => choose(j)} disabled={phase.k !== "say" || recOn}>Practise {it.card.front.slice(0, 40)} next</button>}
+                  <div className={["sd-controls", practice["sd-controls"]].filter(Boolean).join(' ')}>
                   {on && item && (
                     <Dock key={`${item.card.id}-${idx}-${phase.k === "say" ? phase.retryOf ?? "" : "rated"}`} meta={meta} band={band} allowRetake={false} quiet={phase.k !== "say"} eyesOff={!!item.eyes_off && phase.k === "say"}
                       onSaved={(t) => { onTake(t); setPhase({ k: "rate", take: t }); }} onRecording={(on) => { setRecOn(on); onRecording(on); }}
                       idleHint={phase.k === "reveal" ? "Have a look, then carry on" : phase.k === "rate" ? (item.kind === "before_after" ? "Listen to both, then answer" : "Listen back, then rate how it felt") : "Press record and say the card"}>
-                      {phase.k === "say" && !recOn && item.kind === "before_after" && <button className="ve-link" onClick={notToday}>Not today</button>}
-                      {phase.k === "say" && !recOn && <button className="ve-link ouch" onClick={ouchNow}>{HURT}</button>}
+                      {phase.k === "say" && !recOn && item.kind === "before_after" && <button className={["ve-link", practice["ve-link"]].filter(Boolean).join(' ')} onClick={notToday}>Not today</button>}
+                      {phase.k === "say" && !recOn && <button className={["ve-link ouch", practice["ve-link"]].filter(Boolean).join(' ')} onClick={ouchNow}>{HURT}</button>}
                     </Dock>
                   )}
                   {on && rateView}
@@ -1781,24 +1782,24 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               );
             })}
           </ol>
-          {!ended && queue.length > idx + 1 && <details className="sd-upcoming" key={`up-${idx}-${item?.card.id}`}>
+          {!ended && queue.length > idx + 1 && <details className={["sd-upcoming", practice["sd-upcoming"]].filter(Boolean).join(' ')} key={`up-${idx}-${item?.card.id}`}>
             <summary>Up next <span>{queue.length - idx - 1} cards</span></summary>
             <ol>{queue.slice(idx + 1).map((it, k) => <li key={`${idx + k}-${it.card.id}`}>
-              <button className="sd-queue-pick" disabled={phase.k !== "say" || recOn} onClick={() => choose(idx + k + 1)} aria-label={`Practise ${it.card.front.slice(0, 40)} next`}>
-                <span className="sd-queue-number">{doneCount + k + 2}</span><span><b>{it.card.front}</b><small className="ve-kind">{deckName(it)}{kindTag(it) && <span>{kindTag(it)}</span>}{it.eyes_off && <span>Eyes off</span>}</small></span>
+              <button className={["sd-queue-pick", practice["sd-queue-pick"]].filter(Boolean).join(' ')} disabled={phase.k !== "say" || recOn} onClick={() => choose(idx + k + 1)} aria-label={`Practise ${it.card.front.slice(0, 40)} next`}>
+                <span className={["sd-queue-number", practice["sd-queue-number"]].filter(Boolean).join(' ')}>{doneCount + k + 2}</span><span><b>{it.card.front}</b><small className={["ve-kind", practice["ve-kind"]].filter(Boolean).join(' ')}>{deckName(it)}{kindTag(it) && <span>{kindTag(it)}</span>}{it.eyes_off && <span>Eyes off</span>}</small></span>
               </button>
             </li>)}</ol>
           </details>}
-          {doneCount > 0 && <details className="sd-completed" open={phase.k === "hurt" ? true : undefined}>
+          {doneCount > 0 && <details className={["sd-completed", practice["sd-completed"]].filter(Boolean).join(' ')} open={phase.k === "hurt" ? true : undefined}>
             <summary>Practised today <span>{doneCount} cards</span></summary>
-            <ol className="ve-items">
-              {earlier.map((it) => <li key={`e-${it.card.id}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
-                <p className="readtext ve-read">{it.card.front}</p><p className="ve-hint"><span className="ve-tag">Done</span>{deckName(it)}</p></li>)}
-              {results.map((r, i) => <li key={`r-${i}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>
-                <p className="readtext ve-read">{r.item.card.front}</p><p className="ve-hint"><span className="ve-tag">{label(r.rating)}</span>{r.median ? `${Math.round(r.median)} Hz, ${noteName(r.median)}` : deckName(r.item)}</p></li>)}
+            <ol className={["ve-items", practice["ve-items"]].filter(Boolean).join(' ')}>
+              {earlier.map((it) => <li key={`e-${it.card.id}`} className={cx(pages.veItem, ["ve-item done", practice["ve-item"]].filter(Boolean).join(' '))}><span className={["ve-mk num", practice["ve-mk"]].filter(Boolean).join(' ')} aria-hidden="true"><Tick /></span>
+                <p className={["readtext ve-read", practice["readtext"]].filter(Boolean).join(' ')}>{it.card.front}</p><p className={["ve-hint", practice["ve-hint"]].filter(Boolean).join(' ')}><span className={["ve-tag", practice["ve-tag"]].filter(Boolean).join(' ')}>Done</span>{deckName(it)}</p></li>)}
+              {results.map((r, i) => <li key={`r-${i}`} className={cx(pages.veItem, ["ve-item done", practice["ve-item"]].filter(Boolean).join(' '))}><span className={["ve-mk num", practice["ve-mk"]].filter(Boolean).join(' ')} aria-hidden="true"><Tick /></span>
+                <p className={["readtext ve-read", practice["readtext"]].filter(Boolean).join(' ')}>{r.item.card.front}</p><p className={["ve-hint", practice["ve-hint"]].filter(Boolean).join(' ')}><span className={["ve-tag", practice["ve-tag"]].filter(Boolean).join(' ')}>{label(r.rating)}</span>{r.median ? `${Math.round(r.median)} Hz, ${noteName(r.median)}` : deckName(r.item)}</p></li>)}
             </ol>
           </details>}
-          {err && <p role="alert" className="ve-err">{err}</p>}
+          {err && <p role="alert" className={["ve-err", practice["ve-err"]].filter(Boolean).join(' ')}>{err}</p>}
         </article>
       </div>
     </>

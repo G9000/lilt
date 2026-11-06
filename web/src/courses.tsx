@@ -1,3 +1,5 @@
+import { pages } from "./ui/pages";
+import { cx } from "./ui/cx";
 // Courses and kinds of practice, as the web app knows them. A course is content (a folder in
 // content/courses, listed by /api/courses); its `kind` says how it is practised. Each kind the app
 // can practise registers here: its name, its tile, and the screen that practises a course of that
@@ -48,7 +50,7 @@ export const kindOf = (kind: string): Kind => KINDS[kind] ?? OTHER;
 export function KindTile({ kind, size = 44 }: { kind: string; size?: number }) {
   const k = kindOf(kind);
   return (
-    <span className="co-tile" style={{ width: size, height: size, background: `linear-gradient(180deg, ${k.tile[0]}, ${k.tile[1]})` }} aria-hidden="true">
+    <span className={cx(pages.coTile, "co-tile")} style={{ width: size, height: size, background: `linear-gradient(180deg, ${k.tile[0]}, ${k.tile[1]})` }} aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{k.glyph}</svg>
     </span>
   );

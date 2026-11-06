@@ -1,4 +1,5 @@
-import "../styles/photos.css";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { DragEvent, useEffect, useRef, useState } from "react";
 import { api, ApiError } from "../api";
 import { ShuffleIcon } from "../desk/Desk";
@@ -81,18 +82,18 @@ export function PhotosPage() {
   const view = viewing ? pictures.find((p) => p.id === viewing) ?? null : null;
 
   return (
-    <div className={`ph${dragging ? " dragging" : ""}`} onDragOver={(e) => { if ([...e.dataTransfer.types].includes("Files")) { e.preventDefault(); setDragging(true); } }}
+    <div className={cx(pages.ph, `ph${dragging ? " dragging" : ""}`)} onDragOver={(e) => { if ([...e.dataTransfer.types].includes("Files")) { e.preventDefault(); setDragging(true); } }}
       onDragLeave={(e) => { if (e.currentTarget === e.target) setDragging(false); }} onDrop={onDrop}>
-      <header className="ph-head">
+      <header className={cx(pages.phHead, "ph-head")}>
         <div>
           <h1>Photos</h1>
           <p>{pictures.length} photo{pictures.length === 1 ? "" : "s"}{mine ? `, ${mine} of them yours` : ""}. The clock in the room shows {pinned ? "the one you picked" : "a different one each time you come in"}.</p>
         </div>
-        <div className="ph-actions">
-          <button className={`ph-shuffle${pinned ? "" : " on"}`} aria-pressed={!pinned} onClick={() => pinPicture(null)} title="A different photo on the clock each time you come in">
+        <div className={cx(pages.phActions, "ph-actions")}>
+          <button className={cx(pages.phShuffle, `ph-shuffle${pinned ? "" : " on"}`)} aria-pressed={!pinned} onClick={() => pinPicture(null)} title="A different photo on the clock each time you come in">
             <ShuffleIcon />Shuffle
           </button>
-          <button className="ph-add" onClick={() => input.current?.click()} disabled={!!busy}>
+          <button className={cx(pages.phAdd, "ph-add")} onClick={() => input.current?.click()} disabled={!!busy}>
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
             Add photos
           </button>
@@ -100,19 +101,19 @@ export function PhotosPage() {
         </div>
       </header>
 
-      {!loaded && <p className="ph-quiet">Opening your photos…</p>}
-      <ul className="ph-grid">
+      {!loaded && <p className={cx(pages.phQuiet, "ph-quiet")}>Opening your photos…</p>}
+      <ul className={cx(pages.phGrid, "ph-grid")}>
         {pictures.map((p) => (
-          <li key={p.id} className={`ph-tile${p.id === pinned ? " pinned" : ""}`}>
-            <button className="ph-img" onClick={() => setViewing(p.id)} aria-label={`View ${p.name}`}>
+          <li key={p.id} className={cx(pages.phTile, `ph-tile${p.id === pinned ? " pinned" : ""}`)}>
+            <button className={cx(pages.phImg, "ph-img")} onClick={() => setViewing(p.id)} aria-label={`View ${p.name}`}>
               <span style={{ backgroundImage: `url(${p.url(light)})`, ...p.clock }} />
             </button>
-            <div className="ph-meta">
+            <div className={cx(pages.phMeta, "ph-meta")}>
               <b title={p.name}>{p.name}</b>
               <small>{p.id === pinned ? "On the clock" : p.mine ? "Yours" : "Lilt's"}</small>
             </div>
             {confirm === p.id ? (
-              <div className="ph-confirm" role="group" aria-label={`Delete ${p.name}?`}>
+              <div className={cx(pages.phConfirm, "ph-confirm")} role="group" aria-label={`Delete ${p.name}?`}>
                 <span>{p.mine ? "Delete it from your computer?" : "Hide this one? Restore brings it back."}</span>
                 <div>
                   <button className="ph-danger" onClick={() => void remove(p)}>{p.mine ? "Delete" : "Hide"}</button>
@@ -120,7 +121,7 @@ export function PhotosPage() {
                 </div>
               </div>
             ) : (
-              <div className="ph-tools">
+              <div className={cx(pages.phTools, "ph-tools")}>
                 <button onClick={() => pinPicture(p.id)} disabled={p.id === pinned} title="Show this one on the clock" aria-label={`Show ${p.name} on the clock`}>
                   <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.6" fill="none" stroke="currentColor" strokeWidth="1.5" /><path d="M8 5v3.2l2 1.3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                 </button>
@@ -131,7 +132,7 @@ export function PhotosPage() {
             )}
           </li>
         ))}
-        <li className="ph-tile ph-drop">
+        <li className={cx(pages.phTile, pages.phDrop, "ph-tile ph-drop")}>
           <button onClick={() => input.current?.click()} disabled={!!busy}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
             <b>Add photos</b>
@@ -139,11 +140,11 @@ export function PhotosPage() {
           </button>
         </li>
       </ul>
-      {hidden > 0 && <p className="ph-quiet">{hidden} of Lilt's photos hidden. <button className="ph-link" onClick={() => void restore()}>Restore</button></p>}
-      <p className="ph-quiet ph-small">Photos you add stay on this computer, in Lilt's data folder, and go into Export with everything else.</p>
+      {hidden > 0 && <p className={cx(pages.phQuiet, "ph-quiet")}>{hidden} of Lilt's photos hidden. <button className={cx(pages.phLink, "ph-link")} onClick={() => void restore()}>Restore</button></p>}
+      <p className={cx(pages.phQuiet, pages.phSmall, "ph-quiet ph-small")}>Photos you add stay on this computer, in Lilt's data folder, and go into Export with everything else.</p>
 
-      {(busy || note) && <p className={`ph-note${note?.bad ? " bad" : ""}`} role="status">{busy ?? note?.text}</p>}
-      {dragging && <div className="ph-dropzone" aria-hidden="true"><span>Drop to add to Photos</span></div>}
+      {(busy || note) && <p className={cx(pages.phNote, `ph-note${note?.bad ? " bad" : ""}`)} role="status">{busy ?? note?.text}</p>}
+      {dragging && <div className={cx(pages.phDropzone, "ph-dropzone")} aria-hidden="true"><span>Drop to add to Photos</span></div>}
       {view && <Viewer pictures={pictures} picture={view} pinned={pinned} onGo={setViewing} onClose={() => setViewing(null)} onDelete={() => setConfirm(view.id)} />}
     </div>
   );
@@ -165,11 +166,11 @@ function Viewer({ pictures, picture, pinned, onGo, onClose, onDelete }: {
     return () => window.removeEventListener("keydown", onKey);
   });
   return (
-    <div className="ph-viewer" role="dialog" aria-label={picture.name} onClick={onClose}>
+    <div className={cx(pages.phViewer, "ph-viewer")} role="dialog" aria-label={picture.name} onClick={onClose}>
       <img src={picture.url(currentLight())} alt={picture.name} onClick={(e) => e.stopPropagation()} />
-      <button className="ph-nav prev" onClick={(e) => { e.stopPropagation(); step(-1); }} aria-label="Previous photo">‹</button>
-      <button className="ph-nav next" onClick={(e) => { e.stopPropagation(); step(1); }} aria-label="Next photo">›</button>
-      <div className="ph-viewer-bar" onClick={(e) => e.stopPropagation()}>
+      <button className={cx(pages.phNav, "ph-nav prev")} onClick={(e) => { e.stopPropagation(); step(-1); }} aria-label="Previous photo">‹</button>
+      <button className={cx(pages.phNav, "ph-nav next")} onClick={(e) => { e.stopPropagation(); step(1); }} aria-label="Next photo">›</button>
+      <div className={cx(pages.phViewerBar, "ph-viewer-bar")} onClick={(e) => e.stopPropagation()}>
         <b>{picture.name}</b>
         <span>{i + 1} of {pictures.length}</span>
         <button onClick={() => pinPicture(picture.id)} disabled={picture.id === pinned}>{picture.id === pinned ? "On the clock" : "Show on the clock"}</button>

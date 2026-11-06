@@ -1,4 +1,6 @@
-import "../styles/data.css";
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { useEffect, useState } from "react";
 import { api, AREA_LABEL, Evidence, Exercise, Pointer, Review, Take } from "../api";
 import { go } from "../App";
@@ -30,15 +32,15 @@ export function FeedbackPage({ reviewId }: { reviewId: string }) {
     api.exercises().then((x) => setExercises(x.exercises), () => undefined);
   }, [reviewId]);
 
-  if (err) return <div className="dv"><Callout kind="warn" icon="!"><p>{err}</p></Callout></div>;
-  if (!review) return <p className="dv-loading">Loading feedback…</p>;
+  if (err) return <div className={cx(pages.dv, "dv")}><Callout kind="warn" icon="!"><p>{err}</p></Callout></div>;
+  if (!review) return <p className={cx(pages.dvLoading, "dv-loading")}>Loading feedback…</p>;
 
   const pointers = [review.active_pointer, ...review.other_observations].filter(Boolean) as Pointer[];
   const pointer = pointers.find((p) => p.id === focusId) ?? review.active_pointer;
   const others = pointers.filter((p) => p !== pointer);
 
   return (
-    <div className="dv fb">
+    <div className={cx(pages.dv, "dv fb")}>
       <a href="#/desk" className="dv-back">{Icon.back}Today</a>
       {review.evidence_deleted.length > 0 && (
         <Callout kind="warn" icon="!"><p>Some evidence for this review was deleted ({review.evidence_deleted.length} recording{review.evidence_deleted.length > 1 ? "s" : ""}). The review is kept as it was written.</p></Callout>
@@ -46,22 +48,22 @@ export function FeedbackPage({ reviewId }: { reviewId: string }) {
       {pointer ? (
         <PointerView pointer={pointer} review={review} exercises={exercises} isActive={pointer === review.active_pointer} onChanged={(r, msg) => { setReview(r); setToast(msg); }} />
       ) : review.abstention ? (
-        <section className="dv-head fb-head" aria-labelledby="abs-h">
+        <section className={cx(pages.dvHead, "dv-head fb-head")} aria-labelledby="abs-h">
           <h1 id="abs-h">{review.abstention.reason}</h1>
-          <p className="fb-tags"><span className="badge">No pointer this time</span></p>
+          <p className="fb-tags"><span className={["badge", shared["badge"]].filter(Boolean).join(' ')}>No pointer this time</span></p>
           <p className="dv-lede"><span className="fb-next">Next:</span> {review.abstention.next_action}</p>
-          <div><a className="btn btn-primary" href="#/desk">Back to today</a></div>
+          <div><a className={["btn btn-primary", shared["btn"], shared["btn-primary"]].filter(Boolean).join(' ')} href="#/desk">Back to today</a></div>
         </section>
       ) : <p className="dv-empty">Nothing to show.</p>}
 
       {others.length > 0 && (
         <details className="dv-quiet">
           <summary>Other observations ({others.length})</summary>
-          <div className="body">
+          <div className={["body", shared["body"]].filter(Boolean).join(' ')}>
             <ul className="fb-others">
               {others.map((p) => (
                 <li key={p.id}>
-                  <p className="fb-tags"><span className="badge">{KIND_LABEL[p.kind]}</span><span>{AREA_LABEL[p.area] ?? p.area}</span></p>
+                  <p className="fb-tags"><span className={["badge", shared["badge"]].filter(Boolean).join(' ')}>{KIND_LABEL[p.kind]}</span><span>{AREA_LABEL[p.area] ?? p.area}</span></p>
                   <p>{p.observation}</p>
                   {p.evidence.some((e) => e.take_id) && <div><button className="dv-mini" onClick={() => { setFocusId(p.id); window.scrollTo(0, 0); document.getElementById("main")?.scrollTo(0, 0); }}>Open with evidence</button></div>}
                 </li>
@@ -112,20 +114,20 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
 
   return (
     <>
-      <section className="dv-head fb-head" aria-labelledby="obs-h">
+      <section className={cx(pages.dvHead, "dv-head fb-head")} aria-labelledby="obs-h">
         <h1 id="obs-h">{pointer.observation}</h1>
-        <p className="fb-tags"><span className={`badge${isActive ? " now" : ""}`}>{KIND_LABEL[pointer.kind]}</span><span>{AREA_LABEL[pointer.area] ?? pointer.area}</span></p>
+        <p className="fb-tags"><span className={[`badge${isActive ? " now" : ""}`, shared["badge"]].filter(Boolean).join(' ')}>{KIND_LABEL[pointer.kind]}</span><span>{AREA_LABEL[pointer.area] ?? pointer.area}</span></p>
         <p className="dv-lede">{pointer.goal_connection}</p>
       </section>
 
       {/* 1. Hear the moment */}
-      <section className="card fb-step" aria-labelledby="hear-h">
+      <section className={["card fb-step", shared["card"]].filter(Boolean).join(' ')} aria-labelledby="hear-h">
         <h2 id="hear-h">1 · Hear the moment</h2>
         {pointer.evidence.length === 0 && <p className="fb-text">There's no recording behind this observation yet.</p>}
         {/* One moment plays at a time: the first marked one. The take it's compared with plays on its own (B). */}
         {pointer.evidence.map((e, i) => (
           <div key={i} className="fb-ev">
-            <p className="fb-ev-desc"><span className="badge">{CLASS_LABEL[e.class]}</span> {e.description}</p>
+            <p className="fb-ev-desc"><span className={["badge", shared["badge"]].filter(Boolean).join(' ')}>{CLASS_LABEL[e.class]}</span> {e.description}</p>
             {e.measure && <p className="dv-cap">{e.measure.name.replace(/_/g, " ")}: {e.measure.value}{e.measure.unit ? ` ${e.measure.unit}` : ""}</p>}
             {e.take_id && takes[e.take_id] && (
               <>
@@ -142,7 +144,7 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
           </div>
         ))}
         {pointer.evidence.some((e) => e.segment) && (
-          <div><button className="btn-secondary" onClick={() => setHearSignal((x) => x + 1)}>{Icon.play}Play the marked moment</button></div>
+          <div><button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => setHearSignal((x) => x + 1)}>{Icon.play}Play the marked moment</button></div>
         )}
       </section>
 
@@ -150,13 +152,13 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
       {pointer.next_action && (
         <section className="fb-step" aria-labelledby="cue-h">
           <h2 id="cue-h">2 · Try this</h2>
-          {pointer.next_action.cue_text ? <p className="cue">{pointer.next_action.cue_text}</p> : <p className="fb-text">{pointer.next_action.summary}</p>}
+          {pointer.next_action.cue_text ? <p className={["cue", shared["cue"]].filter(Boolean).join(' ')}>{pointer.next_action.cue_text}</p> : <p className="fb-text">{pointer.next_action.summary}</p>}
           <details className="dv-quiet fb-why">
             <summary>Why this, source and limits</summary>
-            <div className="body">
+            <div className={["body", shared["body"]].filter(Boolean).join(' ')}>
               <p><strong>Confidence basis.</strong> {pointer.confidence_basis.data_quality} {pointer.confidence_basis.comparability} {pointer.confidence_basis.method_status} {pointer.confidence_basis.uncertainty}</p>
               {ex && <>
-                <p><strong>From:</strong> {ex.title} (v{ex.version}). <a href={ex.source.url} target="_blank" rel="noreferrer">{ex.source.title}<span className="sr-only"> (opens in a new tab)</span></a>, {ex.source.section}. {ex.review.status.replace(/_/g, " ")}; {ex.review.reviewer}.</p>
+                <p><strong>From:</strong> {ex.title} (v{ex.version}). <a href={ex.source.url} target="_blank" rel="noreferrer">{ex.source.title}<span className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}> (opens in a new tab)</span></a>, {ex.source.section}. {ex.review.status.replace(/_/g, " ")}; {ex.review.reviewer}.</p>
                 <ul>{ex.limitations.map((l, i) => <li key={i}>{l}</li>)}</ul>
                 <p><strong>Stop if:</strong> {ex.stop_conditions[0]}</p>
               </>}
@@ -172,7 +174,7 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
           {mode === "view" && (
             <>
               <p className="fb-text">Record the same task again with the cue in mind. Your earlier take stays exactly as it is.</p>
-              <div><button className="btn-primary" onClick={() => void startRetry()}>Try again</button></div>
+              <div><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void startRetry()}>Try again</button></div>
             </>
           )}
           {mode === "retry" && retrySession && (
@@ -187,7 +189,7 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
                 }}
                 onSaved={(t) => { setRetryTake(t); setMode("compare"); }}
               />
-              <div><button className="btn-ghost" onClick={() => setMode("view")}>Cancel</button></div>
+              <div><button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={() => setMode("view")}>Cancel</button></div>
             </>
           )}
           {mode === "compare" && retryTake && (
@@ -199,7 +201,7 @@ function PointerView({ pointer, review, exercises, isActive, onChanged }: {
         </section>
       )}
       {pointer.kind === "pause" && (
-        <Callout kind="warn" icon="!"><p>{pointer.next_action?.summary}</p><p className="small">{pointer.confidence_basis.uncertainty}</p></Callout>
+        <Callout kind="warn" icon="!"><p>{pointer.next_action?.summary}</p><p className={["small", shared["small"]].filter(Boolean).join(' ')}>{pointer.confidence_basis.uncertainty}</p></Callout>
       )}
 
       {isActive && <Responses review={review} pointer={pointer} exercises={exercises} onChanged={onChanged} />}
@@ -245,7 +247,7 @@ function RetryCompare({ original, retry, exercise, pointer, onSaved }: { origina
       <h2>4 · Compare</h2>
       <div className="fb-status"><StatusBadge status={status.status} /><span className="dv-cap">Your retry is saved as a separate take, linked to the original.</span></div>
       <p className="dv-cap">Press <kbd>A</kbd> or <kbd>B</kbd> to play either take.</p>
-      <div className="ab">
+      <div className={["ab", shared["ab"]].filter(Boolean).join(' ')}>
         <AudioPlayer src={original.audio_url} tag="A" label="Original" knownDuration={original.analysis_summary?.duration_s} />
         <AudioPlayer src={retry.audio_url} tag="B" label="Retry with the cue" />
       </div>
@@ -265,7 +267,7 @@ function RetryCompare({ original, retry, exercise, pointer, onSaved }: { origina
         <textarea id="retry-note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="How did it feel? Any strain?" />
       </div>
       <p className="dv-cap">If anything felt strained or painful, say so in your next comfort check. Lilt will pause the activity.</p>
-      <div><button className="btn-primary" disabled={busy} onClick={() => void save()}>Save and see what's next</button></div>
+      <div><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} disabled={busy} onClick={() => void save()}>Save and see what's next</button></div>
       {err && <Callout kind="warn" icon="!"><p role="alert">{err}</p></Callout>}
     </div>
   );
@@ -289,27 +291,27 @@ function Responses({ review, pointer, exercises, onChanged }: { review: Review; 
       {review.proposed_plan && !review.responses.some((r) => r.response === "accept") && (
         <Callout kind="pink" icon="→">
           <p><strong>Suggested next:</strong> {review.proposed_plan.rationale}</p>
-          <div><button className="btn-primary" onClick={() => void send("accept", "Plan updated")}>Make this my next focus</button></div>
+          <div><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void send("accept", "Plan updated")}>Make this my next focus</button></div>
         </Callout>
       )}
       {disagreed.map((d, i) => <p key={i} className="fb-text">You marked this as not matching what you hear or feel{d.note ? `: “${d.note}”` : ""}. That's kept for the next assessment.</p>)}
       <div className="fb-actions">
-        <button className="btn-secondary" onClick={() => setOpen("disagree")}>Doesn't match what I hear or feel</button>
-        <button className="btn-ghost" onClick={() => void send("keep_focus", "Keeping your current focus")}>Keep current focus</button>
-        <button className="btn-ghost" onClick={() => setOpen("choose")}>Choose another activity</button>
+        <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => setOpen("disagree")}>Doesn't match what I hear or feel</button>
+        <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={() => void send("keep_focus", "Keeping your current focus")}>Keep current focus</button>
+        <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={() => setOpen("choose")}>Choose another activity</button>
       </div>
       {open === "disagree" && (
         <div className="fb-field">
           <label htmlFor="dis-note">What do you hear or feel instead? (optional)</label>
           <textarea id="dis-note" value={note} onChange={(e) => setNote(e.target.value)} />
           <p className="dv-cap">Your note stays attached to this review. Nothing gets re-scored right away, and the original evidence isn't changed.</p>
-          <div><button className="btn-primary" onClick={() => void send("disagree", "Noted. Kept with this review")}>Save note</button></div>
+          <div><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void send("disagree", "Noted. Kept with this review")}>Save note</button></div>
         </div>
       )}
       {open === "choose" && (
         <div className="fb-field">
           <Choices name="choose-ex" value={choice} onChange={setChoice} options={exercises.map((e) => ({ id: e.id, label: e.title }))} />
-          <div><button className="btn-primary" disabled={!choice} onClick={() => void send("choose_other", "Plan updated", { chosen_exercise_id: choice! })}>Use this next</button></div>
+          <div><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} disabled={!choice} onClick={() => void send("choose_other", "Plan updated", { chosen_exercise_id: choice! })}>Use this next</button></div>
         </div>
       )}
     </section>

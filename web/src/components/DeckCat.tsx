@@ -1,3 +1,4 @@
+import { practice } from "../ui/practice";
 import { useEffect, useRef, useState } from "react";
 import { CAT_URL } from "../room/scene";
 
@@ -16,11 +17,11 @@ export function DeckCat({ mode, say }: { mode: CatMode; say?: string | null }) {
     was.current = mode;
   }, [mode]);
   return (
-    <div className={`dk-cat ${mode}`} aria-hidden="true">
-      {say && <span className="dk-cat-say" key={say}>{say}</span>}
+    <div className={[`dk-cat ${mode}`, practice["dk-cat"]].filter(Boolean).join(' ')} aria-hidden="true">
+      {say && <span className={["dk-cat-say", practice["dk-cat-say"]].filter(Boolean).join(' ')} key={say}>{say}</span>}
       <img src={CAT_URL} alt="" draggable={false} />
       {hearts > 0 && (
-        <svg key={hearts} className="dk-cat-heart" viewBox="-12 -13 24 20">
+        <svg key={hearts} className={["dk-cat-heart", practice["dk-cat-heart"]].filter(Boolean).join(' ')} viewBox="-12 -13 24 20">
           <path d="M0 5C-10-3-6-11 0-6 6-11 10-3 0 5Z" fill="#ff7eb6" stroke="#fff" strokeWidth="2" strokeLinejoin="round" />
         </svg>
       )}

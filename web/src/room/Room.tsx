@@ -1,3 +1,4 @@
+import { roomStyles } from "../desk/roomStyles";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
   CAT_BOX, CAT_SPOT, CAT_URL, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
@@ -244,39 +245,39 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
   // so this class name never changes and React never resets it.
   const settledAtStart = useRef(!inside).current;
   return (
-    <div className={`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`} aria-hidden={inside} onPointerDown={onPoint} onPointerMove={onHover}>
-      <div className={settledAtStart ? "room-stage settled" : "room-stage"} ref={stage} style={{ width: W, height: H }}>
-        <div className="room-paint" data-light={appearance.light}>
+    <div className={[`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`, roomStyles["room"]].join(" ")} aria-hidden={inside} onPointerDown={onPoint} onPointerMove={onHover}>
+      <div className={settledAtStart ? ["room-stage settled", roomStyles["room-stage"]].join(" ") : ["room-stage", roomStyles["room-stage"]].join(" ")} ref={stage} style={{ width: W, height: H }}>
+        <div className={["room-paint", roomStyles["room-paint"]].join(" ")} data-light={appearance.light}>
         {LIGHTS.map((l) => (
-          <img key={l} ref={(el) => { arts.current[l] = el; }} className="room-art" src={roomUrl(l)} alt="" draggable={false}
+          <img key={l} ref={(el) => { arts.current[l] = el; }} className={["room-art", roomStyles["room-art"]].join(" ")} src={roomUrl(l)} alt="" draggable={false}
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />
         ))}
         <MonitorScreen monitor="main" appearance={appearance} inside={inside} />
         <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
-        <canvas ref={canvas} className="room-fx" width={W} height={H} />
-        <div className="room-color-wash" style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
+        <canvas ref={canvas} className={["room-fx", roomStyles["room-fx"]].join(" ")} width={W} height={H} />
+        <div className={["room-color-wash", roomStyles["room-color-wash"]].join(" ")} style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
         </div>
-        <svg className="room-screen-light" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+        <svg className={["room-screen-light", roomStyles["room-screen-light"]].join(" ")} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
           <defs><filter id={screenGlowId} x="820" y="280" width="370" height="240" filterUnits="userSpaceOnUse"><feGaussianBlur stdDeviation="7" /></filter></defs>
-          <polygon className="room-screen-bloom" points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="none" stroke="#a8dfff" strokeWidth="10" filter={`url(#${screenGlowId})`} />
-          <polygon className="room-screen-edge" points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="rgba(180,220,255,0.06)" stroke="#c9edff" strokeWidth="1.7" strokeLinejoin="round" />
+          <polygon className={["room-screen-bloom", roomStyles["room-screen-bloom"]].join(" ")} points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="none" stroke="#a8dfff" strokeWidth="10" filter={`url(#${screenGlowId})`} />
+          <polygon className={["room-screen-edge", roomStyles["room-screen-edge"]].join(" ")} points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="rgba(180,220,255,0.06)" stroke="#c9edff" strokeWidth="1.7" strokeLinejoin="round" />
         </svg>
-        <button className="room-hit" style={{ transform: quadMatrix(100, 100, MAIN_SCREEN) }} onClick={onEnter} tabIndex={inside ? -1 : 0}
+        <button className={["room-hit", roomStyles["room-hit"]].join(" ")} style={{ transform: quadMatrix(100, 100, MAIN_SCREEN) }} onClick={onEnter} tabIndex={inside ? -1 : 0}
           aria-label={`Sit down at the computer${cards !== null ? `: ${cards} card${cards === 1 ? "" : "s"} today` : ""}`}
           onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)} onFocus={() => setHover(true)} onBlur={() => setHover(false)} />
-        <div className="room-peek" style={{ left: peekX, top: peekTop }} aria-hidden="true">
-          <b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5v10l3-3 2.5 4 2-1.2-2.5-4H13Z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg><span className="room-click">Click the screen</span><span className="room-tap">Tap the screen</span></b>
+        <div className={["room-peek", roomStyles["room-peek"]].join(" ")} style={{ left: peekX, top: peekTop }} aria-hidden="true">
+          <b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5v10l3-3 2.5 4 2-1.2-2.5-4H13Z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg><span className={["room-click", roomStyles["room-click"]].join(" ")}>Click the screen</span><span className={["room-tap", roomStyles["room-tap"]].join(" ")}>Tap the screen</span></b>
           <span>{cards === null ? "Your desk is ready" : cards === 0 ? "All done · your desk is still open" : `${cards} card${cards === 1 ? "" : "s"} today`}</span>
         </div>
-        <a className={`room-coffee${sipped ? " sipped" : ""}`} href={COFFEE_URL} onClick={onCoffee} target="_blank" rel="noopener noreferrer" tabIndex={inside ? -1 : 0}
+        <a className={[`room-coffee${sipped ? " sipped" : ""}`, roomStyles["room-coffee"]].join(" ")} href={COFFEE_URL} onClick={onCoffee} target="_blank" rel="noopener noreferrer" tabIndex={inside ? -1 : 0}
           style={{ left: COFFEE.x, top: COFFEE.y, width: COFFEE.w, height: COFFEE.h }} onPointerDown={(e) => e.stopPropagation()}>
           <span>Buy me a coffee</span>
         </a>
         <RoomObjects inside={inside} onEnter={onEnter} />
         {children}
       </div>
-      <div className="room-shade" />
-      {say && <div className="room-bubble" ref={bubble}>{say}</div>}
+      <div className={["room-shade", roomStyles["room-shade"]].join(" ")} />
+      {say && <div className={["room-bubble", roomStyles["room-bubble"]].join(" ")} ref={bubble}>{say}</div>}
     </div>
   );
 }

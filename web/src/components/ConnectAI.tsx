@@ -1,3 +1,6 @@
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { ReactNode, useEffect, useState } from "react";
 import { api, ConnectInfo } from "../api";
 import { Callout } from "./bits";
@@ -20,9 +23,9 @@ function Snippet({ text, label }: { text: string; label: string }) {
   const [done, setDone] = useState(false);
   const copy = () => void navigator.clipboard?.writeText(text).then(() => { setDone(true); setTimeout(() => setDone(false), 1600); });
   return (
-    <div className="st-snip">
+    <div className={cx(pages.stSnip, "st-snip")}>
       <pre aria-label={label}>{text}</pre>
-      <button className="btn-secondary" onClick={copy}>{done ? "Copied" : "Copy"}</button>
+      <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={copy}>{done ? "Copied" : "Copy"}</button>
     </div>
   );
 }
@@ -63,41 +66,41 @@ export function ConnectAI() {
     { id: "other", name: "Other apps", where: "Cursor, Hermes and more", icon: <OtherAppsIcon /> },
   ];
   const chatgpt = (
-    <div className="st-box">
-      <div className="st-field"><ChatGPTAccount /></div>
-      <details className="st-more">
+    <div className={cx(pages.stBox, "st-box")}>
+      <div className={cx(pages.stField, "st-field")}><ChatGPTAccount /></div>
+      <details className={cx(pages.stMore, "st-more")}>
       <summary>Use Lilt inside the ChatGPT app</summary>
-      <div className="st-field">
-        <span className="st-label">Connect from the ChatGPT app</span>
-        <p className="st-help st-why">ChatGPT runs on OpenAI's servers, so it can't reach this computer directly. You give Lilt a temporary public address, add it in ChatGPT, and sign in with a code only Lilt shows you. Through that address only Lilt's AI connection and sign-in page can be reached: not the app, not your recordings.</p>
+      <div className={cx(pages.stField, "st-field")}>
+        <span className={cx(pages.stLabel, "st-label")}>Connect from the ChatGPT app</span>
+        <p className={cx(pages.stHelp, pages.stWhy, "st-help st-why")}>ChatGPT runs on OpenAI's servers, so it can't reach this computer directly. You give Lilt a temporary public address, add it in ChatGPT, and sign in with a code only Lilt shows you. Through that address only Lilt's AI connection and sign-in page can be reached: not the app, not your recordings.</p>
       </div>
-      <div className="st-field">
-        <span className="st-label">1. Give Lilt a public address</span>
-        <p className="st-help">Run this on this computer and paste the https address it prints. It needs cloudflared (<code>brew install cloudflared</code>). A quick tunnel gets a new address each time it starts; a named Cloudflare tunnel or Tailscale Funnel keeps the same one.</p>
+      <div className={cx(pages.stField, "st-field")}>
+        <span className={cx(pages.stLabel, "st-label")}>1. Give Lilt a public address</span>
+        <p className={cx(pages.stHelp, "st-help")}>Run this on this computer and paste the https address it prints. It needs cloudflared (<code>brew install cloudflared</code>). A quick tunnel gets a new address each time it starts; a named Cloudflare tunnel or Tailscale Funnel keeps the same one.</p>
         <Snippet label="Tunnel command" text="cloudflared tunnel --url http://127.0.0.1:7878" />
-        <div className="st-inline">
+        <div className={cx(pages.stInline, "st-inline")}>
           <input type="url" inputMode="url" aria-label="Public address" placeholder="https://something.trycloudflare.com" value={address} onChange={(e) => setAddress(e.target.value)} />
-          <button className="btn-secondary" onClick={() => void saveAddress()} disabled={address.trim().replace(/\/$/, "") === (c.public_url ?? "")}>Save address</button>
+          <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void saveAddress()} disabled={address.trim().replace(/\/$/, "") === (c.public_url ?? "")}>Save address</button>
         </div>
       </div>
-      <div className="st-field">
-        <span className="st-label">2. Add Lilt in ChatGPT</span>
-        <p className="st-help">In ChatGPT, turn on developer mode and add a custom MCP server (Settings → Apps &amp; Connectors; on some plans it's under Plugins). Paste this address and choose OAuth.</p>
-        {c.public_mcp_url ? <Snippet label="Public MCP address" text={c.public_mcp_url} /> : <p className="st-help st-wait">Save the public address first.</p>}
+      <div className={cx(pages.stField, "st-field")}>
+        <span className={cx(pages.stLabel, "st-label")}>2. Add Lilt in ChatGPT</span>
+        <p className={cx(pages.stHelp, "st-help")}>In ChatGPT, turn on developer mode and add a custom MCP server (Settings → Apps &amp; Connectors; on some plans it's under Plugins). Paste this address and choose OAuth.</p>
+        {c.public_mcp_url ? <Snippet label="Public MCP address" text={c.public_mcp_url} /> : <p className={cx(pages.stHelp, pages.stWait, "st-help st-wait")}>Save the public address first.</p>}
       </div>
-      <div className="st-field">
-        <span className="st-label">3. Sign in with a code</span>
-        <p className="st-help">ChatGPT opens Lilt's sign-in page. Get a code here and type it there. Each code works once, for 10 minutes, so only you can connect.</p>
+      <div className={cx(pages.stField, "st-field")}>
+        <span className={cx(pages.stLabel, "st-label")}>3. Sign in with a code</span>
+        <p className={cx(pages.stHelp, "st-help")}>ChatGPT opens Lilt's sign-in page. Get a code here and type it there. Each code works once, for 10 minutes, so only you can connect.</p>
         {code && left > 0 ? (
-          <p className="st-code" aria-live="polite"><b>{code.code}</b><span>{Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")} left</span></p>
+          <p className={cx(pages.stCode, "st-code")} aria-live="polite"><b>{code.code}</b><span>{Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")} left</span></p>
         ) : (
-          <button className="btn-secondary" onClick={() => void getCode()} disabled={!c.public_url}>Get a code</button>
+          <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void getCode()} disabled={!c.public_url}>Get a code</button>
         )}
       </div>
       {c.connections.map((x) => (
-        <div className="st-row" key={x.id}>
-          <div><span className="st-label">{x.client_name}</span><p className="st-help">Connected {ago(x.connected)}, last used {ago(x.last_used)}</p></div>
-          <button className="btn-secondary" onClick={() => void run(async () => { await api.disconnectApp(x.id); await load(); })}>Disconnect</button>
+        <div className={cx(pages.stRow, "st-row")} key={x.id}>
+          <div><span className={cx(pages.stLabel, "st-label")}>{x.client_name}</span><p className={cx(pages.stHelp, "st-help")}>Connected {ago(x.connected)}, last used {ago(x.last_used)}</p></div>
+          <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void run(async () => { await api.disconnectApp(x.id); await load(); })}>Disconnect</button>
         </div>
       ))}
       </details>
@@ -106,27 +109,27 @@ export function ConnectAI() {
   const pane: Record<App, ReactNode> = {
     chatgpt,
     claude: (
-      <div className="st-box">
-        <div className="st-field">
-          <span className="st-label">Claude Desktop</span>
-          <p className="st-help">Open Claude → Settings → Developer → Edit Config, paste this into <code>claude_desktop_config.json</code>, then restart Claude. It runs on this computer; nothing goes through the internet to reach Lilt.{c.stdio.command === "docker" && " Lilt's container needs to be running."}</p>
+      <div className={cx(pages.stBox, "st-box")}>
+        <div className={cx(pages.stField, "st-field")}>
+          <span className={cx(pages.stLabel, "st-label")}>Claude Desktop</span>
+          <p className={cx(pages.stHelp, "st-help")}>Open Claude → Settings → Developer → Edit Config, paste this into <code>claude_desktop_config.json</code>, then restart Claude. It runs on this computer; nothing goes through the internet to reach Lilt.{c.stdio.command === "docker" && " Lilt's container needs to be running."}</p>
           <Snippet label="Claude Desktop configuration" text={desktop} />
         </div>
-        <div className="st-field">
-          <span className="st-label">Claude Code</span>
-          <p className="st-help">Run this once in a terminal.</p>
+        <div className={cx(pages.stField, "st-field")}>
+          <span className={cx(pages.stLabel, "st-label")}>Claude Code</span>
+          <p className={cx(pages.stHelp, "st-help")}>Run this once in a terminal.</p>
           <Snippet label="Claude Code command" text={`claude mcp add --transport http lilt ${c.local_url}${c.token_required ? " --header \"Authorization: Bearer $LILT_MCP_TOKEN\"" : ""}`} />
         </div>
-        <div className="st-field">
-          <p className="st-help">Then ask Claude about your practice, or to change your own copy of the chapters. claude.ai on the web works like the ChatGPT app: see "Use Lilt inside the ChatGPT app" under ChatGPT, then add the address under Settings → Connectors.</p>
+        <div className={cx(pages.stField, "st-field")}>
+          <p className={cx(pages.stHelp, "st-help")}>Then ask Claude about your practice, or to change your own copy of the chapters. claude.ai on the web works like the ChatGPT app: see "Use Lilt inside the ChatGPT app" under ChatGPT, then add the address under Settings → Connectors.</p>
         </div>
       </div>
     ),
     other: (
-      <div className="st-box">
-        <div className="st-field">
-          <span className="st-label">Apps on this computer</span>
-          <p className="st-help">Cursor, Hermes and other apps that speak MCP over HTTP can use this address. Apps that start Lilt themselves can use the configuration under Claude.</p>
+      <div className={cx(pages.stBox, "st-box")}>
+        <div className={cx(pages.stField, "st-field")}>
+          <span className={cx(pages.stLabel, "st-label")}>Apps on this computer</span>
+          <p className={cx(pages.stHelp, "st-help")}>Cursor, Hermes and other apps that speak MCP over HTTP can use this address. Apps that start Lilt themselves can use the configuration under Claude.</p>
           <Snippet label="Lilt's MCP address" text={c.local_url} />
         </div>
       </div>
@@ -134,8 +137,8 @@ export function ConnectAI() {
   };
 
   return (
-    <section className="st-group" id="st-ai" aria-label="Connect your AI">
-      <div className="st-apps" role="tablist" aria-label="Choose your app">
+    <section className={cx(pages.stGroup, "st-group")} id="st-ai" aria-label="Connect your AI">
+      <div className={cx(pages.stApps, "st-apps")} role="tablist" aria-label="Choose your app">
         {apps.map((a) => (
           <button key={a.id} role="tab" aria-selected={app === a.id} className={app === a.id ? "on" : ""} onClick={() => setApp(a.id)}>
             {a.icon}<b>{a.name}</b><span>{a.where}</span>
@@ -144,12 +147,12 @@ export function ConnectAI() {
       </div>
       <div role="tabpanel" aria-label={apps.find((a) => a.id === app)?.name}>{pane[app]}</div>
 
-      <h3 className="st-sub">Recently used by</h3>
-      <div className="st-box">
+      <h3 className={cx(pages.stSub, "st-sub")}>Recently used by</h3>
+      <div className={cx(pages.stBox, "st-box")}>
         {c.activity.length === 0
-          ? <div className="st-row"><p className="st-help">No AI app has used Lilt yet. Once one does, it shows here, so you know it worked.</p></div>
+          ? <div className={cx(pages.stRow, "st-row")}><p className={cx(pages.stHelp, "st-help")}>No AI app has used Lilt yet. Once one does, it shows here, so you know it worked.</p></div>
           : c.activity.slice(0, 5).map((a) => (
-            <div className="st-row" key={a.client}><span className="st-label">{a.client}</span><span className="st-help">{a.last_tool.replace(/_/g, " ")}, {ago(a.last_used)}</span></div>
+            <div className={cx(pages.stRow, "st-row")} key={a.client}><span className={cx(pages.stLabel, "st-label")}>{a.client}</span><span className={cx(pages.stHelp, "st-help")}>{a.last_tool.replace(/_/g, " ")}, {ago(a.last_used)}</span></div>
           ))}
       </div>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}

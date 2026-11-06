@@ -1,0 +1,42 @@
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-muted: var(--muted);
+  --color-hair: var(--hair);
+  --color-fill: var(--fill);
+  --color-fill-2: var(--fill-2);
+  --color-win: var(--win);
+  --color-page: var(--page);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-on: var(--accent-on);
+  --color-rec: var(--rec);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-focus: var(--focus);
+  --color-wave: var(--wave);
+  --color-wave-played: var(--wave-played);
+  --font-sans: var(--font);
+  --font-mono: var(--mono);
+  --radius-control: var(--control-radius);
+  --radius-panel: var(--radius);
+  --text-title: var(--type-title);
+  --text-section: var(--type-section);
+  --text-body: var(--type-body);
+  --text-caption: var(--type-caption);
+  --text-control: var(--type-control);
+  --spacing-control: var(--control-height);
+  --container-reading: var(--content-width);
+  --ease-lilt: var(--ease);
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

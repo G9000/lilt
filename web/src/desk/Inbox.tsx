@@ -1,3 +1,5 @@
+import { shared } from "../ui/shared";
+import { roomStyles } from "./roomStyles";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, AREA_LABEL, Deck, Today } from "../api";
 import { go } from "../App";
@@ -75,9 +77,9 @@ const ENVELOPE = <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stro
 
 export function InboxButton({ inbox }: { inbox: InboxState }) {
   return (
-    <button className={`ib-btn${inbox.unread ? "" : " read"}`} onClick={(e) => { e.stopPropagation(); inbox.toggle(); }} aria-expanded={inbox.open}
+    <button className={[`ib-btn${inbox.unread ? "" : " read"}`, roomStyles["ib-btn"]].join(" ")} onClick={(e) => { e.stopPropagation(); inbox.toggle(); }} aria-expanded={inbox.open}
       aria-label={inbox.unread ? `Notifications, ${inbox.unread} new` : "Notifications"}>
-      {ENVELOPE}<span className="dot" aria-hidden="true" />
+      {ENVELOPE}<span className={["dot", shared["dot"]].filter(Boolean).join(' ')} aria-hidden="true" />
     </button>
   );
 }
@@ -111,28 +113,28 @@ export function NotificationCenter({ inbox }: { inbox: InboxState }) {
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
-      <div className={`nc-scrim${open ? " on" : ""}`} aria-hidden="true" />
-      <section className={`nc${open ? " open" : ""}`} aria-label="Notifications" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
-        <header className="nc-head">
+      <div className={[`nc-scrim${open ? " on" : ""}`, roomStyles["nc-scrim"]].join(" ")} aria-hidden="true" />
+      <section className={[`nc${open ? " open" : ""}`, roomStyles["nc"]].join(" ")} aria-label="Notifications" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
+        <header className={["nc-head", roomStyles["nc-head"]].join(" ")}>
           <b>{greeting()}</b>
           <span>{new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })}</span>
         </header>
         {notes.length > 0 ? (
           <>
-            <div className="nc-group"><span>Lilt</span><button onClick={inbox.clearAll}>Clear all</button></div>
-            <ul className="nc-list">
+            <div className={["nc-group", roomStyles["nc-group"]].join(" ")}><span>Lilt</span><button onClick={inbox.clearAll}>Clear all</button></div>
+            <ul className={["nc-list", roomStyles["nc-list"]].join(" ")}>
               {notes.map((n) => (
                 <li key={n.id} className={read.includes(n.id) ? undefined : "new"}>
                   <button onClick={() => inbox.openNote(n)}>
-                    <span className={`nc-ic ${n.kind}`}><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{ICON[n.kind]}</svg></span>
+                    <span className={[`nc-ic ${n.kind}`, roomStyles["nc-ic"]].join(" ")}><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{ICON[n.kind]}</svg></span>
                     <b>{n.title}</b><time>{n.when}</time><small>{n.body}</small>
                   </button>
                 </li>
               ))}
             </ul>
           </>
-        ) : <p className="nc-empty">No notifications. All quiet.</p>}
-        <p className="nc-foot">Only things worth knowing land here. Never streaks, never missed days.</p>
+        ) : <p className={["nc-empty", roomStyles["nc-empty"]].join(" ")}>No notifications. All quiet.</p>}
+        <p className={["nc-foot", roomStyles["nc-foot"]].join(" ")}>Only things worth knowing land here. Never streaks, never missed days.</p>
       </section>
     </>
   );

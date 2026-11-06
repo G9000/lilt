@@ -1,0 +1,15 @@
+@keyframes prc-spin { to { transform: rotate(360deg); } }
+@keyframes ve-award-in { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
+@keyframes ve-medal-in { from { opacity: 0; transform: scale(0.4) rotate(-40deg); } }
+@keyframes ve-pulse { 50% { opacity: 0.3; transform: scale(0.75); } }
+@keyframes ve-breathe { 50% { transform: scale(1.002, 1.007); } }
+@keyframes ve-z { 0% { opacity: 0; transform: translate(0, 6px) scale(0.8); } 25% { opacity: 0.95; } 100% { opacity: 0; transform: translate(14px, -26px) scale(1.1); } }
+@keyframes ve-rise { from { opacity: 0; transform: translateY(6px); } }
+@keyframes ds-open-full { from { opacity: 0; transform: translateY(10px); } }
+@keyframes ve-note { 50% { opacity: 0.45; } }
+@keyframes sd-settle { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes dk-breathe { 50% { scale: 1.006 1.03; } }
+@keyframes dk-say { from { opacity: 0; translate: -50% 3px; } }
+@keyframes dk-heart { 0% { opacity: 0; translate: 0 0; } 15% { opacity: 1; } 100% { opacity: 0; translate: 6px -34px; scale: 1.15; } }
+@keyframes sd-toss { from { opacity: 0; translate: 10px -12px; rotate: 18deg; } }
+@keyframes fc-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }

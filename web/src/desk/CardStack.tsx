@@ -1,3 +1,4 @@
+import { roomStyles } from "./roomStyles";
 import { animate, AnimatePresence, motion, type PanInfo, useDragControls, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Deck, DeckItem } from "../api";
@@ -80,10 +81,10 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   };
 
   return (
-    <motion.section ref={self} className={`cs${moving ? " moving" : ""}`} tabIndex={0} aria-label={label} onKeyDown={onKey}
+    <motion.section ref={self} className={[`cs${moving ? " moving" : ""}`, roomStyles["cs"]].join(" ")} tabIndex={0} aria-label={label} onKeyDown={onKey}
       style={{ x: sx, y: sy }} drag dragListener={false} dragControls={grip} dragMomentum={false}
       onDragStart={() => setMoving(true)} onDragEnd={placed}>
-      <div className="cs-cards">
+      <div className={["cs-cards", roomStyles["cs-cards"]].join(" ")}>
         {!deck || done || deck.paused ? (
           <StaticCard title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
             sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : "The lights are on. Nice work."} onStart={() => onStart(null)} />
@@ -100,12 +101,12 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
         )}
       </div>
       {n > 1 && (
-        <div className="cs-dots" aria-hidden="true">
+        <div className={["cs-dots", roomStyles["cs-dots"]].join(" ")} aria-hidden="true">
           {items.map((it) => <i key={it.card.id} className={it.card.id === pile[0] ? "on" : undefined} />)}
         </div>
       )}
-      <button className="cs-grip" aria-label="Move today's cards (drag)" onPointerDown={(e) => { e.preventDefault(); grip.start(e); }}>
-        <span className="cs-grip-tip" aria-hidden="true">Drag to move</span>
+      <button className={["cs-grip", roomStyles["cs-grip"]].join(" ")} aria-label="Move today's cards (drag)" onPointerDown={(e) => { e.preventDefault(); grip.start(e); }}>
+        <span className={["cs-grip-tip", roomStyles["cs-grip-tip"]].join(" ")} aria-hidden="true">Drag to move</span>
       </button>
     </motion.section>
   );
@@ -145,7 +146,7 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart }
   // The outer layer springs to its place in the pile; the inner one follows your finger.
   return (
     <motion.article
-      className={`cs-card${top ? " top" : ""}`}
+      className={[`cs-card${top ? " top" : ""}`, roomStyles["cs-card"]].join(" ")}
       style={{ zIndex: 10 - depth }}
       initial={{ y: 70, opacity: 0, scale: 0.9, rotate: (index - 1) * 6 }}
       animate={rest(depth)}
@@ -154,7 +155,7 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart }
       aria-hidden={!top}
     >
      <motion.div
-      className="cs-drag"
+      className={["cs-drag", roomStyles["cs-drag"]].join(" ")}
       style={{ x, rotate: tilt }}
       drag={top ? "x" : false}
       dragMomentum={false}
@@ -168,20 +169,20 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart }
       onDragEnd={top ? onDragEnd : undefined}
       whileTap={top ? { scale: 0.985 } : undefined}
      >
-      <div className="cs-in">
-        <div className="cs-body">
-          <div className="cs-head"><div className="cs-title">Today's practice</div>
-            <span className={`cs-chip${first ? " next" : ""}`}>{first ? "Up next" : KIND[item.kind]}</span></div>
-          <div className="cs-kind">{item.card.deck_title} · {SUB[item.card.kind] ?? item.card.kind}</div>
-          <div className="cs-phrase">{item.card.front}</div>
-          {item.card.hint && <div className="cs-hint">{item.card.hint}</div>}
-          <div className="cs-foot">
-            <span className="cs-count"><b>{index + 1}</b> of {count}, about {count} minute{count === 1 ? "" : "s"}</span>
-            <span className="cs-go" aria-hidden="true">Start <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
+      <div className={["cs-in", roomStyles["cs-in"]].join(" ")}>
+        <div className={["cs-body", roomStyles["cs-body"]].join(" ")}>
+          <div className={["cs-head", roomStyles["cs-head"]].join(" ")}><div className={["cs-title", roomStyles["cs-title"]].join(" ")}>Today's practice</div>
+            <span className={[`cs-chip${first ? " next" : ""}`, roomStyles["cs-chip"]].join(" ")}>{first ? "Up next" : KIND[item.kind]}</span></div>
+          <div className={["cs-kind", roomStyles["cs-kind"]].join(" ")}>{item.card.deck_title} · {SUB[item.card.kind] ?? item.card.kind}</div>
+          <div className={["cs-phrase", roomStyles["cs-phrase"]].join(" ")}>{item.card.front}</div>
+          {item.card.hint && <div className={["cs-hint", roomStyles["cs-hint"]].join(" ")}>{item.card.hint}</div>}
+          <div className={["cs-foot", roomStyles["cs-foot"]].join(" ")}>
+            <span className={["cs-count", roomStyles["cs-count"]].join(" ")}><b>{index + 1}</b> of {count}, about {count} minute{count === 1 ? "" : "s"}</span>
+            <span className={["cs-go", roomStyles["cs-go"]].join(" ")} aria-hidden="true">Start <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
           </div>
         </div>
       </div>
-      <div className="cs-shade" style={{ opacity: Math.min(0.3, depth * 0.14) }} />
+      <div className={["cs-shade", roomStyles["cs-shade"]].join(" ")} style={{ opacity: Math.min(0.3, depth * 0.14) }} />
      </motion.div>
     </motion.article>
   );
@@ -189,15 +190,15 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart }
 
 function StaticCard({ title, sub, onStart }: { title: string; sub: string; onStart: () => void }) {
   return (
-    <motion.article className="cs-card top" onTap={onStart} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING} whileTap={{ scale: 0.985 }}>
-      <div className="cs-drag">
-      <div className="cs-in">
-        <div className="cs-body">
-          <div className="cs-title">Today's practice</div>
-          <div className="cs-phrase">{title}</div>
-          <div className="cs-kind">{sub}</div>
-          <div className="cs-foot"><span className="cs-count">Sit down at the desk</span>
-            <span className="cs-go" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span></div>
+    <motion.article className={["cs-card top", roomStyles["cs-card"]].join(" ")} onTap={onStart} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING} whileTap={{ scale: 0.985 }}>
+      <div className={["cs-drag", roomStyles["cs-drag"]].join(" ")}>
+      <div className={["cs-in", roomStyles["cs-in"]].join(" ")}>
+        <div className={["cs-body", roomStyles["cs-body"]].join(" ")}>
+          <div className={["cs-title", roomStyles["cs-title"]].join(" ")}>Today's practice</div>
+          <div className={["cs-phrase", roomStyles["cs-phrase"]].join(" ")}>{title}</div>
+          <div className={["cs-kind", roomStyles["cs-kind"]].join(" ")}>{sub}</div>
+          <div className={["cs-foot", roomStyles["cs-foot"]].join(" ")}><span className={["cs-count", roomStyles["cs-count"]].join(" ")}>Sit down at the desk</span>
+            <span className={["cs-go", roomStyles["cs-go"]].join(" ")} aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span></div>
         </div>
       </div>
       </div>

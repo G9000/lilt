@@ -12,6 +12,7 @@ setup; `VALIDATION.md` covers what was actually verified.
 | App server | Rust 1.94, Axum 0.8, Tokio | PRD's suggested shape; one small binary serves API, web UI and MCP. |
 | Analysis | Python 3.12 helper (`analysis/`) using Parselmouth (Praat) + NumPy, PyAV for decoding | Established Praat pitch tracking; PyAV bundles FFmpeg so WebM/Opus and MP4/AAC decode without a system FFmpeg. Run as a subprocess with a versioned JSON contract. |
 | Web UI | React 18 + TypeScript + Vite, built to static files served by the Rust server | Responsive browser UI for desktop and phone; no separate web server. |
+| Styling | Tailwind CSS 4 through its Vite integration; shared CSS theme and explicit utility recipes | One styling system for the room, practice, Settings and native updater; see [Tailwind conventions](tailwind.md). |
 | JavaScript tooling | Bun 1.4.2 workspace with `web` as a member; Node 22.18+ for Vite and tests | One root lockfile and root development, build, type-check and unit-test commands. |
 | Storage | Plain files under a data root: original audio, JSON records, Markdown summaries | Exportable and understandable; no database. The server scans and caches records. |
 | Jobs | Persisted job files in `jobs/`, a Tokio worker, reconciliation at startup | Analysis survives crashes and restarts without duplicate results. |

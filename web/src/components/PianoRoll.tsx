@@ -1,3 +1,4 @@
+import { shared } from "../ui/shared";
 import { useEffect, useRef, useState } from "react";
 import { cleanContour, ContourPoint, hzToMidi, midiToHz, noteName } from "../pitch";
 
@@ -207,7 +208,7 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
   return (
     <canvas
       ref={ref}
-      className="pianoroll"
+      className={["pianoroll", shared["pianoroll"]].filter(Boolean).join(' ')}
       style={{ height, cursor: onSeek && !live ? "pointer" : "default" }}
       role="img"
       aria-label={label}

@@ -1,4 +1,5 @@
-import "../styles/voice.css";
+import { shared } from "../ui/shared";
+import { practice } from "../ui/practice";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api, Exercise, Prompts, Review, Session, Take } from "../api";
 import { go } from "../App";
@@ -7,7 +8,7 @@ import { Callout, Choices, StatusBadge, Steps, TakeFlags, useTakeStatus } from "
 import { MicCheck, RecordPanel, useMic } from "../components/Recording";
 import { ReadAlong, ReadNotes } from "../components/ReadAlong";
 
-const Ext = () => <svg className="vext" viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 2.5h5v5M9.5 2.5l-7 7" /></svg>;
+const Ext = () => <svg className={["vext", practice["vext"]].filter(Boolean).join(' ')} viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 2.5h5v5M9.5 2.5l-7 7" /></svg>;
 
 // Which reading-cue set fits each exercise's practice text.
 const READ_LEVEL: Record<string, string> = {
@@ -68,7 +69,7 @@ export function PracticePage({ sessionId }: { sessionId: string }) {
   const addTake = (t: Take) => setTakes((xs) => [...xs.filter((x) => x.id !== t.id), t]);
 
   if (err) return <Callout kind="warn"><p>{err}</p></Callout>;
-  if (!session || !prompts) return <p className="vloading">Loading session…</p>;
+  if (!session || !prompts) return <p className={["vloading", practice["vloading"]].filter(Boolean).join(' ')}>Loading session…</p>;
 
   const ladder = exercise?.ladder?.length ? exercise.ladder[session.ladder_step ?? 0] : null;
   const cue = exercise ? (exercise.cues.find((c) => c.id === cueId) ?? exercise.primary_cue) : null;
@@ -78,20 +79,20 @@ export function PracticePage({ sessionId }: { sessionId: string }) {
   const post = refTakes.find((t) => t.phase === "post");
 
   return (
-    <div className="vpage vpractice">
-      <div className="vprogress">
-        <span className="vcap">{session.kind === "check_in" ? "Quick check-in" : "Practice session"}{step !== "done" ? `, step ${Math.min(steps.indexOf(step), steps.length - 2) + 1} of ${steps.length - 1}` : ""}</span>
-        {step !== "done" && <a className="textlink" href="#/">Save &amp; leave</a>}
+    <div className={["vpage vpractice", practice["vpage"]].filter(Boolean).join(' ')}>
+      <div className={["vprogress", practice["vprogress"]].filter(Boolean).join(' ')}>
+        <span className={["vcap", practice["vcap"]].filter(Boolean).join(' ')}>{session.kind === "check_in" ? "Quick check-in" : "Practice session"}{step !== "done" ? `, step ${Math.min(steps.indexOf(step), steps.length - 2) + 1} of ${steps.length - 1}` : ""}</span>
+        {step !== "done" && <a className={["textlink", shared["textlink"]].filter(Boolean).join(' ')} href="#/">Save &amp; leave</a>}
         <Steps total={steps.length - 1} current={Math.min(steps.indexOf(step), steps.length - 1)} />
       </div>
 
       {step === "mic" && <MicCheck onReady={next} />}
 
       {step === "reference" && (
-        <section className="vstep">
-          <h2 className="vh vh-sm">Reference phrase</h2>
-          <p className="vphrase">{prompts.reference.text}</p>
-          <p className="vtip">This is your baseline, not a test. Nothing here is graded.</p>
+        <section className={["vstep", practice["vstep"]].filter(Boolean).join(' ')}>
+          <h2 className={["vh vh-sm", practice["vh"], practice["vh-sm"]].filter(Boolean).join(' ')}>Reference phrase</h2>
+          <p className={["vphrase", practice["vphrase"]].filter(Boolean).join(' ')}>{prompts.reference.text}</p>
+          <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>This is your baseline, not a test. Nothing here is graded.</p>
           {pre ? (
             <TakeRow take={pre} label="Your reference" onUpdate={addTake} />
           ) : (
@@ -101,10 +102,10 @@ export function PracticePage({ sessionId }: { sessionId: string }) {
               onSaved={addTake}
             />
           )}
-          <details className="why"><summary>Why the same phrase every time?</summary><div className="body">{prompts.reference.source_note}</div></details>
-          <div className="vactions">
-            <button className="btn-primary" onClick={next} disabled={!pre}>{session.kind === "check_in" ? "Continue" : "On to the exercise"}</button>
-            {pre && <button className="btn-ghost" onClick={() => setTakes((x) => x.filter((t) => t.id !== pre.id))}>Record another take</button>}
+          <details className={["why", shared["why"]].filter(Boolean).join(' ')}><summary>Why the same phrase every time?</summary><div className={["body", shared["body"]].filter(Boolean).join(' ')}>{prompts.reference.source_note}</div></details>
+          <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
+            <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={next} disabled={!pre}>{session.kind === "check_in" ? "Continue" : "On to the exercise"}</button>
+            {pre && <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={() => setTakes((x) => x.filter((t) => t.id !== pre.id))}>Record another take</button>}
           </div>
         </section>
       )}
@@ -118,12 +119,12 @@ export function PracticePage({ sessionId }: { sessionId: string }) {
       )}
 
       {step === "followup" && (
-        <section className="vstep">
-          <h2 className="vh vh-sm">Reference phrase again</h2>
-          {!post && <p className="vphrase">{prompts.reference.text}</p>}
-          <p className="vtip">Say the same phrase once more, now that you've practised. You'll hear before and after side by side. A change straight after practice is useful to hear, but it doesn't mean the change has become a habit yet.</p>
+        <section className={["vstep", practice["vstep"]].filter(Boolean).join(' ')}>
+          <h2 className={["vh vh-sm", practice["vh"], practice["vh-sm"]].filter(Boolean).join(' ')}>Reference phrase again</h2>
+          {!post && <p className={["vphrase", practice["vphrase"]].filter(Boolean).join(' ')}>{prompts.reference.text}</p>}
+          <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>Say the same phrase once more, now that you've practised. You'll hear before and after side by side. A change straight after practice is useful to hear, but it doesn't mean the change has become a habit yet.</p>
           {post ? (
-            <div className="ab">
+            <div className={["ab", shared["ab"]].filter(Boolean).join(' ')}>
               {pre && <AudioPlayer src={pre.audio_url} label="Before practice" tag="A" />}
               <TakeRow take={post} label="After practice" tag="B" onUpdate={addTake} />
             </div>
@@ -131,9 +132,9 @@ export function PracticePage({ sessionId }: { sessionId: string }) {
             <RecordPanel label="reference · after"
               meta={{ session_id: session.id, role: "reference", phase: "post", prompt_id: prompts.reference.prompt_id, prompt_text: prompts.reference.text }} onSaved={addTake} />
           )}
-          <div className="vactions">
-            <button className="btn-primary" onClick={next} disabled={!post}>Continue</button>
-            {!post && <button className="btn-ghost" onClick={next}>Skip</button>}
+          <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
+            <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={next} disabled={!post}>Continue</button>
+            {!post && <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={next}>Skip</button>}
           </div>
         </section>
       )}
@@ -159,9 +160,9 @@ export function PracticePage({ sessionId }: { sessionId: string }) {
 function TakeRow({ take, label, onUpdate, tag }: { take: Take; label: string; onUpdate: (t: Take) => void; tag?: string }) {
   useTakeStatus(take, onUpdate);
   return (
-    <div className="vtake">
+    <div className={["vtake", practice["vtake"]].filter(Boolean).join(' ')}>
       <AudioPlayer src={take.audio_url} label={label} tag={tag} knownDuration={take.analysis_summary?.duration_s} />
-      <div className="vbadges">
+      <div className={["vbadges", practice["vbadges"]].filter(Boolean).join(' ')}>
         <StatusBadge status={take.status} />
         <TakeFlags take={take} />
       </div>
@@ -190,23 +191,23 @@ function ExerciseStep({ exercise, session, cue, ladderText, takes, onTake, onNex
   const readable = !ladderStep || ladderStep.recordable;
 
   return (
-    <section className="vstep">
-      <h2 className="vh">{exercise.title}</h2>
-      <p className="vtip">{exercise.purpose}</p>
-      {exercise.areas.length > 0 && <p className="vpills">{exercise.areas.map((a) => <span key={a} className="vpill">{a.replace(/^./, (c) => c.toUpperCase())}</span>)}</p>}
+    <section className={["vstep", practice["vstep"]].filter(Boolean).join(' ')}>
+      <h2 className={["vh", practice["vh"]].filter(Boolean).join(' ')}>{exercise.title}</h2>
+      <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>{exercise.purpose}</p>
+      {exercise.areas.length > 0 && <p className={["vpills", practice["vpills"]].filter(Boolean).join(' ')}>{exercise.areas.map((a) => <span key={a} className={["vpill", practice["vpill"]].filter(Boolean).join(' ')}>{a.replace(/^./, (c) => c.toUpperCase())}</span>)}</p>}
       <details open>
         <summary>Steps</summary>
-        <ol className="body vinstr">
+        <ol className={[["body vinstr", practice["vinstr"]].filter(Boolean).join(' '), shared["body"]].filter(Boolean).join(' ')}>
           {exercise.instructions.map((s, i) => <li key={i}>{s}</li>)}
         </ol>
       </details>
-      {!readable && <p className="vtip">This step happens away from Lilt. Afterwards, record a short spoken note about how it went.</p>}
-      {exercise.examples.length > 0 && <p className="vexamples">{exercise.examples.map((e) => (
+      {!readable && <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>This step happens away from Lilt. Afterwards, record a short spoken note about how it went.</p>}
+      {exercise.examples.length > 0 && <p className={["vexamples", practice["vexamples"]].filter(Boolean).join(' ')}>{exercise.examples.map((e) => (
         <a key={e.url} href={e.url} target="_blank" rel="noreferrer">{e.label}<Ext /></a>
       ))}</p>}
       <details>
         <summary>Safety, source and limits</summary>
-        <div className="body small stack">
+        <div className={["body small stack", shared["small"], shared["stack"], shared["body"]].filter(Boolean).join(' ')}>
           <div><strong>Stop if:</strong><ul>{exercise.stop_conditions.map((s, i) => <li key={i}>{s}</li>)}</ul></div>
           {exercise.dose_guidance && <p><strong>How much:</strong> {exercise.dose_guidance.text}</p>}
           <p><strong>Based on:</strong> <a href={exercise.source.url} target="_blank" rel="noreferrer">{exercise.source.title}</a>, {exercise.source.section}. {exercise.source.organization}, checked {exercise.source.date_checked}.</p>
@@ -237,15 +238,15 @@ function ExerciseStep({ exercise, session, cue, ladderText, takes, onTake, onNex
           screen={(rec) => readable
             ? <ReadAlong text={promptText} levelId={READ_LEVEL[exercise.id] ?? "phrases"} hint={nextVariant ? nextVariant.label : ""} kind="phrases"
                 stream={mic.stream} active={rec} onStarts={(x) => { starts.current = x; }} />
-            : <p className="readtext">{promptText}</p>}
+            : <p className={["readtext", practice["readtext"]].filter(Boolean).join(' ')}>{promptText}</p>}
           steadiness={exercise.id === "nhsfife.forward-hum"}
           live={exercise.id === "nhsfife.forward-hum" || !readable}
           onSaved={(t) => void saved(t)}
         />
       ) : null}
       {readable && <ReadNotes text={promptText} levelId={READ_LEVEL[exercise.id] ?? "phrases"} hint={nextVariant ? nextVariant.label : ""} />}
-      <div className="vactions">
-        <button className="btn-primary" onClick={onNext} disabled={!allVariantsDone}>Listen back and check in</button>
+      <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
+        <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={onNext} disabled={!allVariantsDone}>Listen back and check in</button>
       </div>
     </section>
   );
@@ -277,17 +278,17 @@ function CheckStep({ exercise, takes, onUpdate, onNext }: { exercise: Exercise; 
   };
 
   return (
-    <section className="vstep">
-      <h2 className="vh">Listen back</h2>
-      <p className="vtip">Play your take{pair.length > 1 ? "s" : ""}. What you notice is the evidence here. Lilt can't hear resonance or lightness for you.</p>
-      <div className="ab">
+    <section className={["vstep", practice["vstep"]].filter(Boolean).join(' ')}>
+      <h2 className={["vh", practice["vh"]].filter(Boolean).join(' ')}>Listen back</h2>
+      <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>Play your take{pair.length > 1 ? "s" : ""}. What you notice is the evidence here. Lilt can't hear resonance or lightness for you.</p>
+      <div className={["ab", shared["ab"]].filter(Boolean).join(' ')}>
         {pair.map((t, i) => (
           <AudioPlayer key={t.id} src={t.audio_url} tag={pair.length > 1 ? "AB"[i] : undefined}
             label={variants.find((v) => v.id === t.cue_id)?.label ?? (pair.length > 1 ? `Attempt ${takes.indexOf(t) + 1}` : "Your attempt")} />
         ))}
       </div>
       {exercise.check_questions.map((q) => (
-        <fieldset key={q.id} className="card soft">
+        <fieldset key={q.id} className={["card soft", shared["card"]].filter(Boolean).join(' ')}>
           <legend>{q.text}</legend>
           <Choices name={q.id} options={q.options} value={answers[q.id]} onChange={(v) => setAnswers((a) => ({ ...a, [q.id]: v }))} />
         </fieldset>
@@ -297,9 +298,9 @@ function CheckStep({ exercise, takes, onUpdate, onNext }: { exercise: Exercise; 
         <textarea id="take-note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. smiling more, thinking of the sound going forward" />
       </div>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      <div className="vactions">
-        <button className="btn-primary" onClick={() => void save()} disabled={saving || !answers[exercise.check_questions[0].id]}>Save and continue</button>
-        <button className="btn-ghost" onClick={onNext}>Skip the check</button>
+      <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
+        <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void save()} disabled={saving || !answers[exercise.check_questions[0].id]}>Save and continue</button>
+        <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={onNext}>Skip the check</button>
       </div>
     </section>
   );
@@ -309,17 +310,17 @@ function SpontaneousStep({ session, prompts, takes, onTake, onNext }: { session:
   const q = useMemo(() => prompts.spontaneous.questions[Math.floor(Math.random() * prompts.spontaneous.questions.length)], [prompts]);
   const take = takes[takes.length - 1];
   return (
-    <section className="vstep">
-      <h2 className="vh vh-sm">A short answer in your own words</h2>
-      {!take && <p className="vphrase">{q}</p>}
-      <p className="vtip">Optional. Answer in a few sentences and let your practised voice come along if it can. This is how carryover into everyday speech is checked; reading alone can't show it.</p>
+    <section className={["vstep", practice["vstep"]].filter(Boolean).join(' ')}>
+      <h2 className={["vh vh-sm", practice["vh"], practice["vh-sm"]].filter(Boolean).join(' ')}>A short answer in your own words</h2>
+      {!take && <p className={["vphrase", practice["vphrase"]].filter(Boolean).join(' ')}>{q}</p>}
+      <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>Optional. Answer in a few sentences and let your practised voice come along if it can. This is how carryover into everyday speech is checked; reading alone can't show it.</p>
       {take ? <TakeRow take={take} label="Your answer" onUpdate={onTake} /> : (
         <RecordPanel label="your own words" hint="Answer in a few sentences"
           meta={{ session_id: session.id, role: "spontaneous", prompt_id: prompts.spontaneous.prompt_id, prompt_text: q }} onSaved={onTake} />
       )}
-      <div className="vactions">
-        <button className="btn-primary" onClick={onNext} disabled={!take}>Continue</button>
-        {!take && <button className="btn-ghost" onClick={onNext}>Skip today</button>}
+      <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
+        <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={onNext} disabled={!take}>Continue</button>
+        {!take && <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={onNext}>Skip today</button>}
       </div>
     </section>
   );
@@ -349,23 +350,23 @@ function ComfortStep({ session, onDone }: { session: Session; onDone: () => Prom
   };
 
   return (
-    <section className="vstep vcomfort">
-      <h2 className="vh">How did that feel?</h2>
-      <fieldset className="card soft">
+    <section className={["vstep vcomfort", practice["vstep"]].filter(Boolean).join(' ')}>
+      <h2 className={["vh", practice["vh"]].filter(Boolean).join(' ')}>How did that feel?</h2>
+      <fieldset className={["card soft", shared["card"]].filter(Boolean).join(' ')}>
         <legend>Comfort</legend>
         <Choices name="comfort" value={comfort} onChange={setComfort} options={[
           { id: "comfortable", label: "Comfortable" }, { id: "some_effort", label: "Some effort" },
           { id: "strain", label: "Strained" }, { id: "pain", label: "Painful" }]} />
-        <label className="vcheck">
+        <label className={["vcheck", practice["vcheck"]].filter(Boolean).join(' ')}>
           <input type="checkbox" checked={hoarse} onChange={(e) => setHoarse(e.target.checked)} />
           I noticed new hoarseness
         </label>
       </fieldset>
-      <fieldset className="card soft">
+      <fieldset className={["card soft", shared["card"]].filter(Boolean).join(' ')}>
         <legend>Effort (1 = very easy, 5 = very effortful)</legend>
         <Choices name="effort" value={effort} onChange={setEffort} options={["1", "2", "3", "4", "5"].map((x) => ({ id: x, label: x }))} />
       </fieldset>
-      <fieldset className="card soft">
+      <fieldset className={["card soft", shared["card"]].filter(Boolean).join(' ')}>
         <legend>Do you like how it sounded? (optional)</legend>
         <Choices name="likes" value={likes} onChange={setLikes} options={[{ id: "yes", label: "Yes" }, { id: "somewhat", label: "Somewhat" }, { id: "no", label: "Not yet" }, { id: "unsure", label: "Not sure" }]} />
       </fieldset>
@@ -377,7 +378,7 @@ function ComfortStep({ session, onDone }: { session: Session; onDone: () => Prom
         <Callout kind="warn"><p>Thank you for saying so. Lilt will pause this activity. Rest your voice; if it persists or keeps coming back, talk to a voice professional.</p></Callout>
       )}
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      <button className="btn-primary btn-big" onClick={() => void finish()} disabled={!comfort || busy}>Finish session</button>
+      <button className={["btn-primary btn-big", shared["btn-primary"], shared["btn-big"]].filter(Boolean).join(' ')} onClick={() => void finish()} disabled={!comfort || busy}>Finish session</button>
     </section>
   );
 }
@@ -389,40 +390,40 @@ function Celebrate() {
   const [on, setOn] = useState(true);
   useEffect(() => { const id = setTimeout(() => setOn(false), 3200); return () => clearTimeout(id); }, []);
   if (!on) return null;
-  return <div className="celebrate" aria-hidden="true">{pieces.map((p, i) => <i key={i} style={{ left: `${p.left}%`, background: p.hue, animationDelay: `${p.delay}s` }} />)}</div>;
+  return <div className={["celebrate", shared["celebrate"]].filter(Boolean).join(' ')} aria-hidden="true">{pieces.map((p, i) => <i key={i} style={{ left: `${p.left}%`, background: p.hue, animationDelay: `${p.delay}s` }} />)}</div>;
 }
 
 function DoneStep({ session, takes, review, onUpdate }: { session: Session; takes: Take[]; review: Review | null; onUpdate: (t: Take) => void }) {
   const allSaved = takes.length > 0 && takes.every((t) => t.original);
   return (
-    <section className="vstep vdone">
+    <section className={["vstep vdone", practice["vstep"]].filter(Boolean).join(' ')}>
       {allSaved && <Celebrate />}
-      <h1 className="vh">{session.kind === "check_in" ? "Check-in saved" : "Session complete"}</h1>
+      <h1 className={["vh", practice["vh"]].filter(Boolean).join(' ')}>{session.kind === "check_in" ? "Check-in saved" : "Session complete"}</h1>
       <Callout kind={allSaved ? "ok" : "warn"}>
         <p>{allSaved ? `All ${takes.length} recording${takes.length > 1 ? "s are" : " is"} saved on your computer.` : "Some recordings are not confirmed as saved yet."}</p>
       </Callout>
-      <ul className="list" aria-label="Recordings in this session">
+      <ul className={["list", shared["list"]].filter(Boolean).join(' ')} aria-label="Recordings in this session">
         {takes.map((t) => <DoneTake key={t.id} take={t} onUpdate={onUpdate} />)}
       </ul>
       {review?.active_pointer && (
-        <div className="card vnext">
+        <div className={[["card vnext", practice["vnext"]].filter(Boolean).join(' '), shared["card"]].filter(Boolean).join(' ')}>
           <h2>One thing to work on next</h2>
           <p>{review.active_pointer.observation}</p>
-          {review.active_pointer.next_action && <p className="ink2"><strong>Next:</strong> {review.active_pointer.next_action.summary}</p>}
-          <div className="vactions">
-            <button className="btn-primary" onClick={() => go(`/review/${review.id}`)}>Hear it and try again</button>
-            <a className="btn btn-secondary" href="#/">Done for today</a>
+          {review.active_pointer.next_action && <p className={["ink2", shared["ink2"]].filter(Boolean).join(' ')}><strong>Next:</strong> {review.active_pointer.next_action.summary}</p>}
+          <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
+            <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(`/review/${review.id}`)}>Hear it and try again</button>
+            <a className={["btn btn-secondary", shared["btn"], shared["btn-secondary"]].filter(Boolean).join(' ')} href="#/">Done for today</a>
           </div>
         </div>
       )}
       {review && !review.active_pointer && review.abstention && (
-        <div className="card vnext">
+        <div className={[["card vnext", practice["vnext"]].filter(Boolean).join(' '), shared["card"]].filter(Boolean).join(' ')}>
           <p>{review.abstention.reason}</p>
-          <p className="ink2"><strong>Next:</strong> {review.abstention.next_action}</p>
-          <a className="btn btn-primary" href="#/">Back to today</a>
+          <p className={["ink2", shared["ink2"]].filter(Boolean).join(' ')}><strong>Next:</strong> {review.abstention.next_action}</p>
+          <a className={["btn btn-primary", shared["btn"], shared["btn-primary"]].filter(Boolean).join(' ')} href="#/">Back to today</a>
         </div>
       )}
-      <p className="vcap">Showing up counts. Short, regular practice matters more than long sessions.</p>
+      <p className={["vcap", practice["vcap"]].filter(Boolean).join(' ')}>Showing up counts. Short, regular practice matters more than long sessions.</p>
     </section>
   );
 }
@@ -431,11 +432,11 @@ function DoneTake({ take, onUpdate }: { take: Take; onUpdate: (t: Take) => void 
   useTakeStatus(take, onUpdate);
   const role = { reference: take.phase === "post" ? "Reference (after)" : "Reference", exercise: "Exercise", retry: "Retry", follow_up: "Follow-up", spontaneous: "Spontaneous answer", free: "Chapter" }[take.role];
   return (
-    <li className="vdone-row">
-      <span className="vdone-role">{role}</span>
+    <li className={["vdone-row", practice["vdone-row"]].filter(Boolean).join(' ')}>
+      <span className={["vdone-role", practice["vdone-role"]].filter(Boolean).join(' ')}>{role}</span>
       <StatusBadge status={take.status} />
       <TakeFlags take={take} />
-      {take.status === "analysis_failed" && <button className="btn-ghost" onClick={() => void api.reanalyze(take.id).then(onUpdate)}>Retry analysis</button>}
+      {take.status === "analysis_failed" && <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={() => void api.reanalyze(take.id).then(onUpdate)}>Retry analysis</button>}
     </li>
   );
 }

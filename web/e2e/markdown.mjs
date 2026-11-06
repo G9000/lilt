@@ -1,7 +1,7 @@
 // Real Markdown component + shared styles, with subject-neutral stress content.
 // Run: node e2e/markdown.mjs [absolute-screenshot-directory]
 import { chromium } from "playwright-core";
-import { createServer } from "vite";
+import { createIsolatedVite as createServer } from "./isolated-vite.mjs";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";

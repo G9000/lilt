@@ -677,6 +677,11 @@ Deterministic practice analysis does not use a cloud model.
 
 ## Development and tests
 
+The UI uses Tailwind 4 for the room, practice screens, Settings and the native updater. Shared
+theme values keep light/dark appearance and the custom accent consistent. For styling changes,
+follow [Tailwind conventions](tailwind.md); `bun run build` also regenerates the updater's CSS.
+The UI targets modern browsers supported by Tailwind 4; older Safari is no longer a target.
+
 The repository is a Bun workspace: the root `package.json` includes `web`, and the root
 `bun.lock` pins its JavaScript dependencies. Use Bun 1.4.2 and Node 22.18 or later. Bun installs
 packages and runs scripts; Node runs Vite and the existing `node:test` suites, including TypeScript

@@ -1,0 +1,133 @@
+/* Document defaults and runtime theme tokens; component styling lives in Tailwind recipes. */
+:root {
+  --ink: #17171d;
+  --ink-2: #4c4c58;
+  --ink-3: #75757f;
+  --muted: var(--ink-3);
+  --hair: rgba(0, 0, 0, 0.07);
+  --fill: rgba(0, 0, 0, 0.04);
+  --fill-2: rgba(0, 0, 0, 0.075);
+  --win: rgba(250, 249, 247, 0.92);
+  --page: #faf9f7;
+  --stage: var(--fill);
+  --panel: #ffffff;
+  --line: var(--hair);
+  --line-strong: rgba(0, 0, 0, 0.14);
+  --accent: var(--chosen-light-accent, #e0643c);
+  --accent-ink: var(--chosen-light-ink, #b8461f);
+  --accent-rgb: var(--chosen-light-rgb, 224, 100, 60);
+  --accent-on: var(--chosen-light-on, #fff);
+  --accent-dark-ink: var(--chosen-dark-ink, #ff9a72);
+  --accent-soft: rgba(var(--accent-rgb), 0.12);
+  --rec: #ff4255;
+  --ok: #16936a;
+  --ok-soft: rgba(22, 147, 106, 0.11);
+  --warn: #b26a00;
+  --warn-soft: rgba(255, 176, 32, 0.15);
+  --info: #3d5bd9;
+  --info-soft: rgba(61, 91, 217, 0.09);
+  --focus: var(--accent);
+  --wave: rgba(0, 0, 0, 0.16);
+  --wave-played: var(--ink);
+  --segment: rgba(var(--accent-rgb), 0.16);
+  --band: rgba(var(--accent-rgb), 0.12);
+  --radius: 18px;
+  --control-radius: 12px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --type-title: clamp(28px, 3vw, 34px);
+  --type-section: 18px;
+  --type-body: 15px;
+  --type-caption: 13px;
+  --type-control: 14px;
+  --control-height: 44px;
+  --content-width: 792px;
+  --page-padding: clamp(18px, 4vw, 40px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --font: "Geist Variable", -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
+  /* the old device look, until each page is restyled */
+  --dev: #f1f0ee; --dev-2: #f7f6f4; --dev-edge: #d6d4cf;
+  --screen: #17171d; --screen-ink: #f1f1f4; --screen-dim: #9a9aa6;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --ink: #f2f2f5; --ink-2: #c4c4cf; --ink-3: #9a9aa6;
+  --hair: rgba(255, 255, 255, 0.09); --fill: rgba(255, 255, 255, 0.06); --fill-2: rgba(255, 255, 255, 0.11);
+  --win: rgba(30, 30, 36, 0.9); --page: #1e1e24; --panel: #26262d; --line-strong: rgba(255, 255, 255, 0.18);
+  --accent: var(--chosen-dark-accent, #e0643c); --accent-rgb: var(--chosen-dark-rgb, 224, 100, 60);
+  --accent-on: var(--chosen-dark-on, #fff); --accent-ink: var(--accent-dark-ink); --accent-soft: rgba(var(--accent-rgb), 0.18);
+  --ok: #4cc38a; --ok-soft: rgba(76, 195, 138, 0.14); --warn: #ffc53d; --warn-soft: rgba(255, 197, 61, 0.14);
+  --info: #a9b4ff; --info-soft: rgba(124, 140, 255, 0.14); --wave: rgba(255, 255, 255, 0.2);
+  --dev: #26262d; --dev-2: #2c2c33; --dev-edge: #111;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { margin: 0; overflow-x: clip; }
+body { margin: 0; overflow-x: clip; }
+body { background: #0b0d13; color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
+a:hover { text-decoration-color: currentColor; }
+h1 { font-family: var(--font); font-weight: 600; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
+h2 { font-family: var(--font); font-weight: 600; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
+h3 { font-family: var(--font); font-weight: 600; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
+h1 { font-size: clamp(1.7rem, 3.6vw, 2rem); letter-spacing: -0.035em; }
+h2 { font-size: 1.15rem; letter-spacing: -0.02em; }
+h3 { font-size: 1rem; letter-spacing: -0.01em; }
+p { margin: 0 0 0.75em; }
+small { font-size: 0.87rem; }
+kbd { font: 500 0.72em var(--mono); border: 1px solid currentColor; border-radius: 5px; padding: 0 4px; opacity: 0.65; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 8px; }
+::selection { background: var(--accent-soft); }
+button { font: inherit; font-weight: 600; cursor: pointer; border-radius: var(--control-radius); border: 1px solid transparent; padding: 9px 16px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: inherit; background: none; transition: transform 0.12s var(--ease), background-color 0.15s, border-color 0.15s, opacity 0.15s; }
+button:disabled { opacity: 0.42; cursor: not-allowed; }
+button:active:not(:disabled) { transform: scale(0.97); }
+
+input[type="text"] { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--control-radius); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+
+input[type="url"] { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--control-radius); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+
+input[type="time"] { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--control-radius); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+
+input[type="number"] { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--control-radius); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+
+input[type="search"] { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--control-radius); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+
+select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--control-radius); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+
+textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--control-radius); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+textarea { min-height: 84px; resize: vertical; }
+input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; }
+select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; }
+textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; }
+label { font-weight: 600; display: block; margin-bottom: 6px; }
+fieldset { border: 0; padding: 0; margin: 0; }
+legend { font-weight: 600; margin-bottom: 10px; padding: 0; }
+details { border-radius: var(--control-radius); background: var(--fill); color: var(--ink); }
+details > summary { cursor: pointer; padding: 11px 14px; font-weight: 500; list-style: none; display: flex; align-items: center; gap: 8px; min-height: 42px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: ""; width: 7px; height: 7px; border-right: 1.6px solid var(--ink-3); border-bottom: 1.6px solid var(--ink-3); transform: rotate(-45deg); transition: transform 0.2s var(--ease); flex: none; margin-right: 2px; }
+details[open] > summary::before { transform: rotate(45deg); }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--hair); vertical-align: top; }
+td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--hair); vertical-align: top; }
+th { font-size: 0.8rem; font-weight: 600; color: var(--ink-3); }
+@media (prefers-reduced-motion: reduce){
+  * { animation: none !important; transition: none !important; }
+}
+@media (prefers-reduced-motion: reduce){
+  *::before { animation: none !important; transition: none !important; }
+}
+@media (prefers-reduced-motion: reduce){
+  *::after { animation: none !important; transition: none !important; }
+}
+:root { --text-zoom: 1; }
+:root[data-text="smaller"] { --text-zoom: 0.92; }
+:root[data-text="larger"] { --text-zoom: 1.12; }
+:root[data-text="largest"] { --text-zoom: 1.25; }

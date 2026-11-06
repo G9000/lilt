@@ -1,3 +1,5 @@
+import { shared } from "../ui/shared";
+import { practice } from "../ui/practice";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Take } from "../api";
 import { judgeRoom, Room } from "../noise";
@@ -137,45 +139,45 @@ export function MicCheck({ onReady }: { onReady: () => void }) {
   // Twenty segments; the last ones are the "too loud" zone.
   const segs = Array.from({ length: 20 }, (_, k) => k < Math.round(pct / 5));
   return (
-    <section className="vmic">
-      <h2 className="vh">Microphone check</h2>
-      {!mic.stream && !mic.error && <p className="vtip">Lilt records in this browser and saves to your own computer. Nothing is sent anywhere else.</p>}
+    <section className={["vmic", practice["vmic"]].filter(Boolean).join(' ')}>
+      <h2 className={["vh", practice["vh"]].filter(Boolean).join(' ')}>Microphone check</h2>
+      {!mic.stream && !mic.error && <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>Lilt records in this browser and saves to your own computer. Nothing is sent anywhere else.</p>}
       {mic.error && <Callout kind="warn"><p>{mic.error}</p></Callout>}
       {mic.stream && (
-        <div className="vlive vmic-panel">
-          <div className="vlive-top">
+        <div className={["vlive vmic-panel", practice["vlive"]].filter(Boolean).join(' ')}>
+          <div className={["vlive-top", practice["vlive-top"]].filter(Boolean).join(' ')}>
             <b>Input level</b>
             <span>{quietMoment ? "Stay quiet for a moment while Lilt listens to the room…" : "Say a few words at your usual volume."}</span>
           </div>
           <div className="levelbar" role="meter" aria-label="Input level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
             {segs.map((on, k) => <i key={k} className={on ? (k >= 17 ? "hot" : k >= 13 ? "warm" : "on") : ""} />)}
           </div>
-          <p className={`vmic-state${tooHot ? " hot" : heard ? " ok" : ""}`} aria-live="polite">
+          <p className={[`vmic-state${tooHot ? " hot" : heard ? " ok" : ""}`, practice["vmic-state"]].filter(Boolean).join(' ')} aria-live="polite">
             {tooHot ? "Too loud: move back a little" : heard ? "Level looks usable" : "Waiting to hear you…"}
           </p>
           {room?.noisy && (
-            <div className="vmic-noise" role="status">
+            <div className={["vmic-noise", practice["vmic-noise"]].filter(Boolean).join(' ')} role="status">
               <p><b>There's some background sound.</b> In a noisy room, pitch readings can wander. If you can, close a window, turn off a fan, or move a little closer to the mic.</p>
-              <button className="textlink" onClick={() => setRound((k) => k + 1)}>Listen to the room again</button>
+              <button className={["textlink", shared["textlink"]].filter(Boolean).join(' ')} onClick={() => setRound((k) => k + 1)}>Listen to the room again</button>
             </div>
           )}
         </div>
       )}
-      <div className="vactions">
-        {!mic.stream && !mic.error && <button className="btn-primary btn-big" onClick={() => void mic.request()}>Turn on microphone</button>}
-        {mic.error && <button className="btn-secondary" onClick={() => void mic.request()}>Try again</button>}
-        {mic.stream && <button className="btn-primary btn-big" onClick={onReady} disabled={!heard}>Sounds good, continue</button>}
-        {mic.stream && !heard && <button className="btn-ghost" onClick={onReady}>Continue anyway</button>}
+      <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
+        {!mic.stream && !mic.error && <button className={["btn-primary btn-big", shared["btn-primary"], shared["btn-big"]].filter(Boolean).join(' ')} onClick={() => void mic.request()}>Turn on microphone</button>}
+        {mic.error && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void mic.request()}>Try again</button>}
+        {mic.stream && <button className={["btn-primary btn-big", shared["btn-primary"], shared["btn-big"]].filter(Boolean).join(' ')} onClick={onReady} disabled={!heard}>Sounds good, continue</button>}
+        {mic.stream && !heard && <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={onReady}>Continue anyway</button>}
       </div>
       {mic.stream && mic.devices.length > 1 && (
-        <div className="vmic-select">
+        <div className={["vmic-select", practice["vmic-select"]].filter(Boolean).join(' ')}>
           <label htmlFor="mic-select">Microphone</label>
           <select id="mic-select" value={mic.deviceId} onChange={(e) => void mic.request(e.target.value)}>
             {mic.devices.map((d) => <option key={d.deviceId} value={d.deviceId}>{d.label || "Microphone"}</option>)}
           </select>
         </div>
       )}
-      {mic.stream && <p className="vcap">Keep the same microphone and distance from day to day, so recordings stay comparable.</p>}
+      {mic.stream && <p className={["vcap", practice["vcap"]].filter(Boolean).join(' ')}>Keep the same microphone and distance from day to day, so recordings stay comparable.</p>}
     </section>
   );
 }
@@ -310,40 +312,40 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
 
   const heard = points.some((p) => p.hz);
   return (
-    <div ref={root} className={`vrec${recording ? " is-rec" : ""}`}>
-      {title && <p className={screen ? "vrec-title" : "vphrase"}>{sentence(title)}</p>}
+    <div ref={root} className={[`vrec${recording ? " is-rec" : ""}`, practice["vrec"]].filter(Boolean).join(' ')}>
+      {title && <p className={[screen ? "vrec-title" : "vphrase", practice["vphrase"], practice["vrec-title"]].filter(Boolean).join(' ')}>{sentence(title)}</p>}
       {screen?.(recording)}
-      {cue && <p className="vtip">{sentence(cue)}</p>}
+      {cue && <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>{sentence(cue)}</p>}
       {live && (
-        <div className="vlive">
+        <div className={["vlive", practice["vlive"]].filter(Boolean).join(' ')}>
           {recording && heard
             ? <LiveReadout points={points} band={band} showSteadiness={steadiness} />
-            : <div className="vlive-top"><b>Live pitch</b><span>{recording ? "listening…" : "starts when you record"}</span></div>}
+            : <div className={["vlive-top", practice["vlive-top"]].filter(Boolean).join(' ')}><b>Live pitch</b><span>{recording ? "listening…" : "starts when you record"}</span></div>}
           <LiveLine points={points} active={recording} />
         </div>
       )}
-      {!live && steadiness && recording && <div className="vlive"><LiveReadout points={points} showSteadiness /></div>}
-      <div className="vrecrow">
+      {!live && steadiness && recording && <div className={["vlive", practice["vlive"]].filter(Boolean).join(' ')}><LiveReadout points={points} showSteadiness /></div>}
+      <div className={["vrecrow", practice["vrecrow"]].filter(Boolean).join(' ')}>
         {recording ? (
-          <button className="rec-btn stop" onClick={() => void stop()} aria-label="Stop recording"><span className="dot" aria-hidden="true" /></button>
+          <button className={["rec-btn stop", shared["rec-btn"]].filter(Boolean).join(' ')} onClick={() => void stop()} aria-label="Stop recording"><span className={["dot", shared["dot"]].filter(Boolean).join(' ')} aria-hidden="true" /></button>
         ) : (
-          <button className="rec-btn" onClick={() => void start()} disabled={state === "saving"} aria-label="Start recording"><span className="dot" aria-hidden="true" /></button>
+          <button className={["rec-btn", shared["rec-btn"]].filter(Boolean).join(' ')} onClick={() => void start()} disabled={state === "saving"} aria-label="Start recording"><span className={["dot", shared["dot"]].filter(Boolean).join(' ')} aria-hidden="true" /></button>
         )}
-        <div className="vrec-t">
+        <div className={["vrec-t", practice["vrec-t"]].filter(Boolean).join(' ')}>
           <b aria-hidden="true">{recording ? "Stop" : state === "saving" ? "Saving" : "Record"}</b>
           {state === "idle"
-            ? (hint ? <span>{hint}</span> : <span className="vkbd">or press <kbd>Space</kbd></span>)
-            : <span className="vrec-st"><StatusBadge status={state === "error" ? "error" : state} />{recording && <span className="vclock">{clock(elapsed)}</span>}</span>}
+            ? (hint ? <span>{hint}</span> : <span className={["vkbd", practice["vkbd"]].filter(Boolean).join(' ')}>or press <kbd>Space</kbd></span>)
+            : <span className={["vrec-st", practice["vrec-st"]].filter(Boolean).join(' ')}><StatusBadge status={state === "error" ? "error" : state} />{recording && <span className={["vclock", practice["vclock"]].filter(Boolean).join(' ')}>{clock(elapsed)}</span>}</span>}
         </div>
         {(knob || keys) && (
-          <div className="vkeys">
-            {knob && <button className="btn-secondary" onClick={knob.onTurn} disabled={recording}>{sentence(knob.label)}</button>}
+          <div className={["vkeys", practice["vkeys"]].filter(Boolean).join(' ')}>
+            {knob && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={knob.onTurn} disabled={recording}>{sentence(knob.label)}</button>}
             {keys}
           </div>
         )}
       </div>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      {state === "error" && rec.current?.onServer && <button className="btn-secondary" onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
+      {state === "error" && rec.current?.onServer && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
     </div>
   );
 }

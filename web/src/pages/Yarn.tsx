@@ -1,4 +1,4 @@
-import "../styles/yarn.css";
+import { roomStyles } from "../desk/roomStyles";
 import { AnimatePresence, motion } from "motion/react";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Profile } from "../api";
@@ -87,12 +87,12 @@ export function YarnPage() {
   const range = useMemo(() => (band ? playRange(band) : null), [band]);
 
   return (
-    <div className="yn">
-      <header className="yn-top">
-        <button className="yn-close" onClick={() => go("/desk")} aria-label="Close Yarn" title="Close (Esc)">
+    <div className={["yn", roomStyles["yn"]].join(" ")}>
+      <header className={["yn-top", roomStyles["yn-top"]].join(" ")}>
+        <button className={["yn-close", roomStyles["yn-close"]].join(" ")} onClick={() => go("/desk")} aria-label="Close Yarn" title="Close (Esc)">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
         </button>
-        <div className="yn-name">
+        <div className={["yn-name", roomStyles["yn-name"]].join(" ")}>
           <b>Ball of yarn</b>
           <small>{phase === "play" ? `${mode === "hum" ? "Humming" : "Speaking"}${range ? ` · ${noteName(range[0])} to ${noteName(range[1])}` : ""}` : "A gentle voice game"}</small>
         </div>
@@ -102,50 +102,50 @@ export function YarnPage() {
         <Play range={range} mode={mode} free={free} cue={cue && !free} sentences={sentences} stream={mic.stream} reduced={reduced} tone={tones.play}
           onHurt={() => setPhase("hurt")} onStop={(lines) => { setSummary(lines); setPhase("summary"); }} />
       ) : (
-        <main className={`yn-stage${phase === "setup" ? " yn-setup" : ""}`}>
+        <main className={[`yn-stage${phase === "setup" ? " yn-setup" : ""}`, roomStyles["yn-stage"], phase === "setup" ? roomStyles["yn-setup"] : ""].join(" ")}>
           <Scene range={phase === "setup" ? range : null} reduced={reduced} preview={phase === "setup"} />
-          {phase === "setup" && <div className="yn-intro">
+          {phase === "setup" && <div className={["yn-intro", roomStyles["yn-intro"]].join(" ")}>
             <h1>A little room to play</h1>
             <p>Lift the yarn with your voice.<br />The cat will keep you company.</p>
           </div>}
-          <div className="yn-over">
+          <div className={["yn-over", roomStyles["yn-over"]].join(" ")}>
             <AnimatePresence mode="wait" initial={false}>
               {phase === "setup" ? (
                 <Card key="setup" art="yarn" chip="Play" setup>
-                  <h2 className="yn-title">Play at your own pace</h2>
-                  <p className="yn-p">Higher lifts the yarn; lower lets it drift down. Your curious little companion follows along. Nothing is counted.</p>
-                  <div className="yn-modes" role="radiogroup" aria-label="How to play">
+                  <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>Play at your own pace</h2>
+                  <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>Higher lifts the yarn; lower lets it drift down. Your curious little companion follows along. Nothing is counted.</p>
+                  <div className={["yn-modes", roomStyles["yn-modes"]].join(" ")} role="radiogroup" aria-label="How to play">
                     <ModeButton on={mode === "hum"} onClick={() => setMode("hum")} title="Hum or lip trill" body="Easy on the throat; good for breath" />
                     <ModeButton on={mode === "speak"} onClick={() => setMode("speak")} title="Speak sentences" body="Everyday lines, real speech" />
                   </div>
-                  <details className="yn-help"><summary>How to play</summary>
-                    <p className="yn-how">{mode === "hum" ? TRILL : "A short line shows at the top. Say it in your everyday voice; the yarn follows the tune of it and waits between words."}</p>
-                    <p className="yn-foot">Stay comfortable. Stop if anything hurts or feels strained.</p>
+                  <details className={["yn-help", roomStyles["yn-help"]].join(" ")}><summary>How to play</summary>
+                    <p className={["yn-how", roomStyles["yn-how"]].join(" ")}>{mode === "hum" ? TRILL : "A short line shows at the top. Say it in your everyday voice; the yarn follows the tune of it and waits between words."}</p>
+                    <p className={["yn-foot", roomStyles["yn-foot"]].join(" ")}>Stay comfortable. Stop if anything hurts or feels strained.</p>
                   </details>
-                  {!loaded ? <p className="yn-quiet">Getting your range…</p> : range ? (
-                    <div className="yn-range">
+                  {!loaded ? <p className={["yn-quiet", roomStyles["yn-quiet"]].join(" ")}>Getting your range…</p> : range ? (
+                    <div className={["yn-range", roomStyles["yn-range"]].join(" ")}>
                       <span>Your range: <b>{rangeWords(range)}</b></span>
-                      <button className="yn-link" onClick={() => { tones.wake(); tones.play(range[0], 0); tones.play(range[1], 1); }}>Hear low and high</button>
-                      <button className="yn-link" onClick={() => void start("calibrate")}>Find it again</button>
+                      <button className={["yn-link", roomStyles["yn-link"]].join(" ")} onClick={() => { tones.wake(); tones.play(range[0], 0); tones.play(range[1], 1); }}>Hear low and high</button>
+                      <button className={["yn-link", roomStyles["yn-link"]].join(" ")} onClick={() => void start("calibrate")}>Find it again</button>
                     </div>
                   ) : (
-                    <p className="yn-range">First, two easy hums to find your range: a comfortable low one and a comfortable high one.</p>
+                    <p className={["yn-range", roomStyles["yn-range"]].join(" ")}>First, two easy hums to find your range: a comfortable low one and a comfortable high one.</p>
                   )}
-                  <label className="yn-check">
+                  <label className={["yn-check", roomStyles["yn-check"]].join(" ")}>
                     <input type="checkbox" checked={free} onChange={(e) => { setFree(e.target.checked); writePref("lilt.yarn.free", e.target.checked ? "on" : "off"); }} />
                     Free play · just you, the yarn and the cat
                   </label>
-                  {!free && <label className="yn-check">
+                  {!free && <label className={["yn-check", roomStyles["yn-check"]].join(" ")}>
                     <input type="checkbox" checked={cue} onChange={(e) => setCue(e.target.checked)} />
                     Play each loop&rsquo;s note when you pause
                   </label>}
-                  {mic.error && <p className="yn-err" role="alert">{mic.error}</p>}
-                  <div className="yn-row">
-                    <button className="yn-primary" disabled={!loaded || starting} onClick={() => void start(range ? "play" : "calibrate")}>
+                  {mic.error && <p className={["yn-err", roomStyles["yn-err"]].join(" ")} role="alert">{mic.error}</p>}
+                  <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
+                    <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} disabled={!loaded || starting} onClick={() => void start(range ? "play" : "calibrate")}>
                       {range ? "Start playing" : "Find my range"}
                     </button>
                   </div>
-                  <p className="yn-foot">Somewhere quiet works best. Nothing is recorded or saved. A breathing break comes every couple of minutes.</p>
+                  <p className={["yn-foot", roomStyles["yn-foot"]].join(" ")}>Somewhere quiet works best. Nothing is recorded or saved. A breathing break comes every couple of minutes.</p>
                 </Card>
               ) : phase === "calibrate" ? (
                 <Calibrate key="cal" stream={mic.stream} canSave={!!profile} reduced={reduced}
@@ -159,20 +159,20 @@ export function YarnPage() {
                   onCancel={() => setPhase("setup")} />
               ) : phase === "hurt" ? (
                 <Card key="hurt" art="tea" chip="Resting">
-                  <h2 className="yn-title">Let&rsquo;s stop here</h2>
-                  <p className="yn-p">Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</p>
-                  <div className="yn-row">
-                    <button className="yn-primary" onClick={() => go("/")}>Back to the room</button>
-                    <button className="yn-ghost" onClick={() => setPhase("setup")}>I feel fine, carry on</button>
+                  <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>Let&rsquo;s stop here</h2>
+                  <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</p>
+                  <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
+                    <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} onClick={() => go("/")}>Back to the room</button>
+                    <button className={["yn-ghost", roomStyles["yn-ghost"]].join(" ")} onClick={() => setPhase("setup")}>I feel fine, carry on</button>
                   </div>
                 </Card>
               ) : (
                 <Card key="summary" art="yarn" chip="All wound up">
-                  <h2 className="yn-title">The cat&rsquo;s curled up with the yarn</h2>
-                  <div className="yn-p">{summary.map((l) => <p key={l}>{l}</p>)}</div>
-                  <div className="yn-row">
-                    <button className="yn-primary" onClick={() => void start("play")}>Play again</button>
-                    <button className="yn-ghost" onClick={() => go("/desk")}>Back to the desk</button>
+                  <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>The cat&rsquo;s curled up with the yarn</h2>
+                  <div className={["yn-p", roomStyles["yn-p"]].join(" ")}>{summary.map((l) => <p key={l}>{l}</p>)}</div>
+                  <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
+                    <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} onClick={() => void start("play")}>Play again</button>
+                    <button className={["yn-ghost", roomStyles["yn-ghost"]].join(" ")} onClick={() => go("/desk")}>Back to the desk</button>
                   </div>
                 </Card>
               )}
@@ -186,7 +186,7 @@ export function YarnPage() {
 
 function ModeButton({ on, onClick, title, body }: { on: boolean; onClick: () => void; title: string; body: string }) {
   return (
-    <button role="radio" aria-checked={on} tabIndex={on ? 0 : -1} className={`yn-mode${on ? " on" : ""}`} onClick={onClick}
+    <button role="radio" aria-checked={on} tabIndex={on ? 0 : -1} className={[`yn-mode${on ? " on" : ""}`, roomStyles["yn-mode"]].join(" ")} onClick={onClick}
       onKeyDown={(e) => {
         if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) return;
         e.preventDefault();
@@ -202,14 +202,14 @@ function ModeButton({ on, onClick, title, body }: { on: boolean; onClick: () => 
 function Card({ art, chip, children, setup = false }: { art: Art; chip: string; children: ReactNode; setup?: boolean }) {
   const reduced = useYarnReducedMotion();
   return (
-    <motion.section className={`yn-card${setup ? " yn-setup-card" : ""}`} initial={{ y: reduced ? 0 : 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: reduced ? 0 : -8, opacity: 0 }}
+    <motion.section className={[`yn-card${setup ? " yn-setup-card" : ""}`, roomStyles["yn-card"]].join(" ")} initial={{ y: reduced ? 0 : 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: reduced ? 0 : -8, opacity: 0 }}
       transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 30 }}>
-      {!setup && <div className="yn-head">
-        <div className="yn-wash" style={{ background: wash(art) }} />
-        <Illustration art={art} className="yn-illo" />
-        <span className="yn-chip">{chip}</span>
+      {!setup && <div className={["yn-head", roomStyles["yn-head"]].join(" ")}>
+        <div className={["yn-wash", roomStyles["yn-wash"]].join(" ")} style={{ background: wash(art) }} />
+        <Illustration art={art} className={["yn-illo", roomStyles["yn-illo"]].join(" ")} />
+        <span className={["yn-chip", roomStyles["yn-chip"]].join(" ")}>{chip}</span>
       </div>}
-      <div className="yn-body">{children}</div>
+      <div className={["yn-body", roomStyles["yn-body"]].join(" ")}>{children}</div>
     </motion.section>
   );
 }
@@ -287,9 +287,9 @@ function Calibrate({ stream, canSave, reduced, onUse, onCancel }: {
     <Card art="yarn" chip={step === "done" ? "Your range" : step === "low" ? "Hum 1 of 2" : "Hum 2 of 2"}>
       {step !== "done" ? (
         <>
-          <h2 className="yn-title">{step === "low" ? "Hum a comfortable low note" : "Now a comfortable high note"}</h2>
-          <p className="yn-p">{step === "low" ? "Low, but easy: no pushing down. Hold it for a couple of seconds, on “mmm” or a lip trill." : "Up where it still feels easy, not a squeak. Hold it for a couple of seconds."}</p>
-          <div className="yn-listen" aria-live="polite">
+          <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>{step === "low" ? "Hum a comfortable low note" : "Now a comfortable high note"}</h2>
+          <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>{step === "low" ? "Low, but easy: no pushing down. Hold it for a couple of seconds, on “mmm” or a lip trill." : "Up where it still feels easy, not a squeak. Hold it for a couple of seconds."}</p>
+          <div className={["yn-listen", roomStyles["yn-listen"]].join(" ")} aria-live="polite">
             <svg viewBox="0 0 48 48" aria-hidden="true">
               <circle cx="24" cy="24" r="20" fill="none" stroke="var(--fill-2)" strokeWidth="4" />
               <circle cx="24" cy="24" r="20" fill="none" stroke="var(--accent)" strokeWidth="4" strokeLinecap="round"
@@ -297,24 +297,24 @@ function Calibrate({ stream, canSave, reduced, onUse, onCancel }: {
             </svg>
             <span>{heard.hz ? <><b>{noteName(heard.hz)}</b> {Math.round(heard.hz)} Hz</> : heard.n ? "Keep going…" : "Listening…"}</span>
           </div>
-          {slow && <p className="yn-quiet">Can&rsquo;t hear much yet. Hum a little louder, or come a bit closer to the microphone.</p>}
-          <div className="yn-row"><button className="yn-ghost" onClick={onCancel}>Back</button></div>
+          {slow && <p className={["yn-quiet", roomStyles["yn-quiet"]].join(" ")}>Can&rsquo;t hear much yet. Hum a little louder, or come a bit closer to the microphone.</p>}
+          <div className={["yn-row", roomStyles["yn-row"]].join(" ")}><button className={["yn-ghost", roomStyles["yn-ghost"]].join(" ")} onClick={onCancel}>Back</button></div>
         </>
       ) : result ? (
         <>
-          <h2 className="yn-title">{rangeWords(result)}</h2>
-          <p className="yn-p">The game plays from your low hum to your high one, with a little room either side so both ends are easy to reach.</p>
-          <div className="yn-row">
-            {canSave && <button className="yn-primary" onClick={() => onUse(result, true)}>Save as my comfortable range</button>}
-            <button className={canSave ? "yn-ghost" : "yn-primary"} onClick={() => onUse(result, false)}>Just for this game</button>
-            <button className="yn-ghost" onClick={again}>Hum again</button>
+          <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>{rangeWords(result)}</h2>
+          <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>The game plays from your low hum to your high one, with a little room either side so both ends are easy to reach.</p>
+          <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
+            {canSave && <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} onClick={() => onUse(result, true)}>Save as my comfortable range</button>}
+            <button className={canSave ? ["yn-ghost", roomStyles["yn-ghost"]].join(" ") : ["yn-primary", roomStyles["yn-primary"]].join(" ")} onClick={() => onUse(result, false)}>Just for this game</button>
+            <button className={["yn-ghost", roomStyles["yn-ghost"]].join(" ")} onClick={again}>Hum again</button>
           </div>
         </>
       ) : (
         <>
-          <h2 className="yn-title">Let&rsquo;s try that once more</h2>
-          <p className="yn-p">Lilt couldn&rsquo;t quite hear both hums. A steady &ldquo;mmm&rdquo; for a couple of seconds is plenty.</p>
-          <div className="yn-row"><button className="yn-primary" onClick={again}>Hum again</button><button className="yn-ghost" onClick={onCancel}>Back</button></div>
+          <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>Let&rsquo;s try that once more</h2>
+          <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>Lilt couldn&rsquo;t quite hear both hums. A steady &ldquo;mmm&rdquo; for a couple of seconds is plenty.</p>
+          <div className={["yn-row", roomStyles["yn-row"]].join(" ")}><button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} onClick={again}>Hum again</button><button className={["yn-ghost", roomStyles["yn-ghost"]].join(" ")} onClick={onCancel}>Back</button></div>
         </>
       )}
     </Card>
@@ -379,28 +379,28 @@ function Play({ range, mode, free, cue, sentences, stream, reduced, tone, onHurt
   };
 
   return (
-    <main className={`yn-stage playing ${mode}`}>
+    <main className={[`yn-stage playing ${mode}`, roomStyles["yn-stage"]].join(" ")}>
       <Scene game={game} running={running} cue={cue} reduced={reduced} events={events} />
       {mode === "speak" && (
-        <div className="yn-say" aria-live="polite">
+        <div className={["yn-say", roomStyles["yn-say"]].join(" ")} aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
             <motion.p key={line} initial={{ opacity: 0, y: reduced ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduced ? 0 : -8 }} transition={{ duration: 0.25 }}>
               {sentences[line]}
             </motion.p>
           </AnimatePresence>
-          <button className="yn-link" onClick={() => { game.current.voicedSince = 0; setLine((i) => (i + 1) % sentences.length); }}>Another line</button>
+          <button className={["yn-link", roomStyles["yn-link"]].join(" ")} onClick={() => { game.current.voicedSince = 0; setLine((i) => (i + 1) % sentences.length); }}>Another line</button>
         </div>
       )}
-      <p className={`yn-hint${afloat || breathing ? " gone" : ""}`} aria-hidden={afloat}>
+      <p className={[`yn-hint${afloat || breathing ? " gone" : ""}`, roomStyles["yn-hint"]].join(" ")} aria-hidden={afloat}>
         {!voiced ? (mode === "hum" ? "Hum or lip trill to lift the yarn" : "Say the line to lift the yarn") : "Whenever you’re ready"}
       </p>
-      {noisy && !breathing && <p className="yn-noise" role="status">It sounds a bit busy here. A quieter room helps the yarn follow you.</p>}
-      <footer className="yn-bar">
-        <span className="yn-tip">{mode === "hum" ? "A gentle hum is enough. Let the yarn rest whenever you need." : "Use your everyday voice. The yarn waits between words."}</span>
-        <span className="yn-acts">
-          <button className="yn-pill" onClick={() => setBreathing(true)}>Take a breath</button>
-          <button className="yn-pill" onClick={stop}>Stop</button>
-          <button className="yn-pill hurt" onClick={onHurt}>
+      {noisy && !breathing && <p className={["yn-noise", roomStyles["yn-noise"]].join(" ")} role="status">It sounds a bit busy here. A quieter room helps the yarn follow you.</p>}
+      <footer className={["yn-bar", roomStyles["yn-bar"]].join(" ")}>
+        <span className={["yn-tip", roomStyles["yn-tip"]].join(" ")}>{mode === "hum" ? "A gentle hum is enough. Let the yarn rest whenever you need." : "Use your everyday voice. The yarn waits between words."}</span>
+        <span className={["yn-acts", roomStyles["yn-acts"]].join(" ")}>
+          <button className={["yn-pill", roomStyles["yn-pill"]].join(" ")} onClick={() => setBreathing(true)}>Take a breath</button>
+          <button className={["yn-pill", roomStyles["yn-pill"]].join(" ")} onClick={stop}>Stop</button>
+          <button className={["yn-pill hurt", roomStyles["yn-pill"]].join(" ")} onClick={onHurt}>
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
             {HURT}
           </button>
@@ -408,16 +408,16 @@ function Play({ range, mode, free, cue, sentences, stream, reduced, tone, onHurt
       </footer>
       <AnimatePresence>
         {breathing && (
-          <motion.div className="yn-over dim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.3 }}>
-            <section className="yn-card yn-breath" aria-label="Breathing break">
-              <div className={`yn-breathe${reduced ? " still" : ""}`} aria-hidden="true"><i /></div>
-              <h2 className="yn-title">Time for a breath</h2>
-              <p className="yn-p">Let your shoulders drop. Breathe in through your nose, and out slowly, like a long sigh. A sip of water is good too.</p>
-              <div className="yn-row">
-                <button className="yn-primary" autoFocus onClick={() => setBreathing(false)}>Carry on</button>
-                <button className="yn-ghost" onClick={stop}>That&rsquo;s enough for now</button>
+          <motion.div className={["yn-over dim", roomStyles["yn-over"]].join(" ")} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? 0 : 0.3 }}>
+            <section className={["yn-card yn-breath", roomStyles["yn-card"], roomStyles["yn-breath"]].join(" ")} aria-label="Breathing break">
+              <div className={[`yn-breathe${reduced ? " still" : ""}`, roomStyles["yn-breathe"]].join(" ")} aria-hidden="true"><i /></div>
+              <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>Time for a breath</h2>
+              <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>Let your shoulders drop. Breathe in through your nose, and out slowly, like a long sigh. A sip of water is good too.</p>
+              <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
+                <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} autoFocus onClick={() => setBreathing(false)}>Carry on</button>
+                <button className={["yn-ghost", roomStyles["yn-ghost"]].join(" ")} onClick={stop}>That&rsquo;s enough for now</button>
               </div>
-              <button className="yn-hurt" onClick={onHurt}>{HURT}</button>
+              <button className={["yn-hurt", roomStyles["yn-hurt"]].join(" ")} onClick={onHurt}>{HURT}</button>
             </section>
           </motion.div>
         )}
@@ -545,7 +545,7 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="yn-scene" ref={box}>
+    <div className={["yn-scene", roomStyles["yn-scene"]].join(" ")} ref={box}>
       <canvas ref={cvs} role="img" aria-label="A ball of yarn that follows your voice: higher lifts it, lower lets it down. The cat follows it along the floor." />
     </div>
   );

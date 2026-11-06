@@ -1,3 +1,5 @@
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 // The OpenAI and Claude marks, from Simple Icons (CC0; OpenAI from v13, Claude from v16), shown only
 // to name the app being connected. The marks remain their owners' trademarks.
 
@@ -6,17 +8,17 @@ const CLAUDE = "m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893
 
 /** ChatGPT: the OpenAI mark, white on black. */
 export const ChatGPTIcon = () => (
-  <span className="brand-tile chatgpt" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={OPENAI} fill="currentColor" /></svg></span>
+  <span className={cx(pages.brandTile, "brand-tile chatgpt")} aria-hidden="true"><svg viewBox="0 0 24 24"><path d={OPENAI} fill="currentColor" /></svg></span>
 );
 
 /** Claude: the Claude mark in its terracotta, on cream. */
 export const ClaudeIcon = () => (
-  <span className="brand-tile claude" aria-hidden="true"><svg viewBox="0 0 24 24"><path d={CLAUDE} fill="currentColor" /></svg></span>
+  <span className={cx(pages.brandTile, "brand-tile claude")} aria-hidden="true"><svg viewBox="0 0 24 24"><path d={CLAUDE} fill="currentColor" /></svg></span>
 );
 
 /** Other MCP apps: a plain plug. */
 export const OtherAppsIcon = () => (
-  <span className="brand-tile other" aria-hidden="true">
+  <span className={cx(pages.brandTile, "brand-tile other")} aria-hidden="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0zM12 16v5" /></svg>
   </span>
 );

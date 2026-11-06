@@ -7,18 +7,17 @@ import { RoomAppearance } from '/src/room/RoomAppearance.tsx';
 import { PianoRoll } from '/src/components/PianoRoll.tsx';
 import { AccentPicker } from '/src/components/AccentPicker.tsx';
 import '/src/styles.css';
-import '/src/styles/editor.css';
-import '/src/styles/flashcards.css';
-import '/src/styles/voice.css';
+import { practice } from '/src/ui/practice.ts';
+import { roomStyles } from '/src/desk/roomStyles.ts';
 const h = React.createElement;
 createRoot(document.getElementById('root')).render(h(React.StrictMode, null,
-  h('header', {className: 'ds-roomtop'}, h('span', null, 'Lilt'), h(RoomAppearance)),
+  h('header', {className: ['ds-roomtop', roomStyles['ds-roomtop']].join(' ')}, h('span', null, 'Lilt'), h(RoomAppearance)),
   h('main', {style: {padding: '70px 18px 20px', maxWidth: 640, background: 'var(--page)', color: 'var(--ink)'}},
     h('h1', null, 'Your practice'),
     h('p', {style: {color: 'var(--accent-ink)'}}, 'One comfortable next step.'),
     h(PianoRoll, {points: Array.from({length: 80}, (_, i) => ({t: i / 20, hz: 150 + 12 * Math.sin(i / 8), clarity: 1})), duration: 4, band: [130, 190], label: 'Accent preview', height: 180}),
-    h('div', {className: 'fc-card', style: {padding: 12}}, h('a', {style: {color: 'var(--accent-ink)'}}, 'A link on a dark card')),
-    ...['ve', 'vrec'].map(className => h('div', {className, key: className}, h('p', {className: 'readtext'}, h('span', {className: 'w now annotated', 'data-n': '1'}, 'Hello')))),
+    h('div', {className: ['fc-card', practice['fc-card']].join(' '), style: {padding: 12}}, h('a', {style: {color: 'var(--accent-ink)'}}, 'A link on a dark card')),
+    ...['ve', 'vrec'].map(className => h('div', {className: [className, className === 've' ? practice.ve : practice.vrec].join(' '), key: className}, h('p', {className: ['readtext', practice.readtext].join(' ')}, h('span', {className: 'w now annotated', 'data-n': '1'}, 'Hello')))),
     h('section', {'aria-label': 'Settings appearance', style: {marginTop: 24}}, h(AccentPicker))
   )
 ));

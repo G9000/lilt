@@ -1,4 +1,5 @@
-import "../styles/voice.css";
+import { shared } from "../ui/shared";
+import { practice } from "../ui/practice";
 import { useEffect, useState } from "react";
 import { api, Today } from "../api";
 import { go } from "../App";
@@ -32,8 +33,8 @@ export function TodayPage({ recovered }: { recovered: number }) {
   }, []);
   useReminder(t);
 
-  if (err) return <Callout kind="warn"><p>Lilt's server isn't reachable: {err}</p><p className="small">Start it with <code>./lilt.sh</code> (or <code>docker compose up</code>) and reload.</p></Callout>;
-  if (!t) return <p className="vloading" aria-busy="true">Loading…</p>;
+  if (err) return <Callout kind="warn"><p>Lilt's server isn't reachable: {err}</p><p className={["small", shared["small"]].filter(Boolean).join(' ')}>Start it with <code>./lilt.sh</code> (or <code>docker compose up</code>) and reload.</p></Callout>;
+  if (!t) return <p className={["vloading", practice["vloading"]].filter(Boolean).join(' ')} aria-busy="true">Loading…</p>;
 
   const start = async (kind: "full" | "check_in") => {
     setBusy(true);
@@ -79,13 +80,13 @@ export function TodayPage({ recovered }: { recovered: number }) {
 
   const screenFor = () => {
     if (state === "paused") return (
-      <div className="vplan-note">
+      <div className={["vplan-note", practice["vplan-note"]].filter(Boolean).join(' ')}>
         <h2>Give your voice a break</h2>
         <p>You mentioned strain or discomfort last time. Come back when speaking feels comfortable again.</p>
       </div>
     );
     if (state === "done") return (
-      <div className="vplan-note">
+      <div className={["vplan-note", practice["vplan-note"]].filter(Boolean).join(' ')}>
         <h2>Nice work</h2>
         <p>You saved {doneFull!.take_count} recording{doneFull!.take_count === 1 ? "" : "s"} today.</p>
         <p>Next time: {pointer?.next_action?.summary.replace(/^./, (c) => c.toLowerCase()) ?? "same exercise, gently."}</p>
@@ -93,15 +94,15 @@ export function TodayPage({ recovered }: { recovered: number }) {
     );
     return (
       <>
-        <p className="vplan-head">
+        <p className={["vplan-head", practice["vplan-head"]].filter(Boolean).join(' ')}>
           {state === "in_progress" ? `You're partway through: step ${nowIdx + 1} of ${steps.length}` : state === "checked_in" ? "You checked in today. The full session is still here." : "Today's plan"}
         </p>
         <ol className="setlist" aria-label="Today's script">
           {steps.map((s, i) => (
             <li key={s.k} className={s.done ? "done" : i === nowIdx ? "now" : ""}>
-              <span className="mk">{s.done ? <><Check /><span className="sr-only">Done:</span></> : i + 1}</span>
+              <span className="mk">{s.done ? <><Check /><span className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Done:</span></> : i + 1}</span>
               <span className="tx">{s.text}</span>
-              {i === nowIdx && <span className="vpill next">Up next</span>}
+              {i === nowIdx && <span className={["vpill next", practice["vpill"]].filter(Boolean).join(' ')}>Up next</span>}
             </li>
           ))}
         </ol>
@@ -119,48 +120,48 @@ export function TodayPage({ recovered }: { recovered: number }) {
   const pressHint = { ready: "Start", checked_in: "Start", in_progress: "Continue", done: "Practise more", paused: "I'm ready" }[state];
 
   return (
-    <div className="vpage vtoday">
+    <div className={["vpage vtoday", practice["vpage"], practice["vtoday"]].filter(Boolean).join(' ')}>
       {recovered > 0 && <Callout kind="ok"><p>Recovered {recovered} recording{recovered > 1 ? "s" : ""} from an interrupted session, saved and marked as interrupted.</p></Callout>}
 
       <header className="vtoday-head">
         <h1 id="focus-h">
           {state === "done" ? "All done for today" : state === "paused" ? "Rest today" : ex.title}
         </h1>
-        {state !== "done" && state !== "paused" && t.cue && <p className="vlede">{t.cue.text}</p>}
-        {state === "done" && <p className="vlede">Anything more today is a bonus, never a requirement.</p>}
-        <p className="vcap">
+        {state !== "done" && state !== "paused" && t.cue && <p className={["vlede", practice["vlede"]].filter(Boolean).join(' ')}>{t.cue.text}</p>}
+        {state === "done" && <p className={["vlede", practice["vlede"]].filter(Boolean).join(' ')}>Anything more today is a bonus, never a requirement.</p>}
+        <p className={["vcap", practice["vcap"]].filter(Boolean).join(' ')}>
           {dayName}{p.days_this_week > 0 ? `. You've practised ${p.days_this_week} day${p.days_this_week === 1 ? "" : "s"} this week` : ""}. About {t.session_minutes} minutes, nothing is graded.
         </p>
-        {t.reminder.due && state !== "done" && <p className="vreminder"><i aria-hidden="true" />Reminder for {t.reminder.time}. A short session or a check-in both count.</p>}
+        {t.reminder.due && state !== "done" && <p className={["vreminder", practice["vreminder"]].filter(Boolean).join(' ')}><i aria-hidden="true" />Reminder for {t.reminder.time}. A short session or a check-in both count.</p>}
       </header>
 
       <Device3D screen={screenFor()} onPress={press} pressLabel={pressLabel} pressHint={pressHint} led={state === "in_progress"} busy={busy} />
 
-      <nav className="vlinks" aria-label="More">
-        {state !== "in_progress" && <button className="textlink" onClick={() => void start("check_in")} disabled={busy} aria-label="Quick check-in (1 min)">Quick check-in</button>}
-        {(state === "in_progress" || state === "done") && <button className="textlink" onClick={() => void start("full")} disabled={busy}>{state === "done" ? "Do the full session again" : "Start over"}</button>}
+      <nav className={["vlinks", practice["vlinks"]].filter(Boolean).join(' ')} aria-label="More">
+        {state !== "in_progress" && <button className={["textlink", shared["textlink"]].filter(Boolean).join(' ')} onClick={() => void start("check_in")} disabled={busy} aria-label="Quick check-in (1 min)">Quick check-in</button>}
+        {(state === "in_progress" || state === "done") && <button className={["textlink", shared["textlink"]].filter(Boolean).join(' ')} onClick={() => void start("full")} disabled={busy}>{state === "done" ? "Do the full session again" : "Start over"}</button>}
       </nav>
 
       {pointer && (
-        <section className="vmemo" aria-labelledby="memo-h">
+        <section className={["vmemo", practice["vmemo"]].filter(Boolean).join(' ')} aria-labelledby="memo-h">
           <h2 id="memo-h">{state === "done" ? "Today's feedback" : "From last time"}</h2>
           <p>{pointer.observation}</p>
-          {pointer.next_action && <p className="ink2">Next: {pointer.next_action.summary}</p>}
-          <a className="textlink" href={`#/review/${t.latest_review!.id}`}>Open feedback</a>
+          {pointer.next_action && <p className={["ink2", shared["ink2"]].filter(Boolean).join(' ')}>Next: {pointer.next_action.summary}</p>}
+          <a className={["textlink", shared["textlink"]].filter(Boolean).join(' ')} href={`#/review/${t.latest_review!.id}`}>Open feedback</a>
         </section>
       )}
       {!pointer && t.latest_review?.abstention && (
-        <section className="vmemo" aria-labelledby="memo-h">
+        <section className={["vmemo", practice["vmemo"]].filter(Boolean).join(' ')} aria-labelledby="memo-h">
           <h2 id="memo-h">From last time</h2>
-          <p className="ink2">{t.latest_review.abstention.reason} Next: {t.latest_review.abstention.next_action}</p>
+          <p className={["ink2", shared["ink2"]].filter(Boolean).join(' ')}>{t.latest_review.abstention.reason} Next: {t.latest_review.abstention.next_action}</p>
         </section>
       )}
 
-      <details className="why">
+      <details className={["why", shared["why"]].filter(Boolean).join(' ')}>
         <summary>{state === "paused" ? "Why paused?" : "Why this exercise?"}</summary>
-        <div className="body">{t.plan.rationale} Based on <a href={ex.source.url} target="_blank" rel="noreferrer">{ex.source.title}</a> ({ex.review.status.replace("_", " ")}, not clinician-reviewed).</div>
+        <div className={["body", shared["body"]].filter(Boolean).join(' ')}>{t.plan.rationale} Based on <a href={ex.source.url} target="_blank" rel="noreferrer">{ex.source.title}</a> ({ex.review.status.replace("_", " ")}, not clinician-reviewed).</div>
       </details>
-      {t.pending_jobs > 0 && <p className="vcap">{t.pending_jobs} recording{t.pending_jobs > 1 ? "s are" : " is"} still being analysed. They're saved and playable.</p>}
+      {t.pending_jobs > 0 && <p className={["vcap", practice["vcap"]].filter(Boolean).join(' ')}>{t.pending_jobs} recording{t.pending_jobs > 1 ? "s are" : " is"} still being analysed. They're saved and playable.</p>}
     </div>
   );
 }

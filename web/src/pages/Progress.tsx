@@ -1,4 +1,6 @@
-import "../styles/data.css";
+import { shared } from "../ui/shared";
+import { pages } from "../ui/pages";
+import { cx } from "../ui/cx";
 import { useEffect, useMemo, useState } from "react";
 import { api, AREA_LABEL, SkillCard, Take } from "../api";
 import { go } from "../App";
@@ -28,36 +30,36 @@ export function ProgressPage() {
   useEffect(() => { if (!prompt && prompts.length) setPrompt(prompts[0][0]); }, [prompts, prompt]);
   const shown = takes.filter((t) => t.prompt_id === prompt);
 
-  if (!p) return <p className="dv-loading">Loading progress…</p>;
+  if (!p) return <p className={cx(pages.dvLoading, "dv-loading")}>Loading progress…</p>;
 
   const togglePick = (id: string) => setPicked((x) => x.includes(id) ? x.filter((y) => y !== id) : [...x.slice(-1), id]);
   const week = p.participation?.days_this_week ?? 0;
   const assessed = p.skills.filter((s) => s.state !== "not_assessed").length;
 
   return (
-    <div className="dv dv-progress">
-      <header className="dv-head">
+    <div className={cx(pages.dv, "dv dv-progress")}>
+      <header className={cx(pages.dvHead, "dv-head")}>
         <h1>Skill notebook</h1>
         <p className="dv-lede">Where each skill stands, described in the task you practised it in. Nothing here is scored, and a missed day, a new exercise or a recording problem never counts against you.</p>
       </header>
 
-      <dl className="dv-tiles">
+      <dl className={cx(pages.dvTiles, "dv-tiles")}>
         <div><dt>This week</dt><dd>{week} <small>{week === 1 ? "day" : "days"}</small></dd></div>
         <div><dt>Recordings, last {days} days</dt><dd>{takes.length}</dd></div>
         <div><dt>Skills with evidence</dt><dd>{assessed} <small>of {p.skills.length}</small></dd></div>
       </dl>
 
-      <section className="dv-sec" aria-labelledby="skills-h">
+      <section className={cx(pages.dvSec, "dv-sec")} aria-labelledby="skills-h">
         <h2 id="skills-h">Skills</h2>
         <ol className="pg-skills">
           {p.skills.map((s) => <SkillRow key={s.area} s={s} />)}
         </ol>
       </section>
 
-      <section className="dv-sec pg-recs" aria-labelledby="hist-h">
-        <div className="dv-sec-head">
+      <section className={cx(pages.dvSec, "dv-sec pg-recs")} aria-labelledby="hist-h">
+        <div className={cx(pages.dvSecHead, "dv-sec-head")}>
           <h2 id="hist-h">Recordings by task</h2>
-          <label htmlFor="days" className="sr-only">Window</label>
+          <label htmlFor="days" className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Window</label>
           <select id="days" className="dv-select" value={days} onChange={(e) => setDays(Number(e.target.value))}>
             <option value={7}>Last 7 days</option><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option>
           </select>
@@ -84,7 +86,7 @@ export function ProgressPage() {
                       <AudioPlayer src={t.audio_url} label={takeName(t)} compact knownDuration={t.analysis_summary?.duration_s} />
                       <div className="pg-take-meta">
                         <span>{shortDate(t.local_date)}</span>
-                        {t.favourite && <span className="badge">{Icon.star}Favourite</span>}
+                        {t.favourite && <span className={["badge", shared["badge"]].filter(Boolean).join(' ')}>{Icon.star}Favourite</span>}
                         <TakeFlags take={t} />
                         <span className="pg-hz">{t.analysis_summary?.f0_median_hz ? <><b>{t.analysis_summary.f0_median_hz.toFixed(0)} Hz</b> middle pitch</> : "No pitch summary"}</span>
                       </div>
@@ -95,7 +97,7 @@ export function ProgressPage() {
             </ul>
             <div className={`pg-compare${picked.length ? " live" : ""}`}>
               <span aria-live="polite">{picked.length === 2 ? "Two picked." : picked.length === 1 ? "One picked. Pick one more." : "Pick two recordings to compare."}</span>
-              <button className="btn-primary" disabled={picked.length !== 2} onClick={() => go(`/compare?a=${picked[0]}&b=${picked[1]}`)}>Compare selected</button>
+              <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} disabled={picked.length !== 2} onClick={() => go(`/compare?a=${picked[0]}&b=${picked[1]}`)}>Compare selected</button>
             </div>
           </>
         )}
@@ -103,7 +105,7 @@ export function ProgressPage() {
 
       <details className="dv-quiet">
         <summary>What Lilt can't assess yet</summary>
-        <div className="body">
+        <div className={["body", shared["body"]].filter(Boolean).join(' ')}>
           <ul>{p.missing_evaluation_assets.map((m) => <li key={m}>{m}</li>)}</ul>
           <p>Until those exist, Lilt relies on your own listening and reports, source-checked exercises and descriptive measurements.</p>
         </div>
