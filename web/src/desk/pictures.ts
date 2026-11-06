@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { roomUrl, type Light } from "../room/scene";
 
 /**
- * The pictures the clock widget (and its Photos) and today's cards show (credits in public/pictures/CREDITS.md).
+ * The pictures the clock widget and Photos show (credits in public/pictures/CREDITS.md).
  * The room ones follow the hour. `clock` frames it on the square clock, `card` on a card's wide
  * strip; unset, the widget's own CSS frames the room.
  */
@@ -36,10 +36,3 @@ export const PICTURES: Picture[] = [
 ];
 
 export const picture = (id: string) => PICTURES.find((p) => p.id === id) ?? PICTURES[0];
-
-/** The picture for today's i-th card, from `list` (the photos): consecutive cards differ, and the set moves on each day. */
-export function cardPicture(i: number, list: Picture[], now = new Date()): Picture {
-  const day = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
-  const from = list.length ? list : PICTURES.filter((p) => p.photo);
-  return from[(day + i) % from.length];
-}

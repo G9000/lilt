@@ -261,29 +261,28 @@
 .outside-leaving .cs { opacity: 0; pointer-events: none; }
 .cs-cards { position: absolute; left: 0; right: 0; bottom: 40px; height: 262px; }
 .cs-card { position: absolute; inset: 0; transform-origin: 50% 85%; }
-.cs-drag { position: absolute; inset: 0; padding: 8px; border-radius: 32px; background: #0c0c0f; color: #fff; user-select: none; -webkit-user-select: none; touch-action: pan-y; transform-origin: 50% 85%;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 24px 50px -22px rgba(0, 0, 0, 0.85); }
+.cs-drag { position: absolute; inset: 0; padding: 1px; border-radius: 20px; background: var(--hair); color: var(--ink); user-select: none; -webkit-user-select: none; touch-action: pan-y; transform-origin: 50% 85%;
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.55); }
 .cs-card.top .cs-drag { cursor: grab; }
 .cs-card.top .cs-drag:active { cursor: grabbing; }
-.cs-card:not(.top) .cs-drag { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.16), 0 -8px 22px -10px rgba(0, 0, 0, 0.7); }
-.cs:focus-visible .cs-card.top .cs-drag { box-shadow: 0 0 0 2px #fff, 0 24px 50px -22px rgba(0, 0, 0, 0.85); }
-.cs-in { position: relative; height: 100%; border-radius: 25px; overflow: hidden; background: #1c1c21; }
-/* the picture fills the top of the card and melts into it, as Flashcards' cards do */
-.cs-img { position: absolute; inset: 0 0 auto 0; height: 170px; background-repeat: no-repeat; background-size: 300% auto;
-  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent); mask-image: linear-gradient(to bottom, #000 45%, transparent); }
-.cs-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(28, 28, 33, 0.5)); }
-.cs-chip { position: absolute; left: 14px; top: 13px; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; color: #fff; background: rgba(15, 15, 22, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-.cs-chip.next { background: var(--accent); color: var(--accent-on); }
-.cs-body { position: absolute; inset: auto 0 0 0; height: 146px; padding: 10px 16px 16px 18px; display: flex; flex-direction: column; }
-.cs-title { font-weight: 600; font-size: 15px; white-space: nowrap; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55); }
-.cs-phrase { margin-top: 12px; font-size: 17px; font-weight: 600; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cs-kind { font-size: 12.5px; color: #9a9aa5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cs-card:not(.top) .cs-drag { box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.12); }
+.cs-card:not(.top) .cs-body { visibility: hidden; }
+.cs:focus-visible .cs-card.top .cs-drag { outline: 2px solid var(--accent); outline-offset: 3px; }
+.cs-in { position: relative; height: 100%; border-radius: 19px; overflow: hidden; background: var(--page); }
+.cs-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
+.cs-chip { flex: none; padding: 3px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 600; color: var(--ink-2); background: var(--fill); }
+.cs-chip.next { background: var(--accent-soft); color: var(--accent-ink); }
+.cs-body { position: absolute; inset: 0; padding: 18px; display: flex; flex-direction: column; }
+.cs-title { font-weight: 600; font-size: 13px; white-space: nowrap; }
+.cs-phrase { margin-top: 7px; font-size: 21px; line-height: 1.25; font-weight: 600; letter-spacing: -0.015em; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.cs-kind { font-size: 11.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cs-hint { margin-top: 9px; font-size: 12.5px; line-height: 1.45; color: var(--ink-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 .cs-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.cs-count { font-size: 12.5px; color: #9a9aa5; font-variant-numeric: tabular-nums; }
-.cs-count b { color: #fff; font-weight: 600; }
-.cs-go { flex: none; width: 38px; height: 38px; border-radius: 50%; background: #fff; color: #111; display: grid; place-items: center; }
+.cs-count { max-width: 150px; font-size: 11.5px; line-height: 1.4; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.cs-count b { color: var(--ink); font-weight: 600; }
+.cs-go { flex: none; min-width: 34px; height: 34px; padding: 0 10px; gap: 7px; border-radius: 10px; background: var(--ink); color: var(--page); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
 .cs-go svg { width: 16px; height: 16px; }
-.cs-shade { position: absolute; inset: 0; border-radius: 32px; background: #000; pointer-events: none; transition: opacity 0.4s ease; }
+.cs-shade { position: absolute; inset: 0; border-radius: 20px; background: #000; pointer-events: none; transition: opacity 0.4s ease; }
 .cs-dots { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; justify-content: center; gap: 6px; }
 .cs-dots i { width: 6px; height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.4); transition: width 0.35s var(--ease), background-color 0.35s; }
 .cs-dots i.on { width: 18px; background: #fff; }

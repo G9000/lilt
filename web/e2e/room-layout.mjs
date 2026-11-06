@@ -19,7 +19,7 @@ try {
   const deck = { local_date: '2026-11-05', paused: false, counts: { new: 5, review: 0, again: 0 }, open_stage: 1, cap: 5,
     participation: { days_this_week: 0, dates_this_week: [], practised_today: false },
     items: Array.from({ length: 5 }, (_, i) => ({ kind: 'warmup', done_today: false,
-      card: { id: `test-${i}`, front: `Comfortable hum ${i + 1}`, deck_title: 'Warm-ups', kind: 'text' } })) };
+      card: { id: `test-${i}`, front: `Comfortable hum ${i + 1}`, hint: 'Lips together, teeth apart. Try an easy note for a few seconds, without pushing.', deck_title: 'Warm-ups', kind: 'text' } })) };
   await page.route('**/api/**', route => {
     const pathname = new URL(route.request().url()).pathname;
     const data = pathname === '/api/deck/today' ? deck
@@ -112,6 +112,17 @@ try {
   await page.setViewportSize({width:390,height:844});
   await page.getByRole('button', {name:'Reset layout',exact:true}).click();
   await inspect('phone-reset');
+  await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+  await inspect('phone-dark');
+  deck.paused = true;
+  await page.reload();
+  await page.locator('.cs-phrase', { hasText: 'Resting today' }).waitFor();
+  await inspect('resting');
+  deck.paused = false;
+  deck.items = [];
+  await page.reload();
+  await page.locator('.cs-phrase', { hasText: 'All done' }).waitFor();
+  await inspect('done');
   assert.deepEqual(errors, []);
   console.log('PASS: original manual layout, drag persistence and reset visibility at desktop and phone sizes.');
 } finally { await browser?.close(); await server.close(); }

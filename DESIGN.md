@@ -72,7 +72,9 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
 
 - **Room** (`#/`): the painting full screen in the light of the hour (morning, day, sunset,
   night), with its small animations (birds, dust, the sleeping cat). Today's cards sit
-  lower in the room as a swipeable stack (folder-style cards, one per practice card, Motion springs);
+  lower in the room as a swipeable paper stack (one per practice card, Motion springs);
+  plain light/dark surfaces show the chapter, prompt, practice hint and Start action, with
+  a small Up next label. No rotating photo covers; the back cards are quiet paper edges.
   tapping the top card starts it. The default stack sits in the lower-right corner on desktop
   and lower-center on phones. A few small widgets float in the painting (clock, note), riding
   the camera and draggable (Motion); they step aside rather than cover the stack. On smaller screens

@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Practice cards with a purpose", body: "Today's practice cards now show the exercise and its hint on a simple paper stack, with a clear Start action. Unrelated photo covers are gone." },
       { title: "A softer little world for Ball of yarn", body: "Play beside a painted garden window with embroidered curtains, a woven rug and a fluffy kitten. Day and night have their own light, and the yarn has finer wool detail.", to: "/yarn" },
       { title: "Pictures that fill your monitors", body: "Room pictures now meet the edges of both screens. Sleepy cat has a closer crop without the pale strip beside it." },
       { title: "An accent color of your own", body: "Make it yours and Settings → Appearance now have color presets, a custom picker and a hex field. Try a color across Lilt, or reset to the original orange. Your choice stays in this browser.", to: "/settings" },

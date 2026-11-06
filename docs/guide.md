@@ -122,6 +122,8 @@ Monitor uploads and playback have an isolated check with locally generated media
      card away (or use the arrow keys) and it tucks in at the back; tap the card on top, or its
      arrow, to practise that one first. The others stay in today's run. The stack deals in when
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
+     Each plain card shows the exercise, its hint and a Start action. Photos are not used as
+     practice-card covers; the smaller paper stack keeps the content easy to read.
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: a
      clock in the window, the plant by the potted plant, a sticky note taped to the photo wall, and

@@ -3,8 +3,8 @@ import { api, PhotoIndex } from "../api";
 import { Picture, PICTURES } from "./pictures";
 
 /**
- * The pictures you can see in Photos and on the clock: Lilt's own photos (not the views of the room,
- * which only Today's cards use), less any you hid, then the ones you added (kept by the server in
+ * The pictures you can see in Photos and on the clock: Lilt's own photos (not the views of the room),
+ * less any you hid, then the ones you added (kept by the server in
  * <data>/photos). One copy, shared by every widget and window, and
  * which picture the clock shows (one you picked, or a new photo each time you come in).
  */

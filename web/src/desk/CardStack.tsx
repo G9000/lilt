@@ -1,10 +1,7 @@
 import { animate, AnimatePresence, motion, type PanInfo, useDragControls, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Deck, DeckItem } from "../api";
-import { currentLight, type Light } from "../room/scene";
 import { setSpot, useLayoutStore } from "./Floaters";
-import { cardPicture, picture, type Picture } from "./pictures";
-import { usePhotos } from "./photos";
 
 /**
  * Today's cards on the room, as a pile: one card per practice card left. Swipe the top card
@@ -17,9 +14,9 @@ const SUB: Record<string, string> = { reference: "The same every day", exercise:
 /** Where a card rests at depth d (0 = top): each one higher, a touch smaller, fanned alternately. */
 const rest = (d: number) => ({
   x: d === 0 ? 0 : d % 2 ? -5 : 6,
-  y: -d * 30,
-  rotate: d === 0 ? 0 : d % 2 ? -3 : 2.4,
-  scale: 1 - d * 0.06,
+  y: -d * 10,
+  rotate: d === 0 ? 0 : d % 2 ? -1.6 : 1.1,
+  scale: 1 - d * 0.025,
   opacity: d > 3 ? 0 : 1,
 });
 const SPRING = { type: "spring", stiffness: 320, damping: 28, mass: 0.9 } as const;
@@ -33,9 +30,6 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   useEffect(() => { if (!items.length || dealt) return; const id = window.setTimeout(() => setDealt(true), 1300); return () => window.clearTimeout(id); }, [items.length]); // eslint-disable-line react-hooks/exhaustive-deps
   // A new deck (or a finished card) resets the pile to today's order.
   useEffect(() => { setOrder(items.map((i) => i.card.id)); }, [ids]); // eslint-disable-line react-hooks/exhaustive-deps
-  // The cards wear the photos from Photos (yours too), not the room again.
-  const { pictures: photos } = usePhotos();
-  const light = currentLight();
   const byId = new Map(items.map((i) => [i.card.id, i]));
   const pile = order.filter((id) => byId.has(id));
   const n = pile.length;
@@ -91,14 +85,14 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
       onDragStart={() => setMoving(true)} onDragEnd={placed}>
       <div className="cs-cards">
         {!deck || done || deck.paused ? (
-          <StaticCard light={light} pic={picture(!deck ? "cat-window-nap" : deck.paused ? "cat-blanket" : "cat-kitten")} title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
+          <StaticCard title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
             sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : "The lights are on. Nice work."} onStart={() => onStart(null)} />
         ) : (
           <AnimatePresence initial>
             {pile.slice(0, 4).map((id, d) => {
               const it = byId.get(id)!, i = items.indexOf(it);
               return (
-                <StackCard key={id} item={it} depth={d} index={i} count={n} light={light} pic={cardPicture(i, photos)}
+                <StackCard key={id} item={it} depth={d} index={i} count={n}
                   first={i === 0} delay={dealt ? 0 : 0.3 + (Math.min(n, 4) - 1 - d) * 0.12} onSwipe={cycle} onStart={() => onStart(id)} />
               );
             })}
@@ -117,8 +111,8 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   );
 }
 
-function StackCard({ item, depth, index, count, light, pic, first, delay, onSwipe, onStart }: {
-  item: DeckItem; depth: number; index: number; count: number; light: Light; pic: Picture; first: boolean; delay: number;
+function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart }: {
+  item: DeckItem; depth: number; index: number; count: number; first: boolean; delay: number;
   onSwipe: (dir: 1 | -1) => void; onStart: () => void;
 }) {
   const top = depth === 0;
@@ -175,15 +169,15 @@ function StackCard({ item, depth, index, count, light, pic, first, delay, onSwip
       whileTap={top ? { scale: 0.985 } : undefined}
      >
       <div className="cs-in">
-        <div className="cs-img" style={{ backgroundImage: `url(${pic.url(light)})`, ...pic.card }} />
-        <span className={`cs-chip${first ? " next" : ""}`}>{first ? "Up next" : KIND[item.kind]}</span>
         <div className="cs-body">
-          <div className="cs-title">Today's practice</div>
+          <div className="cs-head"><div className="cs-title">Today's practice</div>
+            <span className={`cs-chip${first ? " next" : ""}`}>{first ? "Up next" : KIND[item.kind]}</span></div>
+          <div className="cs-kind">{item.card.deck_title} · {SUB[item.card.kind] ?? item.card.kind}</div>
           <div className="cs-phrase">{item.card.front}</div>
-          <div className="cs-kind">{item.card.deck_title}, {SUB[item.card.kind]?.toLowerCase() ?? item.card.kind}</div>
+          {item.card.hint && <div className="cs-hint">{item.card.hint}</div>}
           <div className="cs-foot">
             <span className="cs-count"><b>{index + 1}</b> of {count}, about {count} minute{count === 1 ? "" : "s"}</span>
-            <span className="cs-go" aria-hidden="true"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
+            <span className="cs-go" aria-hidden="true">Start <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
           </div>
         </div>
       </div>
@@ -193,13 +187,11 @@ function StackCard({ item, depth, index, count, light, pic, first, delay, onSwip
   );
 }
 
-function StaticCard({ light, pic, title, sub, onStart }: { light: Light; pic: Picture; title: string; sub: string; onStart: () => void }) {
+function StaticCard({ title, sub, onStart }: { title: string; sub: string; onStart: () => void }) {
   return (
     <motion.article className="cs-card top" onTap={onStart} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={SPRING} whileTap={{ scale: 0.985 }}>
-      {/* The same dark frame and white text as the live cards */}
       <div className="cs-drag">
       <div className="cs-in">
-        <div className="cs-img" style={{ backgroundImage: `url(${pic.url(light)})`, ...pic.card }} />
         <div className="cs-body">
           <div className="cs-title">Today's practice</div>
           <div className="cs-phrase">{title}</div>
