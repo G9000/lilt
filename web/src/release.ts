@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Pictures that fill your monitors", body: "Room pictures now meet the edges of both screens. Sleepy cat has a closer crop without the pale strip beside it." },
       { title: "An accent color of your own", body: "Make it yours and Settings → Appearance now have color presets, a custom picker and a hex field. Try a color across Lilt, or reset to the original orange. Your choice stays in this browser.", to: "/settings" },
       { title: "See where your storage goes", body: "Settings → Storage shows space used by recordings, photos, backups and other saved data. Refresh the count, copy your data folder path, or open the folder from the installed app.", to: "/settings" },
       { title: "A warmer welcome to your course", body: "Three new illustrations replace the course guide's placeholder pictures. A short first-visit walkthrough and clearer listening prompts help you choose one comfortable next step.", to: "/studio" },

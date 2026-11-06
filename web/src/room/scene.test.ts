@@ -21,6 +21,17 @@ test("the warp puts each corner of the element on the monitor's corner", () => {
   }
 });
 
+test('monitor overlays cover the painted screen edges without covering the bezel', () => {
+  const inside = (quad: number[][], x: number, y: number) => quad.every(([ax, ay], i) => {
+    const [bx, by] = quad[(i + 1) % quad.length];
+    return (bx - ax) * (y - ay) - (by - ay) * (x - ax) >= 0;
+  });
+  // Samples just inside the v3 painting's right/bottom edges, where wallpaper leaked through.
+  for (const [x, y] of [[1153, 322], [1148, 483], [1000, 476]]) assert.ok(inside(MAIN_SCREEN, x, y), `main screen ${x},${y}`);
+  for (const [x, y] of [[1170, 485], [1405, 505]]) assert.ok(inside(SIDE_SCREEN, x, y), `side screen ${x},${y}`);
+  for (const [x, y] of [[1159, 320], [1000, 490], [850, 400]]) assert.ok(!inside(MAIN_SCREEN, x, y), `main bezel ${x},${y}`);
+});
+
 test("the lights always add up to one and follow the clock", () => {
   for (let m = 0; m < 1440; m += 7) {
     const w = weights(m);

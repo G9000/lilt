@@ -10,8 +10,8 @@ export const LIGHTS: Light[] = ["day", "morning", "sunset", "night"];
 export type Quad = [[number, number], [number, number], [number, number], [number, number]];
 
 /** Screen corners (top-left, top-right, bottom-right, bottom-left) of the two front monitors. */
-export const MAIN_SCREEN: Quad = [[857, 320], [1148, 321], [1147, 481], [857, 466]];
-export const SIDE_SCREEN: Quad = [[1176, 354], [1417, 359], [1403, 511], [1171, 491]];
+export const MAIN_SCREEN: Quad = [[860, 318], [1155, 317], [1150, 487], [856, 468]];
+export const SIDE_SCREEN: Quad = [[1175, 351], [1416, 356], [1407, 510], [1167, 489]];
 /** Where the camera looks on the home screen, and the cat (for its speech bubble). */
 export const DESK_FOCUS = { x: 960, y: 430 };
 export const CAT_SPOT = { x: 345, y: 735 };

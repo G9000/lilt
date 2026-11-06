@@ -75,7 +75,10 @@ export function MonitorScreen({ monitor, appearance, inside }: { monitor: Monito
   const decor = monitor === 'main' ? appearance.mainDecor : appearance.decor;
   const media = monitor === 'main' ? appearance.mainMedia : appearance.sideMedia;
   const style = { transform: quadMatrix(520, 300, monitor === 'main' ? MAIN_SCREEN : SIDE_SCREEN) };
-  if (decor === 'custom' && media) return <MonitorMedia key={media.id} media={media} monitor={monitor} active={!inside} className="room-monitor-art" style={style} />;
-  if (decor === 'original' || decor === 'custom') return null;
-  return <img className="room-monitor-art" data-monitor={monitor} src={ROOM_DECOR[decor]} alt="" draggable={false} style={style} />;
+  if (decor === 'original' || (decor === 'custom' && !media)) return null;
+  return <div className="room-monitor-screen" style={style}>
+    {decor === 'custom'
+      ? media && <MonitorMedia key={media.id} media={media} monitor={monitor} active={!inside} className="room-monitor-art" />
+      : <img className="room-monitor-art" data-monitor={monitor} data-decor={decor} src={ROOM_DECOR[decor]} alt="" draggable={false} />}
+  </div>;
 }

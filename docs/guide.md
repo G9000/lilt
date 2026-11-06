@@ -80,6 +80,8 @@ recording, warning and success colors keep their original colors.
 preview and Play/Pause control. Videos loop silently; pausing a GIF shows a still, and
 Play restarts it. Picture uploads are still images, including animated PNG/WebP files.
 You can try a built-in picture and choose **Use upload** to return, or **Remove** it.
+Pictures fill the painted screen edge to edge. **Sleepy cat** uses a tighter crop to keep
+the pale wall beside the cat out of view.
 Choose PNG/JPG/WebP, GIF, or a playable MP4/WebM, up to 25 MB and 4096 × 4096 pixels.
 Reduced motion starts with a still until you press Play. Motion pauses while you are
 inside the desk or the browser tab is hidden.
