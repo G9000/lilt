@@ -359,6 +359,8 @@ bordered quotes and a separate footnote area. Tables and code scroll within the 
 Voice chapters use a wider 1040px desktop column. The active exercise keeps the plain reading
 surface with its recorder below; all exercises use compact rows with hairline dividers. This wider
 layout is specific to the voice chapter, leaving Home and the daily deck at their own widths.
+The chapter is left-aligned with 24px desktop side padding, a 40px exercise number gutter and
+a 16px gap from the introduction to the first exercise. Hover keeps the reading surface plain.
 
 ## Components
 

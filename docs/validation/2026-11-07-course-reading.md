@@ -57,3 +57,17 @@ both source and built output passed. The browser checks now verify a transparent
 row with no enclosing border, along with exercise switching and responsive layouts.
 Visually inspected the dark desktop result. Updated the served assets and confirmed port
 7878 serves the checked index, with HTTP 200 for `index-CSYwdL__.js` and `index-BGMr6LwW.css`.
+
+## Smaller left gutter and first-exercise gap
+
+Left-aligned the voice chapter with 24px desktop side padding, reduced its number gutter
+from 56px to 40px, and reduced the intro-to-first-exercise gap from 52px to 16px (8px intro
+margin plus 8px first-row padding). Mobile retains its 18px page padding. Removed the
+chapter-row hover fill so both selection and hover keep the plain surface.
+
+Course-reading checks cover the left offset, intro gap, number clearance and plain hover,
+using the real chapter introduction with tips collapsed. The checks passed on source and
+the isolated production bundle; the final plain-hover assertion passed against the bundle.
+The isolated type check and production build passed. Visually inspected the dark desktop
+result. Published only this UI update using the existing isolated release tree, then verified
+HTTP 200 for the served `index-CnnPBG0X.js` and `index-DlCLWpYX.css` and an exact index match.

@@ -7,7 +7,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const shots = fileURLToPath(new URL('../../.tmp/course-ui-shots/', import.meta.url));
-const voiceSource = await readFile(new URL('../../content/courses/voice/01-start-here.md', import.meta.url), 'utf8');
+const voiceSource = (await readFile(new URL('../../content/courses/voice/01-start-here.md', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
+const voiceIntro = voiceSource.split(/^## /m)[0].split('---').at(-1).trim();
 const voiceItems = voiceSource.split(/^## /m).slice(1).map(section => {
   const [id, ...lines] = section.trim().split(/\r?\n/);
   const [text, hint] = lines.join('\n').trim().split(/\n\n> /);
@@ -41,7 +42,7 @@ try {
     if (p === '/api/deck/today') return send({ items: [], counts: { new: 0, review: 0, again: 0 }, open_stage: 1, all_done: true, paused: false });
     if (p === '/api/studio/session') return send({ id: 'fixture-session' });
     if (p === '/api/sessions/fixture-session') return send({ takes: [] });
-    if (p === '/api/texts' && course === 'voice') return send({ note: voiceNote, levels: [{ id: 'start-here', level: 1, title: 'Start here', subtitle: 'Your mic, your space, and your voice today', kind: 'phrases', basis: '', check_in: 'today', items: voiceItems }] });
+    if (p === '/api/texts' && course === 'voice') return send({ note: voiceNote, levels: [{ id: 'start-here', level: 1, title: 'Start here', subtitle: 'Your mic, your space, and your voice today', kind: 'phrases', basis: voiceIntro, check_in: 'today', items: voiceItems }] });
     if (p === '/api/texts') return send({ note: '', home: 'Make a little room to explore.', levels: [{ id: 'start', level: 1, title: 'A small beginning', subtitle: 'Try a little, then pause.', kind: 'phrase',
       basis: '## Find your starting point\n\nChoose something close to hand.\n\n> Take your time. There is no single pace for learning.',
       items: [{ id: 'first-lines', text: 'Draw three loose circles.\n\n- Try a light touch.\n- Let each one be different.', hint: 'Notice how the movement feels in your hand.' }],
@@ -85,19 +86,32 @@ try {
     });
     const sidebar = page.getByRole('button', { name: 'Hide sidebar', exact: true });
     if (await sidebar.isVisible()) await sidebar.click();
+    const tipsToggle = page.getByRole('button', { name: /^Hide tips/ });
+    if (await tipsToggle.count()) await tipsToggle.click();
     const layout = await page.locator('.ve-chapter').evaluate(el => {
       const row = el.querySelector('.ve-item.on'), other = el.querySelector('.ve-item:not(.on)');
+      const intro = el.querySelector('.ci'), first = el.querySelector('.ve-item:first-child');
+      const marker = first.querySelector('.ve-mk'), text = first.querySelector('.ve-checkin, .readtext');
       return { width: el.getBoundingClientRect().width, overflow: el.scrollWidth > el.clientWidth + 1,
+        leftGutter: el.querySelector('.ve-head').getBoundingClientRect().left - el.closest('.ve-page').getBoundingClientRect().left,
+        introGap: text.getBoundingClientRect().top - intro.getBoundingClientRect().bottom,
+        markerGap: text.getBoundingClientRect().left - marker.getBoundingClientRect().right,
         selectedBackground: getComputedStyle(row).backgroundColor,
         selectedBorder: ['borderTopWidth', 'borderLeftWidth', 'borderRightWidth'].map(property => getComputedStyle(row)[property]),
         ink: getComputedStyle(other.querySelector('.readtext')).color, hint: getComputedStyle(other.querySelector('.ve-hint')).color,
         activeInk: getComputedStyle(row.querySelector('.readtext')).color };
     });
     assert.ok(!layout.overflow, 'voice chapter fits its column');
+    assert.ok(layout.leftGutter >= 16 && layout.leftGutter <= 25, 'chapter starts near the left edge');
+    assert.ok(layout.introGap >= 12 && layout.introGap <= 20, 'first exercise follows the intro without the large gap');
+    if (width > 860) assert.ok(layout.markerGap >= 8, 'exercise number stays clear of the text');
     if (width >= 1440) assert.ok(layout.width >= 1000, 'desktop chapter uses the wider reading layout');
     assert.equal(layout.selectedBackground, 'rgba(0, 0, 0, 0)', 'selected exercise keeps the plain reading surface');
     assert.deepEqual(layout.selectedBorder, ['0px', '0px', '0px'], 'selected exercise has no enclosing panel');
     assert.ok([layout.hint, layout.activeInk].includes(layout.ink), 'inactive exercise stays readable, including on hover');
+    await page.locator('.ve-item').nth(1).hover();
+    assert.equal(await page.locator('.ve-item').nth(1).evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', 'hover keeps the plain surface');
+    await page.mouse.move(0, 0);
     await page.locator('.ve-page').evaluate(el => { el.scrollTop = 0; });
     await page.screenshot({ path: path.join(shots, `voice-chapter-${width}-${theme}.png`) });
     await page.locator('.ve-item').nth(1).click();
