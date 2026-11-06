@@ -11,8 +11,10 @@ data folder, and these files stay as they are. Another course is another folder 
 with its own `course.md`.
 
 - `index.md`: the Practice home page (why it exists, how it works, sources). `cover: images/<file>`
-  in its front matter sets the full-width banner at the top. The `placeholder-*` pictures in
-  `images/` are stand-ins: replace the files, or point the Markdown at your own. Plain Markdown:
+  in its front matter sets the full-width banner at the top. The welcome page uses three original
+  generated illustrations: `practice-corner.png`, `listening-nook.png` and `resting-cat.png`.
+  The older `placeholder-*` files remain available for personal copies that still reference them.
+  Point the Markdown at your own pictures if you prefer. Plain Markdown:
   `#`/`##` headings, paragraphs, `-` lists, `> ` quotes, `**bold**`, `_italic_`, `[links](https://…)`
   and pictures: put the file in `images/` and write `![what it shows](images/name.webp)` on its own
   line (it opens the same way in Obsidian).

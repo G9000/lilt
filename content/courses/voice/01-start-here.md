@@ -21,11 +21,15 @@ Hi, friend. Five minutes of setup, one "before" recording, and you're ready.
 
 **Check your level.** Count to ten below and play it back. You want it clear, with no loud warning. A gappy pitch line on its own doesn't mean you're too quiet: unvoiced sounds like s and h never draw a line.
 
+**Make your first take.** Select the counting text, press Record, and allow microphone access if asked. Say the line, press Stop, and wait for it to finish saving. Play it back when you are ready. If there is no sound, check that your microphone is allowed and selected in your browser or app settings, then try a short count again. Saved takes are in [Recordings](#/history).
+
 **Choose your goal.** This guide focuses on a more feminine voice, but what that sounds like is yours to choose. Write a goal in [Practice settings](#/studio/settings); it becomes the note on your wall. Name a situation and a quality you want, such as an easy, light voice for everyday conversation. An androgynous voice or a flexible range are valid goals too. A band on a pitch chart cannot define any of these. Oestrogen generally does not reverse voice deepening from testosterone; voice training can work on more than pitch.
 
 **Record your "before".** Read the texts below in your everyday voice. Don't change anything yet. Future you will want this, trust me. You don't have to listen back to it until you want to.
 
 **How every chapter works.** The same small loop each time: hear an example or replay a take you like, try one change, record, listen back, then use it in a real phrase straight away. Five to ten minutes is plenty. Short and often beats long and rare.
+
+**Choose just one next step.** After your starting recording, try [hum to hello](#/studio/warmup/hum-to-hello). You do not need to finish every text here first. Next visit, choose one skill and one listening question: higher or lower for pitch, brighter or darker for resonance, lighter or heavier for weight. If a cue is unclear, revisit its demonstration or use a familiar sound; you do not need to make the change bigger.
 
 **Your ears decide.** Lilt shows your pitch and a rough read of your resonance, but numbers describe a take; they don't grade it. The questions that matter: did it feel easy, could I do it again, and do I like how it sounds? Inside your head your voice sounds lower and fuller than it does to anyone else; the recording is closer to what others hear. Listen back on headphones, not a laptop speaker.
 

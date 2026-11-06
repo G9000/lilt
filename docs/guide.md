@@ -322,6 +322,11 @@ Monitor uploads and playback have an isolated check with locally generated media
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,
    available in a fresh Today deck on day one. The four setup texts stay outside Today's cards.
 
+   The Course guide starts with a short first visit: check the mic, save a starting recording,
+   try hum-to-hello and keep one cue. Its listening prompts help you compare one quality at a time
+   and choose a smaller next step when a cue is unclear. Three original illustrations show a
+   practice corner, a listening nook and a resting cat; these are decorative, not technique diagrams.
+
    Instructions draw on the linked NHS Fife and NHS Lothian sources; the listening questions, bridge
    phrases and suggested daily loop are Lilt's teaching choices. Existing video links provide
    demonstrations. Dedicated A/B audio clips are still missing, and no clinician has reviewed the

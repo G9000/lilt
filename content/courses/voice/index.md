@@ -8,6 +8,23 @@ cover: images/cover.webp
 Pull up a chair. This is a small, quiet room for working on your voice: a few minutes a day, out
 loud, at your own pace. Nobody's listening but you (and the cat, who is asleep).
 
+## Your first visit
+
+You can start before reading the whole guide. One short recording is enough for today.
+
+1. **Check the sound.** Open [Start here](#/studio/start-here/level), choose the counting text,
+   press **Record**, and allow microphone access if asked. Count in your everyday voice, press
+   **Stop**, then play it back. Adjust the mic if the words are hard to hear.
+2. **Keep a starting point.** Record ["Hello, this is my voice today"](#/studio/start-here/today)
+   without changing your voice. Wait for the take to finish saving; you can listen another day.
+3. **Try one small bridge.** If you feel ready, open [hum to hello](#/studio/warmup/hum-to-hello).
+   Read its hint, try it once, and notice whether the words feel as easy as the hum. Stop for strain.
+4. **Leave yourself one cue.** A few words such as "easy start" are enough for next time. You can
+   finish here, or return to [Today's practice](#/deck) when you want a few cards picked for you.
+
+The chapter list is a shelf to explore, not a checklist to finish. A comfortable range on the
+chart is optional; you do not need to choose a target number before making your first recording.
+
 ## Your route through voice feminization
 
 This is a general MtF guide for trans women and other people exploring a more feminine voice.
@@ -40,7 +57,7 @@ and most nights I spent my practice time hunting for what to practise. So I pull
 trusted into one place, put them in an order that builds slowly, and made it something I can open
 and just start.
 
-![Placeholder: a picture of your own goes here](images/placeholder-desk.webp)
+![A quiet practice desk with a microphone, notebook and water beside a sunlit window](images/practice-corner.png)
 
 ## Where I'm at
 
@@ -123,7 +140,23 @@ be personal references: replay a short version you like, then compare the next t
 If you cannot hear what a cue means, it is fine to stay with an easy exercise or ask a voice
 professional for help. Bigger movements and higher numbers are not a substitute for understanding.
 
-![Placeholder: another picture of your own](images/placeholder-window.webp)
+### Give each listen one question
+
+Before pressing play, choose what you want to notice. You do not have to judge the whole voice.
+
+- **Pitch:** does this phrase sound higher or lower than your other take?
+- **Resonance:** does the same vowel sound brighter or darker? Keep the pitch, loudness and mic
+  position similar so the comparison is easier to hear.
+- **Weight:** does it sound lighter or heavier, while the words stay clear? Lilt does not measure
+  weight; a higher pitch reading cannot answer this question for you.
+- **Everyday speech:** can you carry the cue into a greeting and still sound like yourself?
+
+If you cannot hear a difference, replay a short part of the demonstration or compare just one
+word. "Not sure yet" is useful information. You can return to a familiar exercise instead of
+trying harder. If a cue works on a sound but disappears in a sentence, use one word, then a short
+phrase. Change one thing at a time, and keep comfort ahead of the result.
+
+![Headphones and a small audio player beside an open notebook and a glass of water](images/listening-nook.png)
 
 ## Be gentle with your voice
 
@@ -176,7 +209,7 @@ If you've already found your voice, or you coach or teach this, I'd love your he
 is a plain Markdown file, so you can fix an exercise, add a chapter or tell me where I've got it
 wrong without writing any code. Contributions are welcome on [GitHub](https://github.com/G9000/lilt).
 
-![Placeholder: one more picture](images/placeholder-cat.webp)
+![A tuxedo cat asleep on a sage cushion beside a closed practice notebook](images/resting-cat.png)
 
 ## Sources
 
