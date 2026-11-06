@@ -59,30 +59,29 @@ function SoundsChoice() {
 
 type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy" | "backups" | "updates" | "storage";
 
-/** Each pane: its sidebar icon (a white glyph on a coloured tile, as in System Settings) and words to search by. */
-const PANES: { id: PaneId; title: string; words: string; tile: string; glyph: ReactNode }[] = [
-  { id: "appearance", title: "Appearance", words: "theme dark light mode accent color colour picker orange text size font bigger smaller sound sounds audio chime quiet", tile: "#4a4a55,#1f1f26",
+/** Each pane: its sidebar icon and words to search by. */
+const PANES: { id: PaneId; title: string; words: string; glyph: ReactNode }[] = [
+  { id: "appearance", title: "Appearance", words: "theme dark light mode accent color colour picker orange text size font bigger smaller sound sounds audio chime quiet",
     glyph: <><circle cx="10" cy="10" r="6" /><path d="M10 4a6 6 0 0 1 0 12z" fill="currentColor" stroke="none" /></> },
-  { id: "ai", title: "AI connections", words: "ai claude chatgpt mcp connect agent assistant desktop code tunnel", tile: "#f59a6c,#e0643c",
+  { id: "ai", title: "AI connections", words: "ai claude chatgpt mcp connect agent assistant desktop code tunnel",
     glyph: <path d="M10 3l1.5 4 4 1.5-4 1.5L10 14l-1.5-4-4-1.5 4-1.5zM15 13l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="currentColor" stroke="none" /> },
-  { id: "notifications", title: "Notifications", words: "notification notifications alert bell browser reminder", tile: "#ff7171,#e5484d",
+  { id: "notifications", title: "Notifications", words: "notification notifications alert bell browser reminder",
     glyph: <path d="M6 13.5V9a4 4 0 0 1 8 0v4.5l1 1.2H5zM8.6 16.2a1.6 1.6 0 0 0 2.8 0" /> },
-  { id: "time", title: "Date & time", words: "time zone timezone date clock", tile: "#8f9bb0,#56627a",
+  { id: "time", title: "Date & time", words: "time zone timezone date clock",
     glyph: <><circle cx="10" cy="10" r="6.5" /><path d="M10 6.5V10l2.5 1.6" /></> },
-  { id: "privacy", title: "Privacy", words: "privacy data processing cloud local", tile: "#62a8ff,#2f6fe4",
+  { id: "privacy", title: "Privacy", words: "privacy data processing cloud local",
     glyph: <path d="M10 3.5l5.5 2v4c0 3.4-2.3 6-5.5 7-3.2-1-5.5-3.6-5.5-7v-4z" /> },
-  { id: "updates", title: "Updates", words: "updates version download install restart mac desktop", tile: "#8f9bb0,#56627a",
+  { id: "updates", title: "Updates", words: "updates version download install restart mac desktop",
     glyph: <><path d="M15.6 7A6 6 0 1 0 16 11M15.6 3.5V7H12" /><path d="M10 13V7m-2 2 2-2 2 2" /></> },
-  { id: "backups", title: "Backup & restore", words: "backup restore data export import zip recovery copy recordings", tile: "#8f9bb0,#56627a",
+  { id: "backups", title: "Backup & restore", words: "backup restore data export import zip recovery copy recordings",
     glyph: <><path d="M4 8h12v8H4zM3 4h14v4H3zM8 11h4" /></> },
-  { id: "storage", title: "Storage", words: "storage space size disk files folder recordings photos backups", tile: "#8f9bb0,#56627a",
+  { id: "storage", title: "Storage", words: "storage space size disk files folder recordings photos backups",
     glyph: <><path d="M5 4h10l2 8v4H3v-4zM3 12h14M6 14h.01M9 14h.01" /></> },
 ];
 
 function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number }) {
-  const [a, b] = pane.tile.split(",");
   return (
-    <span className="sx-tile" style={{ width: size, height: size, background: `linear-gradient(180deg, ${a}, ${b})` }} aria-hidden="true">
+    <span className="sx-tile" style={{ width: size, height: size }} aria-hidden="true">
       <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{pane.glyph}</svg>
     </span>
   );
@@ -161,7 +160,7 @@ function AppUpdates() {
 }
 
 /**
- * Settings, laid out like System Settings: categories with coloured icons in a sidebar (with
+ * Settings: categories with quiet line icons in a sidebar (with
  * search), one pane at a time on the right, changes saved as you make them. On a narrow screen the
  * categories are a list and a pane opens over it, with a back button.
  */
@@ -254,11 +253,11 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
               <button className="sx-back" onClick={() => setPane(null)} aria-label="All settings">
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
-              <h2>{cur.title}</h2>
+              <h2>Settings</h2>
               <span className={`sx-saved ${saved}`} aria-live="polite">{savedLabel(saved)}</span>
             </header>
             <div className="sx-body" key={cur.id}>
-              <div className="sx-hero"><Tile pane={cur} size={56} /><div><b>{cur.title}</b><p>{HERO[cur.id]}</p></div></div>
+              <header className="sx-hero"><h1>{cur.title}</h1><p>{HERO[cur.id]}</p></header>
               {content(cur.id)}
               {err && <Callout kind="warn"><p>{err}</p></Callout>}
             </div>

@@ -2,7 +2,6 @@ import "../styles/deck.css";
 import "../styles/voice.css";
 import "../styles/editor.css";
 import "../styles/stationery-deck.css";
-import { DeckIllustration } from "../components/DeckIllustration";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
@@ -1071,7 +1070,7 @@ function StartCard() {
         <svg viewBox="0 0 16 16"><rect x="5.5" y="1.8" width="5" height="8.4" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.4" /><path d="M3.3 7.6a4.7 4.7 0 009.4 0M8 12.3v2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
       </span>
       <p><b>First time here?</b> Record one line in your everyday voice. It becomes your starting point, so later you can hear how far you've come.</p>
-      <button className="ve-start-go" onClick={() => go("/studio/start")}>Find my starting voice</button>
+      <button className="btn-primary" onClick={() => go("/studio/start")}>Find my starting voice</button>
     </section>
   );
 }
@@ -1096,18 +1095,18 @@ function thenAndNow(history: Take[]): [Take, Take] | null {
 function NextStep({ deck, texts, practised }: { deck: Deck | null; texts: Texts; practised: Set<string> }) {
   if (!deck) return null;
   const left = deck.items.filter((i) => !i.done_today);
-  if (deck.paused) return <div className="ve-next"><p><b>Resting today.</b> Your cards are paused until your voice feels ready.</p><button className="ve-next-go quiet" onClick={() => go("/deck")}>Open Today</button></div>;
+  if (deck.paused) return <div className="ve-next"><p><b>Resting today.</b> Your cards are paused until your voice feels ready.</p><button className="btn-secondary" onClick={() => go("/deck")}>Open Today</button></div>;
   if (left.length) return (
     <div className="ve-next">
       <p><b>Today: {left.length} card{left.length === 1 ? "" : "s"}</b>, about {Math.max(1, left.length)} min</p>
-      <button className="ve-next-go" onClick={() => go(`/deck?card=${encodeURIComponent(left[0].card.id)}`)}>Start today's cards</button>
+      <button className="btn-primary" onClick={() => go(`/deck?card=${encodeURIComponent(left[0].card.id)}`)}>Start today's cards</button>
     </div>
   );
   const chapter = nextChapter(texts, practised);
   return (
     <div className="ve-next">
       <p><b>Today's cards are done.</b> Anything more is a bonus{chapter ? <>, like the next text in {chapter.title}</> : null}.</p>
-      {chapter && <button className="ve-next-go quiet" onClick={() => go(`/studio/${chapter.id}`)}>Open {chapter.title}</button>}
+      {chapter && <button className="btn-secondary" onClick={() => go(`/studio/${chapter.id}`)}>Open {chapter.title}</button>}
     </div>
   );
 }
@@ -1166,12 +1165,12 @@ function StartDoc({ profile, onProfile, onRecording, onTake }: {
       {range && (saved ? (
         <div className="ve-start-done">
           <p><b>You're all set.</b> Your comfortable range is {range[0]}–{range[1]} Hz for now, and this take is your Day 1. Once you find your note in the Pitch chapter, move the range up to match in Practice settings.</p>
-          <div><button className="ve-start-go" onClick={() => go("/studio/start-here")}>Next: Start here</button><button className="ve-link" onClick={() => go("/deck")}>Start today's cards</button></div>
+          <div><button className="btn-primary" onClick={() => go("/studio/start-here")}>Next: Start here</button><button className="ve-link" onClick={() => go("/deck")}>Start today's cards</button></div>
         </div>
       ) : (
         <div className="ve-start-done">
           <p>Right now you speak at about <b>{range[0]}–{range[1]} Hz</b>. Lilt can shade this behind your pitch line as your comfortable range for now. When you find your note in the Pitch chapter, you'll move it up.</p>
-          <div><button className="ve-start-go" onClick={() => void save()}>Use it for now</button><span className="ve-small">You can record it again first, if you like.</span></div>
+          <div><button className="btn-primary" onClick={() => void save()}>Use it for now</button><span className="ve-small">You can record it again first, if you like.</span></div>
         </div>
       ))}
     </>
@@ -1498,7 +1497,7 @@ function BeforeAfter({ take, item, onDone, onAgain, onHurt }: { take: Take; item
         </div>
       ))}
       <div className="ve-rate-more">
-        <button className="ve-next-go" onClick={() => void save()} disabled={busy}>Save and carry on</button>
+        <button className="btn-primary" onClick={() => void save()} disabled={busy}>Save and carry on</button>
         {first && <button className="ve-ghost" onClick={() => go(`/compare?a=${first.id}&b=${take.id}`)}>Detailed comparison</button>}
         <button className="ve-pill" onClick={onAgain} disabled={busy}>Record it again</button>
         <button className="ve-pill ouch" onClick={onHurt} disabled={busy}>{HURT}</button>
@@ -1668,7 +1667,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
     <div className="prc ve-result" onClick={(e) => e.stopPropagation()} key={`r-${phase.take.id}`}>
       <p className="ve-ba-l">Here's what the pitch did. Did it match what you heard?</p>
       <Measures key={phase.take.id} take={phase.take} band={band} card={item?.card} onUseRange={onUseRange} onMeasured={(m: Measured) => setMeasured((x) => ({ ...x, [phase.take.id]: m.median }))} />
-      <div className="ve-rate-more"><button className="ve-next-go" onClick={() => advance(phase.q)}>Next card</button></div>
+      <div className="ve-rate-more"><button className="btn-primary" onClick={() => advance(phase.q)}>Next card</button></div>
     </div>
   ) : phase.k === "rate" && item.kind === "before_after" ? (
     <BeforeAfter key={phase.take.id} take={phase.take} item={item} onDone={beforeAfterDone} onAgain={() => setPhase({ k: "say", retryOf: phase.take.id })} onHurt={ouchNow} />
@@ -1721,7 +1720,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               <div className="ve-endbox">
                 <p className="ve-small">When speaking feels easy again, pick up where you left off. The paused card comes back gently.</p>
                 <div className="ve-rate-more">
-                  <button className="ve-next-go" onClick={resume}>I feel fine, resume</button>
+                  <button className="btn-primary" onClick={resume}>I feel fine, resume</button>
                   <button className="ve-ghost" onClick={() => go("/")}>Back to the room</button>
                 </div>
               </div>
@@ -1756,7 +1755,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               return (
                 <li key={`q-${j}-${it.card.id}`} ref={curRef} tabIndex={-1} aria-label={`Current card: ${it.card.front}`} className="ve-item on sd-current">
                   <DeckCat mode={catMode} say={recOn ? catSay : null} />
-                  <div className="sd-card-top"><span>Card {doneCount + 1} of {total}</span><DeckIllustration kind={it.kind === "warmup" || it.kind === "cooldown" ? "tea" : it.card.text_kind === "passage" || it.kind === "before_after" ? "book" : "mic"} /></div>
+                  <div className="sd-card-top"><span>Card {doneCount + 1} of {total}</span></div>
                   <p className="ve-kind">{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{kindTag(it) && <span className="ve-tag next">{kindTag(it)}</span>}
                     {it.eyes_off && <span className="ve-tag">Eyes off</span>}
                     {!chosen && k === 0 && phase.k === "say" && <span className="ve-tag start">Start here</span>}</p>

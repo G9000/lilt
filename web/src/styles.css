@@ -39,6 +39,21 @@
   --band: rgba(var(--accent-rgb), 0.12);
   --radius: 18px;
   --radius-sm: 12px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --type-title: clamp(28px, 3vw, 34px);
+  --type-section: 18px;
+  --type-body: 15px;
+  --type-caption: 13px;
+  --type-control: 14px;
+  --control-height: 44px;
+  --content-width: 792px;
+  --page-padding: clamp(18px, 4vw, 40px);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --font: "Geist Variable", -apple-system, "SF Pro Text", system-ui, sans-serif;
   --mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
@@ -113,6 +128,7 @@ kbd { font: 500 0.72em var(--mono); border: 1px solid currentColor; border-radiu
 button, .btn { font: inherit; font-weight: 600; cursor: pointer; border-radius: var(--radius-sm); border: 1px solid transparent; padding: 9px 16px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: inherit; background: none; transition: transform 0.12s var(--ease), background-color 0.15s, border-color 0.15s, opacity 0.15s; }
 button:disabled { opacity: 0.42; cursor: not-allowed; }
 button:active:not(:disabled), .btn:active { transform: scale(0.97); }
+.btn-primary, .btn-secondary, .btn-ghost, .btn-danger { min-height: var(--control-height); padding: 10px 16px; border-radius: var(--radius-sm); font-size: var(--type-control); line-height: 1.4; }
 .btn-primary { background: var(--ink); color: var(--page); }
 .btn-primary:hover:not(:disabled) { opacity: 0.88; }
 .btn-big { padding: 12px 22px; min-height: 48px; }
@@ -133,7 +149,7 @@ button:active:not(:disabled), .btn:active { transform: scale(0.97); }
 .rec-btn:active:not(:disabled) { transform: scale(0.94); }
 .rec-ring { display: none; }
 
-input[type="text"], input[type="url"], input[type="time"], input[type="number"], input[type="search"], select, textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 12px; min-height: 42px; width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
+input[type="text"], input[type="url"], input[type="time"], input[type="number"], input[type="search"], select, textarea { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 10px 12px; min-height: var(--control-height); width: 100%; transition: border-color 0.15s, box-shadow 0.15s; }
 textarea { min-height: 84px; resize: vertical; }
 input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none; }
 label { font-weight: 600; display: block; margin-bottom: 6px; }
@@ -148,7 +164,7 @@ legend { font-weight: 600; margin-bottom: 10px; padding: 0; }
 .choice input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
 .segmented { display: inline-flex; gap: 2px; flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: none; padding: 3px; border-radius: 12px; background: var(--fill); }
 .segmented::-webkit-scrollbar { display: none; }
-.segmented button { white-space: nowrap; flex: none; min-height: 32px; padding: 4px 12px; border-radius: 9px; font: 500 0.87rem var(--font); color: var(--ink-2); }
+.segmented button { white-space: nowrap; flex: none; min-height: calc(var(--control-height) - 6px); padding: 6px 12px; border-radius: 9px; font: 500 var(--type-control) var(--font); color: var(--ink-2); }
 .segmented button:hover { color: var(--ink); }
 .segmented button[aria-pressed="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
 

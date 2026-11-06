@@ -1,9 +1,9 @@
 /* Daily reviews only: one paper card, with its controls in the same place. */
-.ve .sd-page { --sd-paper: #fffaf0; --sd-edge: #e9e0cf; --sd-line: #766951; --sd-sage: #a9b29a; --sd-clay: #c58968; background: color-mix(in srgb, var(--ve-glass-hi) 90%, #d4c8b3); }
-:root[data-theme="dark"] .ve .sd-page { --sd-paper: #292b29; --sd-edge: #393d37; --sd-line: #c5b89d; --sd-sage: #849680; --sd-clay: #ce9578; background: var(--ve-glass-hi); }
-.ve .sd-deck { max-width: 920px; padding: 36px 48px 70px; }
+.ve .sd-page { --sd-paper: #fffaf0; --sd-edge: #e9e0cf; --sd-line: #766951; --sd-sage: #a9b29a; --sd-clay: #c58968; background: var(--page); }
+:root[data-theme="dark"] .ve .sd-page { --sd-paper: #292b29; --sd-edge: #393d37; --sd-line: #c5b89d; --sd-sage: #849680; --sd-clay: #ce9578; }
+.ve .sd-deck { max-width: 920px; padding: var(--space-8) var(--page-padding) 64px; }
 .sd-heading { display: grid; grid-template-columns: 1fr auto; gap: 4px 24px; align-items: baseline; margin-bottom: 18px; }
-.ve .sd-heading h1 { grid-column: 1; font: 500 36px/1.15 var(--read); margin: 0; }
+.ve .sd-heading h1 { grid-column: 1; font: 600 var(--type-title)/1.15 var(--font); letter-spacing: -0.035em; margin: 0; }
 .sd-heading .ve-subtitle { grid-column: 1; font-size: 14px; font-weight: 400; }
 .sd-heading .ve-meta { grid-column: 2; grid-row: 1 / 3; align-self: center; margin: 0; }
 .ve .sd-help, .ve .sd-tips, .ve .sd-upcoming, .ve .sd-completed { background: none; border-radius: 0; margin: 0; }
@@ -14,9 +14,8 @@
 .sd-deck > .ve-items:has(.sd-current)::before, .sd-deck > .ve-items:has(.sd-current)::after { content: ""; position: absolute; inset: 16px 12px -8px; z-index: -1; border: 1px solid var(--hair); border-radius: 20px; background: var(--sd-edge); pointer-events: none; }
 .sd-deck > .ve-items:has(.sd-current)::before { inset: 24px 24px -15px; }
 .ve .sd-current { margin: 0; padding: 28px 36px 30px; border-radius: 20px; background-color: var(--sd-paper); background-image: radial-gradient(color-mix(in srgb, var(--sd-line) 7%, transparent) .5px, transparent .7px); background-size: 5px 5px; box-shadow: 0 0 0 1px var(--hair), 0 12px 30px -22px rgba(48,40,26,.35); outline: none; animation: sd-settle .24s ease-out; }
-.sd-card-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; min-height: 66px; }
+.sd-card-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; min-height: 24px; }
 .sd-card-top > span { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.sd-illustration { width: 74px; height: 74px; flex: none; color: var(--sd-line); }
 .sd-current .ve-kind { flex-wrap: wrap; color: var(--ink-2); margin-bottom: 14px; }
 .ve .sd-current .readtext { font-size: clamp(28px, 2.6vw, 38px); line-height: 1.4; }
 .ve .sd-current .readtext.passage { font-size: 23px; line-height: 1.65; }
@@ -54,11 +53,8 @@
 @media (max-width: 700px) {
   .ve .sd-deck { padding: 24px 18px 50px; }
   .sd-heading { gap: 6px; grid-template-columns: 1fr; }
-  .ve .sd-heading h1 { font-size: 30px; }
   .sd-heading .ve-meta { grid-column: 1; grid-row: auto; }
   .ve .sd-current { padding: 18px 20px 22px; }
-  .sd-illustration { width: 58px; height: 58px; }
-  .sd-card-top { min-height: 58px; }
   .ve .sd-current .readtext { font-size: 29px; }
   .ve .sd-current .readtext.passage { font-size: 21px; }
   .sd-controls .ve-rate { grid-template-columns: repeat(2, minmax(0,1fr)); }

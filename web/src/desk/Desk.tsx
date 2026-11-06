@@ -2,7 +2,7 @@ import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
 import { go } from "../App";
 import { Icon } from "../components/bits";
-import { CAT_URL, currentLight, Light, roomUrl } from "../room/scene";
+import { currentLight, type Light, roomUrl } from "../room/scene";
 import { RoomAppearance } from '../room/RoomAppearance';
 import { MusicMini, MusicWindow } from "./Music";
 import { openMusic } from "./musicState";
@@ -87,7 +87,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
       </header>
 
       <section className="ds-widgets ds-boot" aria-label="Widgets">
-        <TodayWidget deck={deck} light={light} reload={() => void loadDeck()} />
+        <TodayWidget deck={deck} reload={() => void loadDeck()} />
       </section>
 
       {win && (
@@ -128,9 +128,9 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
   );
 }
 
-const KIND: Record<string, string> = { daily: "up next", new: "new", review: "review", again: "again" };
+const KIND: Record<string, string> = { warmup: "warm-up", daily: "daily", before_after: "reference", new: "new", review: "review", again: "again", cooldown: "cool-down" };
 
-function TodayWidget({ deck, light, reload }: { deck: Deck | null; light: Light; reload: () => void }) {
+function TodayWidget({ deck, reload }: { deck: Deck | null; reload: () => void }) {
   const left = deck ? deck.items.filter((i) => !i.done_today) : [];
   const done = !!deck && (deck.all_done || left.length === 0);
   const minutes = Math.max(1, left.length);
@@ -138,11 +138,6 @@ function TodayWidget({ deck, light, reload }: { deck: Deck | null; light: Light;
   const learned = deck?.total_cards ? (deck.learned ?? 0) / deck.total_cards : 0;
   return (
     <article className="ds-w ds-today" aria-label="Today's practice">
-      <div className="ds-cat" aria-hidden="true">
-        <img className="body" src={CAT_URL} alt="" />
-      </div>
-      <div className="ds-t-img" style={{ backgroundImage: `url(${roomUrl(light)})` }} />
-      <svg className="ds-t-shape" viewBox="0 0 348 260" preserveAspectRatio="none" aria-hidden="true"><path d="M0 16 Q0 0 16 0 L176 0 Q188 0 197 8 L214 24 Q222 31 234 31 L332 31 Q348 31 348 47 L348 260 L0 260 Z" /></svg>
       <div className="ds-t-body">
         <h2 className="ds-t-title">{deck?.paused ? "Resting today" : "Today's practice"}</h2>
         {!deck ? <p className="ds-t-min">Getting your cards…</p> : deck.paused ? (
@@ -164,9 +159,9 @@ function TodayWidget({ deck, light, reload }: { deck: Deck | null; light: Light;
         )}
         <a className="ds-t-link" href="#/guided">Guided session with feedback</a>
         <div className="ds-t-foot">
-          {deck?.paused ? <button className="ds-t-go" onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
-            : done ? <button className="ds-t-go" onClick={() => go("/studio")}>Free practice</button>
-            : <button className="ds-t-go" onClick={() => go("/deck")} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
+          {deck?.paused ? <button className="btn-primary" onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
+            : done ? <button className="btn-primary" onClick={() => go("/studio")}>Free practice</button>
+            : <button className="btn-primary" onClick={() => go("/deck")} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
           <span className="ds-t-stage">Stage {deck?.open_stage ?? 1} of {stages}<span className="ds-t-bar"><i style={{ width: `${Math.max(4, learned * 100)}%` }} /></span></span>
         </div>
       </div>

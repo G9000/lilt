@@ -201,8 +201,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    by default, `new_cards_per_day` in the profile). **Start** opens the Practice window: say the
    line, listen back, then rate how it felt: **Again** (later today), **Hard**, **Good** or
    **Easy**. Each button shows when the card will come back (keys 1–4 work too).
-   - **One card at a time:** ivory paper by day, charcoal at night, with a small microphone,
-     book or tea illustration. Reading tips and **How to practise** open when you need them.
+   - **One card at a time:** ivory paper by day, charcoal at night, with the exercise and card
+     position leading. Reading tips and **How to practise** open when you need them.
      **Up next** lets you choose another card before recording; **Practised today** holds
      your completed cards. Record, listen and review stay together below the prompt. Cards
      settle gently into view, with motion disabled when you prefer reduced motion.

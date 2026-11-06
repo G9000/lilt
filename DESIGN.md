@@ -111,13 +111,13 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
   the sidebar, like a Mac app). **A new voice starts** at `#/studio/start`: read the reference line once in your everyday voice;
   Lilt offers that take's range as your comfortable range and keeps it as Day 1. Under Home's welcome
-  and opening paragraph sits a quiet callout (a `--fill` panel, no shadow): "First time here?" with a
-  mic icon and a "Find my starting voice →" link until a range is set; after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
+  and opening paragraph sits a quiet callout (a `--panel` surface with a hairline): "First time here?" with a
+  mic icon and a "Find my starting voice" primary button until a range is set; after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
   button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots,
   and **Then and now** (your first and latest take of the same text, the reference line first).
   **Today** opens **Your daily deck** with one active stationery card: ivory paper in light mode,
-  charcoal in dark, subtle grain and two decorative paper edges. A small drawn mic, tea or book
-  sits opposite the card position, and the room's cat (92px) dozes on the card's top edge: it
+  charcoal in dark, subtle grain and two decorative paper edges. The card position sits above
+  the exercise, and the room's cat (92px) dozes on the card's top edge: it
   breathes faster and shows one small paper bubble while recording, and a pink heart rises once
   when you stop. Finished cards stack as a tiny tilted pile beside the count. The end of the deck
   is a slightly tilted paper slip: the date, one italic serif sentence and the cards by chapter,
@@ -239,14 +239,14 @@ one inside it, with no label. It, the
 settings button in the room's and the desk's menu bars, and old `#/settings` links open **Settings,
 its own window** over the room or the desk (up to 1080px wide, filling the height under the menu bar,
 the world dimmed behind it), laid out like System Settings: a sidebar on `--fill` with the traffic
-lights (red closes), a Search field, and the categories, each a coloured rounded tile with a white
-glyph (Appearance graphite, AI connections coral, Notifications red, Date & time slate, Privacy
-blue). That window is for Lilt as a whole; each app keeps its own settings inside it, as Mac apps do.
+lights (red closes), a Search field, and categories with quiet line icons. The selected category
+uses the soft accent color. That window is for Lilt as a whole; each app keeps its own settings
+inside it, as Mac apps do.
 **Practice settings** (`#/studio/settings`, the sidebar's foot with the Settings icon, a Settings chip on
 phones, or ⌘,) is a page in Practice: a big "Practice settings" title with "Saved", then Your goal,
 Routine (session length, reminder, comparison window) and Comfortable range as grouped rows; it
 saves as you go, the open one on `--accent`. The pane on `--page` has a
-toolbar title and "Saving… / Saved", then a large tile, the pane's name and one line on what it's
+"Settings" toolbar title and "Saving… / Saved", then the pane's name and one line on what it's
 for, then grouped rows on `--panel` (label and help left, control right; choices like Theme and Text
 size full width under their label). Changes save as you make them; there is no Save button. On a
 phone the categories are a list, and a pane opens over it with a back arrow. Escape or a click
@@ -341,13 +341,15 @@ they remain readable over the detailed painting. Prompts and provenance are in `
 
 Text size (Settings → Appearance, kept in this browser as `lilt.text`) scales the reading areas as a whole with CSS `zoom` (0.92, 1, 1.12, 1.25): the Practice page column, the windows' contents and the Settings sheet, so their proportions hold. The Practice frame, sidebar, recorder and the room stay at their size.
 
-Practice uses one scale (web/src/styles/editor.css): captions 12, small 13, secondary 14, body 15,
-lead and small headings 17, section headings 21 and 24, page titles 44 (34 on phones); weights 400,
-500, 600 and 700 only (200 and 300 for the big live numbers). The reading serif keeps its own sizes.
+Settings, Course Home and Today share tokens in `web/src/styles.css`: page titles 28–34px / 600,
+section headings 18px, body 15px, controls 14px and captions 13px. Help text uses `--ink-2`.
+Weights are 400, 500, 600 and 700 (200 and 300 for big live numbers). The reading serif keeps its
+own sizes. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
 
-
-Window title 28–32px / 600 / -0.035em. Section 17–18px / 600. Body 15px. Small 13px. Caption 12px
-in `--ink-3`. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
+Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Reading pages use a centered 792px column with
+18–40px responsive side padding; the daily recording deck retains its 920px column. Reading
+surfaces are opaque `--page` so room artwork does not compete with the text. Course Home's
+shortcuts are quiet links, and its guide is a disclosure between hairlines.
 
 ## Components
 

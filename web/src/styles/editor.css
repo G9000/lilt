@@ -1,15 +1,15 @@
 @import "@fontsource-variable/newsreader";
 
 /* Direct routes stay above the long course introduction, with room for touch and keyboard focus. */
-.ve-course-jumps { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 32px; }
-.ve .ve-course-jumps a, .ve .ve-course-jumps button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 1px solid var(--hair); border-radius: 12px; background: var(--fill); color: var(--ink); font: inherit; font-size: 14px; text-decoration: none; }
-.ve .ve-course-jumps a:hover, .ve .ve-course-jumps button:hover { background: var(--fill-2); }
+.ve-course-jumps { display: flex; flex-wrap: wrap; gap: 0 var(--space-6); margin: var(--space-4) 0 var(--space-8); }
+.ve .ve-course-jumps a, .ve .ve-course-jumps button { display: inline-flex; align-items: center; gap: 8px; min-height: var(--control-height); padding: 8px 0; border: 0; border-radius: 4px; background: none; color: var(--ink-2); font: inherit; font-size: var(--type-control); text-decoration: none; }
+.ve .ve-course-jumps a:hover, .ve .ve-course-jumps button:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
 .ve-course-jumps a:focus-visible, .ve-course-jumps button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 #voice-chapters { scroll-margin-top: 24px; }
-.ve-course-guide { margin: 24px 0 32px; background: var(--ve-card); border: 1px solid var(--hair); border-radius: 14px; }
-.ve-course-guide > summary { flex-wrap: wrap; min-height: 52px; padding: 14px 18px; font-size: 15px; font-weight: 600; }
+.ve-course-guide { margin: var(--space-6) 0 var(--space-8); background: none; border: 0; border-block: 1px solid var(--hair); border-radius: 0; }
+.ve-course-guide > summary { flex-wrap: wrap; min-height: 56px; padding: var(--space-4) 0; font-size: var(--type-body); font-weight: 600; }
 .ve-course-guide > summary span { margin-inline-start: auto; color: var(--ink-2); font-size: 13px; font-weight: 400; }
-.ve-course-guide > .md { padding: 8px 20px 24px; }
+.ve-course-guide > .md { padding: 8px 0 24px; }
 
 /* Practice as one frosted sheet over the blurred room, edge to edge: chapters, the chapter as a
    document, and the recorder (beside the text on wide screens, under it otherwise), split by hairlines. */
@@ -27,8 +27,8 @@
 .ve-side, .ve-page, .ve-dock { background: var(--ve-glass); }
 /* the sidebar is the most solid layer: a clear surface to read the tree from, the room only a hint */
 .ve-side { border-right: 1px solid var(--hair); background: var(--ve-glass-side); }
-.ve-page { background: var(--ve-glass-hi); }
-.ve button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; padding: 0; min-height: 0; box-shadow: none; }
+.ve-page { background: var(--page); }
+.ve button:where(:not(.btn-primary, .btn-secondary, .btn-ghost, .btn-danger)) { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; padding: 0; min-height: 0; box-shadow: none; }
 .ve button:disabled { cursor: default; opacity: 0.45; }
 .ve kbd { font: 500 12px var(--mono); border: 1px solid var(--hair); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; color: var(--ink-2); background: none; }
 
@@ -162,11 +162,11 @@
 .ve-doc { min-width: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
 .ve-chips { display: none; }
 .ve-page { grid-row: 2; overflow: auto; scroll-behavior: smooth; scrollbar-width: thin; }
-.ve-col { width: 100%; min-width: 0; max-width: 792px; margin: 0 auto; padding: 48px 48px 80px; overflow-wrap: anywhere; }
+.ve-col { width: 100%; min-width: 0; max-width: var(--content-width); margin: 0 auto; padding: var(--space-8) var(--page-padding) 64px; overflow-wrap: anywhere; }
 .ve-mk { position: absolute; left: -40px; width: 24px; text-align: right; font: 500 13px/1 var(--font); font-variant-numeric: tabular-nums; color: var(--ve-mk); user-select: none; }
 .ve-mk svg { width: 16px; height: 16px; display: inline-block; }
 .ve-head { margin: 0 0 28px; }
-.ve-head h1 { font: 700 clamp(30px, 3.4vw, 42px)/1.15 var(--font); letter-spacing: -0.035em; margin: 0 0 12px; outline: none; text-wrap: pretty; }
+.ve-head h1 { font: 600 var(--type-title)/1.15 var(--font); letter-spacing: -0.035em; margin: 0 0 var(--space-2); outline: none; text-wrap: pretty; }
 /* chapter complete: a medal and a line, popping in when it is earned on this visit */
 .ve-award { display: flex; align-items: center; gap: 14px; margin: 20px 0 0; padding: 14px 18px 14px 14px; border-radius: 16px; background: var(--accent-soft); color: var(--ink-2); font-size: 14px; line-height: 1.45; }
 .ve-award b { display: block; color: var(--accent-ink); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
@@ -418,11 +418,11 @@
 
 /* Course home: a readable introduction and the generated chapter catalog. */
 /* a Notion-style cover across the whole page, then the note */
-.ve-cover { height: clamp(150px, 26vh, 280px); background-size: cover; background-position: center 40%; }
-.ve-col.ve-home-col { padding-top: 40px; }
+.ve-cover { height: clamp(128px, 19vh, 190px); background-size: cover; background-position: center 40%; }
+.ve-col.ve-home-col { padding-top: var(--space-8); }
 .ve-md { max-width: 68ch; }
 .ve-md:not(.md) { color: var(--ink-2); font-size: 16px; line-height: 1.7; }
-.ve-md:not(.md) > h2 { margin: 40px 0 16px; font-size: 25px; color: var(--ink); }
+.ve-md:not(.md) > h2 { margin: var(--space-8) 0 var(--space-4); font-size: var(--type-section); color: var(--ink); }
 .ve-md + .ve-md { margin-top: 8px; }
 .ve-start-card + .ve-md, .ve-practice + .ve-md { margin-top: 40px; }
 .ve-chapters { list-style: none; padding: 0 !important; margin: 0 0 40px; display: grid; gap: 2px; }
@@ -443,31 +443,24 @@
 .ve-chapters .ve-tag { font-size: 11.5px; letter-spacing: 0; }
 .ve-chapters a.next .n { background: var(--accent); color: var(--accent-on); }
 @media (hover: hover) and (pointer: fine) {
-  .ve .ve-start-card .ve-start-go:hover::after { transform: translate(3px, -1px) rotate(45deg); }
   .ve-chapters a:hover { background: var(--fill); }
   .ve .ve-home:hover:not([aria-current]) { background: var(--fill); }
 }
 
 /* Home's top: "start here" for a new voice, then your practice so far */
 /* a quiet note in the page, like a Notion callout: where you are, under the welcome */
-.ve-start-card, .ve-practice { max-width: 64ch; margin: 24px 0 8px; padding: 16px 18px; border-radius: 14px; background: var(--fill); }
+.ve-start-card, .ve-practice { max-width: none; margin: var(--space-6) 0 var(--space-2); padding: var(--space-6); border: 1px solid var(--hair); border-radius: var(--radius); background: var(--panel); }
 .ve-start-card { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 4px 14px; }
 .ve-start-card .ic { grid-row: 1 / 3; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); }
 .ve-start-card .ic svg { width: 16px; height: 16px; }
 .ve-start-card p { margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink-2); }
 .ve-start-card b { color: var(--ink); font-weight: 600; }
-.ve .ve-start-card .ve-start-go { justify-self: start; height: auto; margin-top: 6px; padding: 0; border-radius: 0; background: none; color: var(--accent-ink); font-size: 14px; font-weight: 600; }
-.ve .ve-start-card .ve-start-go::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 7px; border-top: 1.6px solid currentColor; border-right: 1.6px solid currentColor; transform: translateY(-1px) rotate(45deg); transition: transform 0.15s var(--ease); }
-.ve .ve-start-go { flex: none; height: 42px; padding: 0 18px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform 0.16s var(--ease), background-color 0.15s ease; }
-.ve .ve-start-go:active { transform: scale(0.97); }
+.ve-start-card .btn-primary { justify-self: start; margin-top: var(--space-3); }
 .ve-practice { display: grid; gap: 18px; }
 .ve-next { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; padding-bottom: 16px; border-bottom: 1px solid var(--hair); }
 .ve-next:only-child { padding-bottom: 0; border-bottom: 0; }
 .ve-next p { margin: 0; font-size: 15px; color: var(--ink-2); }
 .ve-next b { color: var(--ink); font-weight: 600; }
-.ve .ve-next-go { height: 38px; padding: 0 16px; border-radius: 99px; background: var(--ink); color: var(--ve-paper); font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform 0.16s var(--ease); }
-.ve .ve-next-go.quiet { background: var(--ve-card); color: var(--ink); box-shadow: 0 0 0 1px var(--hair); }
-.ve .ve-next-go:active { transform: scale(0.97); }
 .ve-days { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .ve-days p { margin: 0; display: grid; }
 .ve-days b { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
