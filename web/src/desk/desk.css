@@ -343,15 +343,27 @@
   box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 18px 36px -18px rgba(0, 0, 0, 0.6); animation: fl-tools-in 0.22s var(--ease, ease-out) both; }
 @keyframes fl-tools-in { from { opacity: 0; translate: -50% -4px; } }
 .fl-note-row { display: flex; align-items: center; gap: 7px; }
-.fl-note-row > span { width: 38px; color: var(--ink-3); }
+.fl-note-row > span { width: 48px; color: var(--ink-3); }
 .fl-swatch { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 999px; cursor: pointer; background: linear-gradient(170deg, var(--sw-top), var(--sw-bottom)); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
 .fl-tape-pick { display: grid; place-items: center; width: 34px; height: 22px; padding: 0; border: 0; border-radius: 6px; cursor: pointer; background: transparent; }
 .fl-tape-pick i { display: block; width: 30px; height: 12px; border-radius: 2px; background: var(--tape); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.15); rotate: -4deg; }
 .fl-tape-pick:hover { background: var(--fill-2); }
 .fl-swatch[aria-pressed="true"], .fl-tape-pick[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
 .fl-swatch:focus-visible, .fl-tape-pick:focus-visible, .fl-note-reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fl-note-foot { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.fl-note-foot:empty { display: none; }
 .fl-note-reset { justify-self: start; padding: 2px 0; border: 0; background: none; color: var(--ink-2); font: inherit; cursor: pointer; }
 .fl-note-reset:hover { color: var(--ink); text-decoration: underline; }
+.fl-note-reset.remove { color: var(--accent-ink); }
+/* handwritten: Caveat, a little larger so it reads like pen on paper */
+.fl-sticky.hand { font: 500 21px/1.12 "Caveat Variable", "Segoe Print", "Bradley Hand", cursive; }
+.fl-sticky.hand .fl-note-hint { font-family: var(--font); }
+.fl-hand-pick { min-height: 0; flex: none; padding: 4px 10px; border: 0; border-radius: 8px; background: var(--fill); color: var(--ink); font: 500 12px/1.2 var(--font); cursor: pointer; }
+.fl-hand-pick.hand { font: 600 16px/1 "Caveat Variable", cursive; }
+.fl-hand-pick:hover { background: var(--fill-2); }
+.fl-hand-pick[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fl-hand-pick:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fl-note-row > span { white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .fl-note-tools { animation: none; } }
 /* the room's radio is the desk's radio, smaller */
 .fl-radio { pointer-events: auto; position: relative; width: 268px; height: 104px; border-radius: 22px; overflow: hidden; color: #fff; display: grid; grid-template-columns: 86px 1fr; align-items: center;

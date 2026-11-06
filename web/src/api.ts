@@ -214,6 +214,8 @@ export interface Profile {
   comfort_range_hz: [number, number] | null;
   new_cards_per_day?: number;
   room_note?: string | null;
+  /** A second sticky note; null when there isn't one. */
+  room_note_2?: string | null;
   /** The Warm-ups text that opens every day's cards (the cool-down closes them); "" for none. */
   warmup_card?: string;
   /** Show the average man/woman pitch scale after each take (off unless turned on; missing means off). */

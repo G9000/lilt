@@ -115,10 +115,12 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
         .into());
     }
     p.session_minutes = p.session_minutes.clamp(2, 30);
-    if let Some(n) = &p.room_note
-        && n.chars().count() > 280
+    if [&p.room_note, &p.room_note_2]
+        .into_iter()
+        .flatten()
+        .any(|n| n.chars().count() > 280)
     {
-        return Err(anyhow::anyhow!("the note can hold up to 280 characters").into());
+        return Err(anyhow::anyhow!("a note can hold up to 280 characters").into());
     }
     if p.warmup_card.len() > 64
         || !p
@@ -167,6 +169,40 @@ mod tests {
         let (_d, app) = app();
         assert!(!app.profile().external_processing);
         const { assert!(!validate::MODEL_PERCEIVED_ENABLED) };
+    }
+
+    /// Both sticky notes are kept with the profile, each up to 280 characters.
+    #[tokio::test]
+    async fn both_room_notes_save_and_stay_short() {
+        use axum::body::Body;
+        use axum::http::{Request, StatusCode};
+        use tower::ServiceExt;
+        let (dir, app) = app();
+        let router = crate::build_router(app.clone(), &config(dir.path()));
+        let put = |second: String| {
+            let mut p = serde_json::to_value(app.profile()).unwrap();
+            p["room_note"] = "Hum first".into();
+            p["room_note_2"] = second.into();
+            let req = Request::builder()
+                .method("PUT")
+                .uri("/api/profile")
+                .header("host", "127.0.0.1:7878")
+                .header("content-type", "application/json")
+                .body(Body::from(p.to_string()))
+                .unwrap();
+            let r = router.clone();
+            async move { r.oneshot(req).await.unwrap().status() }
+        };
+        assert_eq!(put("x".repeat(281)).await, StatusCode::BAD_REQUEST);
+        assert_eq!(
+            app.profile().room_note_2,
+            None,
+            "a refused note changes nothing"
+        );
+        assert_eq!(put("Then hello".into()).await, StatusCode::OK);
+        let p = app.profile();
+        assert_eq!(p.room_note.as_deref(), Some("Hum first"));
+        assert_eq!(p.room_note_2.as_deref(), Some("Then hello"));
     }
 
     /// Every feature's routes are mounted on the one router, behind the cross-origin guard.

@@ -8,7 +8,7 @@ import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
 import { Illustration } from "../components/Illustrations";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
-import { DEFAULT_NOTE, isDefaultNote, NOTE_KEY, NOTE_PAPERS, NOTE_TAPES, NoteStyle, NotePaper, NoteTape, readNoteStyle, resized } from "../room/note-style";
+import { DEFAULT_NOTE, DEFAULT_NOTE_2, isDefaultNote, NOTE_KEY, NOTE_KEY_2, NOTE_PAPERS, NOTE_TAPES, NoteStyle, NotePaper, NoteTape, readNoteStyle, resized } from "../room/note-style";
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
@@ -25,7 +25,7 @@ import { DEFAULT_NOTE, isDefaultNote, NOTE_KEY, NOTE_PAPERS, NOTE_TAPES, NoteSty
 type Spot = { x: number; y: number };
 // Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
 // 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 } };
+const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, note2: { x: 470, y: 420 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -81,19 +81,30 @@ function Widget({ id, delay, label, still, children }: { id: string; delay: numb
 
 const MAX_NOTE = 280;
 
-const loadNoteStyle = (): NoteStyle => { try { return readNoteStyle(localStorage.getItem(NOTE_KEY)); } catch { return DEFAULT_NOTE; } };
-const saveNoteStyle = (s: NoteStyle) => {
-  try { if (isDefaultNote(s)) localStorage.removeItem(NOTE_KEY); else localStorage.setItem(NOTE_KEY, JSON.stringify(s)); } catch { /* private mode: forget on reload */ }
+/** Where each note keeps its look in this browser, and how it looks until you change it. */
+const NOTES = { note: { key: NOTE_KEY, base: DEFAULT_NOTE }, note2: { key: NOTE_KEY_2, base: DEFAULT_NOTE_2 } } as const;
+type NoteId = keyof typeof NOTES;
+const loadNoteStyle = (id: NoteId): NoteStyle => { try { return readNoteStyle(localStorage.getItem(NOTES[id].key), NOTES[id].base); } catch { return NOTES[id].base; } };
+const saveNoteStyle = (id: NoteId, s: NoteStyle) => {
+  const { key, base } = NOTES[id];
+  try { if (isDefaultNote(s, base)) localStorage.removeItem(key); else localStorage.setItem(key, JSON.stringify(s)); } catch { /* private mode: forget on reload */ }
 };
 
 /**
- * The sticky note: click to write on it, click away to keep it. It starts as your goal. While you
- * write, a small tray under it picks its paper and washi tape, and its corner resizes it.
+ * A sticky note: click to write on it, click away to keep it. The first starts as your goal. While
+ * you write, a small tray under it picks its paper, washi tape and writing, and its corner resizes
+ * it. The first note can add a second; the second can be taken down.
  */
-function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) => void; onEditing: (on: boolean) => void }) {
-  const [editing, setEditing] = useState(false);
+function Note({ id, text, onSave, onEditing, startEditing, onAddSecond, onRemove }: {
+  id: NoteId; text: string; onSave: (t: string) => void; onEditing: (on: boolean) => void;
+  /** Open for writing as soon as it appears (a note just added). */
+  startEditing?: boolean; onAddSecond?: () => void; onRemove?: () => void;
+}) {
+  const [editing, setEditing] = useState(!!startEditing);
   const [draft, setDraft] = useState(text);
-  const [look, setLook] = useState(loadNoteStyle);
+  const [look, setLook] = useState(() => loadNoteStyle(id));
+  const [removing, setRemoving] = useState(false);
+  const base = NOTES[id].base, name = id === "note" ? "Note" : "Second note";
   const down = useRef<{ x: number; y: number } | null>(null);
   const area = useRef<HTMLTextAreaElement>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -105,7 +116,8 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
     const t = draft.trim();
     if (keep && t !== text) onSave(t); else setDraft(text);
   };
-  const choose = (s: NoteStyle) => { setLook(s); saveNoteStyle(s); };
+  const choose = (s: NoteStyle) => { setLook(s); saveNoteStyle(id, s); };
+  useEffect(() => { if (!editing) setRemoving(false); }, [editing]);
 
   // The note hangs from its spot by its bottom edge, centred, so the top-right corner follows the
   // pointer when the width grows by twice the sideways move and the height by the upward one.
@@ -127,7 +139,7 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
       handle.removeEventListener("pointermove", move);
       handle.removeEventListener("pointerup", up);
       handle.removeEventListener("pointercancel", up);
-      saveNoteStyle(last);
+      saveNoteStyle(id, last);
     };
     handle.addEventListener("pointermove", move);
     handle.addEventListener("pointerup", up);
@@ -146,10 +158,10 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
     <div className={`fl-note${editing ? " editing" : ""}`} ref={root}
       onBlur={(e) => { if (editing && !root.current?.contains(e.relatedTarget as Node | null)) done(true); }}
       onKeyDown={(e) => { if (editing && e.key === "Escape") { e.preventDefault(); e.stopPropagation(); done(false); } }}>
-      <div ref={sticky} className={`fl-sticky${editing ? " editing" : ""}`}
+      <div ref={sticky} className={`fl-sticky${editing ? " editing" : ""}${look.hand ? " hand" : ""}`}
         style={{ width: look.width, minHeight: look.height ?? undefined, ["--note-top" as string]: paper.top, ["--note-bottom" as string]: paper.bottom, ["--note-ink" as string]: paper.ink, ["--note-faint" as string]: paper.faint }}
         role={editing ? undefined : "button"} tabIndex={editing ? -1 : 0}
-        aria-label={editing ? undefined : `Note: ${text || "empty"}. Press Enter to write on it.`}
+        aria-label={editing ? undefined : `${name}: ${text || "empty"}. Press Enter to write on it.`}
         onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }}
         onClick={(e) => {
           const d = down.current; down.current = null;
@@ -159,7 +171,7 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
         <i className={`fl-washi tape-${look.tape}`} aria-hidden="true" />
         {editing ? (
           <>
-            <textarea ref={area} value={draft} maxLength={MAX_NOTE} aria-label="Note" rows={4}
+            <textarea ref={area} value={draft} maxLength={MAX_NOTE} aria-label={name} rows={4}
               onChange={(e) => setDraft(e.target.value)}
               onPointerDown={(e) => e.stopPropagation()}
               onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); done(true); } }} />
@@ -183,6 +195,11 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
                 onClick={() => choose({ ...look, paper: id })} />
             ))}
           </div>
+          <div className="fl-note-row" role="group" aria-label="Writing">
+            <span aria-hidden="true">Writing</span>
+            <button type="button" className="fl-hand-pick" aria-pressed={!look.hand} onClick={() => choose({ ...look, hand: false })}>Neat</button>
+            <button type="button" className="fl-hand-pick hand" aria-pressed={look.hand} onClick={() => choose({ ...look, hand: true })}>Handwritten</button>
+          </div>
           <div className="fl-note-row" role="group" aria-label="Washi tape">
             <span aria-hidden="true">Tape</span>
             {(Object.keys(NOTE_TAPES) as NoteTape[]).map((id) => (
@@ -190,7 +207,14 @@ function Note({ text, onSave, onEditing }: { text: string; onSave: (t: string) =
                 onClick={() => choose({ ...look, tape: id })}><i className={`tape-${id}`} /></button>
             ))}
           </div>
-          {!isDefaultNote(look) && <button type="button" className="fl-note-reset" onClick={() => choose(DEFAULT_NOTE)}>Back to the original note</button>}
+          <div className="fl-note-foot">
+            {onAddSecond && <button type="button" className="fl-note-reset" onClick={() => { done(true); onAddSecond(); }}>Add a second note</button>}
+            {!isDefaultNote(look, base) && <button type="button" className="fl-note-reset" onClick={() => choose(base)}>Back to the original note</button>}
+            {/* Taking a note down that has words on it asks once more. */}
+            {onRemove && (removing || !text.trim()
+              ? <button type="button" className="fl-note-reset remove" onClick={() => { setEditing(false); onRemove(); }}>{removing ? "Yes, take it down" : "Take this note down"}</button>
+              : <button type="button" className="fl-note-reset" onClick={() => setRemoving(true)}>Take this note down</button>)}
+          </div>
         </div>
       )}
     </div>
@@ -299,19 +323,27 @@ function YarnWidget() {
 
 export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
   const [note, setNote] = useState<string | null>(null);
+  // The second note: null when there isn't one. `added` opens it for writing as it appears.
+  const [note2, setNote2] = useState<string | null>(null);
+  const [added, setAdded] = useState(false);
   const [texts, setTexts] = useState<Texts | null>(null);
   // Read again each time you come back to the room, so the widget shows where you got to.
   useEffect(() => { if (!inside) void api.texts().then(setTexts, () => setTexts(null)); }, [inside]);
-  const [writing, setWriting] = useState(false);
+  const [writing, setWriting] = useState<Record<NoteId, boolean>>({ note: false, note2: false });
   const box = useRef<HTMLDivElement>(null);
   const store = useLayoutStore();
   useEffect(() => {
-    void api.profile().then((p) => setNote(p.room_note ?? p.goal.summary.trim()), () => setNote(null));
+    void api.profile().then((p) => { setNote(p.room_note ?? p.goal.summary.trim()); setNote2(p.room_note_2 ?? null); }, () => setNote(null));
   }, [inside]);
-  const saveNote = async (t: string) => {
-    setNote(t);
-    try { const p = await api.profile(); await api.saveProfile({ ...p, room_note: t }); } catch { /* the note stays on screen; it saves next time */ }
+  // One save at a time, each reading the profile afresh, so two quick changes can't undo each other.
+  const saving = useRef<Promise<unknown>>(Promise.resolve());
+  const saveNotes = (patch: { room_note?: string; room_note_2?: string | null }) => {
+    saving.current = saving.current.then(async () => {
+      try { const p = await api.profile(); await api.saveProfile({ ...p, ...patch }); } catch { /* the note stays on screen; it saves next time */ }
+    });
   };
+  const saveNote = (t: string) => { setNote(t); saveNotes({ room_note: t }); };
+  const saveNote2 = (t: string | null) => { setNote2(t); saveNotes({ room_note_2: t }); };
 
   // Stay on screen: slide inward; hide only if it can't fit, or if a widget still at home would
   // sit on today's cards (one you moved stays where you put it).
@@ -398,8 +430,15 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
         <YarnWidget />
       </Widget>
       {note !== null && (
-        <Widget id="note" delay={-2.6} label="Note" still={writing}>
-          <Note text={note} onSave={(t) => void saveNote(t)} onEditing={setWriting} />
+        <Widget id="note" delay={-2.6} label="Note" still={writing.note}>
+          <Note id="note" text={note} onSave={saveNote} onEditing={(on) => setWriting((w) => ({ ...w, note: on }))}
+            onAddSecond={note2 === null ? () => { setAdded(true); saveNote2(""); } : undefined} />
+        </Widget>
+      )}
+      {note2 !== null && (
+        <Widget id="note2" delay={-1.4} label="Second note" still={writing.note2}>
+          <Note id="note2" text={note2} startEditing={added} onSave={saveNote2} onEditing={(on) => setWriting((w) => ({ ...w, note2: on }))}
+            onRemove={() => { setAdded(false); setSpot("note2", null); saveNote2(null); }} />
         </Widget>
       )}
     </div>

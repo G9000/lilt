@@ -35,7 +35,7 @@ try {
     await page.goto(url);
     await page.evaluate(() => { localStorage.removeItem('lilt.room.note'); localStorage.removeItem('lilt.room.layout.cel-studio.2'); });
     await page.reload();
-    const sticky = page.locator('.fl-sticky');
+    const sticky = page.locator('.fl-sticky').first();
     await sticky.waitFor();
     await page.locator('.room-stage.settled').waitFor({ timeout: 15000 });
     const size = () => sticky.evaluate(el => ({ w: el.offsetWidth, h: el.offsetHeight }));
@@ -95,6 +95,36 @@ try {
       (await size()).w === 160 && await page.locator('.fl-washi.tape-stripes').count() === 1 && (await saved()) === null && await typing());
     await page.keyboard.press('Escape');
     check(`${scheme}: Escape closes it`, await page.locator('.fl-note-tools').count() === 0);
+
+    // Handwriting, and a second note beside the first.
+    await sticky.click();
+    await page.getByRole('button', { name: 'Handwritten', exact: true }).click();
+    check(`${scheme}: handwriting writes the note in Caveat`,
+      (await sticky.evaluate(el => el.classList.contains('hand') && getComputedStyle(el).fontFamily.includes('Caveat'))) && await typing());
+    await page.getByRole('button', { name: 'Add a second note', exact: true }).click();
+    const second = page.locator('.fl-sticky').nth(1);
+    await second.locator('textarea').waitFor();
+    check(`${scheme}: a second note appears, ready to write on`,
+      await page.evaluate(() => document.activeElement?.getAttribute('aria-label')) === 'Second note');
+    check(`${scheme}: it starts in other colours, handwritten`,
+      await second.evaluate(el => el.classList.contains('hand') && !!el.querySelector('.fl-washi.tape-dots') && getComputedStyle(el).backgroundImage.includes('255, 232, 238')));
+    await page.keyboard.type('Sip water between cards');
+    await page.mouse.click(720, 860);
+    for (let i = 0; i < 40 && profile.room_note_2 !== 'Sip water between cards'; i++) await page.waitForTimeout(50);
+    check(`${scheme}: its words save with your profile too`, profile.room_note_2 === 'Sip water between cards');
+    const crowded = await page.evaluate(() => {
+      const [a, b] = [...document.querySelectorAll('.fl-sticky')].map(el => el.getBoundingClientRect());
+      return Math.min(a.right, b.right) - Math.max(a.left, b.left) > 4 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 4;
+    });
+    check(`${scheme}: the two notes don't cover each other`, !crowded);
+
+    // Taking down a note with words on it asks once more.
+    await second.click();
+    await page.getByRole('button', { name: 'Take this note down', exact: true }).click();
+    check(`${scheme}: taking it down asks first`, await page.locator('.fl-sticky').count() === 2);
+    await page.getByRole('button', { name: 'Yes, take it down', exact: true }).click();
+    for (let i = 0; i < 40 && profile.room_note_2 !== null; i++) await page.waitForTimeout(50);
+    check(`${scheme}: then it's gone`, await page.locator('.fl-sticky').count() === 1 && profile.room_note_2 === null);
     assert.deepEqual(errors, [], `${scheme}: no page errors`);
     await page.close();
   }

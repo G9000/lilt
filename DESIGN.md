@@ -45,7 +45,8 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   still at home slides just clear of a neighbour, and of the Photos/Practice/Music shortcuts strip
   that replaces the painted desk objects on squarer screens. One you placed never moves. The sticky note
   is paper, not UI: six soft papers and six washi tapes drawn in CSS (no images), chosen in a small
-  `--win` tray that appears under it only while you write; the selection gets a 2px `--accent` ring,
+  `--win` tray that appears under it only while you write, with a Neat/Handwritten choice (Caveat,
+  bundled, SIL OFL); a second note can join it under the first; the selection gets a 2px `--accent` ring,
   and a round handle on its top-right corner resizes it (130–300px wide). The plant reads "A new
   week" before the week's first practice: the room shows no zeros. The
   computer itself is the other way in: its middle monitor has a steady glow following its painted edges,

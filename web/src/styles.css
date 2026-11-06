@@ -1,5 +1,7 @@
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/jetbrains-mono";
+/* Handwriting on the room's sticky notes, when you choose it (SIL Open Font Licence). */
+@import "@fontsource-variable/caveat";
 @import "./desk/desk.css";
 
 /* Lilt's base look: a calm macOS-style desktop inside the room's monitor. See DESIGN.md. */
