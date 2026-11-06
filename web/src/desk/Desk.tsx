@@ -178,7 +178,7 @@ function TodayWidget({ deck, light, reload }: { deck: Deck | null; light: Light;
 const LEAVES: [number, number, number][] = [[61, 74, -1], [60, 64, 1], [60, 54, -1], [61, 45, 1], [61, 37, -1], [61, 31, 1], [61, 27, 0]];
 export function PlantWidget({ days }: { days: number }) {
   return (
-    <article className="ds-w ds-plant" aria-label={`Practised ${days} day${days === 1 ? "" : "s"} this week`}>
+    <article className="ds-w ds-plant" aria-label={days ? `Practised ${days} day${days === 1 ? "" : "s"} this week` : "A new week: the plant grows a leaf each day you practise"}>
       <svg viewBox="22 14 76 94" aria-hidden="true">
         <defs><linearGradient id="ds-pot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e98a62" /><stop offset="1" stopColor="#c8623c" /></linearGradient></defs>
         <path d="M60 84 C60 66 58 50 61 30" stroke="#3f7a45" strokeWidth="2.6" fill="none" strokeLinecap="round" />
@@ -191,7 +191,10 @@ export function PlantWidget({ days }: { days: number }) {
         })}
         <path d="M40 82h40l-5 24H45z" fill="url(#ds-pot)" /><rect x="37" y="78" width="46" height="8" rx="3" fill="#f0a07a" />
       </svg>
-      <div className="ds-p-text"><b>{days} day{days === 1 ? "" : "s"}</b><span>this week. It grows when you practise.</span></div>
+      {/* A fresh week isn't a zero: it's a sprout waiting. */}
+      <div className="ds-p-text">{days
+        ? <><b>{days} day{days === 1 ? "" : "s"}</b><span>this week. It grows when you practise.</span></>
+        : <><b>A new week</b><span>It grows a leaf each day you practise.</span></>}</div>
     </article>
   );
 }

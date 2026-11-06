@@ -68,3 +68,38 @@
   .ve .sd-controls .ve-dock-sub .ve-link { white-space: normal; overflow-wrap: normal; }
 }
 @media (prefers-reduced-motion: reduce) { .ve .sd-current { animation: none; } }
+
+/* The room's cat, small, on the card's top edge: dozing, listening while you record, a heart after. */
+.ve .sd-current { position: relative; }
+.dk-cat { position: absolute; right: 128px; top: -41px; width: 92px; height: 46px; pointer-events: none; z-index: 1; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.16)); }
+.dk-cat img { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: 50% 88%; animation: dk-breathe 3.6s ease-in-out infinite; transition: translate 0.4s var(--ease); }
+.dk-cat.watch img, .dk-cat.awake img { translate: 0 -2px; animation-duration: 2.2s; }
+@keyframes dk-breathe { 50% { scale: 1.006 1.03; } }
+.dk-cat-say { position: absolute; bottom: calc(100% + 4px); left: 50%; translate: -50% 0; padding: 4px 9px; border-radius: 999px; white-space: nowrap; font-size: 12px; font-weight: 500; color: var(--ink-2); background: var(--sd-paper); box-shadow: 0 0 0 1px var(--hair), 0 4px 10px -6px rgba(0, 0, 0, 0.3); animation: dk-say 0.3s var(--ease) both; }
+@keyframes dk-say { from { opacity: 0; translate: -50% 3px; } }
+.dk-cat-heart { position: absolute; left: 30%; top: 4px; width: 18px; height: 15px; opacity: 0; animation: dk-heart 1.8s ease-out; }
+@keyframes dk-heart { 0% { opacity: 0; translate: 0 0; } 15% { opacity: 1; } 100% { opacity: 0; translate: 6px -34px; scale: 1.15; } }
+@media (max-width: 700px) { .dk-cat { right: 96px; top: -35px; width: 76px; height: 38px; } }
+@media (prefers-reduced-motion: reduce) { .dk-cat img, .dk-cat-say { animation: none; } .dk-cat-heart { animation: none; opacity: 0; } }
+
+/* Finished cards make a small pile by the count; the newest is tossed on top. */
+.sd-pile { position: relative; display: inline-block; width: 26px; height: 18px; margin-right: 10px; vertical-align: -4px; }
+.sd-pile i { position: absolute; inset: 0; border-radius: 3px; background: var(--sd-paper); box-shadow: 0 0 0 1px color-mix(in srgb, var(--sd-line) 30%, transparent), 0 1px 2px rgba(48, 40, 26, 0.15); }
+.sd-pile i:nth-child(1) { rotate: -6deg; } .sd-pile i:nth-child(2) { rotate: 4deg; translate: 1px -1px; }
+.sd-pile i:nth-child(3) { rotate: -2deg; translate: -1px -2px; } .sd-pile i:nth-child(4) { rotate: 7deg; translate: 1px -3px; }
+.sd-pile i:nth-child(5) { rotate: -4deg; translate: 0 -4px; }
+.sd-pile i:last-child { animation: sd-toss 0.42s var(--ease) both; }
+@keyframes sd-toss { from { opacity: 0; translate: 10px -12px; rotate: 18deg; } }
+
+/* The day's slip: a small piece of paper saying what you said. */
+.ve .sd-slip { position: relative; margin: 34px 0 26px; padding: 26px 30px 24px; max-width: 520px; rotate: -0.6deg; border-radius: 4px;
+  background-color: var(--sd-paper); background-image: radial-gradient(color-mix(in srgb, var(--sd-line) 7%, transparent) .5px, transparent .7px); background-size: 5px 5px;
+  box-shadow: 0 0 0 1px var(--hair), 0 14px 28px -20px rgba(48, 40, 26, 0.45); animation: sd-settle 0.3s ease-out; }
+.ve .sd-slip .dk-cat { right: 30px; top: -40px; }
+.sd-slip-date { margin: 0 0 6px; font-size: 13px; color: var(--ink-2); }
+.ve .sd-slip-lede { margin: 0 0 10px; font: italic 400 21px/1.35 var(--read); color: var(--ink); }
+.sd-slip ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.sd-slip li { display: grid; grid-template-columns: minmax(84px, auto) 1fr; gap: 12px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.sd-slip li b { font-weight: 500; color: var(--ink); }
+@media (max-width: 520px) { .ve .sd-slip { padding: 22px 20px 20px; } .sd-slip li { grid-template-columns: 1fr; gap: 2px; } }
+@media (prefers-reduced-motion: reduce) { .sd-pile i:last-child, .ve .sd-slip { animation: none; } }

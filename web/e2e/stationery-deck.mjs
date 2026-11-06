@@ -84,6 +84,7 @@ try {
     await page.getByRole('button', { name: 'Start recording', exact: true }).click();
     await page.getByRole('button', { name: 'Stop recording', exact: true }).waitFor();
     assert.ok(await page.locator('.sd-queue-pick').evaluateAll(els => els.every(el => el.disabled)), 'selection locked during recording');
+    assert.equal(await page.locator('.sd-current .dk-cat.watch .dk-cat-say').innerText(), "i'm listening :3", 'the cat on the card listens while you record');
     if (checkDisclosures) {
       await page.locator('.sd-tips > summary').click();
       assert.ok(await page.locator('.sd-tips .notes').isVisible());
@@ -95,6 +96,8 @@ try {
     await page.waitForTimeout(700);
     await page.getByRole('button', { name: 'Stop recording', exact: true }).click();
     await page.getByText(after, { exact: true }).waitFor();
+    assert.equal(await page.locator('.sd-current .dk-cat-say').count(), 0, 'the cat goes quiet when you stop');
+    assert.equal(await page.locator('.sd-current .dk-cat-heart').count(), 1, 'and a heart floats up');
     assert.ok(await page.locator('.sd-queue-pick').evaluateAll(els => els.every(el => el.disabled)), 'selection locked while reviewing');
     assert.equal(takes.size, count + 1, 'one take per recording');
   };
@@ -130,6 +133,11 @@ try {
   await record();
   await page.keyboard.press('3');
   await page.getByRole('heading', { name: "That's today's deck" }).waitFor();
+  assert.equal(await page.locator('.sd-slip-lede').innerText(), 'You said three cards out loud today.', 'the day ends with a slip of what you said');
+  assert.match(await page.locator('.sd-slip li').first().innerText(), /Good morning/, 'grouped by chapter');
+  assert.equal(await page.locator('.sd-slip .ve-tag').count(), 0, 'the slip shows no ratings');
+  assert.doesNotMatch(await page.locator('.sd-slip').innerText(), /score|missed|well done|perfect|%/i, 'the slip never grades');
+  assert.equal(await page.locator('.sd-heading .sd-pile i').count(), 4, 'finished cards make a small pile by the count');
   await shot('deck-complete');
   reset(); await page.reload();
   await page.getByRole('button', { name: 'It hurts or feels strained', exact: true }).click();

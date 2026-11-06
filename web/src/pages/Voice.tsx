@@ -18,6 +18,8 @@ const COURSE = DEFAULT_COURSE;
 import { HistoryPage } from "./History";
 import { TextHistory } from "./TextHistory";
 import { setRoom } from "../room/Room";
+import { CatMode, DeckCat } from "../components/DeckCat";
+import { daySlip } from "../daySlip";
 import { CAT_URL, currentLight, roomUrl } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
@@ -1422,6 +1424,30 @@ const HURT = "It hurts or feels strained";
 const everyDay = (it?: DeckItem) => !!it && (it.kind === "warmup" || it.kind === "daily" || it.kind === "cooldown");
 /** After rating an eyes-off take, "reveal" shows its pitch before moving on (q: the queue to go on with). */
 type Phase = { k: "say"; retryOf: string | null } | { k: "rate"; take: Take } | { k: "reveal"; take: Take; q: DeckItem[] } | { k: "end" } | { k: "hurt" };
+/** A small pile of finished cards by the count: one slip per card (up to five), the newest tossed on top. */
+function DonePile({ n }: { n: number }) {
+  if (n === 0) return null;
+  const k = Math.min(n, 5);
+  return (
+    <span className="sd-pile" aria-hidden="true">
+      {Array.from({ length: k }, (_, i) => <i key={i === k - 1 ? `top-${n}` : i} />)}
+    </span>
+  );
+}
+
+/** The end of the day's deck: what you said, on a paper slip, with the cat curled up on it. */
+function DaySlip({ date, cards }: { date: string; cards: DeckItem[] }) {
+  const slip = daySlip(cards.map((it) => ({ front: it.card.front, chapter: deckName(it) })));
+  return (
+    <section className="sd-slip" aria-label="Today's slip">
+      <DeckCat mode="happy" />
+      <p className="sd-slip-date">{date}</p>
+      <p className="sd-slip-lede">{slip.lede}</p>
+      {slip.groups.length > 0 && <ul>{slip.groups.map((g) => <li key={g.chapter}><b>{g.chapter}</b><span>{g.fronts.join(" · ")}</span></li>)}</ul>}
+    </section>
+  );
+}
+
 const KIND_TAG: Partial<Record<DeckItem["kind"], string>> = { new: "New card", again: "Again", warmup: "Warm-up", cooldown: "Cool-down", before_after: "Before and after" };
 /** The card's kind as a tag, unless its chapter is already called that ("Warm-ups"). */
 const kindTag = (it: DeckItem) => { const t = KIND_TAG[it.kind]; return t && !sameLabel(t, deckName(it)) ? t : null; };
@@ -1603,12 +1629,10 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
     return () => window.removeEventListener("keydown", onKey);
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The cat in the room follows along.
-  useEffect(() => {
-    const k = phase.k;
-    setRoom({ mode: recOn ? "watch" : k === "rate" || k === "reveal" ? "awake" : k === "end" ? "happy" : "sleep",
-      say: k === "hurt" ? "take a break, sip some water" : k === "end" ? "all done! drink water :3" : recOn ? "i'm listening :3" : k === "rate" ? "let's listen :3" : "zzz… press record" });
-  }, [phase.k, recOn]);
+  // The cat in the room follows along, and so does the small one on the card.
+  const catMode: CatMode = recOn ? "watch" : phase.k === "rate" || phase.k === "reveal" ? "awake" : phase.k === "end" ? "happy" : "sleep";
+  const catSay = phase.k === "hurt" ? "take a break, sip some water" : phase.k === "end" ? "all done! drink water :3" : recOn ? "i'm listening :3" : phase.k === "rate" ? "let's listen :3" : "zzz… press record";
+  useEffect(() => { setRoom({ mode: catMode, say: catSay }); }, [catMode, catSay]);
 
   if (err && !deck) return <div className="ve-page"><article className="ve-col"><p role="alert" className="ve-err">{err}</p></article></div>;
   if (!deck || !session) return <div className="ve-page"><article className="ve-col"><p className="ve-subtitle">Getting your cards…</p></article></div>;
@@ -1675,7 +1699,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}>Let's stop here</h1>
               : <h1>Your daily deck</h1>}
             <p className="ve-subtitle">{date}</p>
-            <p className="ve-meta">{phase.k === "hurt" ? "Paused" : `${doneCount} of ${total} done`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
+            <p className="ve-meta"><DonePile n={doneCount} />{phase.k === "hurt" ? "Paused" : `${doneCount} of ${total} done`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
           </header>
           {phase.k === "hurt" ? (
             <>
@@ -1690,6 +1714,8 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               </div>
             </>
           ) : phase.k === "end" ? (
+            <>
+            <DaySlip date={date} cards={[...earlier, ...results.filter((r) => r.rating !== "later").map((r) => r.item)]} />
             <div className="ve-endbox">
               {comfort ? <p className="ve-note ok" role="status">{comfort === "strain" || comfort === "pain" ? "Noted. Your plan is paused so you can rest." : "Noted. See you tomorrow."}</p> : (
                 <>
@@ -1705,6 +1731,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               <p className="ve-small">Your takes are in <a href="#/history">your recordings</a>. Anything more today is a bonus{deck.open_chapter ? <>: read the steps in <a href={`#/studio/${deck.open_chapter.id}`}>{deck.open_chapter.title}</a>, your newest chapter</> : ": try a chapter on the left"}.</p>
               <div className="ve-rate-more"><button className="ve-ghost" onClick={() => go("/")}>Back to the room</button></div>
             </div>
+            </>
           ) : (
             <details className="sd-help"><summary>How to practise</summary>
               <p>Say the card, listen back, then choose how it felt. Your choice decides when the card comes back; pitch numbers never do. Open the chapter name for its steps.</p>
@@ -1715,6 +1742,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               const j = idx + k, on = chosen && k === 0;
               return (
                 <li key={`q-${j}-${it.card.id}`} ref={curRef} tabIndex={-1} aria-label={`Current card: ${it.card.front}`} className="ve-item on sd-current">
+                  <DeckCat mode={catMode} say={recOn ? catSay : null} />
                   <div className="sd-card-top"><span>Card {doneCount + 1} of {total}</span><DeckIllustration kind={it.kind === "warmup" || it.kind === "cooldown" ? "tea" : it.card.text_kind === "passage" || it.kind === "before_after" ? "book" : "mic"} /></div>
                   <p className="ve-kind">{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{kindTag(it) && <span className="ve-tag next">{kindTag(it)}</span>}
                     {it.eyes_off && <span className="ve-tag">Eyes off</span>}
@@ -1749,7 +1777,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               </button>
             </li>)}</ol>
           </details>}
-          {doneCount > 0 && <details className="sd-completed" open={ended ? true : undefined}>
+          {doneCount > 0 && <details className="sd-completed" open={phase.k === "hurt" ? true : undefined}>
             <summary>Practised today <span>{doneCount} cards</span></summary>
             <ol className="ve-items">
               {earlier.map((it) => <li key={`e-${it.card.id}`} className="ve-item done"><span className="ve-mk num" aria-hidden="true"><Tick /></span>

@@ -43,7 +43,8 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   the camera and draggable (Motion); they step aside rather than cover the stack. The sticky note
   is paper, not UI: six soft papers and six washi tapes drawn in CSS (no images), chosen in a small
   `--win` tray that appears under it only while you write; the selection gets a 2px `--accent` ring,
-  and a round handle on its top-right corner resizes it (130–300px wide). The
+  and a round handle on its top-right corner resizes it (130–300px wide). The plant reads "A new
+  week" before the week's first practice: the room shows no zeros. The
   computer itself is the other way in: its middle monitor has a steady glow following its painted edges,
   and a visible "Click the screen" cue ("Tap" on touch devices). Hover and keyboard focus make the
   edge clearer. The glow does not pulse. The glow and cue hide when entering.
@@ -75,7 +76,11 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   and **Then and now** (your first and latest take of the same text, the reference line first).
   **Today** opens **Your daily deck** with one active stationery card: ivory paper in light mode,
   charcoal in dark, subtle grain and two decorative paper edges. A small drawn mic, tea or book
-  sits opposite the card position. The prompt leads in the reading serif, followed by one hint
+  sits opposite the card position, and the room's cat (92px) dozes on the card's top edge: it
+  breathes faster and shows one small paper bubble while recording, and a pink heart rises once
+  when you stop. Finished cards stack as a tiny tilted pile beside the count. The end of the deck
+  is a slightly tilted paper slip: the date, one italic serif sentence and the cards by chapter,
+  with the cat on top. The prompt leads in the reading serif, followed by one hint
   and optional **Reading tips**. Record, replay and neutral Again/Hard/Good/Easy buttons share
   the area below the prompt. **How to practise**, **Up next** and **Practised today** fold away;
   upcoming choices are keyboard buttons, disabled while recording or reviewing. The centred

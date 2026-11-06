@@ -136,7 +136,8 @@ Monitor uploads and playback have an isolated check with locally generated media
      stage opened, your reminder time, resting today, recordings recovered from a closed page. Never
      streaks or missed days. Read and cleared notifications are remembered in this browser only.
    - **The desk** shows today's practice as a folder (the cards waiting and Start). The clock, the
-     plant (a leaf for each day you practised this week; it never shrinks or scolds) live in the
+     plant (a leaf for each day you practised this week; it never shrinks or scolds, and a fresh week
+     reads "A new week" rather than a zero) live in the
      room instead, as floating widgets you can drag. Music opens from the painted player.
    - **Lo-fi radio:** nine moods, including "Rain on the window", "Desk lamp" and "City at dusk", made live in
      the browser: electric-piano chords, a soft bass, swung drums and ambient textures. The
@@ -162,6 +163,13 @@ Monitor uploads and playback have an isolated check with locally generated media
      **Up next** lets you choose another card before recording; **Practised today** holds
      your completed cards. Record, listen and review stay together below the prompt. Cards
      settle gently into view, with motion disabled when you prefer reduced motion.
+   - **The cat comes too:** the room's cat dozes on the top edge of the card, perks up and says
+     "i'm listening :3" while you record, and sends up a heart when you stop. It reacts to your
+     saying something, never to how it went.
+   - **A pile and a slip:** each finished card adds a slip to a small pile by the count. When the
+     deck is done, a paper slip says what you said today, chapter by chapter (each card once, no
+     ratings); the itemised list stays under **Practised today**. The wording lives in
+     `web/src/daySlip.ts`.
    - **Your warm-up opens the deck and the cool-down closes it,** every day, not spaced like the
      other cards and outside the cap. Pick which warm-up (or none) in Practice settings.
    - **Eyes-off takes:** a review of a card you know well (three or more reviews) is eyes-off every
