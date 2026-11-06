@@ -21,9 +21,10 @@ says how to stop. Keep that in every feature and every line of copy.
 | `server/` | Rust (Axum, Tokio): API, web UI, MCP, jobs. One module per area under `server/src` (`practice`, `recordings`, `analysis`, `coach`, `courses`, `photos`, `ai`, `store`) |
 | `web/` | React 18 + TypeScript + Vite. Pages in `src/pages`, the desk and room in `src/desk` and `src/room`, styles in `src/styles` |
 | `analysis/` | Python 3.12 helper (`lilt_analysis`), run as a subprocess with a versioned JSON contract |
-| `content/` | Courses as Markdown (`content/courses/voice`) and exercises (`content/exercises`) |
+| `content/` | Courses as Markdown (`content/courses/voice`), exercises (`content/exercises`) and coaching prompts (`content/prompts`) |
 | `desktop/` | The Mac app (Tauri): `build.sh` makes `Lilt.app` and a `.dmg` with the server and Python inside |
-| `docs/` | `guide.md` (every feature), `tech-stack.md`, `courses.md` |
+| `docs/` | `guide.md` (every feature), `tech-stack.md`, `courses.md`; design plans and specs in `docs/superpowers`, saved check results in `docs/validation` |
+| `.claude/` | `launch.json` (the `web` dev server for preview tools) and the shared agent skills |
 | `DESIGN.md` | The look: tokens, type, components, motion, and a **Never** list |
 | `VALIDATION.md` | What has actually been verified |
 
@@ -40,6 +41,12 @@ desktop/build.sh                            # Mac app: desktop/dist/Lilt.app and
 On macOS, if `cc` fails because Xcode's licence was never accepted, build with
 `DEVELOPER_DIR=/Library/Developer/CommandLineTools` (`lilt.sh` and `desktop/build.sh` do this themselves).
 
+**Windows** works too (the owner develops there). `lilt.sh` and `desktop/build.sh` are Mac/Linux
+scripts; use `bun dev`, or run `server/target/debug/lilt.exe serve` from the repo root. The binary is
+`lilt.exe`, Python is `analysis/.venv/Scripts/python.exe` (picked automatically), and the data folder
+is `~/Lilt/data`, falling back to `%USERPROFILE%\Lilt\data` when `HOME` isn't set. A plain `bash` may
+be WSL's, which can't run `lilt.exe`: use Git Bash or PowerShell. Use forward or quoted paths, not `/tmp`.
+
 ## Never touch the owner's Lilt while testing
 
 `~/Lilt/data` and port 7878 are the owner's real practice: their recordings and their running app.
@@ -49,8 +56,16 @@ Tests and experiments use a scratch data folder and another port:
 LILT_DATA_DIR=/tmp/lilt-scratch LILT_BIND=127.0.0.1:7979 server/target/release/lilt serve
 ```
 
-Stop that server when you're done. Don't restart, stop or rebuild under the owner's running Lilt
-without saying so.
+```powershell
+$env:LILT_DATA_DIR="$env:TEMP\lilt-scratch"; $env:LILT_BIND="127.0.0.1:7979"; server\target\debug\lilt.exe serve
+```
+
+Stop that server when you're done, by its port's process, never by name (`taskkill /IM lilt.exe`
+also stops the owner's). Don't restart, stop or rebuild under the owner's running Lilt without saying
+so. The owner's Lilt may be running from `server/target/debug` itself, and Windows won't let a running
+`lilt.exe` be replaced: a `cargo build`, or a `cargo test --all-targets` after a change, then fails with
+"Access is denied". Build your scratch copy elsewhere with `--target-dir`, and build the web app for a
+scratch server with `vite build --outDir <scratch>` rather than over `web/dist`.
 
 ## Checks
 
@@ -67,20 +82,29 @@ cd analysis && uv run --locked pytest
 cd desktop && cargo fmt --check && cargo clippy --release -- -D warnings
 ```
 
-Browser tests drive real Chrome with a fake microphone (`web/e2e/fake-mic.wav`) against a scratch
-server on :7979. Most suites take a screenshot folder:
+Browser tests drive real Chrome with a fake microphone (`web/e2e/fake-mic.wav`). Most suites take a
+screenshot folder:
 
 ```bash
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/results-extras.mjs /tmp/shots
 ```
 
-Every suite passes on a fresh data folder (4 November 2026). Most need nothing else; three differ:
+Every suite passed on fresh data folders on 6 November 2026 (Windows). They come in four kinds:
 
-- `deck-extras.mjs` also needs `LILT_DATA_DIR` set to the server's folder, and that folder's
-  `cards/state.json` must hold `text.warmup.lip-trill` as a due review with `"reps": 3` (it's the
-  eyes-off card).
-- `markdown.mjs` and `feedback.mjs` start their own Vite server with a stubbed API: no `LILT_URL`.
-- `recording-lock.mjs` runs with `node --test` against `bun run dev` on :5173, and stubs every API call.
+- **Against a scratch server** (`LILT_URL`, a fresh data folder each): `flashcards`, `flow`, `photos`,
+  `practice`, `recorder-extras`, `results-extras`, `yarn`. `deck-extras` also needs `LILT_DATA_DIR`
+  set to the server's folder, and that folder's `cards/state.json` must hold `text.warmup.lip-trill`
+  as a due review with `"reps": 3` (it's the eyes-off card).
+- **Their own Vite server with a stubbed API** (no `LILT_URL`): `markdown`, `feedback`,
+  `monitor-media`, `music`, `room-appearance`, `room-layout`, `settings-comparison`,
+  `stationery-deck`, `yarn-ui`. `room-layout` can fail once while Vite optimises a dependency; run it again.
+- **Its own server**: `course-review` starts `server/target/debug/lilt` on :17979 with a temporary data
+  folder (set `LILT_WEB_DIR` to test a web build other than `web/dist`).
+- **`node --test`**: `recording-lock` runs against `bun run dev` on :5173 (or `LILT_URL`) and stubs
+  every API call. `safari` needs Safari on a Mac.
+
+Suites find their files with `fileURLToPath(new URL(…, import.meta.url))`; `new URL(…).pathname`
+breaks on Windows (Chrome then records silence from a missing `fake-mic.wav`).
 
 When the app's flow changes on purpose (what sitting down opens, which details fold away, labels),
 update the suites in the same change.
