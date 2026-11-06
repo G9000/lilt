@@ -5,12 +5,16 @@ start with the [README](README.md); everything about how Lilt works is in [docs/
 
 ## What Lilt is
 
-A small, private app for practising your voice (voice feminization first) a few minutes a day. It
-runs on your own computer: a Rust server serves a React app, keeps everything as plain files, and
-measures each take with a Python helper (Praat). There's no database and no cloud service in the
-core app.
+A small, private app for self-directed courses. Read, practise and revisit skills at your own
+pace, with Markdown courses, daily cards, optional recordings and reflections. It runs on your
+own computer: a Rust server serves a React app and keeps everything as plain files. The voice
+course also measures takes with a Python helper (Praat). There's no database and no cloud service
+in the core app.
 
-**Lilt describes, it never grades.** No scores, streaks, pass/fail colours, "missed days" or man/woman
+Describe Lilt as a general learning and practice app. Keep course-specific goals and terminology
+within their course; don't assume everyone is here to practise their voice.
+
+**Lilt describes, it never grades.** No scores, streaks, pass/fail colours, "missed days" or imposed
 targets. Results are plain sentences in plain ink. Comfort comes first: anything that could strain
 says how to stop. Keep that in every feature and every line of copy.
 
@@ -21,7 +25,7 @@ says how to stop. Keep that in every feature and every line of copy.
 | `server/` | Rust (Axum, Tokio): API, web UI, MCP, jobs. One module per area under `server/src` (`practice`, `recordings`, `analysis`, `coach`, `courses`, `photos`, `ai`, `store`) |
 | `web/` | React 18 + TypeScript + Vite. Pages in `src/pages`, the desk and room in `src/desk` and `src/room`, styles in `src/styles` |
 | `analysis/` | Python 3.12 helper (`lilt_analysis`), run as a subprocess with a versioned JSON contract |
-| `content/` | Courses as Markdown (`content/courses/voice`), exercises (`content/exercises`) and coaching prompts (`content/prompts`) |
+| `content/` | Courses as Markdown (`content/courses`), exercises (`content/exercises`) and coaching prompts (`content/prompts`) |
 | `desktop/` | Tauri desktop apps: `build.sh` makes the Mac app/DMG; `build.ps1` makes the Windows installer, with the server and Python inside |
 | `docs/` | `guide.md` (every feature), `tech-stack.md`, `courses.md`; design plans and specs in `docs/superpowers`, saved check results in `docs/validation` |
 | `.claude/` | `launch.json` (the `web` dev server for preview tools) and the shared agent skills |
