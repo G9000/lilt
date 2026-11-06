@@ -11,5 +11,6 @@ services:
       # Your recordings and records live here on the host. This is persistence, not a backup.
       - ./lilt-data:/data
     environment:
-      TZ: Asia/Kuala_Lumpur
+      # Container clock only; choose your practice timezone in Lilt's Settings.
+      TZ: UTC
       # LILT_MCP_TOKEN: set a long random value to require a bearer token on /mcp

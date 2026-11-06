@@ -349,8 +349,7 @@ impl App {
         Ok(plan)
     }
 
-    /// The initial plan when none exists: forward resonance (also part of the
-    /// source's lighten/brighten activities), matching the stated goal.
+    /// The built-in voice course's starter activity, not a personalised recommendation.
     pub fn ensure_plan(&self) -> Result<Plan> {
         if let Some(p) = self.current_plan() {
             return Ok(p);
@@ -369,7 +368,7 @@ impl App {
             focus_area: "resonance".into(),
             cue_id: Some(ex.primary_cue.id.clone()),
             ladder_step: None,
-            rationale: "Starting point for a lighter, brighter voice, whatever your goal: an easy hum that moves forward into the face. NHS Fife lists this under lightening and brightening a voice. There is no evidence about your voice yet; this is where the plan begins.".into(),
+            rationale: "The built-in voice course starts with an easy hum. This is a starter activity, not a recommendation based on your goal or practice evidence. Choose another exercise if it does not fit what you want to practise, and stop if it feels uncomfortable.".into(),
             evidence_refs: vec![],
             paused: false,
         };

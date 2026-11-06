@@ -27,24 +27,25 @@ pub const STABLE_SESSIONS: usize = 2;
 /// Consecutive "target met" sessions with falling effort before reporting easier production.
 pub const PROGRESS_SESSIONS: usize = 3;
 
+/// Describe the activity without claiming it matches a goal the learner never chose.
 pub fn goal_connection(area: &str) -> &'static str {
     match area {
         "resonance" => {
-            "Your goal includes a brighter, more forward sound. Where you feel the buzz is how this source-checked activity tracks it: a clue about easy voicing, not a measurement of resonance."
+            "This activity explores an easy hum. Where you feel the buzz is a clue about easy voicing, not a measurement of resonance."
         }
         "lightness" => {
-            "Your goal includes a lighter sound. In this activity, your own listening judgement is the evidence. Lighter does not mean quieter."
+            "This activity explores a lighter sound. Your own listening judgement is the evidence. Lighter does not mean quieter."
         }
         "pitch" => {
-            "Pitch is one part of your goal, alongside resonance and lightness. Lilt does not treat a higher number as automatically better."
+            "Pitch measurements describe these recordings. Lilt does not treat a higher number as automatically better or as progress toward a personal goal."
         }
         "intonation" => {
-            "You want a voice that sounds natural and like you. Rise and fall that fits the meaning helps with that. No particular melody is required."
+            "This activity explores how the rise and fall of your voice can fit the meaning. No particular melody is required."
         }
         "carryover" => {
-            "Your goal is a voice that works in everyday conversation. That means carrying what you practise into longer, less scripted speech."
+            "Carryover means trying what you practise in longer, less scripted speech. You decide which changes you want to use in everyday conversation."
         }
-        _ => "This relates to your chosen voice goal.",
+        _ => "You decide whether this activity fits what you want to practise.",
     }
 }
 

@@ -631,10 +631,13 @@ authentication.
 | `LILT_WEB_DIR` | `web/dist` | Built web UI |
 | `LILT_MCP_TOKEN` | unset | If set, `/mcp` on this computer requires `Authorization: Bearer <token>` (apps connecting through the public address sign in with OAuth instead) |
 
-The timezone (default `Asia/Kuala_Lumpur`), reminder time, session length and comparison window are
+The timezone (default `UTC` for a new profile), reminder time, session length and comparison window are
 in **Settings**. Changes save automatically; **Saved** confirms your latest edit. If you leave and
 reopen Settings while a save is pending, the pane waits for it before loading your settings.
-In Practice settings, separate the qualities you want with commas, such as `soft, bright`.
+New profiles start with no personal goal or desired voice qualities. Add your goal in Practice
+settings and separate the qualities you want with commas, such as `soft, bright`. Existing saved
+goals, timezones and plans are kept. Choose your timezone in Settings → Date & time; UTC is a
+neutral starting value, not an estimate of your location. The Docker container clock also uses UTC.
 Lilt stores UTC timestamps alongside local dates.
 
 **Models:** the optional in-app coach selects from the connected ChatGPT account's model list.

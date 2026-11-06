@@ -3,8 +3,6 @@
 use crate::coach::model::EvidenceRef;
 use serde::{Deserialize, Serialize};
 
-pub const GOAL_SUMMARY: &str = "A more feminine speaking voice that sounds natural, feels comfortable, and works in everyday conversation.";
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Profile {
     pub schema: String,
@@ -63,16 +61,12 @@ impl Default for Profile {
         Profile {
             schema: "lilt.profile/1".into(),
             goal: Goal {
-                summary: GOAL_SUMMARY.into(),
-                descriptors: vec![
-                    "lighter sound".into(),
-                    "forward (mouth and face) resonance".into(),
-                    "natural and comfortable in everyday conversation".into(),
-                ],
+                summary: String::new(),
+                descriptors: vec![],
                 preferred_take_ids: vec![],
             },
             language: "en".into(),
-            timezone: "Asia/Kuala_Lumpur".into(),
+            timezone: "UTC".into(),
             reminder_time: None,
             appearance: "pink".into(),
             session_minutes: 8,

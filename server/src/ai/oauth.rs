@@ -388,7 +388,7 @@ async fn resource_meta(State(app): State<Shared>) -> Response {
         return no_address();
     };
     Json(json!({ "resource": format!("{u}/mcp"), "authorization_servers": [u], "scopes_supported": [SCOPE],
-        "bearer_methods_supported": ["header"], "resource_name": "Lilt voice practice" })).into_response()
+        "bearer_methods_supported": ["header"], "resource_name": "Lilt learning and practice" })).into_response()
 }
 
 async fn server_meta(State(app): State<Shared>) -> Response {

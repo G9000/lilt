@@ -8,6 +8,41 @@ use crate::test_support::*;
 use std::collections::BTreeMap;
 
 #[test]
+fn a_new_profile_does_not_assign_a_personal_goal_or_location() {
+    let (_dir, app) = app();
+    let profile = app.profile();
+    assert!(profile.goal.summary.is_empty());
+    assert!(profile.goal.descriptors.is_empty());
+    assert!(profile.goal.preferred_take_ids.is_empty());
+    assert_eq!(profile.timezone, "UTC");
+}
+
+#[test]
+fn reopening_keeps_the_learners_saved_goal_timezone_and_plan() {
+    let (dir, app) = app();
+    let mut profile = app.profile();
+    profile.goal.summary = "A more feminine voice for everyday conversation".into();
+    profile.goal.descriptors = vec!["lighter".into(), "comfortable".into()];
+    profile.timezone = "Asia/Kuala_Lumpur".into();
+    store::write_json(&app.paths.profile(), &profile).unwrap();
+    let mut plan = app.ensure_plan().unwrap();
+    plan.rationale = "My existing practice plan".into();
+    let version = plan.version;
+    let plan = app.write_plan(plan, Some(version)).unwrap();
+    drop(app);
+
+    let reopened = App::open(config(dir.path())).unwrap();
+    assert_eq!(
+        serde_json::to_value(reopened.profile()).unwrap(),
+        serde_json::to_value(profile).unwrap()
+    );
+    assert_eq!(
+        serde_json::to_value(reopened.ensure_plan().unwrap()).unwrap(),
+        serde_json::to_value(plan).unwrap()
+    );
+}
+
+#[test]
 fn stale_plan_writes_are_rejected() {
     let (_d, app) = app();
     let p = app.ensure_plan().unwrap();
