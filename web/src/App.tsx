@@ -1,31 +1,32 @@
+import { cx } from "./ui/cx";
 import { shared } from "./ui/shared";
-import { CoursesPage } from "./pages/Courses";
 import './accent';
 import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { lazy, ReactNode, useEffect, useRef, useState } from "react";
+import { Deferred } from "./components/Deferred";
 import { api, Course, Deck } from "./api";
+import { DEFAULT_COURSE } from "./courseIds";
+import { dailyPath, practicePath, rememberCourse, routeCourse, routeSegments, savedCourse } from "./courseNavigation";
 import { CardStack } from "./desk/CardStack";
 import { RoomFloaters } from "./desk/Floaters";
 import { Desktop, RoomTop } from "./desk/Desk";
 import { NotificationCenter, useInbox } from "./desk/Inbox";
-import { MicProvider } from "./components/Recording";
+import { MicProvider } from "./components/Microphone";
 import { recoverPending } from "./recorder";
 import { micInUse } from "./micuse";
-import { TodayPage } from "./pages/Today";
 import { Room } from "./room/Room";
-import { PracticePage } from "./pages/Practice";
-import { FeedbackPage } from "./pages/Feedback";
-import { ComparePage } from "./pages/Compare";
-import { LibraryPage } from "./pages/Library";
-import { VoicePage } from "./pages/Voice";
-import { TextsPage } from "./pages/Texts";
-import { FlashcardsPage } from "./pages/Flashcards";
-import { PhotosPage } from "./pages/Photos";
-import { YarnPage } from "./pages/Yarn";
-
-import { DEFAULT_COURSE } from "./courseIds";
-import { dailyPath, practicePath, rememberCourse, routeCourse, routeSegments, savedCourse } from "./courseNavigation";
-import { CoursePracticePage } from "./pages/CoursePractice";
+const CoursesPage = lazy(() => import("./pages/Courses").then(m => ({ default: m.CoursesPage })));
+const CoursePracticePage = lazy(() => import("./pages/CoursePractice").then(m => ({ default: m.CoursePracticePage })));
+const TodayPage = lazy(() => import("./pages/Today").then(m => ({ default: m.TodayPage })));
+const PracticePage = lazy(() => import("./pages/Practice").then(m => ({ default: m.PracticePage })));
+const FeedbackPage = lazy(() => import("./pages/Feedback").then(m => ({ default: m.FeedbackPage })));
+const ComparePage = lazy(() => import("./pages/Compare").then(m => ({ default: m.ComparePage })));
+const LibraryPage = lazy(() => import("./pages/Library").then(m => ({ default: m.LibraryPage })));
+const VoicePage = lazy(() => import("./pages/Voice").then(m => ({ default: m.VoicePage })));
+const TextsPage = lazy(() => import("./pages/Texts").then(m => ({ default: m.TextsPage })));
+const FlashcardsPage = lazy(() => import("./pages/Flashcards").then(m => ({ default: m.FlashcardsPage })));
+const PhotosPage = lazy(() => import("./pages/Photos").then(m => ({ default: m.PhotosPage })));
+const YarnPage = lazy(() => import("./pages/Yarn").then(m => ({ default: m.YarnPage })));
 
 export function useRoute(): [string, URLSearchParams] {
   const read = () => {
@@ -197,7 +198,7 @@ export function App() {
 
   return (
     <MicProvider>
-      <a className={["skip", shared["skip"]].filter(Boolean).join(' ')} href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
+      <a className={cx("skip", shared["skip"])} href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
       <Room inside={inside} onEnter={() => sitDown.current()} cards={left} done={done}>
         <RoomFloaters key={course} deck={deck} inside={inside} course={course} />
       </Room>
@@ -205,7 +206,7 @@ export function App() {
         <RoomTop inbox={inbox} courseTitle={courseTitle} />
         <CardStack key={course} course={course} deck={deck} onStart={(id) => go(dailyPath(course, id))} />
       </div>
-      <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}
+      <Desktop section={section} page={page && <Deferred resetKey={path}>{page}</Deferred>} inside={inside} instant={instant} theme={theme}
         onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox}
         course={course} courseTitle={courseTitle} deck={deck} reloadDeck={() => refreshDeck((n) => n + 1)} />
       <NotificationCenter inbox={inbox} />

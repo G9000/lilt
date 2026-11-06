@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { practice } from "../ui/practice";
 import { useEffect, useRef, useState } from "react";
@@ -37,17 +38,17 @@ export function LiveReadout({ points, band, showSteadiness }: { points: PitchPoi
   const steadyPct = sd === null ? 0 : Math.max(0, Math.min(100, 100 - (sd / 1.5) * 100));
   return (
     <div className="vreadout">
-      <div className={["readout", shared["readout"]].filter(Boolean).join(' ')} aria-live="off">
+      <div className={cx("readout", shared["readout"])} aria-live="off">
         <span className="hz">{hz ? `${hz.toFixed(0)} Hz` : "Listening…"}</span>
         <span className="note">{hz ? noteName(hz) : "–"}</span>
         {inBand !== null && (
-          <span className={[`vpill${inBand ? " ok" : ""}`, practice["vpill"]].filter(Boolean).join(' ')}>{inBand ? "In your range" : "Outside your range"}</span>
+          <span className={cx(`vpill${inBand ? " ok" : ""}`, practice["vpill"])}>{inBand ? "In your range" : "Outside your range"}</span>
         )}
       </div>
       {showSteadiness && (
-        <div className={["steady", shared["steady"]].filter(Boolean).join(' ')} aria-label={sd === null ? "Steadiness: waiting for a hum" : `Steadiness: pitch wavers about ${sd.toFixed(2)} semitones`}>
+        <div className={cx("steady", shared["steady"])} aria-label={sd === null ? "Steadiness: waiting for a hum" : `Steadiness: pitch wavers about ${sd.toFixed(2)} semitones`}>
           <span className="steady-k">Steadiness</span>
-          <div className={["steady-bar", shared["steady-bar"]].filter(Boolean).join(' ')}><div style={{ width: `${steadyPct}%` }} /></div>
+          <div className={cx("steady-bar", shared["steady-bar"])}><div style={{ width: `${steadyPct}%` }} /></div>
           <span className="steady-v">{sd === null ? "hum to see" : sd < 0.3 ? "smooth" : sd < 0.8 ? "a little wobbly" : "moving"}</span>
         </div>
       )}

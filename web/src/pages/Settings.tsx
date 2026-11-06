@@ -26,7 +26,7 @@ function ThemeChoice() {
     return () => window.removeEventListener("lilt:theme-mode", on);
   }, []);
   return (
-    <div className={["segmented", shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Theme">
+    <div className={cx("segmented", shared["segmented"])} role="group" aria-label="Theme">
       {(["auto", "light", "dark"] as const).map((x) => (
         <button key={x} aria-pressed={m === x} onClick={() => window.dispatchEvent(new CustomEvent("lilt:theme", { detail: x }))}>{x === "auto" ? "Auto" : x === "light" ? "Light" : "Dark"}</button>
       ))}
@@ -38,7 +38,7 @@ function ThemeChoice() {
 function TextSizeChoice() {
   const [t, setT] = useState<TextSize>(readTextSize);
   return (
-    <div className={["segmented", shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Text size">
+    <div className={cx("segmented", shared["segmented"])} role="group" aria-label="Text size">
       {TEXT_SIZES.map((x) => (
         <button key={x.id} aria-pressed={t === x.id} onClick={() => { applyTextSize(x.id); setT(x.id); }}>{x.label}</button>
       ))}
@@ -51,7 +51,7 @@ function SoundsChoice() {
   const [on, setOn] = useState(soundsOn);
   const choose = (v: boolean) => { setSounds(v); setOn(v); if (v) playSound("chime", true); };
   return (
-    <div className={["segmented", shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Soft sounds">
+    <div className={cx("segmented", shared["segmented"])} role="group" aria-label="Soft sounds">
       <button aria-pressed={!on} onClick={() => choose(false)}>Off</button>
       <button aria-pressed={on} onClick={() => choose(true)}>On</button>
     </div>
@@ -91,7 +91,7 @@ function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number
 /** A labelled row: the label (and a line of help) on the left, the control on the right. */
 export function Row({ label, help, htmlFor, children, stack }: { label: string; help?: ReactNode; htmlFor?: string; children?: ReactNode; stack?: boolean }) {
   return (
-    <div className={[cx(pages.sxRow, `sx-row${stack ? " stack" : ""}`), shared["stack"]].filter(Boolean).join(' ')}>
+    <div className={cx(cx(pages.sxRow, `sx-row${stack ? " stack" : ""}`), shared["stack"])}>
       <div className={cx(pages.sxRowL, "sx-row-l")}>
         {htmlFor ? <label htmlFor={htmlFor}>{label}</label> : <span className={cx(pages.sxLabel, "sx-label")}>{label}</span>}
         {help && <p className={cx(pages.sxHelp, "sx-help")}>{help}</p>}
@@ -150,7 +150,7 @@ function AppUpdates() {
       {isDesktop() ? <>
         <Row label="Installed version"><span>{status?.current ?? "Reading app version…"}</span></Row>
         <Row label="Update status" help={<span role="status">{updateStatus(status)}</span>} stack>
-          <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={openAppUpdates}>Open app updates</button>
+          <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={openAppUpdates}>Open app updates</button>
         </Row>
       </> : <>
         <Row label="Web version"><span>{CURRENT.version}</span></Row>
@@ -203,11 +203,11 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
         <div className={cx(pages.sxGroup, "sx-group")}>
           {notif !== "unsupported" ? (
             <Row label="Browser notifications" help={notif === "granted" ? "On while Lilt is open." : notif === "denied" ? "Blocked for this page. Reminders still appear inside Lilt." : "Off. Lilt can notify you while it's open."}>
-              {notif === "default" && <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void Notification.requestPermission().then(setNotif)}>Allow</button>}
+              {notif === "default" && <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={() => void Notification.requestPermission().then(setNotif)}>Allow</button>}
             </Row>
           ) : <Row label="Browser notifications" help="This browser can't show notifications. Reminders still appear inside Lilt." />}
           <Row label="Practice reminder" help="When to be reminded is set in Practice.">
-            <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={toPractice}>Practice settings</button>
+            <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={toPractice}>Practice settings</button>
           </Row>
         </div>
         <p className={cx(pages.sxNote, "sx-note")}>Nothing is set up in any outside messaging account. If your computer was asleep, you'll see one reminder, not a backlog.</p>
@@ -225,7 +225,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
 
   return (
     <div className={cx(pages.sx, `sx${pane ? " has-pane" : ""}`)}>
-      <h1 className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Settings</h1>
+      <h1 className={cx("sr-only", shared["sr-only"])}>Settings</h1>
       <nav className={cx(pages.sxSide, "sx-side")} aria-label="Settings">
         <div className={cx(pages.sxLights, "sx-lights")}>
           {onClose ? <button className="sx-l1" onClick={onClose} aria-label="Close settings" /> : <span className="sx-l1" aria-hidden="true" />}
@@ -244,7 +244,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
             </li>
           ))}
           {/* Your goal, range, warm-up, session length and reminder live in Practice settings. */}
-          {shown.length === 0 && <li className={cx(pages.sxNone, "sx-none")}>No settings match here. <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={toPractice}>Look in Practice settings</button></li>}
+          {shown.length === 0 && <li className={cx(pages.sxNone, "sx-none")}>No settings match here. <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={toPractice}>Look in Practice settings</button></li>}
         </ul>
       </nav>
       <section className={cx(pages.sxMain, "sx-main")} aria-label={cur?.title}>
@@ -341,7 +341,7 @@ export function PracticeSettings() {
           </Row>
           {p.comfort_range_hz && (
             <Row label={`${p.comfort_range_hz[0]}–${p.comfort_range_hz[1]} Hz`}>
-              <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => edit({ ...p, comfort_range_hz: null })}>Clear range</button>
+              <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={() => edit({ ...p, comfort_range_hz: null })}>Clear range</button>
             </Row>
           )}
         </div>

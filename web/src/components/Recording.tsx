@@ -1,96 +1,15 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { practice } from "../ui/practice";
-import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Take } from "../api";
 import { judgeRoom, Room } from "../noise";
-import { closeDelayLine, delayedStream, levelMeter, openMic, RecState, TakeMeta, TakeRecorder, wakeDelayLines } from "../recorder";
+import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
 import { Callout, StatusBadge } from "./bits";
 import { LiveReadout, useLivePitch } from "./LivePitch";
 
-interface MicCtx {
-  stream: MediaStream | null;
-  error: string | null;
-  request: (deviceId?: string) => Promise<MediaStream | null>;
-  devices: MediaDeviceInfo[];
-  deviceId: string | undefined;
-  release: () => void;
-}
-
-const Ctx = createContext<MicCtx | null>(null);
-
-export function MicProvider({ children }: { children: ReactNode }) {
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [deviceId, setDeviceId] = useState<string | undefined>(() => {
-    try { return localStorage.getItem("lilt.mic") ?? undefined; } catch { return undefined; }
-  });
-
-  // The open stream lives in a ref too, so overlapping requests (a click while the auto-open is
-  // pending, StrictMode's double effects) share one getUserMedia call and never orphan a stream.
-  const current = useRef<MediaStream | null>(null);
-  const pending = useRef<Promise<MediaStream | null> | null>(null);
-  const chosenId = useRef(deviceId);
-  chosenId.current = deviceId;
-
-  const request = useCallback(async (id?: string): Promise<MediaStream | null> => {
-    if (pending.current) {
-      if (id === undefined) return pending.current;
-      await pending.current;
-    }
-    const open = (async () => {
-      try {
-        const old = current.current;
-        if (old) { closeDelayLine(old); old.getTracks().forEach((t) => t.stop()); current.current = null; }
-        const s = await openMic(id ?? chosenId.current);
-        current.current = s;
-        delayedStream(s); // start the half-second pre-roll now, so the first take has it too
-        setStream(s);
-        setError(null);
-        const chosen = s.getAudioTracks()[0]?.getSettings().deviceId;
-        if (chosen) { setDeviceId(chosen); try { localStorage.setItem("lilt.mic", chosen); } catch { /* ignore */ } }
-        const all = await navigator.mediaDevices.enumerateDevices();
-        setDevices(all.filter((d) => d.kind === "audioinput"));
-        return s;
-      } catch (e: any) {
-        if (!current.current) setStream(null); // the old stream was already stopped above
-        const name = e?.name;
-        setError(
-          name === "NotAllowedError" ? "Microphone access was blocked. Allow the microphone for this page in your browser's site settings, then try again."
-          : name === "NotFoundError" || name === "OverconstrainedError" ? "No microphone was found. Connect one, or pick another input."
-          : name === "NotReadableError" ? "The microphone is busy in another app. Close it there and try again."
-          : e?.message ?? "Couldn't open the microphone."
-        );
-        return current.current;
-      } finally {
-        pending.current = null;
-      }
-    })();
-    pending.current = open;
-    return open;
-  }, []);
-
-  // Any click or key wakes the pre-roll, so it's already filling when you press Record.
-  useEffect(() => {
-    const wake = () => wakeDelayLines();
-    window.addEventListener("pointerdown", wake, true);
-    window.addEventListener("keydown", wake, true);
-    return () => { window.removeEventListener("pointerdown", wake, true); window.removeEventListener("keydown", wake, true); };
-  }, []);
-
-  const release = useCallback(() => {
-    const s = current.current;
-    if (s) { closeDelayLine(s); s.getTracks().forEach((t) => t.stop()); }
-    current.current = null;
-    setStream(null);
-  }, []);
-
-  return <Ctx.Provider value={{ stream, error, request, devices, deviceId, release }}>{children}</Ctx.Provider>;
-}
-
-export function useMic() {
-  return useContext(Ctx)!;
-}
+export { MicProvider, useMic } from "./Microphone";
+import { useMic } from "./Microphone";
 
 /** How long the room is listened to, quietly, before you're asked to speak. */
 const QUIET_MS = 2000;
@@ -139,45 +58,45 @@ export function MicCheck({ onReady }: { onReady: () => void }) {
   // Twenty segments; the last ones are the "too loud" zone.
   const segs = Array.from({ length: 20 }, (_, k) => k < Math.round(pct / 5));
   return (
-    <section className={["vmic", practice["vmic"]].filter(Boolean).join(' ')}>
-      <h2 className={["vh", practice["vh"]].filter(Boolean).join(' ')}>Microphone check</h2>
-      {!mic.stream && !mic.error && <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>Lilt records in this browser and saves to your own computer. Nothing is sent anywhere else.</p>}
+    <section className={cx("vmic", practice["vmic"])}>
+      <h2 className={cx("vh", practice["vh"])}>Microphone check</h2>
+      {!mic.stream && !mic.error && <p className={cx("vtip", practice["vtip"])}>Lilt records in this browser and saves to your own computer. Nothing is sent anywhere else.</p>}
       {mic.error && <Callout kind="warn"><p>{mic.error}</p></Callout>}
       {mic.stream && (
-        <div className={["vlive vmic-panel", practice["vlive"]].filter(Boolean).join(' ')}>
-          <div className={["vlive-top", practice["vlive-top"]].filter(Boolean).join(' ')}>
+        <div className={cx("vlive vmic-panel", practice["vlive"])}>
+          <div className={cx("vlive-top", practice["vlive-top"])}>
             <b>Input level</b>
             <span>{quietMoment ? "Stay quiet for a moment while Lilt listens to the room…" : "Say a few words at your usual volume."}</span>
           </div>
           <div className="levelbar" role="meter" aria-label="Input level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
             {segs.map((on, k) => <i key={k} className={on ? (k >= 17 ? "hot" : k >= 13 ? "warm" : "on") : ""} />)}
           </div>
-          <p className={[`vmic-state${tooHot ? " hot" : heard ? " ok" : ""}`, practice["vmic-state"]].filter(Boolean).join(' ')} aria-live="polite">
+          <p className={cx(`vmic-state${tooHot ? " hot" : heard ? " ok" : ""}`, practice["vmic-state"])} aria-live="polite">
             {tooHot ? "Too loud: move back a little" : heard ? "Level looks usable" : "Waiting to hear you…"}
           </p>
           {room?.noisy && (
-            <div className={["vmic-noise", practice["vmic-noise"]].filter(Boolean).join(' ')} role="status">
+            <div className={cx("vmic-noise", practice["vmic-noise"])} role="status">
               <p><b>There's some background sound.</b> In a noisy room, pitch readings can wander. If you can, close a window, turn off a fan, or move a little closer to the mic.</p>
-              <button className={["textlink", shared["textlink"]].filter(Boolean).join(' ')} onClick={() => setRound((k) => k + 1)}>Listen to the room again</button>
+              <button className={cx("textlink", shared["textlink"])} onClick={() => setRound((k) => k + 1)}>Listen to the room again</button>
             </div>
           )}
         </div>
       )}
-      <div className={["vactions", practice["vactions"]].filter(Boolean).join(' ')}>
-        {!mic.stream && !mic.error && <button className={["btn-primary btn-big", shared["btn-primary"], shared["btn-big"]].filter(Boolean).join(' ')} onClick={() => void mic.request()}>Turn on microphone</button>}
-        {mic.error && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void mic.request()}>Try again</button>}
-        {mic.stream && <button className={["btn-primary btn-big", shared["btn-primary"], shared["btn-big"]].filter(Boolean).join(' ')} onClick={onReady} disabled={!heard}>Sounds good, continue</button>}
-        {mic.stream && !heard && <button className={["btn-ghost", shared["btn-ghost"]].filter(Boolean).join(' ')} onClick={onReady}>Continue anyway</button>}
+      <div className={cx("vactions", practice["vactions"])}>
+        {!mic.stream && !mic.error && <button className={cx("btn-primary btn-big", shared["btn-primary"], shared["btn-big"])} onClick={() => void mic.request()}>Turn on microphone</button>}
+        {mic.error && <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void mic.request()}>Try again</button>}
+        {mic.stream && <button className={cx("btn-primary btn-big", shared["btn-primary"], shared["btn-big"])} onClick={onReady} disabled={!heard}>Sounds good, continue</button>}
+        {mic.stream && !heard && <button className={cx("btn-ghost", shared["btn-ghost"])} onClick={onReady}>Continue anyway</button>}
       </div>
       {mic.stream && mic.devices.length > 1 && (
-        <div className={["vmic-select", practice["vmic-select"]].filter(Boolean).join(' ')}>
+        <div className={cx("vmic-select", practice["vmic-select"])}>
           <label htmlFor="mic-select">Microphone</label>
           <select id="mic-select" value={mic.deviceId} onChange={(e) => void mic.request(e.target.value)}>
             {mic.devices.map((d) => <option key={d.deviceId} value={d.deviceId}>{d.label || "Microphone"}</option>)}
           </select>
         </div>
       )}
-      {mic.stream && <p className={["vcap", practice["vcap"]].filter(Boolean).join(' ')}>Keep the same microphone and distance from day to day, so recordings stay comparable.</p>}
+      {mic.stream && <p className={cx("vcap", practice["vcap"])}>Keep the same microphone and distance from day to day, so recordings stay comparable.</p>}
     </section>
   );
 }
@@ -312,40 +231,40 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
 
   const heard = points.some((p) => p.hz);
   return (
-    <div ref={root} className={[`vrec${recording ? " is-rec" : ""}`, practice["vrec"]].filter(Boolean).join(' ')}>
-      {title && <p className={[screen ? "vrec-title" : "vphrase", practice["vphrase"], practice["vrec-title"]].filter(Boolean).join(' ')}>{sentence(title)}</p>}
+    <div ref={root} className={cx(`vrec${recording ? " is-rec" : ""}`, practice["vrec"])}>
+      {title && <p className={cx(screen ? "vrec-title" : "vphrase", practice["vphrase"], practice["vrec-title"])}>{sentence(title)}</p>}
       {screen?.(recording)}
-      {cue && <p className={["vtip", practice["vtip"]].filter(Boolean).join(' ')}>{sentence(cue)}</p>}
+      {cue && <p className={cx("vtip", practice["vtip"])}>{sentence(cue)}</p>}
       {live && (
-        <div className={["vlive", practice["vlive"]].filter(Boolean).join(' ')}>
+        <div className={cx("vlive", practice["vlive"])}>
           {recording && heard
             ? <LiveReadout points={points} band={band} showSteadiness={steadiness} />
-            : <div className={["vlive-top", practice["vlive-top"]].filter(Boolean).join(' ')}><b>Live pitch</b><span>{recording ? "listening…" : "starts when you record"}</span></div>}
+            : <div className={cx("vlive-top", practice["vlive-top"])}><b>Live pitch</b><span>{recording ? "listening…" : "starts when you record"}</span></div>}
           <LiveLine points={points} active={recording} />
         </div>
       )}
-      {!live && steadiness && recording && <div className={["vlive", practice["vlive"]].filter(Boolean).join(' ')}><LiveReadout points={points} showSteadiness /></div>}
-      <div className={["vrecrow", practice["vrecrow"]].filter(Boolean).join(' ')}>
+      {!live && steadiness && recording && <div className={cx("vlive", practice["vlive"])}><LiveReadout points={points} showSteadiness /></div>}
+      <div className={cx("vrecrow", practice["vrecrow"])}>
         {recording ? (
-          <button className={["rec-btn stop", shared["rec-btn"]].filter(Boolean).join(' ')} onClick={() => void stop()} aria-label="Stop recording"><span className={["dot", shared["dot"]].filter(Boolean).join(' ')} aria-hidden="true" /></button>
+          <button className={cx("rec-btn stop", shared["rec-btn"])} onClick={() => void stop()} aria-label="Stop recording"><span className={cx("dot", shared["dot"])} aria-hidden="true" /></button>
         ) : (
-          <button className={["rec-btn", shared["rec-btn"]].filter(Boolean).join(' ')} onClick={() => void start()} disabled={state === "saving"} aria-label="Start recording"><span className={["dot", shared["dot"]].filter(Boolean).join(' ')} aria-hidden="true" /></button>
+          <button className={cx("rec-btn", shared["rec-btn"])} onClick={() => void start()} disabled={state === "saving"} aria-label="Start recording"><span className={cx("dot", shared["dot"])} aria-hidden="true" /></button>
         )}
-        <div className={["vrec-t", practice["vrec-t"]].filter(Boolean).join(' ')}>
+        <div className={cx("vrec-t", practice["vrec-t"])}>
           <b aria-hidden="true">{recording ? "Stop" : state === "saving" ? "Saving" : "Record"}</b>
           {state === "idle"
-            ? (hint ? <span>{hint}</span> : <span className={["vkbd", practice["vkbd"]].filter(Boolean).join(' ')}>or press <kbd>Space</kbd></span>)
-            : <span className={["vrec-st", practice["vrec-st"]].filter(Boolean).join(' ')}><StatusBadge status={state === "error" ? "error" : state} />{recording && <span className={["vclock", practice["vclock"]].filter(Boolean).join(' ')}>{clock(elapsed)}</span>}</span>}
+            ? (hint ? <span>{hint}</span> : <span className={cx("vkbd", practice["vkbd"])}>or press <kbd>Space</kbd></span>)
+            : <span className={cx("vrec-st", practice["vrec-st"])}><StatusBadge status={state === "error" ? "error" : state} />{recording && <span className={cx("vclock", practice["vclock"])}>{clock(elapsed)}</span>}</span>}
         </div>
         {(knob || keys) && (
-          <div className={["vkeys", practice["vkeys"]].filter(Boolean).join(' ')}>
-            {knob && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={knob.onTurn} disabled={recording}>{sentence(knob.label)}</button>}
+          <div className={cx("vkeys", practice["vkeys"])}>
+            {knob && <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={knob.onTurn} disabled={recording}>{sentence(knob.label)}</button>}
             {keys}
           </div>
         )}
       </div>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      {state === "error" && rec.current?.onServer && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
+      {state === "error" && rec.current?.onServer && <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
     </div>
   );
 }

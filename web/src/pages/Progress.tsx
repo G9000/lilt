@@ -59,7 +59,7 @@ export function ProgressPage() {
       <section className={cx(pages.dvSec, "dv-sec pg-recs")} aria-labelledby="hist-h">
         <div className={cx(pages.dvSecHead, "dv-sec-head")}>
           <h2 id="hist-h">Recordings by task</h2>
-          <label htmlFor="days" className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Window</label>
+          <label htmlFor="days" className={cx("sr-only", shared["sr-only"])}>Window</label>
           <select id="days" className="dv-select" value={days} onChange={(e) => setDays(Number(e.target.value))}>
             <option value={7}>Last 7 days</option><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option>
           </select>
@@ -86,7 +86,7 @@ export function ProgressPage() {
                       <AudioPlayer src={t.audio_url} label={takeName(t)} compact knownDuration={t.analysis_summary?.duration_s} />
                       <div className="pg-take-meta">
                         <span>{shortDate(t.local_date)}</span>
-                        {t.favourite && <span className={["badge", shared["badge"]].filter(Boolean).join(' ')}>{Icon.star}Favourite</span>}
+                        {t.favourite && <span className={cx("badge", shared["badge"])}>{Icon.star}Favourite</span>}
                         <TakeFlags take={t} />
                         <span className="pg-hz">{t.analysis_summary?.f0_median_hz ? <><b>{t.analysis_summary.f0_median_hz.toFixed(0)} Hz</b> middle pitch</> : "No pitch summary"}</span>
                       </div>
@@ -97,7 +97,7 @@ export function ProgressPage() {
             </ul>
             <div className={`pg-compare${picked.length ? " live" : ""}`}>
               <span aria-live="polite">{picked.length === 2 ? "Two picked." : picked.length === 1 ? "One picked. Pick one more." : "Pick two recordings to compare."}</span>
-              <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} disabled={picked.length !== 2} onClick={() => go(`/compare?a=${picked[0]}&b=${picked[1]}`)}>Compare selected</button>
+              <button className={cx("btn-primary", shared["btn-primary"])} disabled={picked.length !== 2} onClick={() => go(`/compare?a=${picked[0]}&b=${picked[1]}`)}>Compare selected</button>
             </div>
           </>
         )}
@@ -105,7 +105,7 @@ export function ProgressPage() {
 
       <details className="dv-quiet">
         <summary>What Lilt can't assess yet</summary>
-        <div className={["body", shared["body"]].filter(Boolean).join(' ')}>
+        <div className={cx("body", shared["body"])}>
           <ul>{p.missing_evaluation_assets.map((m) => <li key={m}>{m}</li>)}</ul>
           <p>Until those exist, Lilt relies on your own listening and reports, source-checked exercises and descriptive measurements.</p>
         </div>

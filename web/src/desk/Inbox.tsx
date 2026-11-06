@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { roomStyles } from "./roomStyles";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
@@ -86,7 +87,7 @@ export function InboxButton({ inbox }: { inbox: InboxState }) {
   return (
     <button className={[`ib-btn${inbox.unread ? "" : " read"}`, roomStyles["ib-btn"]].join(" ")} onClick={(e) => { e.stopPropagation(); inbox.toggle(); }} aria-expanded={inbox.open}
       aria-label={inbox.unread ? `Notifications, ${inbox.unread} new` : "Notifications"}>
-      {ENVELOPE}<span className={["dot", shared["dot"]].filter(Boolean).join(' ')} aria-hidden="true" />
+      {ENVELOPE}<span className={cx("dot", shared["dot"])} aria-hidden="true" />
     </button>
   );
 }

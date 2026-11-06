@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { practice } from "../ui/practice";
 import { shared } from "../ui/shared";
 import { ReactNode } from "react";
@@ -15,9 +16,9 @@ export function Device3D({ screen, onPress, pressLabel, led = false, busy = fals
   busy?: boolean;
 }) {
   return (
-    <div className={[`vplan${led ? " is-live" : ""}`, practice["vplan"]].filter(Boolean).join(' ')}>
+    <div className={cx(`vplan${led ? " is-live" : ""}`, practice["vplan"])}>
       <div className="vplan-body">{screen}</div>
-      <button className={[["btn-primary vgo", shared["btn-primary"]].filter(Boolean).join(' '), practice["vgo"]].filter(Boolean).join(' ')} onClick={onPress} disabled={busy} aria-busy={busy || undefined}>
+      <button className={cx(cx("btn-primary vgo", shared["btn-primary"]), practice["vgo"])} onClick={onPress} disabled={busy} aria-busy={busy || undefined}>
         {pressLabel}
       </button>
     </div>

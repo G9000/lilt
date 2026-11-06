@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { useEffect, useRef, useState } from "react";
 import { PianoRoll, PitchPoint, contourPoints } from "./PianoRoll";
@@ -182,21 +183,21 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
     : null;
 
   return (
-    <div className={[compact ? "player compact" : "player", shared["player"]].filter(Boolean).join(' ')}>
-      <div className={["player-head", shared["player-head"]].filter(Boolean).join(' ')}>
-        {tag && <span className={["ab-tag", shared["ab-tag"]].filter(Boolean).join(' ')} aria-hidden="true">{tag}</span>}
-        <span className={["label", shared["label"]].filter(Boolean).join(' ')}>{label}</span>
-        <span className={["spacer", shared["spacer"]].filter(Boolean).join(' ')} />
-        <span className={["time", shared["time"]].filter(Boolean).join(' ')} aria-live="off">{fmt(t)} / {fmt(dur)}</span>
+    <div className={cx(compact ? "player compact" : "player", shared["player"])}>
+      <div className={cx("player-head", shared["player-head"])}>
+        {tag && <span className={cx("ab-tag", shared["ab-tag"])} aria-hidden="true">{tag}</span>}
+        <span className={cx("label", shared["label"])}>{label}</span>
+        <span className={cx("spacer", shared["spacer"])} />
+        <span className={cx("time", shared["time"])} aria-live="off">{fmt(t)} / {fmt(dur)}</span>
       </div>
       <div className="player-main flex items-center gap-3">
-        <button className={["play-btn", shared["play-btn"]].filter(Boolean).join(' ')} onClick={toggle} aria-label={`${playing ? "Pause" : "Play"} ${label}`}>
+        <button className={cx("play-btn", shared["play-btn"])} onClick={toggle} aria-label={`${playing ? "Pause" : "Play"} ${label}`}>
           {playing
             ? <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="3" width="4" height="14" rx="1" fill="currentColor" /><rect x="12" y="3" width="4" height="14" rx="1" fill="currentColor" /></svg>
             : <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3l12 7-12 7z" fill="currentColor" /></svg>}
         </button>
         <div
-          className={[`wave flex-1 ${compact ? "h-11!" : "h-16!"}`, shared["wave"]].filter(Boolean).join(' ')}
+          className={cx(`wave flex-1 ${compact ? "h-11!" : "h-16!"}`, shared["wave"])}
           role="slider"
           tabIndex={0}
           aria-label={`Position in ${label}`}
@@ -220,11 +221,11 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
           <PianoRoll points={pitch} duration={dur} currentTime={t} band={band}
             onSeek={(x) => { const a = audio.current!; a.currentTime = x; if (a.paused) a.play().catch(() => {}); }}
             label={`Measured pitch line for ${label}. Click to play from a point.`} height={compact ? 140 : 180} />
-          <p className={["small muted [margin:4px_0_0]", shared["small"], shared["muted"]].filter(Boolean).join(' ')}>Measured pitch (Praat). Click the line to play from there. Gaps are unvoiced or silent.</p>
+          <p className={cx("small muted [margin:4px_0_0]", shared["small"], shared["muted"])}>Measured pitch (Praat). Click the line to play from there. Gaps are unvoiced or silent.</p>
         </div>
       )}
       {segment && (
-        <p className={["small muted [margin:6px_0_0]", shared["small"], shared["muted"]].filter(Boolean).join(' ')}>
+        <p className={cx("small muted [margin:6px_0_0]", shared["small"], shared["muted"])}>
           Highlighted: {segmentLabel ?? "evidence segment"}, {segment[0].toFixed(2)}–{segment[1].toFixed(2)} s
         </p>
       )}

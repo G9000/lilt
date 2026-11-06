@@ -1,5 +1,6 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
-import { practice } from "../ui/practice";
+import { desktop as practice } from "../ui/desktop";
 import { roomStyles } from "./roomStyles";
 import { useEffect, useId, useRef, useState } from "react";
 import { radio, radioMoods, useRadio } from "./lofi";
@@ -31,7 +32,7 @@ export function MusicMini() {
       disabled={spotify && !music.spotify.toggle} onClick={() => spotify ? music.spotify.toggle?.() : void radio.toggle()}>
       <PlayIcon paused={!active} />
     </button>
-    {ducked && <span className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Paused while the mic is on</span>}
+    {ducked && <span className={cx("sr-only", shared["sr-only"])}>Paused while the mic is on</span>}
   </span>;
 }
 
@@ -51,18 +52,18 @@ export function MusicWindow({ open }: { open: boolean }) {
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
   }, [open]);
-  return <section className={[[["ds-win music-window", roomStyles["ds-win"], roomStyles["music-window"]].join(" "), practice["ds-win"]].filter(Boolean).join(' '), shared["ds-win"]].filter(Boolean).join(' ')} hidden={!open} aria-label="Music">
-    <div className={[["ds-tb", roomStyles["ds-tb"]].join(" "), practice["ds-tb"]].filter(Boolean).join(' ')}>
+  return <section className={cx(cx(["ds-win music-window", roomStyles["ds-win"], roomStyles["music-window"]].join(" "), practice["ds-win"]), shared["ds-win"])} hidden={!open} aria-label="Music">
+    <div className={cx(["ds-tb", roomStyles["ds-tb"]].join(" "), practice["ds-tb"])}>
       <div className={["ds-lights", roomStyles["ds-lights"]].join(" ")}>
         <button ref={close} className={["ds-l1", roomStyles["ds-l1"]].join(" ")} onClick={closeMusic} aria-label="Close Music" />
         <button className={["ds-l2", roomStyles["ds-l2"]].join(" ")} onClick={closeMusic} aria-label="Minimize Music" />
       </div>
-      <div className={[["ds-title", roomStyles["ds-title"]].join(" "), practice["ds-title"]].filter(Boolean).join(' ')}>Music</div>
+      <div className={cx(["ds-title", roomStyles["ds-title"]].join(" "), practice["ds-title"])}>Music</div>
     </div>
     {/* Hidden itself too: a page may have only one <main> without the hidden attribute. */}
-    <main id={open ? "main" : undefined} hidden={!open} tabIndex={-1} className={[["ds-body music-body", roomStyles["ds-body"], roomStyles["music-body"]].join(" "), practice["ds-body"]].filter(Boolean).join(' ')}>
+    <main id={open ? "main" : undefined} hidden={!open} tabIndex={-1} className={cx(["ds-body music-body", roomStyles["ds-body"], roomStyles["music-body"]].join(" "), practice["ds-body"])}>
       <fieldset className={["music-source", roomStyles["music-source"]].join(" ")}>
-        <legend className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Listen to</legend>
+        <legend className={cx("sr-only", shared["sr-only"])}>Listen to</legend>
         {(["lofi", "spotify"] as const).map(source => <label key={source}>
           <input type="radio" name={`${id}-source`} checked={music.source === source} onChange={() => selectMusicSource(source)} />
           <span>{source === "lofi" ? "Lo-fi" : "Spotify"}</span>

@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { practice } from "../ui/practice";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -42,39 +43,39 @@ export function TextHistory({ promptId }: { promptId: string }) {
 
   return (
     <div className="rl th">
-      <a className={["th-back", practice["th-back"]].filter(Boolean).join(' ')} href="#/history">Recordings</a>
-      <header className={["rl-head", practice["rl-head"]].filter(Boolean).join(' ')}>
+      <a className={cx("th-back", practice["th-back"])} href="#/history">Recordings</a>
+      <header className={cx("rl-head", practice["rl-head"])}>
         <h1>{level?.title ?? "This text"}</h1>
-        <p className={["th-text", practice["th-text"]].filter(Boolean).join(' ')}>{text}</p>
-        {takes && takes.length > 0 && <p className={["th-sub", practice["th-sub"]].filter(Boolean).join(' ')}>{takes.length} take{takes.length === 1 ? "" : "s"} since {day(takes[0])}{level && <> · <a href={`#/studio/${level.id}`}>Practise it</a></>}</p>}
+        <p className={cx("th-text", practice["th-text"])}>{text}</p>
+        {takes && takes.length > 0 && <p className={cx("th-sub", practice["th-sub"])}>{takes.length} take{takes.length === 1 ? "" : "s"} since {day(takes[0])}{level && <> · <a href={`#/studio/${level.id}`}>Practise it</a></>}</p>}
       </header>
-      {takes && takes.length === 0 && <p className={["rl-empty", practice["rl-empty"]].filter(Boolean).join(' ')}>No takes of this text yet.</p>}
+      {takes && takes.length === 0 && <p className={cx("rl-empty", practice["rl-empty"])}>No takes of this text yet.</p>}
       {takes && takes.filter(middle).length > 1 && <Trend takes={takes} band={band} picked={picked} onPick={pick} />}
 
       {pair.length === 2 && (
-        <section className={["th-pair", practice["th-pair"]].filter(Boolean).join(' ')} aria-label="Two takes side by side">
+        <section className={cx("th-pair", practice["th-pair"])} aria-label="Two takes side by side">
           <h2>Side by side</h2>
-          <div className={["ab", shared["ab"]].filter(Boolean).join(' ')}>
+          <div className={cx("ab", shared["ab"])}>
             {pair.map((t, i) => <AudioPlayer key={t.id} src={t.audio_url} tag={i ? "B" : "A"} label={`${day(t)}, ${time(t)}`} knownDuration={t.analysis_summary?.duration_s} pitchTakeId={t.id} band={band} compact />)}
           </div>
-          <p className={["th-hint", practice["th-hint"]].filter(Boolean).join(' ')}>Listen to both. Which feels more like you? Pick any two takes below to swap them in. <button className={["th-link", practice["th-link"]].filter(Boolean).join(' ')} onClick={() => go(`/compare?a=${pair[0].id}&b=${pair[1].id}`)}>Detailed comparison</button></p>
+          <p className={cx("th-hint", practice["th-hint"])}>Listen to both. Which feels more like you? Pick any two takes below to swap them in. <button className={cx("th-link", practice["th-link"])} onClick={() => go(`/compare?a=${pair[0].id}&b=${pair[1].id}`)}>Detailed comparison</button></p>
         </section>
       )}
 
       {takes && takes.length > 0 && (
         <section aria-label="Every take">
-          <h2 className={["th-h2", practice["th-h2"]].filter(Boolean).join(' ')}>Every take</h2>
-          <ul className={["th-list", practice["th-list"]].filter(Boolean).join(' ')}>
+          <h2 className={cx("th-h2", practice["th-h2"])}>Every take</h2>
+          <ul className={cx("th-list", practice["th-list"])}>
             {[...takes].reverse().map((t) => {
               const n = picked.indexOf(t.id), hz = middle(t);
               return (
                 <li key={t.id} className={n >= 0 ? "on" : undefined}>
-                  <button className={["th-pick", practice["th-pick"]].filter(Boolean).join(' ')} aria-pressed={n >= 0} onClick={() => pick(t.id)} aria-label={`${n >= 0 ? "Remove from" : "Add to"} side by side: ${day(t)}, ${time(t)}`}>
+                  <button className={cx("th-pick", practice["th-pick"])} aria-pressed={n >= 0} onClick={() => pick(t.id)} aria-label={`${n >= 0 ? "Remove from" : "Add to"} side by side: ${day(t)}, ${time(t)}`}>
                     {n >= 0 ? (pair[0]?.id === t.id ? "A" : "B") : ""}
                   </button>
-                  <div className={["th-when", practice["th-when"]].filter(Boolean).join(' ')}><b>{day(t)}</b><span>{time(t)}{t.favourite ? " · favourite" : ""}</span></div>
-                  <div className={["th-hz", practice["th-hz"]].filter(Boolean).join(' ')}>{hz ? <><b>{Math.round(hz)} Hz</b><span>{noteName(hz)}</span></> : <span>not measured</span>}</div>
-                  <div className={["th-play", practice["th-play"]].filter(Boolean).join(' ')}><AudioPlayer src={t.audio_url} label="" knownDuration={t.analysis_summary?.duration_s} compact /></div>
+                  <div className={cx("th-when", practice["th-when"])}><b>{day(t)}</b><span>{time(t)}{t.favourite ? " · favourite" : ""}</span></div>
+                  <div className={cx("th-hz", practice["th-hz"])}>{hz ? <><b>{Math.round(hz)} Hz</b><span>{noteName(hz)}</span></> : <span>not measured</span>}</div>
+                  <div className={cx("th-play", practice["th-play"])}><AudioPlayer src={t.audio_url} label="" knownDuration={t.analysis_summary?.duration_s} compact /></div>
                 </li>
               );
             })}
@@ -118,33 +119,33 @@ function Trend({ takes, band, picked, onPick }: { takes: Take[]; band: [number, 
   const hi_ = hover ? pts.findIndex((p) => p.t.id === hover.id) : -1;
 
   return (
-    <figure className={["th-trend", practice["th-trend"]].filter(Boolean).join(' ')} ref={box}>
+    <figure className={cx("th-trend", practice["th-trend"])} ref={box}>
       <svg width={w} height={H} role="img" aria-label={`Middle pitch on each take, from ${Math.round(middle(pts[0].t)!)} Hz on the first to ${Math.round(middle(pts[pts.length - 1].t)!)} Hz on the latest`}>
         {band && (() => {
           const top = Math.max(PAD.t, Y(hzToMidi(band[1]))), bottom = Math.min(H - PAD.b, Y(hzToMidi(band[0])));
-          return bottom > top && <rect className={["th-band", practice["th-band"]].filter(Boolean).join(' ')} x={PAD.l} width={w - PAD.l - PAD.r} y={top} height={bottom - top} />;
+          return bottom > top && <rect className={cx("th-band", practice["th-band"])} x={PAD.l} width={w - PAD.l - PAD.r} y={top} height={bottom - top} />;
         })()}
         {grid.map((v) => (
           <g key={v}>
-            <line className={["th-grid", practice["th-grid"]].filter(Boolean).join(' ')} x1={PAD.l} x2={w - PAD.r} y1={Y(hzToMidi(v))} y2={Y(hzToMidi(v))} />
-            <text className={["th-ax", practice["th-ax"]].filter(Boolean).join(' ')} x={PAD.l - 8} y={Y(hzToMidi(v))} textAnchor="end" dominantBaseline="middle">{v} Hz</text>
+            <line className={cx("th-grid", practice["th-grid"])} x1={PAD.l} x2={w - PAD.r} y1={Y(hzToMidi(v))} y2={Y(hzToMidi(v))} />
+            <text className={cx("th-ax", practice["th-ax"])} x={PAD.l - 8} y={Y(hzToMidi(v))} textAnchor="end" dominantBaseline="middle">{v} Hz</text>
           </g>
         ))}
-        <path className={["th-line", practice["th-line"]].filter(Boolean).join(' ')} d={path} />
+        <path className={cx("th-line", practice["th-line"])} d={path} />
         {pts.map((p, i) => {
           const on = picked.includes(p.t.id);
           return (
             <g key={p.t.id} onMouseEnter={() => setHover(p.t)} onMouseLeave={() => setHover(null)} onClick={() => onPick(p.t.id)} className="cursor-pointer">
               <circle cx={X(i)} cy={Y(p.m)} r={14} fill="transparent" />
-              <circle className={[`th-dot${on ? " on" : ""}`, practice["th-dot"]].filter(Boolean).join(' ')} cx={X(i)} cy={Y(p.m)} r={on ? 6 : 4.5} />
+              <circle className={cx(`th-dot${on ? " on" : ""}`, practice["th-dot"])} cx={X(i)} cy={Y(p.m)} r={on ? 6 : 4.5} />
             </g>
           );
         })}
-        <text className={["th-ax", practice["th-ax"]].filter(Boolean).join(' ')} x={PAD.l} y={H - 6}>{day(pts[0].t)}</text>
-        {pts.length > 1 && <text className={["th-ax", practice["th-ax"]].filter(Boolean).join(' ')} x={w - PAD.r} y={H - 6} textAnchor="end">{day(pts[pts.length - 1].t)}</text>}
+        <text className={cx("th-ax", practice["th-ax"])} x={PAD.l} y={H - 6}>{day(pts[0].t)}</text>
+        {pts.length > 1 && <text className={cx("th-ax", practice["th-ax"])} x={w - PAD.r} y={H - 6} textAnchor="end">{day(pts[pts.length - 1].t)}</text>}
       </svg>
       {hover && hi_ >= 0 && (
-        <div className={["th-tip", practice["th-tip"]].filter(Boolean).join(' ')} style={{ left: Math.min(w - 150, Math.max(0, X(hi_) - 75)), top: Y(pts[hi_].m) - 62 }}>
+        <div className={cx("th-tip", practice["th-tip"])} style={{ left: Math.min(w - 150, Math.max(0, X(hi_) - 75)), top: Y(pts[hi_].m) - 62 }}>
           <b>{Math.round(middle(hover)!)} Hz <span>{noteName(middle(hover)!)}</span></b>
           <span>{day(hover)}, {time(hover)}</span>
         </div>

@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { practice } from "../ui/practice";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createFollower, notesFor, tokenize, Follower } from "../readalong";
@@ -76,7 +77,7 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
 
   return (
     <>
-      <p className={[`readtext${kind === "passage" ? " passage" : kind === "hum" ? " hum" : ""}${sketches ? " has-pitch" : ""}${active ? " is-following" : ""}`, practice["readtext"]].filter(Boolean).join(' ')} aria-label={text}>
+      <p className={cx(`readtext${kind === "passage" ? " passage" : kind === "hum" ? " hum" : ""}${sketches ? " has-pitch" : ""}${active ? " is-following" : ""}`, practice["readtext"])} aria-label={text}>
         {tokens.map((tk, k) => {
           if (!tk.word) return <span key={k} aria-hidden="true">{tk.text}</span>;
           const ni = numFor(tk.index);
@@ -95,7 +96,7 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
           );
         })}
       </p>
-      <p className={["follow-status", practice["follow-status"]].filter(Boolean).join(' ')} aria-live="polite">
+      <p className={cx("follow-status", practice["follow-status"])} aria-live="polite">
         {active
           ? following ? "Following you. Tap a word if I lose your place." : "Start reading. The highlight follows your syllables."
           : sketches ? "Your measured pitch under each word, approximate." : ""}
@@ -119,5 +120,5 @@ export function ReadNotes({ text, levelId, hint, withHint = true, folded = false
       ))}
     </ul>
   );
-  return folded ? <details className={["sd-tips", practice["sd-tips"]].filter(Boolean).join(' ')}><summary>Reading tips</summary>{content}</details> : content;
+  return folded ? <details className={cx("sd-tips", practice["sd-tips"])}><summary>Reading tips</summary>{content}</details> : content;
 }

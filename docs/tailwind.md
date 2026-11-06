@@ -11,6 +11,7 @@ The native updater uses Tailwind's CLI to produce its bundled stylesheet.
 - `web/src/theme/tailwind.css` exposes those variables through `@theme inline` utilities and the dark variant.
 - `web/src/theme/*-keyframes.css` contains animation definitions and their registered properties.
 - `web/src/ui/` contains explicit shared, practice, page, Markdown and accent utility recipes.
+- `web/src/ui/desktop.ts` keeps the room's window chrome independent of deferred practice styles.
 - `web/src/desk/roomStyles.ts` contains the illustrated room, desktop, music and yarn recipes.
 - `desktop/styles/updates.css` is the native updater's theme input; `desktop/ui/updates.html`
   contains its utilities. `desktop/ui/updates.css` is generated, not handwritten.
@@ -24,8 +25,10 @@ are explicitly attached to their elements; there is no runtime class-name regist
 utilities in recipes: a redundant `:where(.component)` guard produces a separate CSS rule for
 every component instead of sharing utilities. Keep genuine ancestor, descendant and state
 conditions. The reading column retains a small guarded recipe to preserve its verified cascade.
-Compose named recipes as static class text, rather than assembling arrays of utility strings
-at runtime. Avoid adding new marker-based styling when a direct utility or a small shared
+Compose named recipes as static class text; constant literal concatenation is folded at build
+time and avoids shipping formatting whitespace. Use `cx` for conditional JSX class lists,
+instead of repeating array/filter/join expressions at every element. Avoid adding new
+marker-based styling when a direct utility or a small shared
 component expresses it clearly.
 
 ## Theme and interaction rules
@@ -64,6 +67,9 @@ source-scanning mistakes that TypeScript cannot detect.
 `bun run --cwd web test:bundle` builds in a disposable directory and checks the total CSS/JS
 sizes, including gzip. The budgets leave room for ordinary changes while detecting a return
 to duplicated component-specific utilities. Review measured size changes before raising them.
+The initial JavaScript budget includes every static import from the build manifest; deferred
+chunks still count toward the separate total budget. `bun run --cwd web test:loading` checks
+the real production downloads, slow/failing loads and microphone continuity between screens.
 Use a scratch output directory while testing web builds. Inspect narrow and wide screens in
 light/dark themes, and exercise states rather than relying only on static screenshots.
 

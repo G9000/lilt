@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { markdown } from "../ui/markdown";
 import ReactMarkdown, { defaultUrlTransform, type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -31,9 +32,9 @@ const components: Components = {
   ),
   img: ({ node: _node, src, alt, ...props }) => src
     ? <img {...props} src={src} alt={alt ?? ""} loading="lazy" />
-    : <span className={["md-image-fallback", markdown["md-image-fallback"]].filter(Boolean).join(' ')}>{alt}</span>,
+    : <span className={cx("md-image-fallback", markdown["md-image-fallback"])}>{alt}</span>,
   table: ({ node: _node, ...props }) => (
-    <div className={["md-table", markdown["md-table"]].filter(Boolean).join(' ')} role="region" aria-label="Scrollable table" tabIndex={0}><table {...props} /></div>
+    <div className={cx("md-table", markdown["md-table"])} role="region" aria-label="Scrollable table" tabIndex={0}><table {...props} /></div>
   ),
   pre: ({ node: _node, ...props }) => <pre {...props} tabIndex={0} aria-label="Code block" />,
 };
@@ -45,7 +46,7 @@ export function Markdown({ src, className, headingOffset = 0, course, chapters }
     ...(headingOffset ? Object.fromEntries([1, 2, 3, 4, 5, 6].map(level => [`h${level}`, `h${Math.min(6, level + headingOffset)}`])) : {}),
   }), [headingOffset]);
   return (
-    <div className={[["md", className].filter(Boolean).join(" "), markdown["md"]].filter(Boolean).join(' ')} onKeyDown={readingKeys}>
+    <div className={cx(cx("md", className), markdown["md"])} onKeyDown={readingKeys}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         remarkRehypeOptions={{ clobberPrefix: `md-${id}-` }}

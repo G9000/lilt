@@ -25,7 +25,7 @@ function Snippet({ text, label }: { text: string; label: string }) {
   return (
     <div className={cx(pages.stSnip, "st-snip")}>
       <pre aria-label={label}>{text}</pre>
-      <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={copy}>{done ? "Copied" : "Copy"}</button>
+      <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={copy}>{done ? "Copied" : "Copy"}</button>
     </div>
   );
 }
@@ -80,7 +80,7 @@ export function ConnectAI() {
         <Snippet label="Tunnel command" text="cloudflared tunnel --url http://127.0.0.1:7878" />
         <div className={cx(pages.stInline, "st-inline")}>
           <input type="url" inputMode="url" aria-label="Public address" placeholder="https://something.trycloudflare.com" value={address} onChange={(e) => setAddress(e.target.value)} />
-          <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void saveAddress()} disabled={address.trim().replace(/\/$/, "") === (c.public_url ?? "")}>Save address</button>
+          <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void saveAddress()} disabled={address.trim().replace(/\/$/, "") === (c.public_url ?? "")}>Save address</button>
         </div>
       </div>
       <div className={cx(pages.stField, "st-field")}>
@@ -94,13 +94,13 @@ export function ConnectAI() {
         {code && left > 0 ? (
           <p className={cx(pages.stCode, "st-code")} aria-live="polite"><b>{code.code}</b><span>{Math.floor(left / 60)}:{String(left % 60).padStart(2, "0")} left</span></p>
         ) : (
-          <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void getCode()} disabled={!c.public_url}>Get a code</button>
+          <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void getCode()} disabled={!c.public_url}>Get a code</button>
         )}
       </div>
       {c.connections.map((x) => (
         <div className={cx(pages.stRow, "st-row")} key={x.id}>
           <div><span className={cx(pages.stLabel, "st-label")}>{x.client_name}</span><p className={cx(pages.stHelp, "st-help")}>Connected {ago(x.connected)}, last used {ago(x.last_used)}</p></div>
-          <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void run(async () => { await api.disconnectApp(x.id); await load(); })}>Disconnect</button>
+          <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void run(async () => { await api.disconnectApp(x.id); await load(); })}>Disconnect</button>
         </div>
       ))}
       </details>

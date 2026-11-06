@@ -1,498 +1,474 @@
 /** Static page recipes. Marker classes remain for accessibility, interaction and browser checks. */
 export const pages = {
   tx: `[container-type:inline-size]`,
-  st: `[container-type:inline-size] grid gap-y-[28px] gap-x-[28px] pt-[14px] min-w-0 grid-cols-[minmax(0,_1fr)]
-    [&_.st-unit_input]:w-[96px] [&_.st-unit_input]:text-right [&_.st-unit_input]:tabular-nums
-    [&_.st-wide]:flex-none [&_.st-wide]:w-[240px] [&_.st-mid]:flex-none [&_.st-mid]:w-[140px]
-    [&_input::placeholder]:text-ink-3 [&_textarea::placeholder]:text-ink-3
-    [@container(max-width:_480px)]:[&_.st-wide]:w-full`,
   txLoading: `mt-0 mr-0 mb-0 ml-0 pt-[48px] pr-0 pb-[48px] pl-0 text-center text-[13px] text-ink-3`,
-  txHead: `mt-[10px] mr-0 mb-[22px] ml-0 [&_h1]:text-[28px] [&_h1]:leading-[1.15] [&_h1]:tracking-[-0.035em] [&_h1]:mt-0
-    [&_h1]:mr-0 [&_h1]:mb-[8px] [&_h1]:ml-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[62ch]
-    [&_p]:text-ink-2`,
-  txFoot: `mt-[32px] mr-0 mb-0 ml-0 max-w-[64ch] text-pretty text-[13px] text-ink-3 [&_a]:text-ink-2 [&_a]:no-underline
-    [&_a:hover]:text-ink [&_a:hover]:underline [&_a:hover]:decoration-[currentColor]`,
-  txCredit: `[&_a]:text-ink-2 [&_a]:no-underline [&_a:hover]:text-ink [&_a:hover]:underline
-    [&_a:hover]:decoration-[currentColor] mt-[8px] mr-0 mb-0 ml-0 text-[12px] text-ink-3`,
-  txLevels: `[&.tx-levels]:flex w-full
-    [mask-image:linear-gradient(to_right,_transparent,_#000_var(--tx-l),_#000_calc(100%_-_var(--tx-r)),_transparent)]
-    [&.tx-levels_button]:text-[13px] [@supports(animation-timeline:_scroll())]:[animation:tx-edges_linear_both]
-    [@supports(animation-timeline:_scroll())]:[animation-timeline:scroll(self_inline)] [&_+_.tx-level]:mt-[22px]`,
+  txHead: `mt-[10px] mr-0 mb-[22px] ml-0 [&_h1]:text-[28px] [&_h1]:leading-[1.15] [&_h1]:tracking-[-0.035em] [&_h1]:mt-0 ` +
+    `[&_h1]:mr-0 [&_h1]:mb-[8px] [&_h1]:ml-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[62ch] ` +
+    `[&_p]:text-ink-2`,
+  txFoot: `mt-[32px] mr-0 mb-0 ml-0 max-w-[64ch] text-pretty text-[13px] text-ink-3 [&_a]:text-ink-2 [&_a]:no-underline ` +
+    `[&_a:hover]:text-ink [&_a:hover]:underline [&_a:hover]:decoration-[currentColor]`,
+  txCredit: `[&_a]:text-ink-2 [&_a]:no-underline [&_a:hover]:text-ink [&_a:hover]:underline ` +
+    `[&_a:hover]:decoration-[currentColor] mt-[8px] mr-0 mb-0 ml-0 text-[12px] text-ink-3`,
+  txLevels: `[&.tx-levels]:flex w-full ` +
+    `[mask-image:linear-gradient(to_right,_transparent,_#000_var(--tx-l),_#000_calc(100%_-_var(--tx-r)),_transparent)] ` +
+    `[&.tx-levels_button]:text-[13px] [@supports(animation-timeline:_scroll())]:[animation:tx-edges_linear_both] ` +
+    `[@supports(animation-timeline:_scroll())]:[animation-timeline:scroll(self_inline)] [&_+_.tx-level]:mt-[22px]`,
   txLevel: `mt-[28px]`,
-  txLevelHead: `flex flex-wrap items-baseline gap-x-[10px] gap-y-[2px] mb-[6px] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-0
-    [&_h2]:ml-0 [&_h2]:text-[17px] [&_h2]:tracking-[-0.02em] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0
-    [&_p]:text-[13px] [&_p]:text-ink-3`,
-  txList: `list-none mt-0 mr-[-10px] mb-0 ml-[-10px] pt-0 pr-0 pb-0 pl-0 [&_li]:relative [&_li::before]:content-['']
-    [&_li::before]:absolute [&_li::before]:left-[10px] [&_li::before]:right-[10px] [&_li::before]:top-0
-    [&_li::before]:[border-top:1px_solid_var(--hair)] [&_li::before]:[transition:opacity_0.15s]
-    [@media(hover:_hover)]:[&_li:hover::before]:opacity-[0]
-    [@media(hover:_hover)]:[&_li:hover_+_li::before]:opacity-[0] [&_li:focus-within::before]:opacity-[0]
-    [&_li:focus-within_+_li::before]:opacity-[0]`,
-  txRow: `w-full min-h-[52px] flex items-center justify-between gap-y-[16px] gap-x-[16px] pt-[10px] pr-[10px] pb-[10px]
-    pl-[10px] rounded-tl-[10px] rounded-tr-[10px] rounded-br-[10px] rounded-bl-[10px] text-left font-normal
-    text-ink [@media(hover:_hover)]:[&:hover]:bg-fill [@media(hover:_hover)]:[&:hover_.tx-go]:bg-fill-2
-    [@media(hover:_hover)]:[&:hover_.tx-go]:text-ink [&:active:not(:disabled)]:transform-none
-    [&:active:not(:disabled)]:bg-fill-2 [&:focus-visible_.tx-go]:bg-fill-2 [&:focus-visible_.tx-go]:text-ink`,
+  txLevelHead: `flex flex-wrap items-baseline gap-x-[10px] gap-y-[2px] mb-[6px] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-0 ` +
+    `[&_h2]:ml-0 [&_h2]:text-[17px] [&_h2]:tracking-[-0.02em] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
+    `[&_p]:text-[13px] [&_p]:text-ink-3`,
+  txList: `list-none mt-0 mr-[-10px] mb-0 ml-[-10px] pt-0 pr-0 pb-0 pl-0 [&_li]:relative [&_li::before]:content-[''] ` +
+    `[&_li::before]:absolute [&_li::before]:left-[10px] [&_li::before]:right-[10px] [&_li::before]:top-0 ` +
+    `[&_li::before]:[border-top:1px_solid_var(--hair)] [&_li::before]:[transition:opacity_0.15s] ` +
+    `[@media(hover:_hover)]:[&_li:hover::before]:opacity-[0] ` +
+    `[@media(hover:_hover)]:[&_li:hover_+_li::before]:opacity-[0] [&_li:focus-within::before]:opacity-[0] ` +
+    `[&_li:focus-within_+_li::before]:opacity-[0]`,
+  txRow: `w-full min-h-[52px] flex items-center justify-between gap-y-[16px] gap-x-[16px] pt-[10px] pr-[10px] pb-[10px] ` +
+    `pl-[10px] rounded-tl-[10px] rounded-tr-[10px] rounded-br-[10px] rounded-bl-[10px] text-left font-normal ` +
+    `text-ink [@media(hover:_hover)]:[&:hover]:bg-fill [@media(hover:_hover)]:[&:hover_.tx-go]:bg-fill-2 ` +
+    `[@media(hover:_hover)]:[&:hover_.tx-go]:text-ink [&:active:not(:disabled)]:transform-none ` +
+    `[&:active:not(:disabled)]:bg-fill-2 [&:focus-visible_.tx-go]:bg-fill-2 [&:focus-visible_.tx-go]:text-ink`,
   txSay: `grid gap-y-[2px] gap-x-[2px] min-w-0`,
-  txText: `font-[450] [overflow-wrap:anywhere] [&.passage]:[display:-webkit-box]
-    [&.passage]:[-webkit-box-orient:vertical] [&.passage]:[-webkit-line-clamp:2] [&.passage]:[line-clamp:2]
-    [&.passage]:overflow-hidden`,
+  txText: `font-[450] [overflow-wrap:anywhere] [&.passage]:[display:-webkit-box] ` +
+    `[&.passage]:[-webkit-box-orient:vertical] [&.passage]:[-webkit-line-clamp:2] [&.passage]:[line-clamp:2] ` +
+    `[&.passage]:overflow-hidden`,
   txHint: `text-[13px] leading-[1.4] text-ink-3`,
-  txGo: `flex-none pt-[4px] pr-[10px] pb-[4px] pl-[10px] rounded-tl-[999px] rounded-tr-[999px] rounded-br-[999px]
-    rounded-bl-[999px] text-[13px] font-medium text-ink-2 [transition:background-color_0.15s,_color_0.15s]`,
-  lbList: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 [&_>_li]:pt-[24px] [&_>_li]:pr-0 [&_>_li]:pb-[24px]
-    [&_>_li]:pl-0 [&_>_li]:[border-top:1px_solid_var(--hair)] [&_>_li:first-child]:pt-[4px]
-    [&_>_li:first-child]:[border-top:0]`,
+  txGo: `flex-none pt-[4px] pr-[10px] pb-[4px] pl-[10px] rounded-tl-[999px] rounded-tr-[999px] rounded-br-[999px] ` +
+    `rounded-bl-[999px] text-[13px] font-medium text-ink-2 [transition:background-color_0.15s,_color_0.15s]`,
+  lbList: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 [&_>_li]:pt-[24px] [&_>_li]:pr-0 [&_>_li]:pb-[24px] ` +
+    `[&_>_li]:pl-0 [&_>_li]:[border-top:1px_solid_var(--hair)] [&_>_li:first-child]:pt-[4px] ` +
+    `[&_>_li:first-child]:[border-top:0]`,
   lbEx: `grid gap-y-[12px] gap-x-[12px] justify-items-start [&_>_*]:mt-0 [&_>_*]:mr-0 [&_>_*]:mb-0 [&_>_*]:ml-0`,
-  lbExHead: `w-full flex items-baseline justify-between gap-y-[12px] gap-x-[12px] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-0
-    [&_h2]:ml-0 [&_h2]:text-[18px] [&_h2]:tracking-[-0.02em]`,
+  lbExHead: `w-full flex items-baseline justify-between gap-y-[12px] gap-x-[12px] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-0 ` +
+    `[&_h2]:ml-0 [&_h2]:text-[18px] [&_h2]:tracking-[-0.02em]`,
   lbSub: `flex flex-wrap items-center gap-y-[6px] gap-x-[10px] [&.lb-sub]:mt-[-4px]`,
-  lbTags: `flex flex-wrap gap-y-[6px] gap-x-[6px] list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 [&_li]:pt-[2px]
-    [&_li]:pr-[9px] [&_li]:pb-[2px] [&_li]:pl-[9px] [&_li]:rounded-tl-[999px] [&_li]:rounded-tr-[999px]
-    [&_li]:rounded-br-[999px] [&_li]:rounded-bl-[999px] [&_li]:bg-fill [&_li]:text-[11.5px] [&_li]:font-semibold
-    [&_li]:text-ink-2`,
+  lbTags: `flex flex-wrap gap-y-[6px] gap-x-[6px] list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 [&_li]:pt-[2px] ` +
+    `[&_li]:pr-[9px] [&_li]:pb-[2px] [&_li]:pl-[9px] [&_li]:rounded-tl-[999px] [&_li]:rounded-tr-[999px] ` +
+    `[&_li]:rounded-br-[999px] [&_li]:rounded-bl-[999px] [&_li]:bg-fill [&_li]:text-[11.5px] [&_li]:font-semibold ` +
+    `[&_li]:text-ink-2`,
   lbMeta: `text-[13px] text-ink-3`,
   lbPurpose: `max-w-[62ch]`,
-  lbCue: `flex gap-y-[10px] gap-x-[10px] items-baseline max-w-[62ch] text-ink-2 [&_span]:flex-none [&_span]:text-[13px]
-    [&_span]:font-medium [&_span]:text-ink-3`,
-  lbMore: `w-full [&_>_.body]:text-[14px] [&_>_.body]:text-ink-2 [&_ol]:mt-0 [&_ol]:mr-0 [&_ol]:mb-[12px] [&_ol]:ml-0
-    [&_ol]:pl-[20px] [&_ol_li_+_li]:mt-[4px] [&_h3]:mt-[4px] [&_h3]:mr-0 [&_h3]:mb-[6px] [&_h3]:ml-0
-    [&_h3]:text-[14px] [&_h3]:text-ink [&_dl]:grid [&_dl]:grid-cols-[160px_minmax(0,_1fr)] [&_dl]:gap-y-[8px]
-    [&_dl]:gap-x-[16px] [&_dl]:mt-[4px] [&_dl]:mr-0 [&_dl]:mb-0 [&_dl]:ml-0 [&_dl]:pt-[12px]
-    [&_dl]:[border-top:1px_solid_var(--hair)] [&_dt]:font-semibold [&_dt]:text-ink [&_dd]:mt-0 [&_dd]:mr-0
-    [&_dd]:mb-0 [&_dd]:ml-0 [&_a]:text-ink [@container(max-width:_560px)]:[&_dl]:grid-cols-[1fr]
-    [@container(max-width:_560px)]:[&_dl]:gap-y-[2px] [@container(max-width:_560px)]:[&_dl]:gap-x-[2px]
-    [@container(max-width:_560px)]:[&_dd_+_dt]:mt-[8px]`,
+  lbCue: `flex gap-y-[10px] gap-x-[10px] items-baseline max-w-[62ch] text-ink-2 [&_span]:flex-none [&_span]:text-[13px] ` +
+    `[&_span]:font-medium [&_span]:text-ink-3`,
+  lbMore: `w-full [&_>_.body]:text-[14px] [&_>_.body]:text-ink-2 [&_ol]:mt-0 [&_ol]:mr-0 [&_ol]:mb-[12px] [&_ol]:ml-0 ` +
+    `[&_ol]:pl-[20px] [&_ol_li_+_li]:mt-[4px] [&_h3]:mt-[4px] [&_h3]:mr-0 [&_h3]:mb-[6px] [&_h3]:ml-0 ` +
+    `[&_h3]:text-[14px] [&_h3]:text-ink [&_dl]:grid [&_dl]:grid-cols-[160px_minmax(0,_1fr)] [&_dl]:gap-y-[8px] ` +
+    `[&_dl]:gap-x-[16px] [&_dl]:mt-[4px] [&_dl]:mr-0 [&_dl]:mb-0 [&_dl]:ml-0 [&_dl]:pt-[12px] ` +
+    `[&_dl]:[border-top:1px_solid_var(--hair)] [&_dt]:font-semibold [&_dt]:text-ink [&_dd]:mt-0 [&_dd]:mr-0 ` +
+    `[&_dd]:mb-0 [&_dd]:ml-0 [&_a]:text-ink [@container(max-width:_560px)]:[&_dl]:grid-cols-[1fr] ` +
+    `[@container(max-width:_560px)]:[&_dl]:gap-y-[2px] [@container(max-width:_560px)]:[&_dl]:gap-x-[2px] ` +
+    `[@container(max-width:_560px)]:[&_dd_+_dt]:mt-[8px]`,
   lbLicence: `mt-[12px] mr-0 mb-0 ml-0 text-[12px] text-ink-3`,
-  lbCaps: `mt-[4px] pt-[24px] [border-top:1px_solid_var(--hair)] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-[10px] [&_h2]:ml-0
-    [&_h2]:text-[18px] [&_h2]:tracking-[-0.02em] [&_table]:text-[13px] [&_th]:pt-[10px] [&_th]:pr-[10px]
-    [&_th]:pb-[10px] [&_th]:pl-0 [&_td]:pt-[10px] [&_td]:pr-[10px] [&_td]:pb-[10px] [&_td]:pl-0 [&_td]:text-ink-2
-    [&_thead_th]:text-[12px] [&_thead_th]:font-medium [&_tbody_th]:w-[17%] [&_tbody_th]:text-[13px]
-    [&_tbody_th]:font-semibold [&_tbody_th]:text-ink [&_.tx-foot]:mt-[14px]
-    [@container(max-width:_560px)]:[&_thead]:absolute [@container(max-width:_560px)]:[&_thead]:w-[1px]
-    [@container(max-width:_560px)]:[&_thead]:h-[1px] [@container(max-width:_560px)]:[&_thead]:overflow-hidden
-    [@container(max-width:_560px)]:[&_thead]:[clip:rect(0_0_0_0)] [@container(max-width:_560px)]:[&_table]:block
-    [@container(max-width:_560px)]:[&_tbody]:block [@container(max-width:_560px)]:[&_tr]:block
-    [@container(max-width:_560px)]:[&_tr]:pt-[12px] [@container(max-width:_560px)]:[&_tr]:pr-0
-    [@container(max-width:_560px)]:[&_tr]:pb-[12px] [@container(max-width:_560px)]:[&_tr]:pl-0
-    [@container(max-width:_560px)]:[&_tr]:[border-bottom:1px_solid_var(--hair)]
-    [@container(max-width:_560px)]:[&_th]:block [@container(max-width:_560px)]:[&_th]:pt-0
-    [@container(max-width:_560px)]:[&_th]:pr-0 [@container(max-width:_560px)]:[&_th]:pb-0
-    [@container(max-width:_560px)]:[&_th]:pl-0 [@container(max-width:_560px)]:[&_th]:[border-top:0]
-    [@container(max-width:_560px)]:[&_th]:[border-right:0] [@container(max-width:_560px)]:[&_th]:[border-bottom:0]
-    [@container(max-width:_560px)]:[&_th]:[border-left:0] [@container(max-width:_560px)]:[&_td]:block
-    [@container(max-width:_560px)]:[&_td]:pt-0 [@container(max-width:_560px)]:[&_td]:pr-0
-    [@container(max-width:_560px)]:[&_td]:pb-0 [@container(max-width:_560px)]:[&_td]:pl-0
-    [@container(max-width:_560px)]:[&_td]:[border-top:0] [@container(max-width:_560px)]:[&_td]:[border-right:0]
-    [@container(max-width:_560px)]:[&_td]:[border-bottom:0] [@container(max-width:_560px)]:[&_td]:[border-left:0]
-    [@container(max-width:_560px)]:[&_tbody_th]:w-auto [@container(max-width:_560px)]:[&_tbody_th]:text-[15px]
-    [@container(max-width:_560px)]:[&_tbody_th]:mb-[6px] [@container(max-width:_560px)]:[&_td_+_td]:mt-[6px]
-    [@container(max-width:_560px)]:[&_td::before]:content-[attr(data-label)]
-    [@container(max-width:_560px)]:[&_td::before]:block [@container(max-width:_560px)]:[&_td::before]:text-[12px]
-    [@container(max-width:_560px)]:[&_td::before]:text-ink-3`,
-  stGroup: `[&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-[8px] [&_h2]:ml-[2px] [&_h2]:text-[15px] [&_h2]:tracking-[-0.01em]
-    [&_>_.callout]:mb-0`,
-  stBox: `pt-0 pr-[16px] pb-0 pl-[16px] rounded-tl-[12px] rounded-tr-[12px] rounded-br-[12px] rounded-bl-[12px] bg-fill
-    [&_>_*_+_*]:[border-top:1px_solid_var(--hair)]`,
-  stRow: `min-h-[54px] flex items-center justify-between gap-y-[8px] gap-x-[20px] pt-[10px] pr-0 pb-[10px] pl-0
-    flex-wrap [&_>_:first-child]:min-w-0 [&_label]:block [&_label]:mt-0 [&_label]:mr-0 [&_label]:mb-0
-    [&_label]:ml-0 [&_label]:font-medium [@container(max-width:_480px)]:[&:has(.st-wide)]:items-stretch
-    [@container(max-width:_480px)]:[&:has(.st-wide)]:flex-col
-    [@container(max-width:_480px)]:[&:has(.st-btn.btn-secondary)]:items-stretch
-    [@container(max-width:_480px)]:[&:has(.st-btn.btn-secondary)]:flex-col [&.st-stack]:grid
-    [&.st-stack]:gap-y-[10px] [&.st-stack]:gap-x-[10px] [&.st-stack]:justify-stretch`,
+  lbCaps: `mt-[4px] pt-[24px] [border-top:1px_solid_var(--hair)] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-[10px] [&_h2]:ml-0 ` +
+    `[&_h2]:text-[18px] [&_h2]:tracking-[-0.02em] [&_table]:text-[13px] [&_th]:pt-[10px] [&_th]:pr-[10px] ` +
+    `[&_th]:pb-[10px] [&_th]:pl-0 [&_td]:pt-[10px] [&_td]:pr-[10px] [&_td]:pb-[10px] [&_td]:pl-0 [&_td]:text-ink-2 ` +
+    `[&_thead_th]:text-[12px] [&_thead_th]:font-medium [&_tbody_th]:w-[17%] [&_tbody_th]:text-[13px] ` +
+    `[&_tbody_th]:font-semibold [&_tbody_th]:text-ink [&_.tx-foot]:mt-[14px] ` +
+    `[@container(max-width:_560px)]:[&_thead]:absolute [@container(max-width:_560px)]:[&_thead]:w-[1px] ` +
+    `[@container(max-width:_560px)]:[&_thead]:h-[1px] [@container(max-width:_560px)]:[&_thead]:overflow-hidden ` +
+    `[@container(max-width:_560px)]:[&_thead]:[clip:rect(0_0_0_0)] [@container(max-width:_560px)]:[&_table]:block ` +
+    `[@container(max-width:_560px)]:[&_tbody]:block [@container(max-width:_560px)]:[&_tr]:block ` +
+    `[@container(max-width:_560px)]:[&_tr]:pt-[12px] [@container(max-width:_560px)]:[&_tr]:pr-0 ` +
+    `[@container(max-width:_560px)]:[&_tr]:pb-[12px] [@container(max-width:_560px)]:[&_tr]:pl-0 ` +
+    `[@container(max-width:_560px)]:[&_tr]:[border-bottom:1px_solid_var(--hair)] ` +
+    `[@container(max-width:_560px)]:[&_th]:block [@container(max-width:_560px)]:[&_th]:pt-0 ` +
+    `[@container(max-width:_560px)]:[&_th]:pr-0 [@container(max-width:_560px)]:[&_th]:pb-0 ` +
+    `[@container(max-width:_560px)]:[&_th]:pl-0 [@container(max-width:_560px)]:[&_th]:[border-top:0] ` +
+    `[@container(max-width:_560px)]:[&_th]:[border-right:0] [@container(max-width:_560px)]:[&_th]:[border-bottom:0] ` +
+    `[@container(max-width:_560px)]:[&_th]:[border-left:0] [@container(max-width:_560px)]:[&_td]:block ` +
+    `[@container(max-width:_560px)]:[&_td]:pt-0 [@container(max-width:_560px)]:[&_td]:pr-0 ` +
+    `[@container(max-width:_560px)]:[&_td]:pb-0 [@container(max-width:_560px)]:[&_td]:pl-0 ` +
+    `[@container(max-width:_560px)]:[&_td]:[border-top:0] [@container(max-width:_560px)]:[&_td]:[border-right:0] ` +
+    `[@container(max-width:_560px)]:[&_td]:[border-bottom:0] [@container(max-width:_560px)]:[&_td]:[border-left:0] ` +
+    `[@container(max-width:_560px)]:[&_tbody_th]:w-auto [@container(max-width:_560px)]:[&_tbody_th]:text-[15px] ` +
+    `[@container(max-width:_560px)]:[&_tbody_th]:mb-[6px] [@container(max-width:_560px)]:[&_td_+_td]:mt-[6px] ` +
+    `[@container(max-width:_560px)]:[&_td::before]:content-[attr(data-label)] ` +
+    `[@container(max-width:_560px)]:[&_td::before]:block [@container(max-width:_560px)]:[&_td::before]:text-[12px] ` +
+    `[@container(max-width:_560px)]:[&_td::before]:text-ink-3`,
+  stGroup: `[&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-[8px] [&_h2]:ml-[2px] [&_h2]:text-[15px] [&_h2]:tracking-[-0.01em] ` +
+    `[&_>_.callout]:mb-0`,
+  stBox: `pt-0 pr-[16px] pb-0 pl-[16px] rounded-tl-[12px] rounded-tr-[12px] rounded-br-[12px] rounded-bl-[12px] bg-fill ` +
+    `[&_>_*_+_*]:[border-top:1px_solid_var(--hair)]`,
+  stRow: `min-h-[54px] flex items-center justify-between gap-y-[8px] gap-x-[20px] pt-[10px] pr-0 pb-[10px] pl-0 ` +
+    `flex-wrap [&_>_:first-child]:min-w-0 [&_label]:block [&_label]:mt-0 [&_label]:mr-0 [&_label]:mb-0 ` +
+    `[&_label]:ml-0 [&_label]:font-medium [@container(max-width:_480px)]:[&:has(.st-wide)]:items-stretch ` +
+    `[@container(max-width:_480px)]:[&:has(.st-wide)]:flex-col ` +
+    `[@container(max-width:_480px)]:[&:has(.st-btn.btn-secondary)]:items-stretch ` +
+    `[@container(max-width:_480px)]:[&:has(.st-btn.btn-secondary)]:flex-col [&.st-stack]:grid ` +
+    `[&.st-stack]:gap-y-[10px] [&.st-stack]:gap-x-[10px] [&.st-stack]:justify-stretch`,
   stLabel: `block mt-0 mr-0 mb-0 ml-0 font-medium`,
-  stField: `pt-[14px] pr-0 pb-[14px] pl-0 [&_label]:mt-0 [&_label]:mr-0 [&_label]:mb-[8px] [&_label]:ml-0
-    [&_label]:font-medium [&_.st-help]:mt-[6px] [&_>_.btn-secondary]:mt-[10px]`,
-  stHelp: `mt-[2px] mr-0 mb-0 ml-0 text-[13px] leading-[1.4] text-ink-3 min-w-0 [overflow-wrap:anywhere]
-    [&_code]:font-normal [&_code]:text-[12px] [&_code]:leading-[normal] [&_code]:font-mono`,
-  stNote: `mt-[8px] mr-[2px] mb-0 ml-[2px] max-w-[64ch] text-[13px] leading-[1.45] text-ink-3 min-w-0
-    [overflow-wrap:anywhere]`,
-  stUnit: `flex-none inline-flex items-center gap-y-[8px] gap-x-[8px] [&_>_span]:min-w-[30px] [&_>_span]:text-[13px]
-    [&_>_span]:text-ink-3`,
-  stBtn: `flex-none min-h-[34px] pt-[6px] pr-[12px] pb-[6px] pl-[12px] text-[13px]`,
-  stSave: `grid gap-y-[12px] gap-x-[12px] justify-items-start`,
-  stLead: `mt-0 mr-[2px] mb-[14px] ml-[2px]`,
+  stField: `pt-[14px] pr-0 pb-[14px] pl-0 [&_label]:mt-0 [&_label]:mr-0 [&_label]:mb-[8px] [&_label]:ml-0 ` +
+    `[&_label]:font-medium [&_.st-help]:mt-[6px] [&_>_.btn-secondary]:mt-[10px]`,
+  stHelp: `mt-[2px] mr-0 mb-0 ml-0 text-[13px] leading-[1.4] text-ink-3 min-w-0 [overflow-wrap:anywhere] ` +
+    `[&_code]:font-normal [&_code]:text-[12px] [&_code]:leading-[normal] [&_code]:font-mono`,
   stSub: `mt-[18px] mr-0 mb-[8px] ml-[2px] text-[13px] font-semibold text-ink-2`,
-  stSnip: `flex items-start gap-y-[8px] gap-x-[8px] mt-[10px] [&_pre]:flex-1 [&_pre]:min-w-0 [&_pre]:mt-0 [&_pre]:mr-0
-    [&_pre]:mb-0 [&_pre]:ml-0 [&_pre]:pt-[10px] [&_pre]:pr-[12px] [&_pre]:pb-[10px] [&_pre]:pl-[12px]
-    [&_pre]:rounded-tl-[10px] [&_pre]:rounded-tr-[10px] [&_pre]:rounded-br-[10px] [&_pre]:rounded-bl-[10px]
-    [&_pre]:bg-page [&_pre]:font-normal [&_pre]:text-[12.5px] [&_pre]:leading-[1.5] [&_pre]:font-mono
-    [&_pre]:whitespace-pre-wrap [&_pre]:[overflow-wrap:anywhere] [&_pre]:text-ink [&_.btn-secondary]:flex-none
-    [&_.btn-secondary]:min-h-[38px] [&_.btn-secondary]:pt-[6px] [&_.btn-secondary]:pr-[14px]
-    [&_.btn-secondary]:pb-[6px] [&_.btn-secondary]:pl-[14px]`,
-  stInline: `[&_.btn-secondary]:flex-none [&_.btn-secondary]:min-h-[38px] [&_.btn-secondary]:pt-[6px]
-    [&_.btn-secondary]:pr-[14px] [&_.btn-secondary]:pb-[6px] [&_.btn-secondary]:pl-[14px] flex gap-y-[8px]
-    gap-x-[8px] mt-[10px] [&_input]:flex-1 [&_input]:min-w-0`,
+  stSnip: `flex items-start gap-y-[8px] gap-x-[8px] mt-[10px] [&_pre]:flex-1 [&_pre]:min-w-0 [&_pre]:mt-0 [&_pre]:mr-0 ` +
+    `[&_pre]:mb-0 [&_pre]:ml-0 [&_pre]:pt-[10px] [&_pre]:pr-[12px] [&_pre]:pb-[10px] [&_pre]:pl-[12px] ` +
+    `[&_pre]:rounded-tl-[10px] [&_pre]:rounded-tr-[10px] [&_pre]:rounded-br-[10px] [&_pre]:rounded-bl-[10px] ` +
+    `[&_pre]:bg-page [&_pre]:font-normal [&_pre]:text-[12.5px] [&_pre]:leading-[1.5] [&_pre]:font-mono ` +
+    `[&_pre]:whitespace-pre-wrap [&_pre]:[overflow-wrap:anywhere] [&_pre]:text-ink [&_.btn-secondary]:flex-none ` +
+    `[&_.btn-secondary]:min-h-[38px] [&_.btn-secondary]:pt-[6px] [&_.btn-secondary]:pr-[14px] ` +
+    `[&_.btn-secondary]:pb-[6px] [&_.btn-secondary]:pl-[14px]`,
+  stInline: `[&_.btn-secondary]:flex-none [&_.btn-secondary]:min-h-[38px] [&_.btn-secondary]:pt-[6px] ` +
+    `[&_.btn-secondary]:pr-[14px] [&_.btn-secondary]:pb-[6px] [&_.btn-secondary]:pl-[14px] flex gap-y-[8px] ` +
+    `gap-x-[8px] mt-[10px] [&_input]:flex-1 [&_input]:min-w-0`,
   stWait: `mt-[8px]`,
-  stCode: `flex items-baseline gap-y-[14px] gap-x-[14px] mt-[10px] mr-0 mb-0 ml-0 [&_b]:font-semibold [&_b]:text-[26px]
-    [&_b]:leading-[1] [&_b]:font-mono [&_b]:tracking-[0.12em] [&_b]:text-ink [&_span]:text-[13px]
-    [&_span]:text-ink-3 [&_span]:tabular-nums`,
-  stStack: `[&_.segmented]:flex [&_.segmented]:w-full [&_.segmented_button]:[flex:1_1_0] [&_.segmented_button]:min-w-0
-    [&_.segmented_button]:pt-[4px] [&_.segmented_button]:pr-[6px] [&_.segmented_button]:pb-[4px]
-    [&_.segmented_button]:pl-[6px]`,
-  sx: `h-full grid grid-cols-[232px_minmax(0,_1fr)] text-body [&_.sx-search_input]:min-h-0
-    [&_.sx-search_input]:h-[40px] [&_.sx-search_input]:pt-0 [&_.sx-search_input]:pr-0 [&_.sx-search_input]:pb-0
-    [&_.sx-search_input]:pl-0 [&_.sx-search_input]:[border-top:0] [&_.sx-search_input]:[border-right:0]
-    [&_.sx-search_input]:[border-bottom:0] [&_.sx-search_input]:[border-left:0]
-    [&_.sx-search_input]:[background:none] [&_.sx-search_input]:shadow-[none] [&_.sx-search_input]:text-control
-    [&_.callout]:mt-0 [&_.callout]:mr-0 [&_.callout]:mb-0 [&_.callout]:ml-0 [&_#st-ai]:grid [&_#st-ai]:gap-y-0
-    [&_#st-ai]:gap-x-0 [&_#st-ai_.st-box]:bg-panel [&_#st-ai_.st-box]:shadow-[0_0_0_1px_var(--hair)]
-    [@media(max-width:_700px)]:grid-cols-[minmax(0,_1fr)] [@media(max-width:_700px)]:[&.has-pane_.sx-side]:hidden
-    [@media(max-width:_700px)]:[&:not(.has-pane)_.sx-main]:hidden [&_.st-apps_button]:min-h-0
-    [&_.st-apps_button]:grid [&_.st-apps_button]:[justify-content:start] [&_.st-apps_button]:[align-content:start]
-    [&_.st-apps_button]:justify-items-start [&_.st-apps_button]:gap-y-[2px] [&_.st-apps_button]:gap-x-[2px]
-    [&_.st-apps_button]:pt-[12px] [&_.st-apps_button]:pr-[14px] [&_.st-apps_button]:pb-[12px]
-    [&_.st-apps_button]:pl-[14px] [&_.st-apps_button]:rounded-tl-[12px] [&_.st-apps_button]:rounded-tr-[12px]
-    [&_.st-apps_button]:rounded-br-[12px] [&_.st-apps_button]:rounded-bl-[12px] [&_.st-apps_button]:text-left
-    [&_.st-apps_button]:bg-panel [&_.st-apps_button]:shadow-[0_0_0_1px_var(--hair)] [&_.st-apps_button]:text-ink
-    [&_.st-apps_button]:[transition:box-shadow_0.15s_ease,_background-color_0.15s_ease]
-    [&_.st-apps_button:hover:not(.on)]:shadow-[0_0_0_1px_var(--line-strong)] [&_.st-apps_button.on]:bg-accent-soft
-    [&_.st-apps_button.on]:shadow-[0_0_0_1.5px_var(--accent)] [&_#st-ai_.st-sub]:mt-[18px] [&.sx-app]:grid
-    [&.sx-app]:gap-y-[14px] [&.sx-app]:gap-x-[14px] [&.sx-app]:h-auto [&.sx-app]:grid-cols-[minmax(0,_1fr)]
-    [&.sx-app]:text-[14px] [@media(max-width:_700px)]:[&.sx-app]:grid-cols-[minmax(0,_1fr)]
-    [@media(max-width:_700px)]:[&.sx-app_.sx-main]:[display:initial]
-    [@media(max-width:_700px)]:[&.sx-app_.sx-side]:[display:initial]`,
-  sxSide: `min-h-0 overflow-auto pt-[14px] pr-[10px] pb-[16px] pl-[10px] bg-fill [border-right:1px_solid_var(--hair)]
-    [scrollbar-width:none] [&_ul]:list-none [&_ul]:mt-0 [&_ul]:mr-0 [&_ul]:mb-0 [&_ul]:ml-0 [&_ul]:pt-0
-    [&_ul]:pr-0 [&_ul]:pb-0 [&_ul]:pl-0 [&_ul]:grid [&_ul]:gap-y-[1px] [&_ul]:gap-x-[1px] [&_li_button]:w-full
-    [&_li_button]:min-h-[var(--control-height)] [&_li_button]:flex [&_li_button]:items-center
-    [&_li_button]:justify-start [&_li_button]:gap-y-[10px] [&_li_button]:gap-x-[10px] [&_li_button]:pt-[8px]
-    [&_li_button]:pr-[10px] [&_li_button]:pb-[8px] [&_li_button]:pl-[10px]
-    [&_li_button]:rounded-tl-[var(--control-radius)] [&_li_button]:rounded-tr-[var(--control-radius)]
-    [&_li_button]:rounded-br-[var(--control-radius)] [&_li_button]:rounded-bl-[var(--control-radius)]
-    [&_li_button]:font-medium [&_li_button]:text-control [&_li_button]:leading-[normal] [&_li_button]:font-sans
-    [&_li_button]:text-ink [&_li_button]:text-left [&_li_button:hover:not(.on)]:bg-fill-2
-    [&_li_button.on]:bg-accent-soft [&_li_button.on]:text-accent-ink [@media(max-width:_700px)]:[background:none]
-    [@media(max-width:_700px)]:[border-top:0] [@media(max-width:_700px)]:[border-right:0]
-    [@media(max-width:_700px)]:[border-bottom:0] [@media(max-width:_700px)]:[border-left:0]
-    [@media(max-width:_700px)]:[&_li_button]:pt-[8px] [@media(max-width:_700px)]:[&_li_button]:pr-[10px]
-    [@media(max-width:_700px)]:[&_li_button]:pb-[8px] [@media(max-width:_700px)]:[&_li_button]:pl-[10px]
-    [@media(max-width:_700px)]:[&_li_button]:text-[15px]`,
-  sxLights: `flex gap-y-[8px] gap-x-[8px] pt-[2px] pr-[6px] pb-[16px] pl-[6px] [&_>_*]:w-[12px] [&_>_*]:h-[12px]
-    [&_>_*]:min-h-0 [&_>_*]:pt-0 [&_>_*]:pr-0 [&_>_*]:pb-0 [&_>_*]:pl-0 [&_>_*]:[border-top:0]
-    [&_>_*]:[border-right:0] [&_>_*]:[border-bottom:0] [&_>_*]:[border-left:0] [&_>_*]:rounded-tl-[50%]
-    [&_>_*]:rounded-tr-[50%] [&_>_*]:rounded-br-[50%] [&_>_*]:rounded-bl-[50%] [&_>_*]:bg-[#ff5f57]
-    [&_.sx-l2]:bg-[#febc2e] [&_.sx-l3]:bg-[#28c840] [&_button]:cursor-pointer
-    [&_button:hover]:shadow-[inset_0_0_0_4px_rgba(0,_0,_0,_0.25)]`,
-  sxSearch: `flex items-center gap-y-[8px] gap-x-[8px] min-h-[var(--control-height)] mt-0 mr-[4px] mb-[16px] ml-[4px] pt-0
-    pr-[12px] pb-0 pl-[12px] rounded-tl-[var(--control-radius)] rounded-tr-[var(--control-radius)]
-    rounded-br-[var(--control-radius)] rounded-bl-[var(--control-radius)] bg-panel
-    shadow-[inset_0_0_0_1px_var(--hair)] text-ink-2 [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:flex-none
-    [&:focus-within]:[outline:2px_solid_var(--focus)] [&:focus-within]:[outline-offset:2px]`,
+  stCode: `flex items-baseline gap-y-[14px] gap-x-[14px] mt-[10px] mr-0 mb-0 ml-0 [&_b]:font-semibold [&_b]:text-[26px] ` +
+    `[&_b]:leading-[1] [&_b]:font-mono [&_b]:tracking-[0.12em] [&_b]:text-ink [&_span]:text-[13px] ` +
+    `[&_span]:text-ink-3 [&_span]:tabular-nums`,
+  sx: `h-full grid grid-cols-[232px_minmax(0,_1fr)] text-body [&_.sx-search_input]:min-h-0 ` +
+    `[&_.sx-search_input]:h-[40px] [&_.sx-search_input]:pt-0 [&_.sx-search_input]:pr-0 [&_.sx-search_input]:pb-0 ` +
+    `[&_.sx-search_input]:pl-0 [&_.sx-search_input]:[border-top:0] [&_.sx-search_input]:[border-right:0] ` +
+    `[&_.sx-search_input]:[border-bottom:0] [&_.sx-search_input]:[border-left:0] ` +
+    `[&_.sx-search_input]:[background:none] [&_.sx-search_input]:shadow-[none] [&_.sx-search_input]:text-control ` +
+    `[&_.callout]:mt-0 [&_.callout]:mr-0 [&_.callout]:mb-0 [&_.callout]:ml-0 [&_#st-ai]:grid [&_#st-ai]:gap-y-0 ` +
+    `[&_#st-ai]:gap-x-0 [&_#st-ai_.st-box]:bg-panel [&_#st-ai_.st-box]:shadow-[0_0_0_1px_var(--hair)] ` +
+    `[@media(max-width:_700px)]:grid-cols-[minmax(0,_1fr)] [@media(max-width:_700px)]:[&.has-pane_.sx-side]:hidden ` +
+    `[@media(max-width:_700px)]:[&:not(.has-pane)_.sx-main]:hidden [&_.st-apps_button]:min-h-0 ` +
+    `[&_.st-apps_button]:grid [&_.st-apps_button]:[justify-content:start] [&_.st-apps_button]:[align-content:start] ` +
+    `[&_.st-apps_button]:justify-items-start [&_.st-apps_button]:gap-y-[2px] [&_.st-apps_button]:gap-x-[2px] ` +
+    `[&_.st-apps_button]:pt-[12px] [&_.st-apps_button]:pr-[14px] [&_.st-apps_button]:pb-[12px] ` +
+    `[&_.st-apps_button]:pl-[14px] [&_.st-apps_button]:rounded-tl-[12px] [&_.st-apps_button]:rounded-tr-[12px] ` +
+    `[&_.st-apps_button]:rounded-br-[12px] [&_.st-apps_button]:rounded-bl-[12px] [&_.st-apps_button]:text-left ` +
+    `[&_.st-apps_button]:bg-panel [&_.st-apps_button]:shadow-[0_0_0_1px_var(--hair)] [&_.st-apps_button]:text-ink ` +
+    `[&_.st-apps_button]:[transition:box-shadow_0.15s_ease,_background-color_0.15s_ease] ` +
+    `[&_.st-apps_button:hover:not(.on)]:shadow-[0_0_0_1px_var(--line-strong)] [&_.st-apps_button.on]:bg-accent-soft ` +
+    `[&_.st-apps_button.on]:shadow-[0_0_0_1.5px_var(--accent)] [&_#st-ai_.st-sub]:mt-[18px] [&.sx-app]:grid ` +
+    `[&.sx-app]:gap-y-[14px] [&.sx-app]:gap-x-[14px] [&.sx-app]:h-auto [&.sx-app]:grid-cols-[minmax(0,_1fr)] ` +
+    `[&.sx-app]:text-[14px] [@media(max-width:_700px)]:[&.sx-app]:grid-cols-[minmax(0,_1fr)] ` +
+    `[@media(max-width:_700px)]:[&.sx-app_.sx-main]:[display:initial] ` +
+    `[@media(max-width:_700px)]:[&.sx-app_.sx-side]:[display:initial]`,
+  sxSide: `min-h-0 overflow-auto pt-[14px] pr-[10px] pb-[16px] pl-[10px] bg-fill [border-right:1px_solid_var(--hair)] ` +
+    `[scrollbar-width:none] [&_ul]:list-none [&_ul]:mt-0 [&_ul]:mr-0 [&_ul]:mb-0 [&_ul]:ml-0 [&_ul]:pt-0 ` +
+    `[&_ul]:pr-0 [&_ul]:pb-0 [&_ul]:pl-0 [&_ul]:grid [&_ul]:gap-y-[1px] [&_ul]:gap-x-[1px] [&_li_button]:w-full ` +
+    `[&_li_button]:min-h-[var(--control-height)] [&_li_button]:flex [&_li_button]:items-center ` +
+    `[&_li_button]:justify-start [&_li_button]:gap-y-[10px] [&_li_button]:gap-x-[10px] [&_li_button]:pt-[8px] ` +
+    `[&_li_button]:pr-[10px] [&_li_button]:pb-[8px] [&_li_button]:pl-[10px] ` +
+    `[&_li_button]:rounded-tl-[var(--control-radius)] [&_li_button]:rounded-tr-[var(--control-radius)] ` +
+    `[&_li_button]:rounded-br-[var(--control-radius)] [&_li_button]:rounded-bl-[var(--control-radius)] ` +
+    `[&_li_button]:font-medium [&_li_button]:text-control [&_li_button]:leading-[normal] [&_li_button]:font-sans ` +
+    `[&_li_button]:text-ink [&_li_button]:text-left [&_li_button:hover:not(.on)]:bg-fill-2 ` +
+    `[&_li_button.on]:bg-accent-soft [&_li_button.on]:text-accent-ink [@media(max-width:_700px)]:[background:none] ` +
+    `[@media(max-width:_700px)]:[border-top:0] [@media(max-width:_700px)]:[border-right:0] ` +
+    `[@media(max-width:_700px)]:[border-bottom:0] [@media(max-width:_700px)]:[border-left:0] ` +
+    `[@media(max-width:_700px)]:[&_li_button]:pt-[8px] [@media(max-width:_700px)]:[&_li_button]:pr-[10px] ` +
+    `[@media(max-width:_700px)]:[&_li_button]:pb-[8px] [@media(max-width:_700px)]:[&_li_button]:pl-[10px] ` +
+    `[@media(max-width:_700px)]:[&_li_button]:text-[15px]`,
+  sxLights: `flex gap-y-[8px] gap-x-[8px] pt-[2px] pr-[6px] pb-[16px] pl-[6px] [&_>_*]:w-[12px] [&_>_*]:h-[12px] ` +
+    `[&_>_*]:min-h-0 [&_>_*]:pt-0 [&_>_*]:pr-0 [&_>_*]:pb-0 [&_>_*]:pl-0 [&_>_*]:[border-top:0] ` +
+    `[&_>_*]:[border-right:0] [&_>_*]:[border-bottom:0] [&_>_*]:[border-left:0] [&_>_*]:rounded-tl-[50%] ` +
+    `[&_>_*]:rounded-tr-[50%] [&_>_*]:rounded-br-[50%] [&_>_*]:rounded-bl-[50%] [&_>_*]:bg-[#ff5f57] ` +
+    `[&_.sx-l2]:bg-[#febc2e] [&_.sx-l3]:bg-[#28c840] [&_button]:cursor-pointer ` +
+    `[&_button:hover]:shadow-[inset_0_0_0_4px_rgba(0,_0,_0,_0.25)]`,
+  sxSearch: `flex items-center gap-y-[8px] gap-x-[8px] min-h-[var(--control-height)] mt-0 mr-[4px] mb-[16px] ml-[4px] pt-0 ` +
+    `pr-[12px] pb-0 pl-[12px] rounded-tl-[var(--control-radius)] rounded-tr-[var(--control-radius)] ` +
+    `rounded-br-[var(--control-radius)] rounded-bl-[var(--control-radius)] bg-panel ` +
+    `shadow-[inset_0_0_0_1px_var(--hair)] text-ink-2 [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:flex-none ` +
+    `[&:focus-within]:[outline:2px_solid_var(--focus)] [&:focus-within]:[outline-offset:2px]`,
   sxNone: `pt-[8px] pr-[10px] pb-[8px] pl-[10px] text-[13px] text-ink-3`,
-  sxTile: `flex-none grid place-items-center rounded-tl-[8px] rounded-tr-[8px] rounded-br-[8px] rounded-bl-[8px]
-    text-[color:inherit] bg-fill [&_svg]:w-[64%] [&_svg]:h-[64%]`,
+  sxTile: `flex-none grid place-items-center rounded-tl-[8px] rounded-tr-[8px] rounded-br-[8px] rounded-bl-[8px] ` +
+    `text-[color:inherit] bg-fill [&_svg]:w-[64%] [&_svg]:h-[64%]`,
   sxMain: `min-w-0 min-h-0 grid grid-rows-[auto_minmax(0,_1fr)] bg-page`,
-  sxHead: `flex items-center gap-y-[12px] gap-x-[12px] min-h-[56px] pt-0 pr-[24px] pb-0 pl-[24px]
-    [border-bottom:1px_solid_var(--hair)] [&_h2]:flex-1 [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-0 [&_h2]:ml-0
-    [&_h2]:text-[15px] [&_h2]:font-bold [&_h2]:tracking-[-0.01em] [@media(max-width:_700px)]:pt-0
-    [@media(max-width:_700px)]:pr-[12px] [@media(max-width:_700px)]:pb-0 [@media(max-width:_700px)]:pl-[12px]`,
-  sxBack: `hidden w-[var(--control-height)] h-[var(--control-height)] min-h-0 pt-0 pr-0 pb-0 pl-0
-    rounded-tl-[var(--control-radius)] rounded-tr-[var(--control-radius)] rounded-br-[var(--control-radius)]
-    rounded-bl-[var(--control-radius)] text-ink-2 [&_svg]:w-[16px] [&_svg]:h-[16px]
-    [@media(max-width:_700px)]:grid [@media(max-width:_700px)]:place-items-center`,
+  sxHead: `flex items-center gap-y-[12px] gap-x-[12px] min-h-[56px] pt-0 pr-[24px] pb-0 pl-[24px] ` +
+    `[border-bottom:1px_solid_var(--hair)] [&_h2]:flex-1 [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-0 [&_h2]:ml-0 ` +
+    `[&_h2]:text-[15px] [&_h2]:font-bold [&_h2]:tracking-[-0.01em] [@media(max-width:_700px)]:pt-0 ` +
+    `[@media(max-width:_700px)]:pr-[12px] [@media(max-width:_700px)]:pb-0 [@media(max-width:_700px)]:pl-[12px]`,
+  sxBack: `hidden w-[var(--control-height)] h-[var(--control-height)] min-h-0 pt-0 pr-0 pb-0 pl-0 ` +
+    `rounded-tl-[var(--control-radius)] rounded-tr-[var(--control-radius)] rounded-br-[var(--control-radius)] ` +
+    `rounded-bl-[var(--control-radius)] text-ink-2 [&_svg]:w-[16px] [&_svg]:h-[16px] ` +
+    `[@media(max-width:_700px)]:grid [@media(max-width:_700px)]:place-items-center`,
   sxSaved: `text-[12.5px] text-ink-3 [transition:opacity_0.3s] [&.saved]:text-ok [&.error]:text-warn`,
-  sxBody: `overflow-auto pt-[var(--space-8)] pr-[var(--page-padding)] pb-[var(--space-12)] pl-[var(--page-padding)] grid
-    [align-content:start] gap-y-[var(--space-6)] gap-x-[var(--space-6)] [scrollbar-width:thin] [&_>_*]:w-full
-    [&_>_*]:max-w-[712px] [&_>_*]:justify-self-center [&_>_*]:[zoom:var(--text-zoom)]
-    [@media(max-width:_700px)]:pt-[20px] [@media(max-width:_700px)]:pr-[16px] [@media(max-width:_700px)]:pb-[32px]
-    [@media(max-width:_700px)]:pl-[16px]`,
-  sxHero: `grid gap-y-[var(--space-2)] gap-x-[var(--space-2)] pt-0 pr-0 pb-0 pl-0 [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0
-    [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-sans
-    [&_h1]:tracking-[-0.035em] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2 [&_p]:leading-[1.55]`,
-  sxGroup: `rounded-tl-[var(--radius)] rounded-tr-[var(--radius)] rounded-br-[var(--radius)] rounded-bl-[var(--radius)]
-    bg-panel [border-top:1px_solid_var(--hair)] [border-right:1px_solid_var(--hair)]
-    [border-bottom:1px_solid_var(--hair)] [border-left:1px_solid_var(--hair)] pt-0 pr-[var(--space-6)] pb-0
-    pl-[var(--space-6)] [&_>_*_+_*]:[border-top:1px_solid_var(--hair)]`,
-  sxRow: `flex items-center justify-between gap-y-[12px] gap-x-[24px] min-h-[64px] pt-[var(--space-4)] pr-0
-    pb-[var(--space-4)] pl-0 flex-wrap [&.stack]:grid [&.stack]:grid-cols-[minmax(0,_1fr)]
-    [&.stack]:justify-stretch [&.stack_.sx-row-c]:block [&.stack_.segmented]:flex [&.stack_.segmented]:w-full
-    [&.stack_.segmented_button]:[flex:1_1_0] [&.stack_.segmented_button]:min-w-0
-    [&.stack_.segmented_button]:pt-[4px] [&.stack_.segmented_button]:pr-[6px] [&.stack_.segmented_button]:pb-[4px]
-    [&.stack_.segmented_button]:pl-[6px] [&_select]:w-[240px] [&_select]:max-w-full [&_textarea]:min-h-[84px]
-    [&_input[type=time]]:w-[140px]`,
-  sxRowL: `min-w-0 [flex:1_1_220px] [&_label]:block [&_label]:mt-0 [&_label]:mr-0 [&_label]:mb-0 [&_label]:ml-0
-    [&_label]:font-medium [&_label]:text-ink`,
+  sxBody: `overflow-auto pt-[var(--space-8)] pr-[var(--page-padding)] pb-[var(--space-12)] pl-[var(--page-padding)] grid ` +
+    `[align-content:start] gap-y-[var(--space-6)] gap-x-[var(--space-6)] [scrollbar-width:thin] [&_>_*]:w-full ` +
+    `[&_>_*]:max-w-[712px] [&_>_*]:justify-self-center [&_>_*]:[zoom:var(--text-zoom)] ` +
+    `[@media(max-width:_700px)]:pt-[20px] [@media(max-width:_700px)]:pr-[16px] [@media(max-width:_700px)]:pb-[32px] ` +
+    `[@media(max-width:_700px)]:pl-[16px]`,
+  sxHero: `grid gap-y-[var(--space-2)] gap-x-[var(--space-2)] pt-0 pr-0 pb-0 pl-0 [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 ` +
+    `[&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-sans ` +
+    `[&_h1]:tracking-[-0.035em] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2 [&_p]:leading-[1.55]`,
+  sxGroup: `rounded-tl-[var(--radius)] rounded-tr-[var(--radius)] rounded-br-[var(--radius)] rounded-bl-[var(--radius)] ` +
+    `bg-panel [border-top:1px_solid_var(--hair)] [border-right:1px_solid_var(--hair)] ` +
+    `[border-bottom:1px_solid_var(--hair)] [border-left:1px_solid_var(--hair)] pt-0 pr-[var(--space-6)] pb-0 ` +
+    `pl-[var(--space-6)] [&_>_*_+_*]:[border-top:1px_solid_var(--hair)]`,
+  sxRow: `flex items-center justify-between gap-y-[12px] gap-x-[24px] min-h-[64px] pt-[var(--space-4)] pr-0 ` +
+    `pb-[var(--space-4)] pl-0 flex-wrap [&.stack]:grid [&.stack]:grid-cols-[minmax(0,_1fr)] ` +
+    `[&.stack]:justify-stretch [&.stack_.sx-row-c]:block [&.stack_.segmented]:flex [&.stack_.segmented]:w-full ` +
+    `[&.stack_.segmented_button]:[flex:1_1_0] [&.stack_.segmented_button]:min-w-0 ` +
+    `[&.stack_.segmented_button]:pt-[4px] [&.stack_.segmented_button]:pr-[6px] [&.stack_.segmented_button]:pb-[4px] ` +
+    `[&.stack_.segmented_button]:pl-[6px] [&_select]:w-[240px] [&_select]:max-w-full [&_textarea]:min-h-[84px] ` +
+    `[&_input[type=time]]:w-[140px]`,
+  sxRowL: `min-w-0 [flex:1_1_220px] [&_label]:block [&_label]:mt-0 [&_label]:mr-0 [&_label]:mb-0 [&_label]:ml-0 ` +
+    `[&_label]:font-medium [&_label]:text-ink`,
   sxLabel: `block mt-0 mr-0 mb-0 ml-0 font-medium text-ink`,
   sxHelp: `mt-[4px] mr-0 mb-0 ml-0 text-caption leading-[1.5] text-ink-2`,
   sxRowC: `flex-none flex items-center gap-y-[8px] gap-x-[8px] max-w-full`,
-  sxUnit: `inline-flex items-center gap-y-[8px] gap-x-[8px] [&_input]:w-[96px] [&_input]:text-right
-    [&_input]:tabular-nums [&_>_span]:min-w-[30px] [&_>_span]:text-[13px] [&_>_span]:text-ink-3`,
+  sxUnit: `inline-flex items-center gap-y-[8px] gap-x-[8px] [&_input]:w-[96px] [&_input]:text-right ` +
+    `[&_input]:tabular-nums [&_>_span]:min-w-[30px] [&_>_span]:text-[13px] [&_>_span]:text-ink-3`,
   sxBtn: `text-control`,
   sxNote: `mt-[-8px] mr-[2px] mb-0 ml-[2px] text-caption leading-[1.5] text-ink-2`,
-  sxStorage: `grid gap-y-[16px] gap-x-[16px] min-w-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_.sx-row-c]:min-w-0
-    [&_[role=alert]]:[border-left:2px_solid_var(--accent)] [&_[role=alert]]:pl-[12px]`,
-  sxStorageTotal: `flex items-center justify-between flex-wrap gap-y-[14px] gap-x-[14px] [&_strong]:block [&_strong]:text-[28px]
-    [&_strong]:font-semibold [&_strong]:tracking-[-0.04em] [&_span]:text-ink-2`,
+  sxStorage: `grid gap-y-[16px] gap-x-[16px] min-w-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_.sx-row-c]:min-w-0 ` +
+    `[&_[role=alert]]:[border-left:2px_solid_var(--accent)] [&_[role=alert]]:pl-[12px]`,
+  sxStorageTotal: `flex items-center justify-between flex-wrap gap-y-[14px] gap-x-[14px] [&_strong]:block [&_strong]:text-[28px] ` +
+    `[&_strong]:font-semibold [&_strong]:tracking-[-0.04em] [&_span]:text-ink-2`,
   sxStorageSize: `tabular-nums whitespace-nowrap`,
   sxStoragePath: `block max-w-full whitespace-normal [overflow-wrap:anywhere] select-text text-[12px]`,
   sxStorageActions: `flex flex-wrap gap-y-[8px] gap-x-[8px] mt-[12px]`,
-  sxBackups: `grid gap-y-[16px] gap-x-[16px] min-w-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_.sx-row-c]:gap-y-[12px]
-    [&_.sx-row-c]:gap-x-[12px] [&_input[type=file]]:max-w-full [&_input[type=file]]:[font-family:inherit]
-    [&_input[type=file]]:text-[inherit] [&_input[type=file]]:font-[inherit]
-    [&_input[type=file]]:[font-style:inherit] [&_input[type=file]]:leading-[inherit] [&_[role=alert]]:text-ink
-    [&_[role=alert]]:[border-left:2px_solid_var(--accent)] [&_[role=alert]]:pl-[12px]`,
-  sxBackupPreview: `grid gap-y-[12px] gap-x-[12px] [border-top:1px_solid_var(--hair)] pt-[16px] [overflow-wrap:anywhere]
-    [&_h3]:mt-0 [&_h3]:mr-0 [&_h3]:mb-0 [&_h3]:ml-0 [&_h3]:text-[16px]`,
+  sxBackups: `grid gap-y-[16px] gap-x-[16px] min-w-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_.sx-row-c]:gap-y-[12px] ` +
+    `[&_.sx-row-c]:gap-x-[12px] [&_input[type=file]]:max-w-full [&_input[type=file]]:[font-family:inherit] ` +
+    `[&_input[type=file]]:text-[inherit] [&_input[type=file]]:font-[inherit] ` +
+    `[&_input[type=file]]:[font-style:inherit] [&_input[type=file]]:leading-[inherit] [&_[role=alert]]:text-ink ` +
+    `[&_[role=alert]]:[border-left:2px_solid_var(--accent)] [&_[role=alert]]:pl-[12px]`,
+  sxBackupPreview: `grid gap-y-[12px] gap-x-[12px] [border-top:1px_solid_var(--hair)] pt-[16px] [overflow-wrap:anywhere] ` +
+    `[&_h3]:mt-0 [&_h3]:mr-0 [&_h3]:mb-0 [&_h3]:ml-0 [&_h3]:text-[16px]`,
   sxBackupConfirm: `flex items-start gap-y-[8px] gap-x-[8px] [&_input]:shrink-0 [&_input]:mt-[3px]`,
   sxBackupActions: `flex flex-wrap gap-y-[10px] gap-x-[10px]`,
-  stApps: `grid grid-cols-[repeat(auto-fit,_minmax(170px,_1fr))] gap-y-[8px] gap-x-[8px] mb-[14px] [&_b]:text-[14px]
-    [&_b]:font-semibold [&_span]:text-[12px] [&_span]:text-ink-3`,
+  stApps: `grid grid-cols-[repeat(auto-fit,_minmax(170px,_1fr))] gap-y-[8px] gap-x-[8px] mb-[14px] [&_b]:text-[14px] ` +
+    `[&_b]:font-semibold [&_span]:text-[12px] [&_span]:text-ink-3`,
   stWhy: `mt-0 text-ink-2`,
-  sxAppHead: `flex flex-wrap items-baseline justify-between gap-y-[8px] gap-x-[12px] mb-[6px] [&_h1]:mt-0 [&_h1]:mr-0
-    [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-sans
-    [&_h1]:tracking-[-0.035em] [&_h1]:text-ink`,
-  sxApp: `[&_section]:grid [&_section]:grid-cols-[minmax(0,_1fr)] [&_section]:min-w-0 [&_section]:gap-y-[10px]
-    [&_section]:gap-x-[10px] [&_h2]:mt-[18px] [&_h2]:mr-0 [&_h2]:mb-0 [&_h2]:ml-[2px] [&_h2]:text-[17px]
-    [&_h2]:font-semibold [&_h2]:tracking-[-0.01em] [&_h2]:text-ink [&_.sx-note]:mt-0 [&_.sx-note]:mr-[2px]
-    [&_.sx-note]:mb-0 [&_.sx-note]:ml-[2px]`,
-  brandTile: `w-[34px] h-[34px] rounded-tl-[9px] rounded-tr-[9px] rounded-br-[9px] rounded-bl-[9px] grid place-items-center
-    mb-[8px] shadow-[inset_0_0_0_0.5px_rgba(0,_0,_0,_0.12)] [&_svg]:w-[20px] [&_svg]:h-[20px]
-    [&.chatgpt]:bg-[#0d0d0d] [&.chatgpt]:text-[color:#fff] [&.claude]:bg-[#f5f0e8] [&.claude]:text-[color:#d97757]
-    [&.other]:bg-fill-2 [&.other]:text-ink-2`,
+  sxAppHead: `flex flex-wrap items-baseline justify-between gap-y-[8px] gap-x-[12px] mb-[6px] [&_h1]:mt-0 [&_h1]:mr-0 ` +
+    `[&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-sans ` +
+    `[&_h1]:tracking-[-0.035em] [&_h1]:text-ink`,
+  sxApp: `[&_section]:grid [&_section]:grid-cols-[minmax(0,_1fr)] [&_section]:min-w-0 [&_section]:gap-y-[10px] ` +
+    `[&_section]:gap-x-[10px] [&_h2]:mt-[18px] [&_h2]:mr-0 [&_h2]:mb-0 [&_h2]:ml-[2px] [&_h2]:text-[17px] ` +
+    `[&_h2]:font-semibold [&_h2]:tracking-[-0.01em] [&_h2]:text-ink [&_.sx-note]:mt-0 [&_.sx-note]:mr-[2px] ` +
+    `[&_.sx-note]:mb-0 [&_.sx-note]:ml-[2px]`,
+  brandTile: `w-[34px] h-[34px] rounded-tl-[9px] rounded-tr-[9px] rounded-br-[9px] rounded-bl-[9px] grid place-items-center ` +
+    `mb-[8px] shadow-[inset_0_0_0_0.5px_rgba(0,_0,_0,_0.12)] [&_svg]:w-[20px] [&_svg]:h-[20px] ` +
+    `[&.chatgpt]:bg-[#0d0d0d] [&.chatgpt]:text-[color:#fff] [&.claude]:bg-[#f5f0e8] [&.claude]:text-[color:#d97757] ` +
+    `[&.other]:bg-fill-2 [&.other]:text-ink-2`,
   lcAccount: `grid gap-y-[8px] gap-x-[8px]`,
-  lcRow: `flex items-center justify-between gap-y-[12px] gap-x-[20px] flex-wrap mt-0 mr-0 mb-0 ml-0 [&_b]:block
-    [&_b]:font-semibold [&_b]:text-ink [&_p]:mt-[2px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-[12.5px]
-    [&_p]:leading-[1.4] [&_p]:text-ink-3`,
+  lcRow: `flex items-center justify-between gap-y-[12px] gap-x-[20px] flex-wrap mt-0 mr-0 mb-0 ml-0 [&_b]:block ` +
+    `[&_b]:font-semibold [&_b]:text-ink [&_p]:mt-[2px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-[12.5px] ` +
+    `[&_p]:leading-[1.4] [&_p]:text-ink-3`,
   lcError: `mt-0 mr-0 mb-0 ml-0 text-[13px] text-warn`,
-  stMore: `[background:none] rounded-tl-none rounded-tr-none rounded-br-none rounded-bl-none
-    [border-top:1px_solid_var(--hair)] [&_>_summary]:min-h-0 [&_>_summary]:pt-[12px] [&_>_summary]:pr-0
-    [&_>_summary]:pb-[12px] [&_>_summary]:pl-0 [&_>_summary]:text-[13px] [&_>_summary]:font-medium
-    [&_>_summary]:text-ink-2 [&_>_summary:hover]:text-ink [&[open]_>_summary]:pb-[4px]`,
-  co: `grid grid-cols-[minmax(0,_1fr)] gap-y-[var(--space-6)] gap-x-[var(--space-6)] max-w-[var(--content-width)]
-    mt-0 mr-auto mb-0 ml-auto pt-[8px] pr-[4px] pb-[32px] pl-[4px] text-ink text-body [&_.co-list_button]:w-full
-    [&_.co-list_button]:min-h-0 [&_.co-list_button]:flex [&_.co-list_button]:items-start
-    [&_.co-list_button]:justify-start [&_.co-list_button]:gap-y-[16px] [&_.co-list_button]:gap-x-[16px]
-    [&_.co-list_button]:pt-[16px] [&_.co-list_button]:pr-[16px] [&_.co-list_button]:pb-[16px]
-    [&_.co-list_button]:pl-[16px] [&_.co-list_button]:rounded-tl-[14px] [&_.co-list_button]:rounded-tr-[14px]
-    [&_.co-list_button]:rounded-br-[14px] [&_.co-list_button]:rounded-bl-[14px] [&_.co-list_button]:text-left
-    [&_.co-list_button]:font-normal [&_.co-list_button]:bg-panel
-    [&_.co-list_button]:shadow-[0_0_0_1px_var(--hair)] [&_.co-list_button]:text-ink
-    [&_.co-list_button]:[transition:box-shadow_0.15s_ease,_translate_0.15s_ease]
-    [&_.co-list_button:hover]:shadow-[0_0_0_1px_var(--line-strong),_0_8px_20px_-12px_rgba(0,_0,_0,_0.25)]
-    [&_.co-list_button:hover]:[translate:0_-1px] [&_code]:font-normal [&_code]:text-[12px]
-    [&_code]:leading-[normal] [&_code]:font-mono`,
-  coHead: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15]
-    [&_h1]:font-sans [&_h1]:tracking-[-0.035em] [&_p]:mt-[8px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[60ch]
-    [&_p]:text-ink-2 [&_p]:leading-[1.5] [&_p]:text-[15px] [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
-  coHero: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15]
-    [&_h1]:font-sans [&_h1]:tracking-[-0.035em] flex items-start gap-y-[18px] gap-x-[18px] flex-wrap
-    [&_>_div]:[flex:1_1_280px] [&_>_div]:min-w-0 [&_p]:mt-[6px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2
-    [&_p]:leading-[1.5] [&_.btn-primary]:flex-none [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
-  coTile: `flex-none grid place-items-center rounded-tl-[24%] rounded-tr-[24%] rounded-br-[24%] rounded-bl-[24%]
-    text-[color:#fff] shadow-[inset_0_0.5px_0_rgba(255,_255,_255,_0.4),_0_1px_2px_rgba(0,_0,_0,_0.15)]
-    [&_svg]:w-[58%] [&_svg]:h-[58%]`,
+  stMore: `[background:none] rounded-tl-none rounded-tr-none rounded-br-none rounded-bl-none ` +
+    `[border-top:1px_solid_var(--hair)] [&_>_summary]:min-h-0 [&_>_summary]:pt-[12px] [&_>_summary]:pr-0 ` +
+    `[&_>_summary]:pb-[12px] [&_>_summary]:pl-0 [&_>_summary]:text-[13px] [&_>_summary]:font-medium ` +
+    `[&_>_summary]:text-ink-2 [&_>_summary:hover]:text-ink [&[open]_>_summary]:pb-[4px]`,
+  co: `grid grid-cols-[minmax(0,_1fr)] gap-y-[var(--space-6)] gap-x-[var(--space-6)] max-w-[var(--content-width)] ` +
+    `mt-0 mr-auto mb-0 ml-auto pt-[8px] pr-[4px] pb-[32px] pl-[4px] text-ink text-body [&_.co-list_button]:w-full ` +
+    `[&_.co-list_button]:min-h-0 [&_.co-list_button]:flex [&_.co-list_button]:items-start ` +
+    `[&_.co-list_button]:justify-start [&_.co-list_button]:gap-y-[16px] [&_.co-list_button]:gap-x-[16px] ` +
+    `[&_.co-list_button]:pt-[16px] [&_.co-list_button]:pr-[16px] [&_.co-list_button]:pb-[16px] ` +
+    `[&_.co-list_button]:pl-[16px] [&_.co-list_button]:rounded-tl-[14px] [&_.co-list_button]:rounded-tr-[14px] ` +
+    `[&_.co-list_button]:rounded-br-[14px] [&_.co-list_button]:rounded-bl-[14px] [&_.co-list_button]:text-left ` +
+    `[&_.co-list_button]:font-normal [&_.co-list_button]:bg-panel ` +
+    `[&_.co-list_button]:shadow-[0_0_0_1px_var(--hair)] [&_.co-list_button]:text-ink ` +
+    `[&_.co-list_button]:[transition:box-shadow_0.15s_ease,_translate_0.15s_ease] ` +
+    `[&_.co-list_button:hover]:shadow-[0_0_0_1px_var(--line-strong),_0_8px_20px_-12px_rgba(0,_0,_0,_0.25)] ` +
+    `[&_.co-list_button:hover]:[translate:0_-1px] [&_code]:font-normal [&_code]:text-[12px] ` +
+    `[&_code]:leading-[normal] [&_code]:font-mono`,
+  coHead: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] ` +
+    `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] [&_p]:mt-[8px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[60ch] ` +
+    `[&_p]:text-ink-2 [&_p]:leading-[1.5] [&_p]:text-[15px] [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
+  coHero: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] ` +
+    `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] flex items-start gap-y-[18px] gap-x-[18px] flex-wrap ` +
+    `[&_>_div]:[flex:1_1_280px] [&_>_div]:min-w-0 [&_p]:mt-[6px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2 ` +
+    `[&_p]:leading-[1.5] [&_.btn-primary]:flex-none [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
+  coTile: `flex-none grid place-items-center rounded-tl-[24%] rounded-tr-[24%] rounded-br-[24%] rounded-bl-[24%] ` +
+    `text-[color:#fff] shadow-[inset_0_0.5px_0_rgba(255,_255,_255,_0.4),_0_1px_2px_rgba(0,_0,_0,_0.15)] ` +
+    `[&_svg]:w-[58%] [&_svg]:h-[58%]`,
   coList: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid gap-y-[10px] gap-x-[10px]`,
-  coCard: `grid gap-y-[3px] gap-x-[3px] min-w-0 [&_b]:text-[16px] [&_b]:font-semibold [&_b]:tracking-[-0.01em]
-    [&_small]:text-[12.5px] [&_small]:text-ink-3`,
-  coSum: `mt-[4px] text-ink-2 leading-[1.45] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]
-    overflow-hidden`,
+  coCard: `grid gap-y-[3px] gap-x-[3px] min-w-0 [&_b]:text-[16px] [&_b]:font-semibold [&_b]:tracking-[-0.01em] ` +
+    `[&_small]:text-[12.5px] [&_small]:text-ink-3`,
+  coSum: `mt-[4px] text-ink-2 leading-[1.45] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] ` +
+    `overflow-hidden`,
   coStatus: `flex flex-wrap gap-y-[6px] gap-x-[6px] mt-[8px]`,
-  coPill: `pt-[2px] pr-[9px] pb-[2px] pl-[9px] rounded-tl-[999px] rounded-tr-[999px] rounded-br-[999px]
-    rounded-bl-[999px] text-[11.5px] font-semibold bg-fill text-ink-2 [&.mine]:bg-accent-soft
-    [&.mine]:text-accent-ink [&.new]:bg-[rgba(22,_147,_106,_0.12)] [&.new]:text-ok`,
-  coNote: `mt-0 mr-0 mb-0 ml-0 text-[12.5px] text-ink-3 [&_code]:font-normal [&_code]:text-[12px]
-    [&_code]:leading-[normal] [&_code]:font-mono`,
-  coBack: `inline-flex items-center gap-y-[4px] gap-x-[4px] w-fit text-[13px] font-medium text-ink-2 no-underline
-    [&:hover]:text-ink [&_svg]:w-[14px] [&_svg]:h-[14px]`,
-  coCallout: `flex items-center justify-between gap-y-[12px] gap-x-[20px] flex-wrap pt-[14px] pr-[16px] pb-[14px] pl-[16px]
-    rounded-tl-[14px] rounded-tr-[14px] rounded-br-[14px] rounded-bl-[14px] bg-[rgba(22,_147,_106,_0.08)]
-    shadow-[inset_0_0_0_1px_rgba(22,_147,_106,_0.25)] [&_b]:font-semibold [&_p]:mt-[2px] [&_p]:mr-0 [&_p]:mb-0
-    [&_p]:ml-0 [&_p]:text-[13px] [&_p]:text-ink-2`,
-  coSec: `grid gap-y-[8px] gap-x-[8px] [&_h2]:mt-0 [&_h2]:mr-[2px] [&_h2]:mb-0 [&_h2]:ml-[2px] [&_h2]:text-section
-    [&_h2]:font-semibold [&_h2]:tracking-[-0.01em]`,
+  coPill: `pt-[2px] pr-[9px] pb-[2px] pl-[9px] rounded-tl-[999px] rounded-tr-[999px] rounded-br-[999px] ` +
+    `rounded-bl-[999px] text-[11.5px] font-semibold bg-fill text-ink-2 [&.mine]:bg-accent-soft ` +
+    `[&.mine]:text-accent-ink [&.new]:bg-[rgba(22,_147,_106,_0.12)] [&.new]:text-ok`,
+  coNote: `mt-0 mr-0 mb-0 ml-0 text-[12.5px] text-ink-3 [&_code]:font-normal [&_code]:text-[12px] ` +
+    `[&_code]:leading-[normal] [&_code]:font-mono`,
+  coBack: `inline-flex items-center gap-y-[4px] gap-x-[4px] w-fit text-[13px] font-medium text-ink-2 no-underline ` +
+    `[&:hover]:text-ink [&_svg]:w-[14px] [&_svg]:h-[14px]`,
+  coCallout: `flex items-center justify-between gap-y-[12px] gap-x-[20px] flex-wrap pt-[14px] pr-[16px] pb-[14px] pl-[16px] ` +
+    `rounded-tl-[14px] rounded-tr-[14px] rounded-br-[14px] rounded-bl-[14px] bg-[rgba(22,_147,_106,_0.08)] ` +
+    `shadow-[inset_0_0_0_1px_rgba(22,_147,_106,_0.25)] [&_b]:font-semibold [&_p]:mt-[2px] [&_p]:mr-0 [&_p]:mb-0 ` +
+    `[&_p]:ml-0 [&_p]:text-[13px] [&_p]:text-ink-2`,
+  coSec: `grid gap-y-[8px] gap-x-[8px] [&_h2]:mt-0 [&_h2]:mr-[2px] [&_h2]:mb-0 [&_h2]:ml-[2px] [&_h2]:text-section ` +
+    `[&_h2]:font-semibold [&_h2]:tracking-[-0.01em]`,
   coSecHead: `flex items-center justify-between gap-y-[12px] gap-x-[12px] [&_.co-small]:flex-none`,
-  coBox: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-[var(--space-6)] pb-0 pl-[var(--space-6)] rounded-tl-[var(--radius)]
-    rounded-tr-[var(--radius)] rounded-br-[var(--radius)] rounded-bl-[var(--radius)] bg-panel
-    [border-top:1px_solid_var(--hair)] [border-right:1px_solid_var(--hair)] [border-bottom:1px_solid_var(--hair)]
-    [border-left:1px_solid_var(--hair)] [&_>_*_+_*]:[border-top:1px_solid_var(--hair)]`,
-  coRow: `flex items-center justify-between gap-y-[12px] gap-x-[24px] min-h-[64px] pt-[var(--space-4)] pr-0
-    pb-[var(--space-4)] pl-0 flex-wrap [&_>_div]:[flex:1_1_240px] [&_>_div]:min-w-0 [&_b]:block [&_b]:font-medium
-    [&_b]:text-ink [&_b]:[overflow-wrap:anywhere] [&_p]:mt-[4px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0
-    [&_p]:text-caption [&_p]:leading-[1.5] [&_p]:text-ink-2 [&_>_p]:mt-0 [&_>_p]:mr-0 [&_>_p]:mb-0 [&_>_p]:ml-0
-    [&_>_p]:text-ink-2 [&_>_p]:text-[13.5px] [&_time]:flex-none [&_time]:text-[12.5px] [&_time]:text-ink-3
-    [&_p_.co-k]:inline [&_p_.co-k]:font-semibold [&_p_.co-k]:text-ink-2`,
+  coBox: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-[var(--space-6)] pb-0 pl-[var(--space-6)] rounded-tl-[var(--radius)] ` +
+    `rounded-tr-[var(--radius)] rounded-br-[var(--radius)] rounded-bl-[var(--radius)] bg-panel ` +
+    `[border-top:1px_solid_var(--hair)] [border-right:1px_solid_var(--hair)] [border-bottom:1px_solid_var(--hair)] ` +
+    `[border-left:1px_solid_var(--hair)] [&_>_*_+_*]:[border-top:1px_solid_var(--hair)]`,
+  coRow: `flex items-center justify-between gap-y-[12px] gap-x-[24px] min-h-[64px] pt-[var(--space-4)] pr-0 ` +
+    `pb-[var(--space-4)] pl-0 flex-wrap [&_>_div]:[flex:1_1_240px] [&_>_div]:min-w-0 [&_b]:block [&_b]:font-medium ` +
+    `[&_b]:text-ink [&_b]:[overflow-wrap:anywhere] [&_p]:mt-[4px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
+    `[&_p]:text-caption [&_p]:leading-[1.5] [&_p]:text-ink-2 [&_>_p]:mt-0 [&_>_p]:mr-0 [&_>_p]:mb-0 [&_>_p]:ml-0 ` +
+    `[&_>_p]:text-ink-2 [&_>_p]:text-[13.5px] [&_time]:flex-none [&_time]:text-[12.5px] [&_time]:text-ink-3 ` +
+    `[&_p_.co-k]:inline [&_p_.co-k]:font-semibold [&_p_.co-k]:text-ink-2`,
   coConfirm: `[background:none] [&_>_p]:[flex:1_1_260px]`,
   coActions: `flex flex-wrap gap-y-[var(--space-2)] gap-x-[var(--space-2)]`,
   coChapters: `[&_.co-row]:flex-nowrap`,
-  coN: `flex-none w-[24px] h-[24px] rounded-tl-[50%] rounded-tr-[50%] rounded-br-[50%] rounded-bl-[50%] grid
-    place-items-center bg-fill text-[12px] font-semibold text-ink-2 tabular-nums`,
-  coExamples: `mt-[6px] mr-0 mb-0 ml-0 pl-[18px] text-ink-2 text-[13.5px] grid gap-y-[3px] gap-x-[3px]`,
-  coSaid: `mt-0 mr-0 mb-0 ml-0 pt-[10px] pr-[14px] pb-[10px] pl-[14px] rounded-tl-[10px] rounded-tr-[10px]
-    rounded-br-[10px] rounded-bl-[10px] bg-fill text-ink-2 text-[13.5px]`,
+  coN: `flex-none w-[24px] h-[24px] rounded-tl-[50%] rounded-tr-[50%] rounded-br-[50%] rounded-bl-[50%] grid ` +
+    `place-items-center bg-fill text-[12px] font-semibold text-ink-2 tabular-nums`,
+  coSaid: `mt-0 mr-0 mb-0 ml-0 pt-[10px] pr-[14px] pb-[10px] pl-[14px] rounded-tl-[10px] rounded-tr-[10px] ` +
+    `rounded-br-[10px] rounded-bl-[10px] bg-fill text-ink-2 text-[13.5px]`,
   coError: `mt-0 mr-0 mb-0 ml-0 text-warn text-[13.5px]`,
-  rx: `grid gap-y-[8px] gap-x-[8px] pt-[14px] pr-[16px] pb-[14px] pl-[16px] rounded-tl-[12px] rounded-tr-[12px]
-    rounded-br-[12px] rounded-bl-[12px] bg-panel shadow-[0_0_0_1px_var(--hair)] [&_label]:font-semibold
-    [&_label]:text-[14px] [&_label]:text-ink [&_textarea]:w-full [&_textarea]:min-h-[64px] [&_textarea]:resize-y
-    [&_textarea]:[font-family:inherit] [&_textarea]:text-[14px] [&_textarea]:font-[inherit]
-    [&_textarea]:[font-style:inherit] [&_textarea]:leading-[inherit] [&_.rx-undo]:ml-[6px] [&_.rx-undo]:pt-0
-    [&_.rx-undo]:pr-0 [&_.rx-undo]:pb-0 [&_.rx-undo]:pl-0 [&_.rx-undo]:min-h-0 [&_.rx-undo]:[background:none]
-    [&_.rx-undo]:[font-family:inherit] [&_.rx-undo]:text-[inherit] [&_.rx-undo]:font-semibold
-    [&_.rx-undo]:[font-style:inherit] [&_.rx-undo]:leading-[inherit] [&_.rx-undo]:text-accent-ink
-    [&_.rx-undo]:underline [&_.rx-undo]:underline-offset-[2px] [&_.rx-undo]:cursor-pointer`,
+  rx: `grid gap-y-[8px] gap-x-[8px] pt-[14px] pr-[16px] pb-[14px] pl-[16px] rounded-tl-[12px] rounded-tr-[12px] ` +
+    `rounded-br-[12px] rounded-bl-[12px] bg-panel shadow-[0_0_0_1px_var(--hair)] [&_label]:font-semibold ` +
+    `[&_label]:text-[14px] [&_label]:text-ink [&_textarea]:w-full [&_textarea]:min-h-[64px] [&_textarea]:resize-y ` +
+    `[&_textarea]:[font-family:inherit] [&_textarea]:text-[14px] [&_textarea]:font-[inherit] ` +
+    `[&_textarea]:[font-style:inherit] [&_textarea]:leading-[inherit] [&_.rx-undo]:ml-[6px] [&_.rx-undo]:pt-0 ` +
+    `[&_.rx-undo]:pr-0 [&_.rx-undo]:pb-0 [&_.rx-undo]:pl-0 [&_.rx-undo]:min-h-0 [&_.rx-undo]:[background:none] ` +
+    `[&_.rx-undo]:[font-family:inherit] [&_.rx-undo]:text-[inherit] [&_.rx-undo]:font-semibold ` +
+    `[&_.rx-undo]:[font-style:inherit] [&_.rx-undo]:leading-[inherit] [&_.rx-undo]:text-accent-ink ` +
+    `[&_.rx-undo]:underline [&_.rx-undo]:underline-offset-[2px] [&_.rx-undo]:cursor-pointer`,
   rxFoot: `flex items-center justify-between gap-y-[10px] gap-x-[16px] flex-wrap`,
   rxNote: `text-[12.5px] text-ink-3 [flex:1_1_220px]`,
-  rxDone: `mt-0 mr-0 mb-0 ml-0 pt-[9px] pr-[12px] pb-[9px] pl-[12px] rounded-tl-[10px] rounded-tr-[10px]
-    rounded-br-[10px] rounded-bl-[10px] bg-[rgba(22,_147,_106,_0.1)] text-ink-2 text-[13.5px]`,
-  ve: `[&_.rx_.rx-undo]:ml-[6px] [&_.rx_.rx-undo]:pt-0 [&_.rx_.rx-undo]:pr-0 [&_.rx_.rx-undo]:pb-0
-    [&_.rx_.rx-undo]:pl-0 [&_.rx_.rx-undo]:min-h-0 [&_.rx_.rx-undo]:[background:none]
-    [&_.rx_.rx-undo]:[font-family:inherit] [&_.rx_.rx-undo]:text-[inherit] [&_.rx_.rx-undo]:font-semibold
-    [&_.rx_.rx-undo]:[font-style:inherit] [&_.rx_.rx-undo]:leading-[inherit] [&_.rx_.rx-undo]:text-accent-ink
-    [&_.rx_.rx-undo]:underline [&_.rx_.rx-undo]:underline-offset-[2px] [&_.rx_.rx-undo]:cursor-pointer
-    [&_.ve-head-actions_>_button]:min-w-[96px] [&_.ve-head-actions_>_button]:justify-center
-    [&_.ve-remix-btn]:inline-flex [&_.ve-remix-btn]:items-center [&_.ve-remix-btn]:gap-y-[7px]
-    [&_.ve-remix-btn]:gap-x-[7px] [&_.ve-remix-btn]:h-[34px] [&_.ve-remix-btn]:pt-0 [&_.ve-remix-btn]:pr-[14px]
-    [&_.ve-remix-btn]:pb-0 [&_.ve-remix-btn]:pl-[14px] [&_.ve-remix-btn]:rounded-tl-[999px]
-    [&_.ve-remix-btn]:rounded-tr-[999px] [&_.ve-remix-btn]:rounded-br-[999px] [&_.ve-remix-btn]:rounded-bl-[999px]
-    [&_.ve-remix-btn]:bg-ink [&_.ve-remix-btn]:text-page [&_.ve-remix-btn]:text-[13.5px]
-    [&_.ve-remix-btn]:font-semibold [&_.ve-remix-btn]:shadow-[0_6px_16px_-8px_rgba(0,_0,_0,_0.45)]
-    [&_.ve-remix-btn]:[transition:transform_0.15s_var(--ease),_opacity_0.15s]
-    [&_.ve-remix-btn:hover]:[transform:translateY(-1px)] [&_.ve-remix-btn_svg]:w-[16px]
-    [&_.ve-remix-btn_svg]:h-[16px] [&_.ve-edit-btn]:relative [&_.ve-edit-btn]:inline-flex
-    [&_.ve-edit-btn]:items-center [&_.ve-edit-btn]:gap-y-[7px] [&_.ve-edit-btn]:gap-x-[7px]
-    [&_.ve-edit-btn]:h-[34px] [&_.ve-edit-btn]:pt-0 [&_.ve-edit-btn]:pr-[14px] [&_.ve-edit-btn]:pb-0
-    [&_.ve-edit-btn]:pl-[14px] [&_.ve-edit-btn]:rounded-tl-[999px] [&_.ve-edit-btn]:rounded-tr-[999px]
-    [&_.ve-edit-btn]:rounded-br-[999px] [&_.ve-edit-btn]:rounded-bl-[999px] [&_.ve-edit-btn]:bg-fill
-    [&_.ve-edit-btn]:text-ink-3 [&_.ve-edit-btn]:text-[13.5px] [&_.ve-edit-btn]:font-semibold
-    [&_.ve-edit-btn]:cursor-not-allowed [&_.ve-edit-btn_svg]:w-[16px] [&_.ve-edit-btn_svg]:h-[16px]
-    [&_.ve-edit-btn_svg]:opacity-[0.7] [&_.ve-new-chapter]:flex [&_.ve-new-chapter]:items-center
-    [&_.ve-new-chapter]:justify-start [&_.ve-new-chapter]:gap-y-[8px] [&_.ve-new-chapter]:gap-x-[8px]
-    [&_.ve-new-chapter]:w-full [&_.ve-new-chapter]:pt-[5px] [&_.ve-new-chapter]:pr-[8px]
-    [&_.ve-new-chapter]:pb-[5px] [&_.ve-new-chapter]:pl-[10px] [&_.ve-new-chapter]:mt-[4px]
-    [&_.ve-new-chapter]:rounded-tl-[8px] [&_.ve-new-chapter]:rounded-tr-[8px] [&_.ve-new-chapter]:rounded-br-[8px]
-    [&_.ve-new-chapter]:rounded-bl-[8px] [&_.ve-new-chapter]:text-[13px] [&_.ve-new-chapter]:font-medium
-    [&_.ve-new-chapter]:text-ink-3 [&_.ve-new-chapter]:text-left [&_.ve-new-chapter_span]:w-[14px]
-    [&_.ve-new-chapter_span]:text-center [&_.ve-new-chapter_span]:text-[15px] [&_.ve-new-chapter_span]:leading-[1]
-    [&_.ve-new-chapter:hover]:bg-fill-2 [&_.ve-new-chapter:hover]:text-ink
-    [&_.ve-dock]:[transition:opacity_0.35s_ease,_filter_0.35s_ease]
-    [&.remixing_.ve-dock:not(.rec):not(.live)]:opacity-[0.5]
-    [&.remixing_.ve-dock:not(.rec):not(.live)]:[filter:blur(8px)_saturate(0.85)]
-    [&.remixing_.ve-dock:not(.rec):not(.live)]:pointer-events-none [&_.ve-remix-btn:disabled]:opacity-[0.4]
-    [&_.ve-remix-btn:disabled]:transform-none [&_.ve-remix-btn:disabled]:cursor-not-allowed
-    [&_.rp-close]:flex-none [&_.rp-close]:w-[30px] [&_.rp-close]:h-[30px] [&_.rp-close]:grid
-    [&_.rp-close]:place-items-center [&_.rp-close]:rounded-tl-[999px] [&_.rp-close]:rounded-tr-[999px]
-    [&_.rp-close]:rounded-br-[999px] [&_.rp-close]:rounded-bl-[999px] [&_.rp-close]:bg-fill
-    [&_.rp-close]:text-ink-2 [&_.rp-close]:[transition:background-color_0.15s] [&_.rp-close:hover]:bg-fill-2
-    [&_.rp-close:hover]:text-ink [&_.rp-try_button]:w-full [&_.rp-try_button]:flex [&_.rp-try_button]:items-center
-    [&_.rp-try_button]:justify-between [&_.rp-try_button]:gap-y-[10px] [&_.rp-try_button]:gap-x-[10px]
-    [&_.rp-try_button]:pt-[10px] [&_.rp-try_button]:pr-[12px] [&_.rp-try_button]:pb-[10px]
-    [&_.rp-try_button]:pl-[12px] [&_.rp-try_button]:rounded-tl-[12px] [&_.rp-try_button]:rounded-tr-[12px]
-    [&_.rp-try_button]:rounded-br-[12px] [&_.rp-try_button]:rounded-bl-[12px] [&_.rp-try_button]:bg-panel
-    [&_.rp-try_button]:shadow-[0_0_0_1px_var(--hair)] [&_.rp-try_button]:text-ink [&_.rp-try_button]:text-[13.5px]
-    [&_.rp-try_button]:font-medium [&_.rp-try_button]:text-left
-    [&_.rp-try_button]:[transition:box-shadow_0.15s,_translate_0.15s]
-    [&_.rp-try_button:hover]:shadow-[0_0_0_1px_var(--accent)] [&_.rp-try_button:hover]:[translate:2px_0]
-    [&_.rp-undo]:flex-none [&_.rp-undo]:pt-[2px] [&_.rp-undo]:pr-[9px] [&_.rp-undo]:pb-[2px] [&_.rp-undo]:pl-[9px]
-    [&_.rp-undo]:rounded-tl-[999px] [&_.rp-undo]:rounded-tr-[999px] [&_.rp-undo]:rounded-br-[999px]
-    [&_.rp-undo]:rounded-bl-[999px] [&_.rp-undo]:bg-panel [&_.rp-undo]:shadow-[0_0_0_1px_rgba(22,_147,_106,_0.3)]
-    [&_.rp-undo]:text-ink-2 [&_.rp-undo]:text-[12px] [&_.rp-undo]:font-semibold [&_.rp-undo:hover]:text-ink
-    [&_.rp-undo:hover]:shadow-[0_0_0_1px_var(--ok)] [&_.rp-retry]:mt-[8px] [&_.rp-retry]:pt-[4px]
-    [&_.rp-retry]:pr-[12px] [&_.rp-retry]:pb-[4px] [&_.rp-retry]:pl-[12px] [&_.rp-retry]:rounded-tl-[999px]
-    [&_.rp-retry]:rounded-tr-[999px] [&_.rp-retry]:rounded-br-[999px] [&_.rp-retry]:rounded-bl-[999px]
-    [&_.rp-retry]:bg-ink [&_.rp-retry]:text-page [&_.rp-retry]:text-[12.5px] [&_.rp-retry]:font-semibold
-    [&_.rp-input_textarea]:flex-1 [&_.rp-input_textarea]:min-h-[36px] [&_.rp-input_textarea]:h-[36px]
-    [&_.rp-input_textarea]:max-h-[140px] [&_.rp-input_textarea]:pt-[8px] [&_.rp-input_textarea]:pr-0
-    [&_.rp-input_textarea]:pb-[8px] [&_.rp-input_textarea]:pl-0 [&_.rp-input_textarea]:[border-top:0]
-    [&_.rp-input_textarea]:[border-right:0] [&_.rp-input_textarea]:[border-bottom:0]
-    [&_.rp-input_textarea]:[border-left:0] [&_.rp-input_textarea]:[background:none]
-    [&_.rp-input_textarea]:shadow-[none] [&_.rp-input_textarea]:resize-none
-    [&_.rp-input_textarea]:[font-family:inherit] [&_.rp-input_textarea]:text-[14px]
-    [&_.rp-input_textarea]:font-[inherit] [&_.rp-input_textarea]:[font-style:inherit]
-    [&_.rp-input_textarea]:leading-[20px] [&_.rp-input_textarea]:text-ink [&_.rp-input_textarea]:[outline:none]
-    [&_.rp-input_textarea:focus]:flex-1 [&_.rp-input_textarea:focus]:min-h-[36px]
-    [&_.rp-input_textarea:focus]:h-[36px] [&_.rp-input_textarea:focus]:max-h-[140px]
-    [&_.rp-input_textarea:focus]:pt-[8px] [&_.rp-input_textarea:focus]:pr-0 [&_.rp-input_textarea:focus]:pb-[8px]
-    [&_.rp-input_textarea:focus]:pl-0 [&_.rp-input_textarea:focus]:[border-top:0]
-    [&_.rp-input_textarea:focus]:[border-right:0] [&_.rp-input_textarea:focus]:[border-bottom:0]
-    [&_.rp-input_textarea:focus]:[border-left:0] [&_.rp-input_textarea:focus]:[background:none]
-    [&_.rp-input_textarea:focus]:shadow-[none] [&_.rp-input_textarea:focus]:resize-none
-    [&_.rp-input_textarea:focus]:[font-family:inherit] [&_.rp-input_textarea:focus]:text-[14px]
-    [&_.rp-input_textarea:focus]:font-[inherit] [&_.rp-input_textarea:focus]:[font-style:inherit]
-    [&_.rp-input_textarea:focus]:leading-[20px] [&_.rp-input_textarea:focus]:text-ink
-    [&_.rp-input_textarea:focus]:[outline:none] [&_.rp-send]:flex-none [&_.rp-send]:w-[34px] [&_.rp-send]:h-[34px]
-    [&_.rp-send]:grid [&_.rp-send]:place-items-center [&_.rp-send]:rounded-tl-[999px]
-    [&_.rp-send]:rounded-tr-[999px] [&_.rp-send]:rounded-br-[999px] [&_.rp-send]:rounded-bl-[999px]
-    [&_.rp-send]:bg-accent [&_.rp-send]:text-accent-on [&_.rp-send]:[transition:opacity_0.15s,_transform_0.15s]
-    [&_.rp-send:not(:disabled):hover]:[transform:translateY(-1px)] [&_.rp-send:disabled]:opacity-[0.3]
-    [&_.rp-btn]:pt-[7px] [&_.rp-btn]:pr-[14px] [&_.rp-btn]:pb-[7px] [&_.rp-btn]:pl-[14px]
-    [&_.rp-btn]:rounded-tl-[999px] [&_.rp-btn]:rounded-tr-[999px] [&_.rp-btn]:rounded-br-[999px]
-    [&_.rp-btn]:rounded-bl-[999px] [&_.rp-btn]:bg-ink [&_.rp-btn]:text-page [&_.rp-btn]:text-[13px]
-    [&_.rp-btn]:font-semibold [@media(prefers-reduced-motion:_reduce)]:[&_.ve-dock]:transition-none`,
+  rxDone: `mt-0 mr-0 mb-0 ml-0 pt-[9px] pr-[12px] pb-[9px] pl-[12px] rounded-tl-[10px] rounded-tr-[10px] ` +
+    `rounded-br-[10px] rounded-bl-[10px] bg-[rgba(22,_147,_106,_0.1)] text-ink-2 text-[13.5px]`,
+  ve: `[&_.rx_.rx-undo]:ml-[6px] [&_.rx_.rx-undo]:pt-0 [&_.rx_.rx-undo]:pr-0 [&_.rx_.rx-undo]:pb-0 ` +
+    `[&_.rx_.rx-undo]:pl-0 [&_.rx_.rx-undo]:min-h-0 [&_.rx_.rx-undo]:[background:none] ` +
+    `[&_.rx_.rx-undo]:[font-family:inherit] [&_.rx_.rx-undo]:text-[inherit] [&_.rx_.rx-undo]:font-semibold ` +
+    `[&_.rx_.rx-undo]:[font-style:inherit] [&_.rx_.rx-undo]:leading-[inherit] [&_.rx_.rx-undo]:text-accent-ink ` +
+    `[&_.rx_.rx-undo]:underline [&_.rx_.rx-undo]:underline-offset-[2px] [&_.rx_.rx-undo]:cursor-pointer ` +
+    `[&_.ve-head-actions_>_button]:min-w-[96px] [&_.ve-head-actions_>_button]:justify-center ` +
+    `[&_.ve-remix-btn]:inline-flex [&_.ve-remix-btn]:items-center [&_.ve-remix-btn]:gap-y-[7px] ` +
+    `[&_.ve-remix-btn]:gap-x-[7px] [&_.ve-remix-btn]:h-[34px] [&_.ve-remix-btn]:pt-0 [&_.ve-remix-btn]:pr-[14px] ` +
+    `[&_.ve-remix-btn]:pb-0 [&_.ve-remix-btn]:pl-[14px] [&_.ve-remix-btn]:rounded-tl-[999px] ` +
+    `[&_.ve-remix-btn]:rounded-tr-[999px] [&_.ve-remix-btn]:rounded-br-[999px] [&_.ve-remix-btn]:rounded-bl-[999px] ` +
+    `[&_.ve-remix-btn]:bg-ink [&_.ve-remix-btn]:text-page [&_.ve-remix-btn]:text-[13.5px] ` +
+    `[&_.ve-remix-btn]:font-semibold [&_.ve-remix-btn]:shadow-[0_6px_16px_-8px_rgba(0,_0,_0,_0.45)] ` +
+    `[&_.ve-remix-btn]:[transition:transform_0.15s_var(--ease),_opacity_0.15s] ` +
+    `[&_.ve-remix-btn:hover]:[transform:translateY(-1px)] [&_.ve-remix-btn_svg]:w-[16px] ` +
+    `[&_.ve-remix-btn_svg]:h-[16px] [&_.ve-edit-btn]:relative [&_.ve-edit-btn]:inline-flex ` +
+    `[&_.ve-edit-btn]:items-center [&_.ve-edit-btn]:gap-y-[7px] [&_.ve-edit-btn]:gap-x-[7px] ` +
+    `[&_.ve-edit-btn]:h-[34px] [&_.ve-edit-btn]:pt-0 [&_.ve-edit-btn]:pr-[14px] [&_.ve-edit-btn]:pb-0 ` +
+    `[&_.ve-edit-btn]:pl-[14px] [&_.ve-edit-btn]:rounded-tl-[999px] [&_.ve-edit-btn]:rounded-tr-[999px] ` +
+    `[&_.ve-edit-btn]:rounded-br-[999px] [&_.ve-edit-btn]:rounded-bl-[999px] [&_.ve-edit-btn]:bg-fill ` +
+    `[&_.ve-edit-btn]:text-ink-3 [&_.ve-edit-btn]:text-[13.5px] [&_.ve-edit-btn]:font-semibold ` +
+    `[&_.ve-edit-btn]:cursor-not-allowed [&_.ve-edit-btn_svg]:w-[16px] [&_.ve-edit-btn_svg]:h-[16px] ` +
+    `[&_.ve-edit-btn_svg]:opacity-[0.7] [&_.ve-new-chapter]:flex [&_.ve-new-chapter]:items-center ` +
+    `[&_.ve-new-chapter]:justify-start [&_.ve-new-chapter]:gap-y-[8px] [&_.ve-new-chapter]:gap-x-[8px] ` +
+    `[&_.ve-new-chapter]:w-full [&_.ve-new-chapter]:pt-[5px] [&_.ve-new-chapter]:pr-[8px] ` +
+    `[&_.ve-new-chapter]:pb-[5px] [&_.ve-new-chapter]:pl-[10px] [&_.ve-new-chapter]:mt-[4px] ` +
+    `[&_.ve-new-chapter]:rounded-tl-[8px] [&_.ve-new-chapter]:rounded-tr-[8px] [&_.ve-new-chapter]:rounded-br-[8px] ` +
+    `[&_.ve-new-chapter]:rounded-bl-[8px] [&_.ve-new-chapter]:text-[13px] [&_.ve-new-chapter]:font-medium ` +
+    `[&_.ve-new-chapter]:text-ink-3 [&_.ve-new-chapter]:text-left [&_.ve-new-chapter_span]:w-[14px] ` +
+    `[&_.ve-new-chapter_span]:text-center [&_.ve-new-chapter_span]:text-[15px] [&_.ve-new-chapter_span]:leading-[1] ` +
+    `[&_.ve-new-chapter:hover]:bg-fill-2 [&_.ve-new-chapter:hover]:text-ink ` +
+    `[&_.ve-dock]:[transition:opacity_0.35s_ease,_filter_0.35s_ease] ` +
+    `[&.remixing_.ve-dock:not(.rec):not(.live)]:opacity-[0.5] ` +
+    `[&.remixing_.ve-dock:not(.rec):not(.live)]:[filter:blur(8px)_saturate(0.85)] ` +
+    `[&.remixing_.ve-dock:not(.rec):not(.live)]:pointer-events-none [&_.ve-remix-btn:disabled]:opacity-[0.4] ` +
+    `[&_.ve-remix-btn:disabled]:transform-none [&_.ve-remix-btn:disabled]:cursor-not-allowed ` +
+    `[&_.rp-close]:flex-none [&_.rp-close]:w-[30px] [&_.rp-close]:h-[30px] [&_.rp-close]:grid ` +
+    `[&_.rp-close]:place-items-center [&_.rp-close]:rounded-tl-[999px] [&_.rp-close]:rounded-tr-[999px] ` +
+    `[&_.rp-close]:rounded-br-[999px] [&_.rp-close]:rounded-bl-[999px] [&_.rp-close]:bg-fill ` +
+    `[&_.rp-close]:text-ink-2 [&_.rp-close]:[transition:background-color_0.15s] [&_.rp-close:hover]:bg-fill-2 ` +
+    `[&_.rp-close:hover]:text-ink [&_.rp-try_button]:w-full [&_.rp-try_button]:flex [&_.rp-try_button]:items-center ` +
+    `[&_.rp-try_button]:justify-between [&_.rp-try_button]:gap-y-[10px] [&_.rp-try_button]:gap-x-[10px] ` +
+    `[&_.rp-try_button]:pt-[10px] [&_.rp-try_button]:pr-[12px] [&_.rp-try_button]:pb-[10px] ` +
+    `[&_.rp-try_button]:pl-[12px] [&_.rp-try_button]:rounded-tl-[12px] [&_.rp-try_button]:rounded-tr-[12px] ` +
+    `[&_.rp-try_button]:rounded-br-[12px] [&_.rp-try_button]:rounded-bl-[12px] [&_.rp-try_button]:bg-panel ` +
+    `[&_.rp-try_button]:shadow-[0_0_0_1px_var(--hair)] [&_.rp-try_button]:text-ink [&_.rp-try_button]:text-[13.5px] ` +
+    `[&_.rp-try_button]:font-medium [&_.rp-try_button]:text-left ` +
+    `[&_.rp-try_button]:[transition:box-shadow_0.15s,_translate_0.15s] ` +
+    `[&_.rp-try_button:hover]:shadow-[0_0_0_1px_var(--accent)] [&_.rp-try_button:hover]:[translate:2px_0] ` +
+    `[&_.rp-undo]:flex-none [&_.rp-undo]:pt-[2px] [&_.rp-undo]:pr-[9px] [&_.rp-undo]:pb-[2px] [&_.rp-undo]:pl-[9px] ` +
+    `[&_.rp-undo]:rounded-tl-[999px] [&_.rp-undo]:rounded-tr-[999px] [&_.rp-undo]:rounded-br-[999px] ` +
+    `[&_.rp-undo]:rounded-bl-[999px] [&_.rp-undo]:bg-panel [&_.rp-undo]:shadow-[0_0_0_1px_rgba(22,_147,_106,_0.3)] ` +
+    `[&_.rp-undo]:text-ink-2 [&_.rp-undo]:text-[12px] [&_.rp-undo]:font-semibold [&_.rp-undo:hover]:text-ink ` +
+    `[&_.rp-undo:hover]:shadow-[0_0_0_1px_var(--ok)] [&_.rp-retry]:mt-[8px] [&_.rp-retry]:pt-[4px] ` +
+    `[&_.rp-retry]:pr-[12px] [&_.rp-retry]:pb-[4px] [&_.rp-retry]:pl-[12px] [&_.rp-retry]:rounded-tl-[999px] ` +
+    `[&_.rp-retry]:rounded-tr-[999px] [&_.rp-retry]:rounded-br-[999px] [&_.rp-retry]:rounded-bl-[999px] ` +
+    `[&_.rp-retry]:bg-ink [&_.rp-retry]:text-page [&_.rp-retry]:text-[12.5px] [&_.rp-retry]:font-semibold ` +
+    `[&_.rp-input_textarea]:flex-1 [&_.rp-input_textarea]:min-h-[36px] [&_.rp-input_textarea]:h-[36px] ` +
+    `[&_.rp-input_textarea]:max-h-[140px] [&_.rp-input_textarea]:pt-[8px] [&_.rp-input_textarea]:pr-0 ` +
+    `[&_.rp-input_textarea]:pb-[8px] [&_.rp-input_textarea]:pl-0 [&_.rp-input_textarea]:[border-top:0] ` +
+    `[&_.rp-input_textarea]:[border-right:0] [&_.rp-input_textarea]:[border-bottom:0] ` +
+    `[&_.rp-input_textarea]:[border-left:0] [&_.rp-input_textarea]:[background:none] ` +
+    `[&_.rp-input_textarea]:shadow-[none] [&_.rp-input_textarea]:resize-none ` +
+    `[&_.rp-input_textarea]:[font-family:inherit] [&_.rp-input_textarea]:text-[14px] ` +
+    `[&_.rp-input_textarea]:font-[inherit] [&_.rp-input_textarea]:[font-style:inherit] ` +
+    `[&_.rp-input_textarea]:leading-[20px] [&_.rp-input_textarea]:text-ink [&_.rp-input_textarea]:[outline:none] ` +
+    `[&_.rp-input_textarea:focus]:flex-1 [&_.rp-input_textarea:focus]:min-h-[36px] ` +
+    `[&_.rp-input_textarea:focus]:h-[36px] [&_.rp-input_textarea:focus]:max-h-[140px] ` +
+    `[&_.rp-input_textarea:focus]:pt-[8px] [&_.rp-input_textarea:focus]:pr-0 [&_.rp-input_textarea:focus]:pb-[8px] ` +
+    `[&_.rp-input_textarea:focus]:pl-0 [&_.rp-input_textarea:focus]:[border-top:0] ` +
+    `[&_.rp-input_textarea:focus]:[border-right:0] [&_.rp-input_textarea:focus]:[border-bottom:0] ` +
+    `[&_.rp-input_textarea:focus]:[border-left:0] [&_.rp-input_textarea:focus]:[background:none] ` +
+    `[&_.rp-input_textarea:focus]:shadow-[none] [&_.rp-input_textarea:focus]:resize-none ` +
+    `[&_.rp-input_textarea:focus]:[font-family:inherit] [&_.rp-input_textarea:focus]:text-[14px] ` +
+    `[&_.rp-input_textarea:focus]:font-[inherit] [&_.rp-input_textarea:focus]:[font-style:inherit] ` +
+    `[&_.rp-input_textarea:focus]:leading-[20px] [&_.rp-input_textarea:focus]:text-ink ` +
+    `[&_.rp-input_textarea:focus]:[outline:none] [&_.rp-send]:flex-none [&_.rp-send]:w-[34px] [&_.rp-send]:h-[34px] ` +
+    `[&_.rp-send]:grid [&_.rp-send]:place-items-center [&_.rp-send]:rounded-tl-[999px] ` +
+    `[&_.rp-send]:rounded-tr-[999px] [&_.rp-send]:rounded-br-[999px] [&_.rp-send]:rounded-bl-[999px] ` +
+    `[&_.rp-send]:bg-accent [&_.rp-send]:text-accent-on [&_.rp-send]:[transition:opacity_0.15s,_transform_0.15s] ` +
+    `[&_.rp-send:not(:disabled):hover]:[transform:translateY(-1px)] [&_.rp-send:disabled]:opacity-[0.3] ` +
+    `[&_.rp-btn]:pt-[7px] [&_.rp-btn]:pr-[14px] [&_.rp-btn]:pb-[7px] [&_.rp-btn]:pl-[14px] ` +
+    `[&_.rp-btn]:rounded-tl-[999px] [&_.rp-btn]:rounded-tr-[999px] [&_.rp-btn]:rounded-br-[999px] ` +
+    `[&_.rp-btn]:rounded-bl-[999px] [&_.rp-btn]:bg-ink [&_.rp-btn]:text-page [&_.rp-btn]:text-[13px] ` +
+    `[&_.rp-btn]:font-semibold [@media(prefers-reduced-motion:_reduce)]:[&_.ve-dock]:transition-none`,
   rxErr: `mt-0 mr-0 mb-0 ml-0 text-warn text-[13.5px]`,
-  rxOff: `flex items-center justify-between gap-y-[10px] gap-x-[16px] flex-wrap [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0
-    [&_p]:ml-0 [&_p]:text-ink-2`,
+  rxOff: `flex items-center justify-between gap-y-[10px] gap-x-[16px] flex-wrap [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 ` +
+    `[&_p]:ml-0 [&_p]:text-ink-2`,
   veHeadRemix: `relative`,
   veHeadActions: `flex flex-wrap gap-y-[8px] gap-x-[8px] mt-[16px]`,
-  veSoonTip: `absolute top-[calc(100%_+_8px)] right-auto z-[5] w-[max-content] max-w-[min(280px,_65vw)] pt-[7px] pr-[10px]
-    pb-[7px] pl-[10px] rounded-tl-[9px] rounded-tr-[9px] rounded-br-[9px] rounded-bl-[9px] bg-ink text-page
-    text-[12px] font-medium leading-[1.35] text-left shadow-[0_8px_20px_-8px_rgba(0,_0,_0,_0.4)] opacity-[0]
-    [translate:0_-3px] pointer-events-none [transition:opacity_0.15s_ease,_translate_0.15s_ease] left-0
-    whitespace-normal [&::before]:content-[''] [&::before]:absolute [&::before]:top-[-4px] [&::before]:right-auto
-    [&::before]:w-[8px] [&::before]:h-[8px] [&::before]:[background:inherit] [&::before]:[rotate:45deg]
-    [&::before]:rounded-tl-[1px] [&::before]:rounded-tr-[1px] [&::before]:rounded-br-[1px]
-    [&::before]:rounded-bl-[1px] [&::before]:left-[22px]`,
-  veEditBtn: `[&:hover_.ve-soon-tip]:opacity-[1] [&:hover_.ve-soon-tip]:[translate:0_0]
-    [&:focus-visible_.ve-soon-tip]:opacity-[1] [&:focus-visible_.ve-soon-tip]:[translate:0_0]`,
-  rp: `absolute z-[30] top-[14px] right-[14px] bottom-[14px] w-[min(400px,_calc(100%_-_28px))] grid
-    grid-rows-[auto_minmax(0,_1fr)_auto] rounded-tl-[20px] rounded-tr-[20px] rounded-br-[20px] rounded-bl-[20px]
-    overflow-hidden bg-win [backdrop-filter:blur(30px)_saturate(1.6)]
-    shadow-[0_0_0_0.5px_rgba(0,_0,_0,_0.14),_0_30px_70px_-20px_rgba(0,_0,_0,_0.55)] text-ink font-sans text-[14px]
-    [animation:rp-in_0.38s_cubic-bezier(0.16,_1,_0.3,_1)_both] [&_::selection]:bg-accent-soft
-    [@media(max-width:_700px)]:top-auto [@media(max-width:_700px)]:left-[8px]
-    [@media(max-width:_700px)]:right-[8px] [@media(max-width:_700px)]:bottom-[8px]
-    [@media(max-width:_700px)]:w-auto [@media(max-width:_700px)]:h-[min(72dvh,_600px)]
-    [@media(max-width:_700px)]:[animation-name:rp-up] [@media(prefers-reduced-motion:_reduce)]:animate-none`,
-  rpHead: `flex items-center gap-y-[11px] gap-x-[11px] pt-[12px] pr-[12px] pb-[12px] pl-[14px]
-    [border-bottom:1px_solid_var(--hair)] [&_>_div]:flex-1 [&_>_div]:min-w-0 [&_>_div]:grid [&_>_div]:gap-y-[1px]
-    [&_>_div]:gap-x-[1px] [&_b]:text-[15px] [&_b]:font-bold [&_b]:tracking-[-0.01em] [&_b]:whitespace-nowrap
-    [&_b]:overflow-hidden [&_b]:text-ellipsis [&_small]:text-[12px] [&_small]:text-ink-3`,
-  rpIc: `flex-none w-[34px] h-[34px] rounded-tl-[10px] rounded-tr-[10px] rounded-br-[10px] rounded-bl-[10px] grid
-    place-items-center text-[color:#fff] [background:linear-gradient(180deg,_#f59a6c,_#e0643c)]
-    shadow-[inset_0_0.5px_0_rgba(255,_255,_255,_0.45),_0_4px_10px_-4px_rgba(var(--accent-rgb),_0.6)]
-    [&_svg]:w-[19px] [&_svg]:h-[19px]`,
+  veEditBtn: `[&:hover_.ve-soon-tip]:opacity-[1] [&:hover_.ve-soon-tip]:[translate:0_0] ` +
+    `[&:focus-visible_.ve-soon-tip]:opacity-[1] [&:focus-visible_.ve-soon-tip]:[translate:0_0]`,
+  rp: `absolute z-[30] top-[14px] right-[14px] bottom-[14px] w-[min(400px,_calc(100%_-_28px))] grid ` +
+    `grid-rows-[auto_minmax(0,_1fr)_auto] rounded-tl-[20px] rounded-tr-[20px] rounded-br-[20px] rounded-bl-[20px] ` +
+    `overflow-hidden bg-win [backdrop-filter:blur(30px)_saturate(1.6)] ` +
+    `shadow-[0_0_0_0.5px_rgba(0,_0,_0,_0.14),_0_30px_70px_-20px_rgba(0,_0,_0,_0.55)] text-ink font-sans text-[14px] ` +
+    `[animation:rp-in_0.38s_cubic-bezier(0.16,_1,_0.3,_1)_both] [&_::selection]:bg-accent-soft ` +
+    `[@media(max-width:_700px)]:top-auto [@media(max-width:_700px)]:left-[8px] ` +
+    `[@media(max-width:_700px)]:right-[8px] [@media(max-width:_700px)]:bottom-[8px] ` +
+    `[@media(max-width:_700px)]:w-auto [@media(max-width:_700px)]:h-[min(72dvh,_600px)] ` +
+    `[@media(max-width:_700px)]:[animation-name:rp-up] [@media(prefers-reduced-motion:_reduce)]:animate-none`,
+  rpHead: `flex items-center gap-y-[11px] gap-x-[11px] pt-[12px] pr-[12px] pb-[12px] pl-[14px] ` +
+    `[border-bottom:1px_solid_var(--hair)] [&_>_div]:flex-1 [&_>_div]:min-w-0 [&_>_div]:grid [&_>_div]:gap-y-[1px] ` +
+    `[&_>_div]:gap-x-[1px] [&_b]:text-[15px] [&_b]:font-bold [&_b]:tracking-[-0.01em] [&_b]:whitespace-nowrap ` +
+    `[&_b]:overflow-hidden [&_b]:text-ellipsis [&_small]:text-[12px] [&_small]:text-ink-3`,
+  rpIc: `flex-none w-[34px] h-[34px] rounded-tl-[10px] rounded-tr-[10px] rounded-br-[10px] rounded-bl-[10px] grid ` +
+    `place-items-center text-[color:#fff] [background:linear-gradient(180deg,_#f59a6c,_#e0643c)] ` +
+    `shadow-[inset_0_0.5px_0_rgba(255,_255,_255,_0.45),_0_4px_10px_-4px_rgba(var(--accent-rgb),_0.6)] ` +
+    `[&_svg]:w-[19px] [&_svg]:h-[19px]`,
   rpClose: `[&_svg]:w-[13px] [&_svg]:h-[13px]`,
-  rpMsgs: `overflow-auto pt-[18px] pr-[16px] pb-[12px] pl-[16px] flex flex-col gap-y-[10px] gap-x-[10px]
-    [scrollbar-width:thin] overscroll-contain`,
+  rpMsgs: `overflow-auto pt-[18px] pr-[16px] pb-[12px] pl-[16px] flex flex-col gap-y-[10px] gap-x-[10px] ` +
+    `[scrollbar-width:thin] overscroll-contain`,
   rpHello: `grid gap-y-[6px] gap-x-[6px] pt-[4px] pr-[2px] pb-0 pl-[2px]`,
   rpAsk: `mt-0 mr-0 mb-0 ml-0 font-semibold text-[18px] leading-[1.3] font-sans tracking-[-0.02em] text-ink text-balance`,
   rpSub: `mt-0 mr-0 mb-[8px] ml-0 text-[12.5px] leading-[1.5] text-ink-3`,
-  rpTry: `list-none mt-[4px] mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid gap-y-[6px] gap-x-[6px] [&_svg]:w-[14px]
-    [&_svg]:h-[14px] [&_svg]:flex-none [&_svg]:text-ink-3 [&_button:hover_svg]:text-accent-ink`,
-  rpMsg: `max-w-[86%] pt-[9px] pr-[13px] pb-[9px] pl-[13px] rounded-tl-[16px] rounded-tr-[16px] rounded-br-[16px]
-    rounded-bl-[16px] leading-[1.45] [animation:rp-msg_0.28s_cubic-bezier(0.16,_1,_0.3,_1)_both] [&_p]:mt-0
-    [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:whitespace-pre-wrap [&_p]:[overflow-wrap:anywhere] [&.user]:self-end
-    [&.user]:bg-ink [&.user]:text-page [&.user]:rounded-br-[6px] [&.assistant]:self-start [&.assistant]:bg-panel
-    [&.assistant]:shadow-[0_0_0_1px_var(--hair)] [&.assistant]:rounded-bl-[6px]
-    [&.failed.failed]:bg-[rgba(178,_106,_0,_0.08)] [&.failed.failed]:shadow-[0_0_0_1px_rgba(178,_106,_0,_0.3)]
-    [&.failed.failed]:text-ink [@media(prefers-reduced-motion:_reduce)]:animate-none`,
-  rpSaved: `flex items-center gap-y-[6px] gap-x-[6px] mt-[8px] mr-[-5px] mb-[-3px] ml-[-5px] pt-[6px] pr-[8px] pb-[6px]
-    pl-[8px] rounded-tl-[10px] rounded-tr-[10px] rounded-br-[10px] rounded-bl-[10px] bg-[rgba(22,_147,_106,_0.1)]
-    text-ok text-[12.5px] font-medium leading-[1.35] [&_svg]:w-[14px] [&_svg]:h-[14px] [&_svg]:flex-none
-    [&_span]:flex-1 [&_span]:min-w-0 [&.undone]:bg-fill [&.undone]:text-ink-3`,
+  rpTry: `list-none mt-[4px] mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid gap-y-[6px] gap-x-[6px] [&_svg]:w-[14px] ` +
+    `[&_svg]:h-[14px] [&_svg]:flex-none [&_svg]:text-ink-3 [&_button:hover_svg]:text-accent-ink`,
+  rpMsg: `max-w-[86%] pt-[9px] pr-[13px] pb-[9px] pl-[13px] rounded-tl-[16px] rounded-tr-[16px] rounded-br-[16px] ` +
+    `rounded-bl-[16px] leading-[1.45] [animation:rp-msg_0.28s_cubic-bezier(0.16,_1,_0.3,_1)_both] [&_p]:mt-0 ` +
+    `[&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:whitespace-pre-wrap [&_p]:[overflow-wrap:anywhere] [&.user]:self-end ` +
+    `[&.user]:bg-ink [&.user]:text-page [&.user]:rounded-br-[6px] [&.assistant]:self-start [&.assistant]:bg-panel ` +
+    `[&.assistant]:shadow-[0_0_0_1px_var(--hair)] [&.assistant]:rounded-bl-[6px] ` +
+    `[&.failed.failed]:bg-[rgba(178,_106,_0,_0.08)] [&.failed.failed]:shadow-[0_0_0_1px_rgba(178,_106,_0,_0.3)] ` +
+    `[&.failed.failed]:text-ink [@media(prefers-reduced-motion:_reduce)]:animate-none`,
+  rpSaved: `flex items-center gap-y-[6px] gap-x-[6px] mt-[8px] mr-[-5px] mb-[-3px] ml-[-5px] pt-[6px] pr-[8px] pb-[6px] ` +
+    `pl-[8px] rounded-tl-[10px] rounded-tr-[10px] rounded-br-[10px] rounded-bl-[10px] bg-[rgba(22,_147,_106,_0.1)] ` +
+    `text-ok text-[12.5px] font-medium leading-[1.35] [&_svg]:w-[14px] [&_svg]:h-[14px] [&_svg]:flex-none ` +
+    `[&_span]:flex-1 [&_span]:min-w-0 [&.undone]:bg-fill [&.undone]:text-ink-3`,
   rpTyping: `grid gap-y-[4px] gap-x-[4px] [&_small]:text-[12px] [&_small]:text-ink-3`,
-  rpDots: `inline-flex gap-y-[4px] gap-x-[4px] pt-[3px] pr-0 pb-[3px] pl-0 [&_i]:w-[7px] [&_i]:h-[7px]
-    [&_i]:rounded-tl-[50%] [&_i]:rounded-tr-[50%] [&_i]:rounded-br-[50%] [&_i]:rounded-bl-[50%] [&_i]:bg-accent
-    [&_i]:[animation:rp-dot_1.1s_ease-in-out_infinite] [&_i:nth-child(2)]:[animation-delay:0.15s]
-    [&_i:nth-child(3)]:[animation-delay:0.3s] [@media(prefers-reduced-motion:_reduce)]:[&_i]:animate-none`,
+  rpDots: `inline-flex gap-y-[4px] gap-x-[4px] pt-[3px] pr-0 pb-[3px] pl-0 [&_i]:w-[7px] [&_i]:h-[7px] ` +
+    `[&_i]:rounded-tl-[50%] [&_i]:rounded-tr-[50%] [&_i]:rounded-br-[50%] [&_i]:rounded-bl-[50%] [&_i]:bg-accent ` +
+    `[&_i]:[animation:rp-dot_1.1s_ease-in-out_infinite] [&_i:nth-child(2)]:[animation-delay:0.15s] ` +
+    `[&_i:nth-child(3)]:[animation-delay:0.3s] [@media(prefers-reduced-motion:_reduce)]:[&_i]:animate-none`,
   rpForm: `grid gap-y-[6px] gap-x-[6px] pt-[10px] pr-[12px] pb-[10px] pl-[12px] [border-top:1px_solid_var(--hair)]`,
-  rpInput: `flex items-end gap-y-[8px] gap-x-[8px] pt-[6px] pr-[6px] pb-[6px] pl-[14px] rounded-tl-[16px]
-    rounded-tr-[16px] rounded-br-[16px] rounded-bl-[16px] bg-panel shadow-[0_0_0_1px_var(--line-strong)]
-    [transition:box-shadow_0.15s] [&:focus-within]:shadow-[0_0_0_1px_var(--accent),_0_0_0_4px_var(--accent-soft)]
-    [&_textarea::placeholder]:text-ink-3`,
+  rpInput: `flex items-end gap-y-[8px] gap-x-[8px] pt-[6px] pr-[6px] pb-[6px] pl-[14px] rounded-tl-[16px] ` +
+    `rounded-tr-[16px] rounded-br-[16px] rounded-bl-[16px] bg-panel shadow-[0_0_0_1px_var(--line-strong)] ` +
+    `[transition:box-shadow_0.15s] [&:focus-within]:shadow-[0_0_0_1px_var(--accent),_0_0_0_4px_var(--accent-soft)] ` +
+    `[&_textarea::placeholder]:text-ink-3`,
   rpSend: `[&_svg]:w-[16px] [&_svg]:h-[16px]`,
   rpHint: `mt-0 mr-[4px] mb-0 ml-[4px] text-[11.5px] text-ink-3 [@media(max-width:_700px)]:hidden`,
-  rpOff: `flex items-center justify-between gap-y-[10px] gap-x-[10px] pt-[14px] pr-[16px] pb-[14px] pl-[16px]
-    [border-top:1px_solid_var(--hair)] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2
-    [&_p]:text-[13.5px]`,
-  veItem: `[&.fresh]:relative [&.fresh]:isolate [&.fresh::before]:content-[''] [&.fresh::before]:absolute
-    [&.fresh::before]:z-[-1] [&.fresh::before]:top-[6px] [&.fresh::before]:right-[2px]
-    [&.fresh::before]:bottom-[6px] [&.fresh::before]:left-[-10px] [&.fresh::before]:rounded-tl-[16px]
-    [&.fresh::before]:rounded-tr-[16px] [&.fresh::before]:rounded-br-[16px] [&.fresh::before]:rounded-bl-[16px]
-    [&.fresh::before]:bg-accent-soft [&.fresh::before]:shadow-[inset_0_0_0_1px_rgba(var(--accent-rgb),_0.25)]
-    [&.fresh::before]:[animation:ve-fresh_2.6s_cubic-bezier(0.16,_1,_0.3,_1)_both]
-    [&.fresh::before]:pointer-events-none [@media(prefers-reduced-motion:_reduce)]:[&.fresh::before]:animate-none
-    [@media(prefers-reduced-motion:_reduce)]:[&.fresh::before]:opacity-[0]`,
+  rpOff: `flex items-center justify-between gap-y-[10px] gap-x-[10px] pt-[14px] pr-[16px] pb-[14px] pl-[16px] ` +
+    `[border-top:1px_solid_var(--hair)] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2 ` +
+    `[&_p]:text-[13.5px]`,
+  veItem: `[&.fresh]:relative [&.fresh]:isolate [&.fresh::before]:content-[''] [&.fresh::before]:absolute ` +
+    `[&.fresh::before]:z-[-1] [&.fresh::before]:top-[6px] [&.fresh::before]:right-[2px] ` +
+    `[&.fresh::before]:bottom-[6px] [&.fresh::before]:left-[-10px] [&.fresh::before]:rounded-tl-[16px] ` +
+    `[&.fresh::before]:rounded-tr-[16px] [&.fresh::before]:rounded-br-[16px] [&.fresh::before]:rounded-bl-[16px] ` +
+    `[&.fresh::before]:bg-accent-soft [&.fresh::before]:shadow-[inset_0_0_0_1px_rgba(var(--accent-rgb),_0.25)] ` +
+    `[&.fresh::before]:[animation:ve-fresh_2.6s_cubic-bezier(0.16,_1,_0.3,_1)_both] ` +
+    `[&.fresh::before]:pointer-events-none [@media(prefers-reduced-motion:_reduce)]:[&.fresh::before]:animate-none ` +
+    `[@media(prefers-reduced-motion:_reduce)]:[&.fresh::before]:opacity-[0]`,
   dv: String.raw`grid gap-y-[28px] gap-x-[28px] pt-[8px] text-[15px] [&_>_*]:mt-0 [&_>_*]:mr-0 [&_>_*]:mb-0 [&_>_*]:ml-0
     [&_>_*]:min-w-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_h1]:text-[28px] [&_h1]:leading-[1.15]
     [&_h1]:tracking-[-0.035em] [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:text-balance
@@ -714,143 +690,118 @@ export const pages = {
     [@media(max-width:_640px)]:[&_.rc-head_.dv-link]:justify-self-start
     [@media(prefers-reduced-motion:_reduce)]:[&_.pg-takes_li]:transition-none`,
   dvHead: `grid gap-y-[8px] gap-x-[8px]`,
-  dvHeadRow: `flex items-baseline justify-between gap-y-[8px] gap-x-[20px] flex-wrap`,
   dvLoading: `text-ink-3 pt-[8px]`,
   dvSec: `grid gap-y-[12px] gap-x-[12px] [align-content:start]`,
   dvSecHead: `flex items-center justify-between gap-y-[8px] gap-x-[16px] flex-wrap`,
-  dvTiles: `grid grid-cols-[repeat(3,_minmax(0,_1fr))] gap-y-[8px] gap-x-[8px] [&_>_div]:bg-fill
-    [&_>_div]:rounded-tl-[14px] [&_>_div]:rounded-tr-[14px] [&_>_div]:rounded-br-[14px]
-    [&_>_div]:rounded-bl-[14px] [&_>_div]:pt-[12px] [&_>_div]:pr-[14px] [&_>_div]:pb-[13px] [&_>_div]:pl-[14px]
-    [&_>_div]:min-w-0 [&_>_div]:flex [&_>_div]:flex-col [&_>_div]:justify-between [&_>_div]:gap-y-[4px]
-    [&_>_div]:gap-x-[4px] [&_dt]:text-[12px] [&_dt]:leading-[1.35] [&_dt]:text-ink-3 [&_dd]:mt-0 [&_dd]:mr-0
-    [&_dd]:mb-0 [&_dd]:ml-0 [&_dd]:text-[24px] [&_dd]:font-semibold [&_dd]:tracking-[-0.03em]
-    [&_dd]:leading-[1.15] [&_dd]:tabular-nums [&_dd_small]:text-[15px] [&_dd_small]:font-medium
-    [&_dd_small]:tracking-[-0.01em] [&_dd_small]:text-ink-2 [@media(max-width:_640px)]:gap-y-[6px]
-    [@media(max-width:_640px)]:gap-x-[6px] [@media(max-width:_640px)]:[&_>_div]:pt-[10px]
-    [@media(max-width:_640px)]:[&_>_div]:pr-[11px] [@media(max-width:_640px)]:[&_>_div]:pb-[11px]
-    [@media(max-width:_640px)]:[&_>_div]:pl-[11px] [@media(max-width:_640px)]:[&_>_div]:rounded-tl-[12px]
-    [@media(max-width:_640px)]:[&_>_div]:rounded-tr-[12px] [@media(max-width:_640px)]:[&_>_div]:rounded-br-[12px]
-    [@media(max-width:_640px)]:[&_>_div]:rounded-bl-[12px] [@media(max-width:_640px)]:[&_dd]:text-[21px]
-    [@media(max-width:_640px)]:[&_dd_small]:text-[13px]`,
-  rcHead: `grid-cols-[minmax(0,_1fr)_auto] gap-x-[20px] [&_h1]:[grid-column:1] [&_h1]:[grid-row:1]
-    [&_.dv-lede]:[grid-column:1_/_-1] [@media(max-width:_640px)]:grid-cols-[minmax(0,_1fr)]`,
-  rcDay: `grid gap-y-[6px] gap-x-[6px]`,
-  rcList: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 [&_>_li]:[border-top:1px_solid_var(--hair)]
-    [&_>_li.open]:[border-top-color:transparent] [&_>_li.open]:bg-fill [&_>_li.open]:rounded-tl-[14px]
-    [&_>_li.open]:rounded-tr-[14px] [&_>_li.open]:rounded-br-[14px] [&_>_li.open]:rounded-bl-[14px]
-    [&_>_li.open_+_li]:[border-top-color:transparent]`,
-  rcMain: `grid gap-y-[1px] gap-x-[1px] min-w-0`,
-  rcT: `font-semibold`,
-  rcH: `text-[13px] text-ink-3`,
-  rcTime: `text-[13px] text-ink-3 tabular-nums whitespace-nowrap`,
-  rcChev: `grid place-items-center text-ink-3 [transition:transform_0.2s_var(--ease)]
-    [@media(prefers-reduced-motion:_reduce)]:transition-none`,
-  rcRow: `[&[aria-expanded=true]_.rc-chev]:[transform:rotate(180deg)]`,
-  rcDetail: `pt-0 pr-[14px] pb-[14px] pl-[10px] [@media(max-width:_640px)]:pt-0 [@media(max-width:_640px)]:pr-[10px]
-    [@media(max-width:_640px)]:pb-[12px] [@media(max-width:_640px)]:pl-[10px]`,
-  rcInner: `grid gap-y-[12px] gap-x-[12px]`,
-  rcTakes: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid [&_>_li]:grid [&_>_li]:gap-y-[4px] [&_>_li]:gap-x-[4px]
-    [&_>_li]:pt-[12px] [&_>_li]:pr-0 [&_>_li]:pb-[12px] [&_>_li]:pl-0 [&_>_li]:[border-top:1px_solid_var(--hair)]
-    [&_>_li:first-child]:[border-top:0] [&_>_li:first-child]:pt-[4px]`,
-  rcActions: `flex flex-wrap items-center gap-y-[4px] gap-x-[6px] ml-[46px] [@media(max-width:_640px)]:ml-0
-    [@media(max-width:_640px)]:[&_.spacer]:hidden [@media(max-width:_640px)]:[&_.badge]:mr-[4px]`,
-  rcNoteform: `flex gap-y-[6px] gap-x-[6px] [flex-basis:100%]`,
-  rcReviews: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid gap-y-[4px] gap-x-[4px]`,
+  dvTiles: `grid grid-cols-[repeat(3,_minmax(0,_1fr))] gap-y-[8px] gap-x-[8px] [&_>_div]:bg-fill ` +
+    `[&_>_div]:rounded-tl-[14px] [&_>_div]:rounded-tr-[14px] [&_>_div]:rounded-br-[14px] ` +
+    `[&_>_div]:rounded-bl-[14px] [&_>_div]:pt-[12px] [&_>_div]:pr-[14px] [&_>_div]:pb-[13px] [&_>_div]:pl-[14px] ` +
+    `[&_>_div]:min-w-0 [&_>_div]:flex [&_>_div]:flex-col [&_>_div]:justify-between [&_>_div]:gap-y-[4px] ` +
+    `[&_>_div]:gap-x-[4px] [&_dt]:text-[12px] [&_dt]:leading-[1.35] [&_dt]:text-ink-3 [&_dd]:mt-0 [&_dd]:mr-0 ` +
+    `[&_dd]:mb-0 [&_dd]:ml-0 [&_dd]:text-[24px] [&_dd]:font-semibold [&_dd]:tracking-[-0.03em] ` +
+    `[&_dd]:leading-[1.15] [&_dd]:tabular-nums [&_dd_small]:text-[15px] [&_dd_small]:font-medium ` +
+    `[&_dd_small]:tracking-[-0.01em] [&_dd_small]:text-ink-2 [@media(max-width:_640px)]:gap-y-[6px] ` +
+    `[@media(max-width:_640px)]:gap-x-[6px] [@media(max-width:_640px)]:[&_>_div]:pt-[10px] ` +
+    `[@media(max-width:_640px)]:[&_>_div]:pr-[11px] [@media(max-width:_640px)]:[&_>_div]:pb-[11px] ` +
+    `[@media(max-width:_640px)]:[&_>_div]:pl-[11px] [@media(max-width:_640px)]:[&_>_div]:rounded-tl-[12px] ` +
+    `[@media(max-width:_640px)]:[&_>_div]:rounded-tr-[12px] [@media(max-width:_640px)]:[&_>_div]:rounded-br-[12px] ` +
+    `[@media(max-width:_640px)]:[&_>_div]:rounded-bl-[12px] [@media(max-width:_640px)]:[&_dd]:text-[21px] ` +
+    `[@media(max-width:_640px)]:[&_dd_small]:text-[13px]`,
   cmpSide: `grid gap-y-[8px] gap-x-[8px] [align-content:start] min-w-0`,
   cmpReason: `text-ink-2 max-w-[66ch]`,
   cmpM: `block text-ink font-medium [&::first-letter]:uppercase`,
   ph: `relative grid gap-y-[16px] gap-x-[16px] pt-[6px] min-h-full`,
-  phHead: `flex items-end justify-between gap-y-[16px] gap-x-[16px] flex-wrap [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0
-    [&_h1]:ml-0 [&_h1]:text-[24px] [&_h1]:font-[650] [&_h1]:tracking-[-0.02em] [&_p]:mt-[2px] [&_p]:mr-0
-    [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[52ch] [&_p]:text-ink-3 [&_p]:text-[13.5px]`,
+  phHead: `flex items-end justify-between gap-y-[16px] gap-x-[16px] flex-wrap [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 ` +
+    `[&_h1]:ml-0 [&_h1]:text-[24px] [&_h1]:font-[650] [&_h1]:tracking-[-0.02em] [&_p]:mt-[2px] [&_p]:mr-0 ` +
+    `[&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[52ch] [&_p]:text-ink-3 [&_p]:text-[13.5px]`,
   phActions: `flex gap-y-[8px] gap-x-[8px]`,
-  phShuffle: `min-h-[36px] inline-flex items-center gap-y-[7px] gap-x-[7px] pt-0 pr-[14px] pb-0 pl-[14px] rounded-tl-[99px]
-    rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px] text-[13px] font-semibold bg-fill text-ink-2
-    [&.on]:bg-accent-soft [&.on]:text-accent-ink [&_svg]:w-[15px] [&_svg]:h-[15px]`,
-  phAdd: `min-h-[36px] inline-flex items-center gap-y-[7px] gap-x-[7px] pt-0 pr-[14px] pb-0 pl-[14px] rounded-tl-[99px]
-    rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px] text-[13px] font-semibold bg-ink text-page
-    [&_svg]:w-[15px] [&_svg]:h-[15px]`,
-  phGrid: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))]
-    gap-y-[14px] gap-x-[14px] [@media(max-width:_640px)]:grid-cols-[repeat(2,_1fr)]
-    [@media(max-width:_640px)]:gap-y-[10px] [@media(max-width:_640px)]:gap-x-[10px]`,
-  phTile: `relative grid gap-y-[6px] gap-x-[6px] min-w-0
-    [&.pinned_.ph-img]:shadow-[0_0_0_2px_var(--page),_0_0_0_4px_var(--accent)]
-    [&.pinned_.ph-meta_small]:text-accent-ink [&.pinned_.ph-meta_small]:font-semibold
-    [&:hover_.ph-tools]:opacity-[1] [&:focus-within_.ph-tools]:opacity-[1]`,
-  phImg: `block w-full min-h-0 pt-0 pr-0 pb-0 pl-0 [border-top:0] [border-right:0] [border-bottom:0] [border-left:0]
-    rounded-tl-[16px] rounded-tr-[16px] rounded-br-[16px] rounded-bl-[16px] overflow-hidden bg-fill cursor-zoom-in
-    [&_span]:block [&_span]:w-full [&_span]:aspect-[1] [&_span]:bg-no-repeat
-    [&_span]:[background-position:70%_30%] [&_span]:[background-size:420%_auto]
-    [&_span]:[transition:transform_0.35s_var(--ease)] [&:hover_span]:[transform:scale(1.04)]
-    [@media(prefers-reduced-motion:_reduce)]:[&_span]:transition-none`,
-  phMeta: `grid min-w-0 pt-0 pr-[2px] pb-0 pl-[2px] [&_b]:text-[13px] [&_b]:font-semibold [&_b]:whitespace-nowrap
-    [&_b]:overflow-hidden [&_b]:text-ellipsis [&_small]:text-[11.5px] [&_small]:text-ink-3`,
-  phTools: `absolute top-[8px] right-[8px] flex gap-y-[6px] gap-x-[6px] opacity-[0] [transition:opacity_0.15s_ease]
-    [@media(hover:_none)]:opacity-[1] [&_button]:w-[30px] [&_button]:h-[30px] [&_button]:min-h-0 [&_button]:pt-0
-    [&_button]:pr-0 [&_button]:pb-0 [&_button]:pl-0 [&_button]:grid [&_button]:place-items-center
-    [&_button]:rounded-tl-[50%] [&_button]:rounded-tr-[50%] [&_button]:rounded-br-[50%]
-    [&_button]:rounded-bl-[50%] [&_button]:bg-[rgba(20,_20,_26,_0.6)] [&_button]:text-[color:#fff]
-    [&_button]:[backdrop-filter:blur(8px)] [&_button:hover:not(:disabled)]:bg-[rgba(20,_20,_26,_0.85)]
-    [&_button:disabled]:opacity-[0.45] [&_svg]:w-[15px] [&_svg]:h-[15px]`,
-  phConfirm: `absolute top-0 right-0 bottom-auto left-0 aspect-[1] grid place-content-center gap-y-[10px] gap-x-[10px]
-    pt-[12px] pr-[12px] pb-[12px] pl-[12px] rounded-tl-[16px] rounded-tr-[16px] rounded-br-[16px]
-    rounded-bl-[16px] text-center bg-[rgba(20,_20,_26,_0.82)] text-[color:#fff] text-[12.5px] leading-[1.35]
-    [backdrop-filter:blur(6px)] [&_div]:flex [&_div]:gap-y-[6px] [&_div]:gap-x-[6px] [&_div]:justify-center
-    [&_button]:min-h-[30px] [&_button]:pt-0 [&_button]:pr-[12px] [&_button]:pb-0 [&_button]:pl-[12px]
-    [&_button]:rounded-tl-[99px] [&_button]:rounded-tr-[99px] [&_button]:rounded-br-[99px]
-    [&_button]:rounded-bl-[99px] [&_button]:bg-[rgba(255,_255,_255,_0.14)] [&_button]:text-[color:#fff]
-    [&_button]:text-[12.5px] [&_button]:font-semibold [&_.ph-danger]:bg-rec`,
-  phDrop: `[&_button]:box-border [&_button]:w-full [&_button]:min-w-0 [&_button]:aspect-[1] [&_button]:min-h-0
-    [&_button]:grid [&_button]:grid-cols-[minmax(0,_1fr)] [&_button]:content-center
-    [&_button]:justify-items-center [&_button]:gap-y-[4px] [&_button]:gap-x-[4px] [&_button]:pt-[12px]
-    [&_button]:pr-[12px] [&_button]:pb-[12px] [&_button]:pl-[12px]
-    [&_button]:[border-top:1.5px_dashed_var(--line-strong)]
-    [&_button]:[border-right:1.5px_dashed_var(--line-strong)]
-    [&_button]:[border-bottom:1.5px_dashed_var(--line-strong)]
-    [&_button]:[border-left:1.5px_dashed_var(--line-strong)] [&_button]:rounded-tl-[16px]
-    [&_button]:rounded-tr-[16px] [&_button]:rounded-br-[16px] [&_button]:rounded-bl-[16px]
-    [&_button]:[background:none] [&_button]:text-ink-3 [&_button]:text-center
-    [&_button:hover:not(:disabled)]:[border-color:var(--accent)] [&_button:hover:not(:disabled)]:text-accent-ink
-    [&_button:hover:not(:disabled)]:bg-accent-soft [&_svg]:w-[28px] [&_svg]:h-[28px] [&_b]:text-[13px]
-    [&_b]:text-ink-2 [&_small]:text-[11.5px]`,
+  phShuffle: `min-h-[36px] inline-flex items-center gap-y-[7px] gap-x-[7px] pt-0 pr-[14px] pb-0 pl-[14px] rounded-tl-[99px] ` +
+    `rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px] text-[13px] font-semibold bg-fill text-ink-2 ` +
+    `[&.on]:bg-accent-soft [&.on]:text-accent-ink [&_svg]:w-[15px] [&_svg]:h-[15px]`,
+  phAdd: `min-h-[36px] inline-flex items-center gap-y-[7px] gap-x-[7px] pt-0 pr-[14px] pb-0 pl-[14px] rounded-tl-[99px] ` +
+    `rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px] text-[13px] font-semibold bg-ink text-page ` +
+    `[&_svg]:w-[15px] [&_svg]:h-[15px]`,
+  phGrid: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid grid-cols-[repeat(auto-fill,_minmax(150px,_1fr))] ` +
+    `gap-y-[14px] gap-x-[14px] [@media(max-width:_640px)]:grid-cols-[repeat(2,_1fr)] ` +
+    `[@media(max-width:_640px)]:gap-y-[10px] [@media(max-width:_640px)]:gap-x-[10px]`,
+  phTile: `relative grid gap-y-[6px] gap-x-[6px] min-w-0 ` +
+    `[&.pinned_.ph-img]:shadow-[0_0_0_2px_var(--page),_0_0_0_4px_var(--accent)] ` +
+    `[&.pinned_.ph-meta_small]:text-accent-ink [&.pinned_.ph-meta_small]:font-semibold ` +
+    `[&:hover_.ph-tools]:opacity-[1] [&:focus-within_.ph-tools]:opacity-[1]`,
+  phImg: `block w-full min-h-0 pt-0 pr-0 pb-0 pl-0 [border-top:0] [border-right:0] [border-bottom:0] [border-left:0] ` +
+    `rounded-tl-[16px] rounded-tr-[16px] rounded-br-[16px] rounded-bl-[16px] overflow-hidden bg-fill cursor-zoom-in ` +
+    `[&_span]:block [&_span]:w-full [&_span]:aspect-[1] [&_span]:bg-no-repeat ` +
+    `[&_span]:[background-position:70%_30%] [&_span]:[background-size:420%_auto] ` +
+    `[&_span]:[transition:transform_0.35s_var(--ease)] [&:hover_span]:[transform:scale(1.04)] ` +
+    `[@media(prefers-reduced-motion:_reduce)]:[&_span]:transition-none`,
+  phMeta: `grid min-w-0 pt-0 pr-[2px] pb-0 pl-[2px] [&_b]:text-[13px] [&_b]:font-semibold [&_b]:whitespace-nowrap ` +
+    `[&_b]:overflow-hidden [&_b]:text-ellipsis [&_small]:text-[11.5px] [&_small]:text-ink-3`,
+  phTools: `absolute top-[8px] right-[8px] flex gap-y-[6px] gap-x-[6px] opacity-[0] [transition:opacity_0.15s_ease] ` +
+    `[@media(hover:_none)]:opacity-[1] [&_button]:w-[30px] [&_button]:h-[30px] [&_button]:min-h-0 [&_button]:pt-0 ` +
+    `[&_button]:pr-0 [&_button]:pb-0 [&_button]:pl-0 [&_button]:grid [&_button]:place-items-center ` +
+    `[&_button]:rounded-tl-[50%] [&_button]:rounded-tr-[50%] [&_button]:rounded-br-[50%] ` +
+    `[&_button]:rounded-bl-[50%] [&_button]:bg-[rgba(20,_20,_26,_0.6)] [&_button]:text-[color:#fff] ` +
+    `[&_button]:[backdrop-filter:blur(8px)] [&_button:hover:not(:disabled)]:bg-[rgba(20,_20,_26,_0.85)] ` +
+    `[&_button:disabled]:opacity-[0.45] [&_svg]:w-[15px] [&_svg]:h-[15px]`,
+  phConfirm: `absolute top-0 right-0 bottom-auto left-0 aspect-[1] grid place-content-center gap-y-[10px] gap-x-[10px] ` +
+    `pt-[12px] pr-[12px] pb-[12px] pl-[12px] rounded-tl-[16px] rounded-tr-[16px] rounded-br-[16px] ` +
+    `rounded-bl-[16px] text-center bg-[rgba(20,_20,_26,_0.82)] text-[color:#fff] text-[12.5px] leading-[1.35] ` +
+    `[backdrop-filter:blur(6px)] [&_div]:flex [&_div]:gap-y-[6px] [&_div]:gap-x-[6px] [&_div]:justify-center ` +
+    `[&_button]:min-h-[30px] [&_button]:pt-0 [&_button]:pr-[12px] [&_button]:pb-0 [&_button]:pl-[12px] ` +
+    `[&_button]:rounded-tl-[99px] [&_button]:rounded-tr-[99px] [&_button]:rounded-br-[99px] ` +
+    `[&_button]:rounded-bl-[99px] [&_button]:bg-[rgba(255,_255,_255,_0.14)] [&_button]:text-[color:#fff] ` +
+    `[&_button]:text-[12.5px] [&_button]:font-semibold [&_.ph-danger]:bg-rec`,
+  phDrop: `[&_button]:box-border [&_button]:w-full [&_button]:min-w-0 [&_button]:aspect-[1] [&_button]:min-h-0 ` +
+    `[&_button]:grid [&_button]:grid-cols-[minmax(0,_1fr)] [&_button]:content-center ` +
+    `[&_button]:justify-items-center [&_button]:gap-y-[4px] [&_button]:gap-x-[4px] [&_button]:pt-[12px] ` +
+    `[&_button]:pr-[12px] [&_button]:pb-[12px] [&_button]:pl-[12px] ` +
+    `[&_button]:[border-top:1.5px_dashed_var(--line-strong)] ` +
+    `[&_button]:[border-right:1.5px_dashed_var(--line-strong)] ` +
+    `[&_button]:[border-bottom:1.5px_dashed_var(--line-strong)] ` +
+    `[&_button]:[border-left:1.5px_dashed_var(--line-strong)] [&_button]:rounded-tl-[16px] ` +
+    `[&_button]:rounded-tr-[16px] [&_button]:rounded-br-[16px] [&_button]:rounded-bl-[16px] ` +
+    `[&_button]:[background:none] [&_button]:text-ink-3 [&_button]:text-center ` +
+    `[&_button:hover:not(:disabled)]:[border-color:var(--accent)] [&_button:hover:not(:disabled)]:text-accent-ink ` +
+    `[&_button:hover:not(:disabled)]:bg-accent-soft [&_svg]:w-[28px] [&_svg]:h-[28px] [&_b]:text-[13px] ` +
+    `[&_b]:text-ink-2 [&_small]:text-[11.5px]`,
   phQuiet: `mt-0 mr-0 mb-0 ml-0 text-ink-3 text-[13px]`,
   phSmall: `text-[12px]`,
-  phLink: `min-h-0 pt-0 pr-0 pb-0 pl-0 [background:none] text-accent-ink [font-family:inherit] text-[inherit]
-    font-semibold [font-style:inherit] leading-[inherit] underline underline-offset-[2px]`,
-  phNote: `sticky bottom-0 justify-self-center z-[5] mt-0 mr-0 mb-0 ml-0 pt-[9px] pr-[16px] pb-[9px] pl-[16px]
-    rounded-tl-[99px] rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px] bg-ink text-page text-[13px]
-    font-medium shadow-[0_12px_28px_-12px_rgba(0,_0,_0,_0.5)] [&.bad]:bg-rec [&.bad]:text-[color:#fff]`,
-  phDropzone: `absolute top-0 right-0 bottom-0 left-0 z-[6] grid place-items-center [border-top:2px_dashed_var(--accent)]
-    [border-right:2px_dashed_var(--accent)] [border-bottom:2px_dashed_var(--accent)]
-    [border-left:2px_dashed_var(--accent)] rounded-tl-[18px] rounded-tr-[18px] rounded-br-[18px] rounded-bl-[18px]
-    bg-[color-mix(in_srgb,_var(--accent)_12%,_transparent)] pointer-events-none [&_span]:pt-[10px]
-    [&_span]:pr-[18px] [&_span]:pb-[10px] [&_span]:pl-[18px] [&_span]:rounded-tl-[99px] [&_span]:rounded-tr-[99px]
-    [&_span]:rounded-br-[99px] [&_span]:rounded-bl-[99px] [&_span]:bg-accent [&_span]:text-accent-on
-    [&_span]:font-semibold`,
-  phViewer: `fixed top-0 right-0 bottom-0 left-0 z-[100] grid place-items-center pt-[56px] pr-[72px] pb-[96px] pl-[72px]
-    bg-[rgba(8,_8,_12,_0.88)] [backdrop-filter:blur(10px)] [animation:ph-in_0.2s_ease-out] [&_img]:max-w-full
-    [&_img]:max-h-full [&_img]:rounded-tl-[14px] [&_img]:rounded-tr-[14px] [&_img]:rounded-br-[14px]
-    [&_img]:rounded-bl-[14px] [&_img]:shadow-[0_30px_80px_-30px_rgba(0,_0,_0,_0.9)]
-    [@media(max-width:_640px)]:pt-[48px] [@media(max-width:_640px)]:pr-[12px]
-    [@media(max-width:_640px)]:pb-[120px] [@media(max-width:_640px)]:pl-[12px]
-    [@media(prefers-reduced-motion:_reduce)]:animate-none`,
-  phNav: `absolute top-[50%] [translate:0_-50%] w-[46px] h-[46px] min-h-0 pt-0 pr-0 pb-0 pl-0 rounded-tl-[50%]
-    rounded-tr-[50%] rounded-br-[50%] rounded-bl-[50%] bg-[rgba(255,_255,_255,_0.12)] text-[color:#fff]
-    text-[28px] leading-[1] [&:hover]:bg-[rgba(255,_255,_255,_0.22)] [&.prev]:left-[16px] [&.next]:right-[16px]
-    [@media(max-width:_640px)]:top-auto [@media(max-width:_640px)]:bottom-[150px]`,
-  phViewerBar: `absolute left-[50%] bottom-[24px] [translate:-50%_0] flex items-center gap-y-[10px] gap-x-[10px]
-    max-w-[calc(100%_-_32px)] pt-[8px] pr-[8px] pb-[8px] pl-[18px] rounded-tl-[99px] rounded-tr-[99px]
-    rounded-br-[99px] rounded-bl-[99px] bg-[rgba(30,_30,_38,_0.9)] text-[color:#fff] text-[13px]
-    shadow-[0_0_0_1px_rgba(255,_255,_255,_0.1)] [&_b]:font-semibold [&_b]:whitespace-nowrap [&_b]:overflow-hidden
-    [&_b]:text-ellipsis [&_span]:text-[color:rgba(255,_255,_255,_0.55)] [&_span]:whitespace-nowrap
-    [&_button]:min-h-[32px] [&_button]:pt-0 [&_button]:pr-[13px] [&_button]:pb-0 [&_button]:pl-[13px]
-    [&_button]:rounded-tl-[99px] [&_button]:rounded-tr-[99px] [&_button]:rounded-br-[99px]
-    [&_button]:rounded-bl-[99px] [&_button]:bg-[rgba(255,_255,_255,_0.12)] [&_button]:text-[color:#fff]
-    [&_button]:text-[12.5px] [&_button]:font-semibold [&_button]:whitespace-nowrap
-    [&_button:hover:not(:disabled)]:bg-[rgba(255,_255,_255,_0.22)] [&_button:disabled]:bg-accent
-    [&_button:disabled]:text-accent-on [&_button:disabled]:opacity-[1] [@media(max-width:_640px)]:flex-wrap
-    [@media(max-width:_640px)]:justify-center [@media(max-width:_640px)]:rounded-tl-[18px]
-    [@media(max-width:_640px)]:rounded-tr-[18px] [@media(max-width:_640px)]:rounded-br-[18px]
-    [@media(max-width:_640px)]:rounded-bl-[18px] [@media(max-width:_640px)]:pt-[10px]
-    [@media(max-width:_640px)]:pr-[10px] [@media(max-width:_640px)]:pb-[10px] [@media(max-width:_640px)]:pl-[10px]`,
+  phLink: `min-h-0 pt-0 pr-0 pb-0 pl-0 [background:none] text-accent-ink [font-family:inherit] text-[inherit] ` +
+    `font-semibold [font-style:inherit] leading-[inherit] underline underline-offset-[2px]`,
+  phNote: `sticky bottom-0 justify-self-center z-[5] mt-0 mr-0 mb-0 ml-0 pt-[9px] pr-[16px] pb-[9px] pl-[16px] ` +
+    `rounded-tl-[99px] rounded-tr-[99px] rounded-br-[99px] rounded-bl-[99px] bg-ink text-page text-[13px] ` +
+    `font-medium shadow-[0_12px_28px_-12px_rgba(0,_0,_0,_0.5)] [&.bad]:bg-rec [&.bad]:text-[color:#fff]`,
+  phDropzone: `absolute top-0 right-0 bottom-0 left-0 z-[6] grid place-items-center [border-top:2px_dashed_var(--accent)] ` +
+    `[border-right:2px_dashed_var(--accent)] [border-bottom:2px_dashed_var(--accent)] ` +
+    `[border-left:2px_dashed_var(--accent)] rounded-tl-[18px] rounded-tr-[18px] rounded-br-[18px] rounded-bl-[18px] ` +
+    `bg-[color-mix(in_srgb,_var(--accent)_12%,_transparent)] pointer-events-none [&_span]:pt-[10px] ` +
+    `[&_span]:pr-[18px] [&_span]:pb-[10px] [&_span]:pl-[18px] [&_span]:rounded-tl-[99px] [&_span]:rounded-tr-[99px] ` +
+    `[&_span]:rounded-br-[99px] [&_span]:rounded-bl-[99px] [&_span]:bg-accent [&_span]:text-accent-on ` +
+    `[&_span]:font-semibold`,
+  phViewer: `fixed top-0 right-0 bottom-0 left-0 z-[100] grid place-items-center pt-[56px] pr-[72px] pb-[96px] pl-[72px] ` +
+    `bg-[rgba(8,_8,_12,_0.88)] [backdrop-filter:blur(10px)] [animation:ph-in_0.2s_ease-out] [&_img]:max-w-full ` +
+    `[&_img]:max-h-full [&_img]:rounded-tl-[14px] [&_img]:rounded-tr-[14px] [&_img]:rounded-br-[14px] ` +
+    `[&_img]:rounded-bl-[14px] [&_img]:shadow-[0_30px_80px_-30px_rgba(0,_0,_0,_0.9)] ` +
+    `[@media(max-width:_640px)]:pt-[48px] [@media(max-width:_640px)]:pr-[12px] ` +
+    `[@media(max-width:_640px)]:pb-[120px] [@media(max-width:_640px)]:pl-[12px] ` +
+    `[@media(prefers-reduced-motion:_reduce)]:animate-none`,
+  phNav: `absolute top-[50%] [translate:0_-50%] w-[46px] h-[46px] min-h-0 pt-0 pr-0 pb-0 pl-0 rounded-tl-[50%] ` +
+    `rounded-tr-[50%] rounded-br-[50%] rounded-bl-[50%] bg-[rgba(255,_255,_255,_0.12)] text-[color:#fff] ` +
+    `text-[28px] leading-[1] [&:hover]:bg-[rgba(255,_255,_255,_0.22)] [&.prev]:left-[16px] [&.next]:right-[16px] ` +
+    `[@media(max-width:_640px)]:top-auto [@media(max-width:_640px)]:bottom-[150px]`,
+  phViewerBar: `absolute left-[50%] bottom-[24px] [translate:-50%_0] flex items-center gap-y-[10px] gap-x-[10px] ` +
+    `max-w-[calc(100%_-_32px)] pt-[8px] pr-[8px] pb-[8px] pl-[18px] rounded-tl-[99px] rounded-tr-[99px] ` +
+    `rounded-br-[99px] rounded-bl-[99px] bg-[rgba(30,_30,_38,_0.9)] text-[color:#fff] text-[13px] ` +
+    `shadow-[0_0_0_1px_rgba(255,_255,_255,_0.1)] [&_b]:font-semibold [&_b]:whitespace-nowrap [&_b]:overflow-hidden ` +
+    `[&_b]:text-ellipsis [&_span]:text-[color:rgba(255,_255,_255,_0.55)] [&_span]:whitespace-nowrap ` +
+    `[&_button]:min-h-[32px] [&_button]:pt-0 [&_button]:pr-[13px] [&_button]:pb-0 [&_button]:pl-[13px] ` +
+    `[&_button]:rounded-tl-[99px] [&_button]:rounded-tr-[99px] [&_button]:rounded-br-[99px] ` +
+    `[&_button]:rounded-bl-[99px] [&_button]:bg-[rgba(255,_255,_255,_0.12)] [&_button]:text-[color:#fff] ` +
+    `[&_button]:text-[12.5px] [&_button]:font-semibold [&_button]:whitespace-nowrap ` +
+    `[&_button:hover:not(:disabled)]:bg-[rgba(255,_255,_255,_0.22)] [&_button:disabled]:bg-accent ` +
+    `[&_button:disabled]:text-accent-on [&_button:disabled]:opacity-[1] [@media(max-width:_640px)]:flex-wrap ` +
+    `[@media(max-width:_640px)]:justify-center [@media(max-width:_640px)]:rounded-tl-[18px] ` +
+    `[@media(max-width:_640px)]:rounded-tr-[18px] [@media(max-width:_640px)]:rounded-br-[18px] ` +
+    `[@media(max-width:_640px)]:rounded-bl-[18px] [@media(max-width:_640px)]:pt-[10px] ` +
+    `[@media(max-width:_640px)]:pr-[10px] [@media(max-width:_640px)]:pb-[10px] [@media(max-width:_640px)]:pl-[10px]`,
 } as const;

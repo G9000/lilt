@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { practice } from "../ui/practice";
 import { useEffect, useRef, useState } from "react";
 import { DEFAULT_COURSE, parseTextId } from "../courses";
@@ -65,21 +66,21 @@ export function HistoryPage() {
 
   return (
     <div className="rl">
-      <header className={["rl-head", practice["rl-head"]].filter(Boolean).join(' ')}>
+      <header className={cx("rl-head", practice["rl-head"])}>
         <h1>Recordings</h1>
-        <a className={["rl-export", practice["rl-export"]].filter(Boolean).join(' ')} href="/api/export" download>{Icon.download}Export all</a>
+        <a className={cx("rl-export", practice["rl-export"])} href="/api/export" download>{Icon.download}Export all</a>
         <p>Every take stays on this computer. Play any of them to hear how far you've come.</p>
       </header>
-      {takes && takes.length === 0 && <p className={["rl-empty", practice["rl-empty"]].filter(Boolean).join(' ')}>Nothing here yet. Your takes appear here as soon as you record one.</p>}
+      {takes && takes.length === 0 && <p className={cx("rl-empty", practice["rl-empty"])}>Nothing here yet. Your takes appear here as soon as you record one.</p>}
       {groups.map((g) => (
-        <section key={g.day} className={["rl-day", practice["rl-day"]].filter(Boolean).join(' ')} aria-labelledby={`rl-${g.day}`}>
+        <section key={g.day} className={cx("rl-day", practice["rl-day"])} aria-labelledby={`rl-${g.day}`}>
           <h2 id={`rl-${g.day}`}>{dayLabel(g.day)}</h2>
           <ul>{bySameText(g.takes).map((ts) => <TakeGroup key={ts[0].id} takes={ts} title={takeTitle(ts[0], texts)} onUpdate={update} onDelete={(t) => void remove(t)} />)}</ul>
         </section>
       ))}
-      {takes && takes.length > 0 && <button className={["rl-more", practice["rl-more"]].filter(Boolean).join(' ')} onClick={() => setDays((d) => d + 365)}>Show older</button>}
-      <p className={["rl-foot", practice["rl-foot"]].filter(Boolean).join(' ')}>Measurements improve now and then. <button className={["rl-link", practice["rl-link"]].filter(Boolean).join(' ')} onClick={() => void remeasure()}>Measure older takes again</button> with the latest analysis; the earlier results are kept.</p>
-      <p className={["rl-foot", practice["rl-foot"]].filter(Boolean).join(' ')}>Everything lives in Lilt's data folder as ordinary audio and JSON files, and <a href="/api/export" download>the export</a> is a full copy. Deleting a recording removes it from Lilt only; copies you've exported or backed up elsewhere stay where they are.</p>
+      {takes && takes.length > 0 && <button className={cx("rl-more", practice["rl-more"])} onClick={() => setDays((d) => d + 365)}>Show older</button>}
+      <p className={cx("rl-foot", practice["rl-foot"])}>Measurements improve now and then. <button className={cx("rl-link", practice["rl-link"])} onClick={() => void remeasure()}>Measure older takes again</button> with the latest analysis; the earlier results are kept.</p>
+      <p className={cx("rl-foot", practice["rl-foot"])}>Everything lives in Lilt's data folder as ordinary audio and JSON files, and <a href="/api/export" download>the export</a> is a full copy. Deleting a recording removes it from Lilt only; copies you've exported or backed up elsewhere stay where they are.</p>
       <Toast text={toast} />
     </div>
   );
@@ -102,7 +103,7 @@ function TakeGroup({ takes, title, onUpdate, onDelete }: { takes: Take[]; title:
   return (
     <>
       <TakeRow take={first} title={title} onUpdate={onUpdate} onDelete={() => onDelete(first)}
-        more={rest.length ? <button className={["rl-more-takes", practice["rl-more-takes"]].filter(Boolean).join(' ')} aria-expanded={open} onClick={() => setOpen((o) => !o)}>{takes.length} takes<span aria-hidden="true">{open ? "↑" : "↓"}</span></button> : null} />
+        more={rest.length ? <button className={cx("rl-more-takes", practice["rl-more-takes"])} aria-expanded={open} onClick={() => setOpen((o) => !o)}>{takes.length} takes<span aria-hidden="true">{open ? "↑" : "↓"}</span></button> : null} />
       {open && rest.map((t, i) => <TakeRow key={t.id} take={t} title={`Take ${rest.length - i}`} sub onUpdate={onUpdate} onDelete={() => onDelete(t)} />)}
     </>
   );
@@ -130,20 +131,20 @@ function TakeRow({ take, title, onUpdate, onDelete, more, sub }: { take: Take; t
   const status = STATUS[take.status];
   const text = take.prompt_id === "free" ? null : take.prompt_text;
   return (
-    <li className={[`rl-row${playing ? " playing" : ""}${sub ? " sub" : ""}`, practice["rl-row"]].filter(Boolean).join(' ')}>
-      <button className={["rl-play", practice["rl-play"]].filter(Boolean).join(' ')} onClick={toggle} aria-label={`${playing ? "Pause" : "Play"} ${title}`}>
+    <li className={cx(`rl-row${playing ? " playing" : ""}${sub ? " sub" : ""}`, practice["rl-row"])}>
+      <button className={cx("rl-play", practice["rl-play"])} onClick={toggle} aria-label={`${playing ? "Pause" : "Play"} ${title}`}>
         {playing ? <svg viewBox="0 0 12 12" aria-hidden="true"><rect x="2.5" y="1.5" width="2.4" height="9" rx=".8" /><rect x="7.1" y="1.5" width="2.4" height="9" rx=".8" /></svg>
           : <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 1.6l7.3 4.4-7.3 4.4z" /></svg>}
       </button>
-      <div className={["rl-what", practice["rl-what"]].filter(Boolean).join(' ')}>
-        <b>{title}{take.favourite && <span className={["rl-fav", practice["rl-fav"]].filter(Boolean).join(' ')} aria-label="Favourite">{Icon.star}</span>}{more}</b>
+      <div className={cx("rl-what", practice["rl-what"])}>
+        <b>{title}{take.favourite && <span className={cx("rl-fav", practice["rl-fav"])} aria-label="Favourite">{Icon.star}</span>}{more}</b>
         <span>{[sub ? null : text, length(take.analysis_summary?.duration_s), status].filter(Boolean).join(" · ")}</span>
       </div>
-      <div className={["rl-wave", practice["rl-wave"]].filter(Boolean).join(' ')} onClick={seek} aria-hidden="true">
+      <div className={cx("rl-wave", practice["rl-wave"])} onClick={seek} aria-hidden="true">
         {(bars.length ? bars : Array(64).fill(0.14)).map((h, i, arr) => <i key={i} className={i / arr.length < pos ? "on" : ""} style={{ transform: `scaleY(${h.toFixed(3)})` }} />)}
       </div>
-      <time className={["rl-time", practice["rl-time"]].filter(Boolean).join(' ')} dateTime={take.created_utc}>{clock(take.created_utc)}</time>
-      <div className={["rl-actions", practice["rl-actions"]].filter(Boolean).join(' ')}>
+      <time className={cx("rl-time", practice["rl-time"])} dateTime={take.created_utc}>{clock(take.created_utc)}</time>
+      <div className={cx("rl-actions", practice["rl-actions"])}>
         <button onClick={() => void api.patchTake(take.id, { favourite: !take.favourite }).then(onUpdate)} aria-pressed={take.favourite}
           aria-label={take.favourite ? "Remove from favourites" : "Add to favourites"} title={take.favourite ? "Your favourite take" : "Star this take"}>{Icon.star}</button>
         <button onClick={() => setNoting((n) => !n)} aria-expanded={noting} aria-label="Note" title="Add a note">
@@ -154,7 +155,7 @@ function TakeRow({ take, title, onUpdate, onDelete, more, sub }: { take: Take; t
         </button>
       </div>
       {(noting || take.note) && (
-        <div className={["rl-note", practice["rl-note"]].filter(Boolean).join(' ')}>
+        <div className={cx("rl-note", practice["rl-note"])}>
           {noting ? (
             <form onSubmit={(e) => { e.preventDefault(); void api.patchTake(take.id, { note }).then((t) => { onUpdate(t); setNoting(false); }); }}>
               <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="What were you trying? How did it feel?" aria-label="Note" autoFocus />

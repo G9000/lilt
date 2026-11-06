@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { practice } from "../ui/practice";
 import { animate, AnimatePresence, motion, type PanInfo, useIsPresent, useMotionValue, useTransform } from "motion/react";
@@ -44,7 +45,7 @@ function CourseFlashcards({ chapter, course }: { chapter?: string; course: strin
   }, [course, attempt]);
   const level = texts ? texts.levels.find(l => l.id === (chapter ?? loadRuns(course).last)) ?? (chapter ? null : texts.levels[0]) : null;
   return (
-    <div className={["fc", practice["fc"]].filter(Boolean).join(' ')}>
+    <div className={cx("fc", practice["fc"])}>
       {err ? <div className={practice["fc-msg"]}><p role="alert">{err}</p><button className={`btn ${shared.btn} ${shared["btn-secondary"]}`} onClick={() => setAttempt(n => n + 1)}>Try again</button></div>
         : !texts ? <p role="status" className={practice["fc-msg"]}>Dealing the cards…</p>
         : !level ? <div className={practice["fc-msg"]}><p>{chapter ? "This chapter isn't in the course." : "This course has no chapters yet."}</p><a href={`#${practicePath(course)}`}>Back to the course</a></div>
@@ -100,44 +101,44 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
 
   return (
     <>
-      <header className={["fc-top", practice["fc-top"]].filter(Boolean).join(' ')}>
-        <button className={["fc-close", practice["fc-close"]].filter(Boolean).join(' ')} onClick={() => go("/desk")} aria-label="Close Flashcards" title="Close (Esc)">
+      <header className={cx("fc-top", practice["fc-top"])}>
+        <button className={cx("fc-close", practice["fc-close"])} onClick={() => go("/desk")} aria-label="Close Flashcards" title="Close (Esc)">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
         </button>
         <ChapterMenu course={course} texts={texts} level={level} locked={recording} />
-        <div className={["fc-progress", practice["fc-progress"]].filter(Boolean).join(' ')} aria-label={`${got} of ${total} cards done`}>
-          <span className={["fc-segs", practice["fc-segs"]].filter(Boolean).join(' ')} aria-hidden="true">{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : c.id === top?.id ? "now" : undefined} />)}</span>
-          <span className={["fc-count", practice["fc-count"]].filter(Boolean).join(' ')}><b>{got}</b> of {total}</span>
+        <div className={cx("fc-progress", practice["fc-progress"])} aria-label={`${got} of ${total} cards done`}>
+          <span className={cx("fc-segs", practice["fc-segs"])} aria-hidden="true">{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : c.id === top?.id ? "now" : undefined} />)}</span>
+          <span className={cx("fc-count", practice["fc-count"])}><b>{got}</b> of {total}</span>
         </div>
-        <a className={["fc-full", practice["fc-full"]].filter(Boolean).join(' ')} href={full}>
+        <a className={cx("fc-full", practice["fc-full"])} href={full}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5h4a2 2 0 012 2v8a1.5 1.5 0 00-1.5-1.5H2zM14 3.5h-4a2 2 0 00-2 2v8a1.5 1.5 0 011.5-1.5H14z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>
           <span>Full chapter</span>
         </a>
       </header>
 
-      <main className={["fc-stage", practice["fc-stage"]].filter(Boolean).join(' ')}>
+      <main className={cx("fc-stage", practice["fc-stage"])}>
         {hurt ? (
           <EndCard art="tea" chip="Resting" title="Let's stop here"
             body="Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.">
-            <button className={["fc-primary", practice["fc-primary"]].filter(Boolean).join(' ')} onClick={() => go("/")}>Back to the room</button>
-            <button className={["fc-ghost", practice["fc-ghost"]].filter(Boolean).join(' ')} onClick={() => setHurt(false)}>I feel fine, carry on</button>
+            <button className={cx("fc-primary", practice["fc-primary"])} onClick={() => go("/")}>Back to the room</button>
+            <button className={cx("fc-ghost", practice["fc-ghost"])} onClick={() => setHurt(false)}>I feel fine, carry on</button>
           </EndCard>
         ) : !top ? (
           <EndCard art="medal" chip="Chapter done" title={`That's ${level.title}`}
             body={voice ? <>Every card is done. Your takes are in <a href="#/history">Recordings</a>; go through it again any time.</> : "Every card is done. Go through this chapter again any time."}>
-            {next && <button className={["fc-primary", practice["fc-primary"]].filter(Boolean).join(' ')} onClick={() => go(flashcardsPath(course, next.id))}>Next: {next.title}</button>}
-            <button className={[next ? "fc-ghost" : "fc-primary", practice["fc-primary"], practice["fc-ghost"]].filter(Boolean).join(' ')} onClick={() => { setUndo(null); setRun(EMPTY); }}>Go through it again</button>
+            {next && <button className={cx("fc-primary", practice["fc-primary"])} onClick={() => go(flashcardsPath(course, next.id))}>Next: {next.title}</button>}
+            <button className={cx(next ? "fc-ghost" : "fc-primary", practice["fc-primary"], practice["fc-ghost"])} onClick={() => { setUndo(null); setRun(EMPTY); }}>Go through it again</button>
           </EndCard>
         ) : (
-          <div className={["fc-table", practice["fc-table"]].filter(Boolean).join(' ')}>
+          <div className={cx("fc-table", practice["fc-table"])}>
             <SideButton dir="again" locked={locked} disabled={recording} onClick={() => move("again")} />
-            <div className={["fc-pile", practice["fc-pile"]].filter(Boolean).join(' ')}>
+            <div className={cx("fc-pile", practice["fc-pile"])}>
               <AnimatePresence initial={false} custom={flung}>
                 {left.slice(0, 3).map((c, d) => d === 0
                   ? <TopCard key={c.id} dir={flung} locked={locked} nudge={nudge} recording={recording} onSwipe={move} label={cardTitle(c, level)}>
                       <CardFace course={course} chapters={texts.levels.map(l => l.id)} card={c} level={level} tips={tips} take={takes[c.id] ?? null} band={band} onHurt={() => setHurt(true)} />
                     </TopCard>
-                  : <motion.article key={c.id} className={["fc-card under", practice["fc-card"]].filter(Boolean).join(' ')} aria-hidden="true"
+                  : <motion.article key={c.id} className={cx("fc-card under", practice["fc-card"])} aria-hidden="true"
                       initial={false} animate={{ y: -d * 16, scale: 1 - d * 0.05, rotate: d % 2 ? -1.2 : 1 }} exit={{ opacity: 0 }}
                       transition={{ type: "spring", stiffness: 320, damping: 30 }} style={{ zIndex: 5 - d }}>
                     </motion.article>)}
@@ -148,26 +149,26 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
         )}
       </main>
 
-      <footer className={["fc-dock", practice["fc-dock"]].filter(Boolean).join(' ')}>
+      <footer className={cx("fc-dock", practice["fc-dock"])}>
         {undo && (
-          <div className={["fc-undo", practice["fc-undo"]].filter(Boolean).join(' ')} role="status">
+          <div className={cx("fc-undo", practice["fc-undo"])} role="status">
             {undo.label}
             <button onClick={() => { setRun(undo.run); setUndo(null); }}>Undo</button>
           </div>
         )}
         {voice && !hurt && top?.kind === "text" ? (
-          <div className={["ve fc-ve", practice["ve"], practice["fc-ve"]].filter(Boolean).join(' ')}>
+          <div className={cx("ve fc-ve", practice["ve"], practice["fc-ve"])}>
             <Dock key={top.id} band={band} allowRetake retake={!!takes[top.id]}
               meta={sessionId ? { session_id: sessionId, role: "free", prompt_id: textId(DEFAULT_COURSE, level.id, top.item.id), prompt_text: top.item.text } : null}
               onSaved={(t) => setTakes((x) => ({ ...x, [top.id]: t }))} onRecording={setRecording}
               idleHint={takes[top.id] ? "Listen back on the card, then swipe" : "Press record and say the card"}>
-              <span className={[`fc-say-first${locked ? "" : " ok"}`, practice["fc-say-first"]].filter(Boolean).join(' ')} aria-live="polite">
+              <span className={cx(`fc-say-first${locked ? "" : " ok"}`, practice["fc-say-first"])} aria-live="polite">
                 {locked ? "Say it to unlock the swipe" : "Swipe right when you've got it"}
               </span>
             </Dock>
           </div>
         ) : !hurt && top ? (
-          <p className={["fc-keys", practice["fc-keys"]].filter(Boolean).join(' ')}><kbd>←</kbd> Again later <span aria-hidden="true">·</span> swipe the card or use the arrows <span aria-hidden="true">·</span> Got it <kbd>→</kbd></p>
+          <p className={cx("fc-keys", practice["fc-keys"])}><kbd>←</kbd> Again later <span aria-hidden="true">·</span> swipe the card or use the arrows <span aria-hidden="true">·</span> Got it <kbd>→</kbd></p>
         ) : null}
       </footer>
     </>
@@ -189,15 +190,15 @@ function ChapterMenu({ texts, level, locked, course }: { texts: Texts; level: Te
   }, [open]);
   const runs = loadRuns(course).runs;
   return (
-    <div className={[`fc-menu${open ? " open" : ""}`, practice["fc-menu"]].filter(Boolean).join(' ')} ref={box}>
-      <button className={["fc-menu-btn", practice["fc-menu-btn"]].filter(Boolean).join(' ')} onClick={() => setOpen((o) => !o)} disabled={locked} aria-expanded={open} aria-haspopup="menu">
+    <div className={cx(`fc-menu${open ? " open" : ""}`, practice["fc-menu"])} ref={box}>
+      <button className={cx("fc-menu-btn", practice["fc-menu-btn"])} onClick={() => setOpen((o) => !o)} disabled={locked} aria-expanded={open} aria-haspopup="menu">
         <span><b>{level.title}</b>{level.subtitle && <small>{level.subtitle}</small>}</span>
         <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5L6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </button>
       {open && (
-        <div className={["fc-menu-list", practice["fc-menu-list"]].filter(Boolean).join(' ')} role="menu">
+        <div className={cx("fc-menu-list", practice["fc-menu-list"])} role="menu">
           {byPart(texts.levels).map((g, i) => (
-            <div key={i} className={["fc-menu-part", practice["fc-menu-part"]].filter(Boolean).join(' ')}>
+            <div key={i} className={cx("fc-menu-part", practice["fc-menu-part"])}>
               {g.part && <p>{g.part}</p>}
               {g.levels.map((l) => {
                 const p = progress(chapterCards(l, course), runs[l.id] ?? EMPTY);
@@ -219,9 +220,9 @@ function ChapterMenu({ texts, level, locked, course }: { texts: Texts; level: Te
 function SideButton({ dir, locked, disabled, onClick }: { dir: "got" | "again"; locked: boolean; disabled: boolean; onClick: () => void }) {
   const got = dir === "got";
   return (
-    <button className={[`fc-side ${dir}`, practice["fc-side"]].filter(Boolean).join(' ')} onClick={onClick} disabled={disabled} aria-disabled={locked} aria-keyshortcuts={got ? "ArrowRight" : "ArrowLeft"}
+    <button className={cx(`fc-side ${dir}`, practice["fc-side"])} onClick={onClick} disabled={disabled} aria-disabled={locked} aria-keyshortcuts={got ? "ArrowRight" : "ArrowLeft"}
       title={locked ? "Say it first" : got ? "Got it (→)" : "Again later (←)"}>
-      <span className={["fc-side-ic", practice["fc-side-ic"]].filter(Boolean).join(' ')} aria-hidden="true">
+      <span className={cx("fc-side-ic", practice["fc-side-ic"])} aria-hidden="true">
         {got
           ? <svg viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           : <svg viewBox="0 0 16 16"><path d="M3.2 8a4.8 4.8 0 104.8-4.8H5.4M7 1.4L5.2 3.2 7 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
@@ -260,13 +261,13 @@ function TopCard({ dir, locked, nudge, recording, onSwipe, label, children }: {
     if (locked || !(far || fast)) void animate(x, 0, { type: "spring", stiffness: 420, damping: 30 });
   };
   return (
-    <motion.article className={[`fc-card z-[6]${present ? " top" : " leaving"}${locked ? " locked" : ""}`, practice["fc-card"]].filter(Boolean).join(' ')} style={{ x, rotate }}
+    <motion.article className={cx(`fc-card z-[6]${present ? " top" : " leaving"}${locked ? " locked" : ""}`, practice["fc-card"])} style={{ x, rotate }}
       aria-label={`Card: ${label}`} aria-hidden={!present} {...({ inert: present ? undefined : "" } as object)}
       custom={dir} variants={FLY} initial={{ y: -18, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit="away"
       transition={{ type: "spring", stiffness: 320, damping: 30 }}
       drag={recording ? false : "x"} dragMomentum={false} dragElastic={locked ? 0.12 : 0.9} onDragEnd={onDragEnd}>
-      <motion.span className={["fc-stamp got", practice["fc-stamp"]].filter(Boolean).join(' ')} style={{ opacity: gotO }} aria-hidden="true">Got it</motion.span>
-      <motion.span className={["fc-stamp again", practice["fc-stamp"]].filter(Boolean).join(' ')} style={{ opacity: againO }} aria-hidden="true">Again</motion.span>
+      <motion.span className={cx("fc-stamp got", practice["fc-stamp"])} style={{ opacity: gotO }} aria-hidden="true">Got it</motion.span>
+      <motion.span className={cx("fc-stamp again", practice["fc-stamp"])} style={{ opacity: againO }} aria-hidden="true">Again</motion.span>
       {children}
     </motion.article>
   );
@@ -278,10 +279,10 @@ const artFor = (c: Flashcard): Art => c.kind === "lede" ? "book" : c.kind === "s
 /** A drawing at the top of a card, on a warm wash that melts into the card, with its chip. */
 function CardArt({ art, chip, care }: { art: Art; chip: string; care?: boolean }) {
   return (
-    <div className={["fc-head", practice["fc-head"]].filter(Boolean).join(' ')}>
-      <div className={["fc-art", practice["fc-art"]].filter(Boolean).join(' ')} style={{ background: wash(art) }} />
-      <Illustration art={art} className={["fc-illo", practice["fc-illo"]].filter(Boolean).join(' ')} />
-      <span className={[`fc-chip${care ? " care" : ""}`, practice["fc-chip"]].filter(Boolean).join(' ')}>
+    <div className={cx("fc-head", practice["fc-head"])}>
+      <div className={cx("fc-art", practice["fc-art"])} style={{ background: wash(art) }} />
+      <Illustration art={art} className={cx("fc-illo", practice["fc-illo"])} />
+      <span className={cx(`fc-chip${care ? " care" : ""}`, practice["fc-chip"])}>
         {care && <svg viewBox="0 0 16 16" aria-hidden="true"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>}
         {chip}
       </span>
@@ -298,24 +299,24 @@ function CardFace({ card, level, tips, take, band, onHurt, course, chapters }: {
   return (
     <>
       <CardArt art={course !== DEFAULT_COURSE && card.kind === "text" ? "book" : artFor(card)} chip={course !== DEFAULT_COURSE && card.kind === "text" ? "Practise" : kicker(card, !!take)} care={card.kind === "step" && card.care} />
-      <div className={[`fc-body ${card.kind}`, practice["fc-body"]].filter(Boolean).join(' ')}>
-        {card.kind === "lede" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>{level.title}</h2><Markdown course={course} chapters={chapters} src={card.markdown} className={["fc-md", practice["fc-md"]].filter(Boolean).join(' ')} headingOffset={2} /></>}
-        {card.kind === "step" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>{card.label}</h2><Markdown course={course} chapters={chapters} src={card.body} className={["fc-md", practice["fc-md"]].filter(Boolean).join(' ')} headingOffset={2} /></>}
-        {card.kind === "video" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>Watch first</h2><ChapterVideo video={card.video} course={course} /></>}
+      <div className={cx(`fc-body ${card.kind}`, practice["fc-body"])}>
+        {card.kind === "lede" && <><h2 className={cx("fc-title", practice["fc-title"])}>{level.title}</h2><Markdown course={course} chapters={chapters} src={card.markdown} className={cx("fc-md", practice["fc-md"])} headingOffset={2} /></>}
+        {card.kind === "step" && <><h2 className={cx("fc-title", practice["fc-title"])}>{card.label}</h2><Markdown course={course} chapters={chapters} src={card.body} className={cx("fc-md", practice["fc-md"])} headingOffset={2} /></>}
+        {card.kind === "video" && <><h2 className={cx("fc-title", practice["fc-title"])}>Watch first</h2><ChapterVideo video={card.video} course={course} /></>}
         {card.kind === "text" && <>
-          {course === DEFAULT_COURSE ? <p className={[`fc-say${isLong(card.item.text) ? " long" : ""}`, practice["fc-say"]].filter(Boolean).join(' ')}>{card.item.text}</p>
+          {course === DEFAULT_COURSE ? <p className={cx(`fc-say${isLong(card.item.text) ? " long" : ""}`, practice["fc-say"])}>{card.item.text}</p>
             : <Markdown course={course} chapters={chapters} src={card.item.text} className={`fc-md ${practice["fc-md"]}`} headingOffset={2} />}
-          {card.item.hint && (course === DEFAULT_COURSE ? <p className={["fc-hint", practice["fc-hint"]].filter(Boolean).join(' ')}>{card.item.hint}</p>
+          {card.item.hint && (course === DEFAULT_COURSE ? <p className={cx("fc-hint", practice["fc-hint"])}>{card.item.hint}</p>
             : <Markdown course={course} chapters={chapters} src={card.item.hint} className={`fc-md small ${practice["fc-md"]}`} headingOffset={2} />)}
           {take && (
-            <section className={["fc-take", practice["fc-take"]].filter(Boolean).join(' ')} aria-label="Your take">
-              <div className={["prc", practice["prc"]].filter(Boolean).join(' ')}><ListenBack src={take.audio_url} /></div>
+            <section className={cx("fc-take", practice["fc-take"])} aria-label="Your take">
+              <div className={cx("prc", practice["prc"])}><ListenBack src={take.audio_url} /></div>
               <FoldedMeasures key={take.id} take={take} band={band} />
             </section>
           )}
           {tips.length > 0 && (
-            <div className={["fc-tips", practice["fc-tips"]].filter(Boolean).join(' ')}>
-              <button className={["fc-tips-btn", practice["fc-tips-btn"]].filter(Boolean).join(' ')} aria-expanded={showTips} onClick={() => setShowTips((v) => !v)}>
+            <div className={cx("fc-tips", practice["fc-tips"])}>
+              <button className={cx("fc-tips-btn", practice["fc-tips-btn"])} aria-expanded={showTips} onClick={() => setShowTips((v) => !v)}>
                 <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8a4.3 4.3 0 00-2.6 7.7c.5.4.8 1 .8 1.6v.4h3.6v-.4c0-.6.3-1.2.8-1.6A4.3 4.3 0 008 1.8zM6.4 13.6h3.2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 {showTips ? "Hide tips" : `Tips for ${level.title.toLowerCase()} (${tips.length})`}
               </button>
@@ -324,14 +325,14 @@ function CardFace({ card, level, tips, take, band, onHurt, course, chapters }: {
                   {tips.map((t, i) => (
                     <li key={i} className={isCare(t.label) ? "care" : undefined}>
                       <b>{t.label}</b>
-                      <Markdown course={course} chapters={chapters} src={t.body} className={[["fc-md small", practice["fc-md"]].filter(Boolean).join(' '), shared["small"]].filter(Boolean).join(' ')} headingOffset={2} />
+                      <Markdown course={course} chapters={chapters} src={t.body} className={cx(cx("fc-md small", practice["fc-md"]), shared["small"])} headingOffset={2} />
                     </li>
                   ))}
                 </ol>
               )}
             </div>
           )}
-          {course === DEFAULT_COURSE && <button className={["fc-hurt", practice["fc-hurt"]].filter(Boolean).join(' ')} onClick={onHurt}>{HURT}</button>}
+          {course === DEFAULT_COURSE && <button className={cx("fc-hurt", practice["fc-hurt"])} onClick={onHurt}>{HURT}</button>}
         </>}
       </div>
     </>
@@ -340,12 +341,12 @@ function CardFace({ card, level, tips, take, band, onHurt, course, chapters }: {
 
 function EndCard({ art, chip, title, body, children }: { art: Art; chip: string; title: string; body: ReactNode; children: ReactNode }) {
   return (
-    <motion.article className={["fc-card end", practice["fc-card"]].filter(Boolean).join(' ')} initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 300, damping: 28 }}>
+    <motion.article className={cx("fc-card end", practice["fc-card"])} initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 300, damping: 28 }}>
       <CardArt art={art} chip={chip} />
-      <div className={["fc-body", practice["fc-body"]].filter(Boolean).join(' ')}>
-        <h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>{title}</h2>
-        <p className={["fc-md", practice["fc-md"]].filter(Boolean).join(' ')}>{body}</p>
-        <div className={["fc-row", practice["fc-row"]].filter(Boolean).join(' ')}>{children}</div>
+      <div className={cx("fc-body", practice["fc-body"])}>
+        <h2 className={cx("fc-title", practice["fc-title"])}>{title}</h2>
+        <p className={cx("fc-md", practice["fc-md"])}>{body}</p>
+        <div className={cx("fc-row", practice["fc-row"])}>{children}</div>
       </div>
     </motion.article>
   );

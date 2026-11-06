@@ -10,7 +10,8 @@
     "typecheck": "tsc -b --noEmit",
     "test": "node --test src/*.test.ts src/room/*.test.ts",
     "test:styles": "node e2e/tailwind.mjs",
-    "test:bundle": "node e2e/bundle-size.mjs"
+    "test:bundle": "node e2e/bundle-size.mjs",
+    "test:loading": "node e2e/lazy-loading.mjs"
   },
   "dependencies": {
     "@fontsource-variable/caveat": "5.2.8",

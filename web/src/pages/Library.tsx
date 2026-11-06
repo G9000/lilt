@@ -27,7 +27,7 @@ export function LibraryPage() {
             <article className={cx(pages.lbEx, "lb-ex")} aria-labelledby={`ex-${e.id}`}>
               <div className={cx(pages.lbExHead, "lb-ex-head")}>
                 <h2 id={`ex-${e.id}`}>{e.title}</h2>
-                <span className={["badge", shared["badge"]].filter(Boolean).join(' ')}>{e.review.status.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase())}</span>
+                <span className={cx("badge", shared["badge"])}>{e.review.status.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase())}</span>
               </div>
               <div className={cx(pages.lbSub, "lb-sub")}>
                 <ul className={cx(pages.lbTags, "lb-tags")} aria-label="Areas">
@@ -39,11 +39,11 @@ export function LibraryPage() {
               <p className={cx(pages.lbCue, "lb-cue")}><span>Cue</span>{e.primary_cue.text}</p>
               <details className={cx(pages.lbMore, "lb-more")}>
                 <summary>Steps, safety and source</summary>
-                <div className={["body", shared["body"]].filter(Boolean).join(' ')}>
+                <div className={cx("body", shared["body"])}>
                   <ol>{e.instructions.map((s, i) => <li key={i}>{s}</li>)}</ol>
                   {e.ladder && <><h3>Ladder</h3><ol>{e.ladder.map((l) => <li key={l.id}>{l.text}</li>)}</ol></>}
                   <dl>
-                    {e.progression_rule && <><dt>Moving up</dt><dd>{e.progression_rule.text} <span className={["muted", shared["muted"]].filter(Boolean).join(' ')}>({e.progression_rule.source_basis})</span></dd></>}
+                    {e.progression_rule && <><dt>Moving up</dt><dd>{e.progression_rule.text} <span className={cx("muted", shared["muted"])}>({e.progression_rule.source_basis})</span></dd></>}
                     {e.dose_guidance && <><dt>How much</dt><dd>{e.dose_guidance.text}</dd></>}
                     <dt>Expected</dt><dd>{e.expected_observations.join(" ")}</dd>
                     <dt>Common misunderstandings</dt><dd>{e.common_misunderstandings.join(" ")}</dd>
@@ -51,12 +51,12 @@ export function LibraryPage() {
                     <dt>Adaptations</dt><dd>{e.adaptations.join(" ")}</dd>
                     <dt>Limits</dt><dd>{e.limitations.join(" ")}</dd>
                     <dt>Based on</dt>
-                    <dd><a href={e.source.url} target="_blank" rel="noreferrer">{e.source.title}<span className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}> (opens in a new tab)</span></a>, section “{e.source.section}”, {e.source.organization}{e.source.issued ? `, issued ${e.source.issued}` : ""}. Checked {e.source.date_checked}.</dd>
+                    <dd><a href={e.source.url} target="_blank" rel="noreferrer">{e.source.title}<span className={cx("sr-only", shared["sr-only"])}> (opens in a new tab)</span></a>, section “{e.source.section}”, {e.source.organization}{e.source.issued ? `, issued ${e.source.issued}` : ""}. Checked {e.source.date_checked}.</dd>
                   </dl>
                   <p className={cx(pages.lbLicence, "lb-licence")}>{e.license_note}</p>
                 </div>
               </details>
-              <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void api.choosePlan(e.id).then(() => go("/desk"))}>Make this today's focus</button>
+              <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void api.choosePlan(e.id).then(() => go("/desk"))}>Make this today's focus</button>
             </article>
           </li>
         ))}

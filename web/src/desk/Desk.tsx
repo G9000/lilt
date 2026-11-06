@@ -1,5 +1,6 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
-import { practice } from "../ui/practice";
+import { desktop as practice } from "../ui/desktop";
 import { roomStyles } from "./roomStyles";
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
@@ -90,26 +91,26 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         </div>
       </header>
 
-      <section className={[["ds-widgets ds-boot", roomStyles["ds-widgets"], roomStyles["ds-boot"]].join(" "), practice["ds-widgets"]].filter(Boolean).join(' ')} aria-label="Widgets">
+      <section className={cx(["ds-widgets ds-boot", roomStyles["ds-widgets"], roomStyles["ds-boot"]].join(" "), practice["ds-widgets"])} aria-label="Widgets">
         <TodayWidget deck={deck} reload={reloadDeck} course={course} courseTitle={courseTitle} />
       </section>
 
       {win && (
-        <section className={[[[`ds-win${win.full ? " full" : ""}`, roomStyles["ds-win"]].join(" "), practice["ds-win"]].filter(Boolean).join(' '), shared["ds-win"]].filter(Boolean).join(' ')} aria-label={win.title} style={{ ["--w" as string]: `${win.width}px` }} key={win.full ? "full" : section}>
-          <div className={[["ds-tb", roomStyles["ds-tb"]].join(" "), practice["ds-tb"]].filter(Boolean).join(' ')}>
+        <section className={cx(cx([`ds-win${win.full ? " full" : ""}`, roomStyles["ds-win"]].join(" "), practice["ds-win"]), shared["ds-win"])} aria-label={win.title} style={{ ["--w" as string]: `${win.width}px` }} key={win.full ? "full" : section}>
+          <div className={cx(["ds-tb", roomStyles["ds-tb"]].join(" "), practice["ds-tb"])}>
             <div className={["ds-lights", roomStyles["ds-lights"]].join(" ")}>
-              <button className={["ds-l1", roomStyles["ds-l1"]].join(" ")} onClick={() => go("/desk")}><span className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}>Close window</span></button>
+              <button className={["ds-l1", roomStyles["ds-l1"]].join(" ")} onClick={() => go("/desk")}><span className={cx("sr-only", shared["sr-only"])}>Close window</span></button>
               <span className={["ds-l2", roomStyles["ds-l2"]].join(" ")} aria-hidden="true" /><span className={["ds-l3", roomStyles["ds-l3"]].join(" ")} aria-hidden="true" />
             </div>
-            <div className={[["ds-title", roomStyles["ds-title"]].join(" "), practice["ds-title"]].filter(Boolean).join(' ')}>{win.title}</div>
+            <div className={cx(["ds-title", roomStyles["ds-title"]].join(" "), practice["ds-title"])}>{win.title}</div>
           </div>
-          <main id="main" tabIndex={-1} className={[["ds-body", roomStyles["ds-body"]].join(" "), practice["ds-body"]].filter(Boolean).join(' ')}>{page}</main>
+          <main id="main" tabIndex={-1} className={cx(["ds-body", roomStyles["ds-body"]].join(" "), practice["ds-body"])}>{page}</main>
         </section>
       )}
 
       <MusicWindow open={inside && section === "music"} />
 
-      <nav className={[["ds-dock ds-boot", roomStyles["ds-dock"], roomStyles["ds-boot"]].join(" "), practice["ds-dock"]].filter(Boolean).join(' ')} aria-label="Apps">
+      <nav className={cx(["ds-dock ds-boot", roomStyles["ds-dock"], roomStyles["ds-boot"]].join(" "), practice["ds-dock"])} aria-label="Apps">
         {/* Named for what they open. Practice texts and Progress stay reachable by link but aren't
             apps until they offer more than the chapters (and Progress has something to show). */}
         {dockApp(dailyPath(course), "Today", <TodayIcon date={now} />, (!page && section !== "music") || section === "deck" || section === "guided" || section === "practice" || section === "review")}
@@ -127,7 +128,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         {dockApp("/", "Back to the room", <LeaveIcon />, false)}
       </nav>
 
-      {recovered > 0 && <p className={["toast", shared["toast"]].filter(Boolean).join(' ')} role="status">Recovered {recovered} recording{recovered > 1 ? "s" : ""} from an interrupted page. They're saved and marked as interrupted.</p>}
+      {recovered > 0 && <p className={cx("toast", shared["toast"])} role="status">Recovered {recovered} recording{recovered > 1 ? "s" : ""} from an interrupted page. They're saved and marked as interrupted.</p>}
     </div>
   );
 }
@@ -141,7 +142,7 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
   const stages = deck?.stages ?? deck?.open_stage ?? 1;
   const learned = deck?.total_cards ? (deck.learned ?? 0) / deck.total_cards : 0;
   return (
-    <article className={[["ds-w ds-today", roomStyles["ds-w"], roomStyles["ds-today"]].join(" "), practice["ds-w"]].filter(Boolean).join(' ')} aria-label="Today's practice">
+    <article className={cx(["ds-w ds-today", roomStyles["ds-w"], roomStyles["ds-today"]].join(" "), practice["ds-w"])} aria-label="Today's practice">
       <div className={["ds-t-body", roomStyles["ds-t-body"]].join(" ")}>
         <h2 className={["ds-t-title", roomStyles["ds-t-title"]].join(" ")}>{deck?.paused ? "Resting today" : "Today's practice"}</h2>
         {courseTitle && <p className="text-sm text-(--ink-2)">{courseTitle}</p>}
@@ -164,9 +165,9 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
         )}
         {course === DEFAULT_COURSE && <a className={["ds-t-link", roomStyles["ds-t-link"]].join(" ")} href="#/guided">Guided session with feedback</a>}
         <div className={["ds-t-foot", roomStyles["ds-t-foot"]].join(" ")}>
-          {deck?.paused ? <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
-            : done ? <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(practicePath(course))}>Free practice</button>
-            : <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(dailyPath(course))} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
+          {deck?.paused ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
+            : done ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(practicePath(course))}>Free practice</button>
+            : <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(dailyPath(course))} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
           <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>Stage {deck?.open_stage ?? 1} of {stages}<span className={["ds-t-bar", roomStyles["ds-t-bar"]].join(" ")}><i style={{ width: `${Math.max(4, learned * 100)}%` }} /></span></span>
         </div>
       </div>
@@ -178,7 +179,7 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
 const LEAVES: [number, number, number][] = [[61, 74, -1], [60, 64, 1], [60, 54, -1], [61, 45, 1], [61, 37, -1], [61, 31, 1], [61, 27, 0]];
 export function PlantWidget({ days }: { days: number }) {
   return (
-    <article className={[["ds-w ds-plant", roomStyles["ds-w"], roomStyles["ds-plant"]].join(" "), practice["ds-w"]].filter(Boolean).join(' ')} aria-label={days ? `Practised ${days} day${days === 1 ? "" : "s"} this week` : "A new week: the plant grows a leaf each day you practise"}>
+    <article className={cx(["ds-w ds-plant", roomStyles["ds-w"], roomStyles["ds-plant"]].join(" "), practice["ds-w"])} aria-label={days ? `Practised ${days} day${days === 1 ? "" : "s"} this week` : "A new week: the plant grows a leaf each day you practise"}>
       <svg viewBox="22 14 76 94" aria-hidden="true">
         <defs><linearGradient id="ds-pot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e98a62" /><stop offset="1" stopColor="#c8623c" /></linearGradient></defs>
         <path d="M60 84 C60 66 58 50 61 30" stroke="#3f7a45" strokeWidth="2.6" fill="none" strokeLinecap="round" />
@@ -237,7 +238,7 @@ export function ClockWidget() {
   }, [open]);
   return (
     <div className={[`ds-clockbox${open ? " open" : ""}`, roomStyles["ds-clockbox"]].join(" ")} ref={box}>
-      <article className={[["ds-w ds-clock", roomStyles["ds-w"], roomStyles["ds-clock"]].join(" "), practice["ds-w"]].filter(Boolean).join(' ')} aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
+      <article className={cx(["ds-w ds-clock", roomStyles["ds-w"], roomStyles["ds-clock"]].join(" "), practice["ds-w"])} aria-label={`Time: ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}>
         <div className={["ds-clock-img", roomStyles["ds-clock-img"]].join(" ")} key={shown.id} style={{ backgroundImage: `url(${shown.url(light)})`, ...shown.clock }} />
         <button className={["ds-clock-next", roomStyles["ds-clock-next"]].join(" ")} onPointerDown={(e) => { down.current = { x: e.clientX, y: e.clientY }; }} onClick={toggle}
           aria-label={`Picture: ${shown.name}. Choose a picture`} aria-expanded={open} aria-controls="ds-photos" title="Photos" />

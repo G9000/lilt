@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { practice } from "../ui/practice";
 import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
@@ -24,7 +25,7 @@ function InsightNote({ analysis, band, card }: { analysis: any; band: [number, n
     style: takeStyle(card), flags: (analysis?.quality_flags ?? []).map((f: { code: string }) => f.code),
   });
   if (!said) return null;
-  return <div className={["prc-insight", practice["prc-insight"]].filter(Boolean).join(' ')}><span className="t">Suggestion</span><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
+  return <div className={cx("prc-insight", practice["prc-insight"])}><span className="t">Suggestion</span><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
 }
 
 let reference: Promise<PitchReference | null> | null = null;
@@ -56,8 +57,8 @@ export function PitchScale({ median, note = true }: { median: number; note?: boo
   const band = (lo: number, hi: number) => ({ left: `${at(lo)}%`, width: `${at(hi) - at(lo)}%` });
   const men: [number, number] = [ref.men_mean - ref.men_sd, ref.men_mean + ref.men_sd], women: [number, number] = [ref.women_mean - ref.women_sd, ref.women_mean + ref.women_sd];
   return (
-    <figure className={["pscale", practice["pscale"]].filter(Boolean).join(' ')}>
-      <div className={["pscale-track", practice["pscale-track"]].filter(Boolean).join(' ')} role="img" aria-label={placePitch(median, ref)}>
+    <figure className={cx("pscale", practice["pscale"])}>
+      <div className={cx("pscale-track", practice["pscale-track"])} role="img" aria-label={placePitch(median, ref)}>
         <span className="men" style={band(...men)} />
         <span className="either" style={band(ref.overlap_low, ref.overlap_high)} />
         <span className="women" style={band(...women)} />
@@ -65,7 +66,7 @@ export function PitchScale({ median, note = true }: { median: number; note?: boo
         <i className="avg" style={{ left: `${at(ref.women_mean)}%` }} />
         <b className="you" style={{ left: `${at(median)}%` }} />
       </div>
-      <div className={["pscale-labels", practice["pscale-labels"]].filter(Boolean).join(' ')} aria-hidden="true">
+      <div className={cx("pscale-labels", practice["pscale-labels"])} aria-hidden="true">
         <span style={{ left: `${at(ref.men_mean)}%` }}>Average man<small>{Math.round(men[0])}–{Math.round(men[1])} Hz</small></span>
         <span style={{ left: `${at((ref.overlap_low + ref.overlap_high) / 2)}%` }}>Either<small>{ref.overlap_low}–{ref.overlap_high} Hz</small></span>
         <span style={{ left: `${at(ref.women_mean)}%` }}>Average woman<small>{Math.round(women[0])}–{Math.round(women[1])} Hz</small></span>
@@ -117,22 +118,22 @@ function ResonanceForTake({ take }: { take: Take }) {
   if (!measured || !r) return null;
   const at = (st: number) => `${50 + (Math.max(-3, Math.min(3, st)) / 3) * 50}%`;
   return (
-    <section className={["rz", practice["rz"]].filter(Boolean).join(' ')} aria-label="Resonance">
-      <div className={["rz-head", practice["rz-head"]].filter(Boolean).join(' ')}><b>Resonance</b><small>against your own takes of this text</small></div>
+    <section className={cx("rz", practice["rz"])} aria-label="Resonance">
+      <div className={cx("rz-head", practice["rz-head"])}><b>Resonance</b><small>against your own takes of this text</small></div>
       {r.k === "change" && (
         <>
-          <div className={["rz-track", practice["rz-track"]].filter(Boolean).join(' ')} role="img" aria-label={describeResonance(r.first, "your first take of this text")}>
-            <i className={["rz-first", practice["rz-first"]].filter(Boolean).join(' ')} />
-            {r.last !== null && <i className={["rz-last", practice["rz-last"]].filter(Boolean).join(' ')} title="Last time" style={{ left: at(r.first - r.last) }} />}
-            <b className={["rz-you", practice["rz-you"]].filter(Boolean).join(' ')} style={{ left: at(r.first) }} />
+          <div className={cx("rz-track", practice["rz-track"])} role="img" aria-label={describeResonance(r.first, "your first take of this text")}>
+            <i className={cx("rz-first", practice["rz-first"])} />
+            {r.last !== null && <i className={cx("rz-last", practice["rz-last"])} title="Last time" style={{ left: at(r.first - r.last) }} />}
+            <b className={cx("rz-you", practice["rz-you"])} style={{ left: at(r.first) }} />
           </div>
-          <div className={["rz-labels", practice["rz-labels"]].filter(Boolean).join(' ')} aria-hidden="true"><span>Darker</span><span>First take</span><span>Brighter</span></div>
-          <p className={["rz-say", practice["rz-say"]].filter(Boolean).join(' ')}>{describeResonance(r.first, "your first take of this text")}{r.last !== null && <> {describeResonance(r.last, "last time")}</>}</p>
+          <div className={cx("rz-labels", practice["rz-labels"])} aria-hidden="true"><span>Darker</span><span>First take</span><span>Brighter</span></div>
+          <p className={cx("rz-say", practice["rz-say"])}>{describeResonance(r.first, "your first take of this text")}{r.last !== null && <> {describeResonance(r.last, "last time")}</>}</p>
         </>
       )}
-      {r.k === "start" && <p className={["rz-say", practice["rz-say"]].filter(Boolean).join(' ')}>Measured. This take is your starting point for this text; later takes are compared with it.{r.unmeasured && " Your earlier takes were recorded before Lilt measured resonance: measure them again in Recordings to compare them too."}</p>}
-      {r.k === "apart" && <p className={["rz-say", practice["rz-say"]].filter(Boolean).join(' ')}>Not compared: {r.reason}</p>}
-      <p className={["rz-foot", practice["rz-foot"]].filter(Boolean).join(' ')}>From F2 and F3, two resonances of your vowels. A rough guide; your ear decides.</p>
+      {r.k === "start" && <p className={cx("rz-say", practice["rz-say"])}>Measured. This take is your starting point for this text; later takes are compared with it.{r.unmeasured && " Your earlier takes were recorded before Lilt measured resonance: measure them again in Recordings to compare them too."}</p>}
+      {r.k === "apart" && <p className={cx("rz-say", practice["rz-say"])}>Not compared: {r.reason}</p>}
+      <p className={cx("rz-foot", practice["rz-foot"])}>From F2 and F3, two resonances of your vowels. A rough guide; your ear decides.</p>
     </section>
   );
 }
@@ -210,8 +211,8 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
   }, [analysis, take.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!analysis) {
-    if (take.analysis_error || take.status === "analysis_failed") return <div className={["prc-result", practice["prc-result"]].filter(Boolean).join(' ')}><p className={["prc-wait", practice["prc-wait"]].filter(Boolean).join(' ')}>Couldn't measure this one{take.analysis_error ? `: ${take.analysis_error}` : ""}. Your recording is still saved.</p></div>;
-    return <div className={["prc-result", practice["prc-result"]].filter(Boolean).join(' ')}><p className={["prc-wait", practice["prc-wait"]].filter(Boolean).join(' ')}><i className={["prc-spin", practice["prc-spin"]].filter(Boolean).join(' ')} aria-hidden="true" />Measuring your pitch…</p></div>;
+    if (take.analysis_error || take.status === "analysis_failed") return <div className={cx("prc-result", practice["prc-result"])}><p className={cx("prc-wait", practice["prc-wait"])}>Couldn't measure this one{take.analysis_error ? `: ${take.analysis_error}` : ""}. Your recording is still saved.</p></div>;
+    return <div className={cx("prc-result", practice["prc-result"])}><p className={cx("prc-wait", practice["prc-wait"])}><i className={cx("prc-spin", practice["prc-spin"])} aria-hidden="true" />Measuring your pitch…</p></div>;
   }
 
   const m = analysis.measures ?? {};
@@ -227,33 +228,33 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
   const shift = comparable && prevMedian ? Math.round(median! - prevMedian) : null;
   const inRange = describeRangeShare(pts, band);
   return (
-    <div className={["prc-result", practice["prc-result"]].filter(Boolean).join(' ')} aria-label="What Lilt measured" role="group">
+    <div className={cx("prc-result", practice["prc-result"])} aria-label="What Lilt measured" role="group">
       {median === null ? (
-        <p className={["prc-wait", practice["prc-wait"]].filter(Boolean).join(' ')}>No clear pitch in this take (it may have been very quiet, whispered or noisy). That's fine, it's still saved.</p>
+        <p className={cx("prc-wait", practice["prc-wait"])}>No clear pitch in this take (it may have been very quiet, whispered or noisy). That's fine, it's still saved.</p>
       ) : (
         <>
           <InsightNote analysis={analysis} band={band} card={card} />
           {/* Your pitch: the number once, where it sits, then the other facts in one quiet line. */}
-          <section className={["tr-pitch", practice["tr-pitch"]].filter(Boolean).join(' ')} aria-label="Your pitch">
-            <p className={["tr-head", practice["tr-head"]].filter(Boolean).join(' ')}>Your middle pitch <b>{fmtHz(median)}</b><span>{noteName(median)}</span></p>
+          <section className={cx("tr-pitch", practice["tr-pitch"])} aria-label="Your pitch">
+            <p className={cx("tr-head", practice["tr-head"])}>Your middle pitch <b>{fmtHz(median)}</b><span>{noteName(median)}</span></p>
             <PitchScale median={median} note={false} />
-            {inRange && <p className={["tr-share", practice["tr-share"]].filter(Boolean).join(' ')}>{inRange}</p>}
-            <p className={["tr-facts", practice["tr-facts"]].filter(Boolean).join(' ')}>
+            {inRange && <p className={cx("tr-share", practice["tr-share"])}>{inRange}</p>}
+            <p className={cx("tr-facts", practice["tr-facts"])}>
               {p10 && p90 && <span title="Where most of this take sat (10th to 90th percentile)">Most of this take <b>{Math.round(p10)}–{Math.round(p90)} Hz</b></span>}
               {voiced !== null && <span>Voice heard <b>{Math.round(voiced * 100)}%</b></span>}
               {prev && comparable && prevMedian && <span>Last time <b>{fmtHz(prevMedian)}</b> ({shift! >= 0 ? "+" : "−"}{Math.abs(shift!)} Hz)</span>}
             </p>
             {onUseRange && p10 && p90 && (!band || median > band[1] * 1.03) && (
-              <button className={["ve-ghost", practice["ve-ghost"]].filter(Boolean).join(' ')} onClick={() => onUseRange(Math.round(p10), Math.round(p90))}>Use this take's range as my comfortable range</button>
+              <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => onUseRange(Math.round(p10), Math.round(p90))}>Use this take's range as my comfortable range</button>
             )}
           </section>
           <TakeChart src={take.audio_url} pts={pts} prev={comparable ? prevPts : null} median={median} band={band} />
           <ResonanceNote take={take} />
-          {prev && !comparable && <p className={["prc-prev", practice["prc-prev"]].filter(Boolean).join(' ')}>Not compared with last time: {prev.cmp?.reasons[0] ?? "the recordings aren't comparable"}.</p>}
+          {prev && !comparable && <p className={cx("prc-prev", practice["prc-prev"])}>Not compared with last time: {prev.cmp?.reasons[0] ?? "the recordings aren't comparable"}.</p>}
         </>
       )}
-      {flags.length > 0 && <ul className={["prc-flags", practice["prc-flags"]].filter(Boolean).join(' ')}>{flags.map((f) => <li key={f.code}>{f.message}</li>)}</ul>}
-      <p className={["prc-cap", practice["prc-cap"]].filter(Boolean).join(' ')}>Describes the recording, never a grade. Pitch is one part of how a voice is heard; averages from Leung et al. (2022).</p>
+      {flags.length > 0 && <ul className={cx("prc-flags", practice["prc-flags"])}>{flags.map((f) => <li key={f.code}>{f.message}</li>)}</ul>}
+      <p className={cx("prc-cap", practice["prc-cap"])}>Describes the recording, never a grade. Pitch is one part of how a voice is heard; averages from Leung et al. (2022).</p>
     </div>
   );
 }
@@ -266,15 +267,15 @@ function TakeChart({ src, pts, prev, median, band }: { src: string; pts: PitchPo
   const play = useTakeAudio(src);
   const dur = Math.max(play.dur, pts.length ? pts[pts.length - 1].t : 0.5);
   return (
-    <figure className={["prc-chart tr-chart", practice["prc-chart"], practice["tr-chart"]].filter(Boolean).join(' ')}>
+    <figure className={cx("prc-chart tr-chart", practice["prc-chart"], practice["tr-chart"])}>
       <PianoRoll points={pts} duration={dur} currentTime={play.ended ? undefined : play.t} onSeek={play.seek} band={band} median={median} prev={prev} height={150}
         label={`Your pitch over the take, middle ${Math.round(median)} Hz. Click to hear that moment.`} />
       <figcaption>
-        <span><i className={["prc-k now", practice["prc-k"]].filter(Boolean).join(' ')} />this take</span>
-        {prev && <span><i className={["prc-k prev", practice["prc-k"]].filter(Boolean).join(' ')} />last time</span>}
-        <span><i className={["prc-k mid", practice["prc-k"]].filter(Boolean).join(' ')} />middle</span>
-        {band && <span><i className={["prc-k band", practice["prc-k"]].filter(Boolean).join(' ')} />your comfortable range, {Math.round(band[0])}–{Math.round(band[1])} Hz</span>}
-        <span className={["tr-hint", practice["tr-hint"]].filter(Boolean).join(' ')}>Click the line to hear that moment</span>
+        <span><i className={cx("prc-k now", practice["prc-k"])} />this take</span>
+        {prev && <span><i className={cx("prc-k prev", practice["prc-k"])} />last time</span>}
+        <span><i className={cx("prc-k mid", practice["prc-k"])} />middle</span>
+        {band && <span><i className={cx("prc-k band", practice["prc-k"])} />your comfortable range, {Math.round(band[0])}–{Math.round(band[1])} Hz</span>}
+        <span className={cx("tr-hint", practice["tr-hint"])}>Click the line to hear that moment</span>
       </figcaption>
     </figure>
   );

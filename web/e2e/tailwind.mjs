@@ -12,6 +12,7 @@ import { shared } from '../src/ui/shared.ts';
 import { markdown } from '../src/ui/markdown.ts';
 import { accent } from '../src/ui/accent.ts';
 import { practice } from '../src/ui/practice.ts';
+import { desktop } from '../src/ui/desktop.ts';
 import { pages } from '../src/ui/pages.ts';
 import { roomStyles } from '../src/desk/roomStyles.ts';
 
@@ -24,7 +25,7 @@ try {
     '-i', fileURLToPath(new URL('../src/styles.css', import.meta.url)), '-o', output,
   ], { timeout: 60_000 });
   const css = await readFile(output, 'utf8');
-  const recipes = { shared, markdown, accent, practice, pages, roomStyles };
+  const recipes = { shared, markdown, accent, practice, desktop, pages, roomStyles };
   browser = await chromium.launch({ channel: 'chrome', headless: true });
   const page = await browser.newPage();
   let count = 0;

@@ -66,7 +66,7 @@ export function StorageSettings() {
       <div>{summary && <><strong>{summary.complete ? "" : "At least "}{storageSize(summary.total_bytes)}</strong><span>Lilt’s saved files</span></>}
         {loading && <p role="status">Counting saved files…</p>}
       </div>
-      <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} disabled={loading} onClick={() => void refresh()}>Refresh</button>
+      <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} disabled={loading} onClick={() => void refresh()}>Refresh</button>
     </div>
     {error && <div role="alert"><p>{error}</p>{summary && <p>Showing the previous count. Refresh when you’re ready.</p>}</div>}
     {summary && <>
@@ -80,8 +80,8 @@ export function StorageSettings() {
       <div className={cx(pages.sxGroup, "sx-group")}><Row label="Data folder" help="Your recordings and other saved practice data live here." stack>
         <code className={cx(pages.sxStoragePath, "sx-storage-path")}>{summary.data_path}</code>
         <div className={cx(pages.sxStorageActions, "sx-storage-actions")}>
-          {isDesktop() && <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} disabled={opening} onClick={openFolder}>{opening ? "Opening folder…" : "Open data folder"}</button>}
-          <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void copyPath()}>Copy folder path</button>
+          {isDesktop() && <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} disabled={opening} onClick={openFolder}>{opening ? "Opening folder…" : "Open data folder"}</button>}
+          <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={() => void copyPath()}>Copy folder path</button>
         </div>
       </Row><Row label="Backup folder" help="Backup and recovery files are kept separately from practice data." stack>
         <code className={cx(pages.sxStoragePath, "sx-storage-path")}>{summary.backup_path}</code>

@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { ReactNode, useEffect, useState } from "react";
 import { STATE_LABEL, STATUS_LABEL, SkillCard, Take, TakeStatus } from "../api";
@@ -19,7 +20,7 @@ export function StatusBadge({ status }: { status: TakeStatus | "idle" | "error" 
   };
   const text = status === "error" ? "Not saved yet" : STATUS_LABEL[status];
   return (
-    <span className={[`badge ${cls[status]}`, shared["badge"]].filter(Boolean).join(' ')} role="status">
+    <span className={cx(`badge ${cls[status]}`, shared["badge"])} role="status">
       {STATUS_ICON[status] && (
         <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{STATUS_ICON[status]}</svg>
       )}
@@ -57,9 +58,9 @@ export function TakeFlags({ take }: { take: Take }) {
   const flags = take.analysis_summary?.quality_flags ?? [];
   return (
     <>
-      {take.completeness === "missing_tail" && <span className={["badge failed", shared["badge"]].filter(Boolean).join(' ')}>End missing</span>}
-      {take.completeness === "interrupted" && <span className={["badge failed", shared["badge"]].filter(Boolean).join(' ')}>Interrupted, saved part kept</span>}
-      {flags.map((f) => <span key={f.code} className={["badge failed", shared["badge"]].filter(Boolean).join(' ')} title={f.message}>{f.code.replace(/_/g, " ")}</span>)}
+      {take.completeness === "missing_tail" && <span className={cx("badge failed", shared["badge"])}>End missing</span>}
+      {take.completeness === "interrupted" && <span className={cx("badge failed", shared["badge"])}>Interrupted, saved part kept</span>}
+      {flags.map((f) => <span key={f.code} className={cx("badge failed", shared["badge"])} title={f.message}>{f.code.replace(/_/g, " ")}</span>)}
     </>
   );
 }
@@ -74,7 +75,7 @@ const CALLOUT_ICON: Record<string, ReactNode> = {
 
 export function Callout({ kind = "info", icon, children }: { kind?: "info" | "warn" | "ok" | "pink"; icon?: string; children: ReactNode }) {
   return (
-    <div className={[`callout ${kind}`, shared["callout"]].filter(Boolean).join(' ')}>
+    <div className={cx(`callout ${kind}`, shared["callout"])}>
       {icon && (
         <span className="ico" aria-hidden="true">
           {CALLOUT_ICON[icon]
@@ -89,7 +90,7 @@ export function Callout({ kind = "info", icon, children }: { kind?: "info" | "wa
 
 export function Steps({ total, current }: { total: number; current: number }) {
   return (
-    <div className={["steps", shared["steps"]].filter(Boolean).join(' ')} aria-label={`Step ${current + 1} of ${total}`}>
+    <div className={cx("steps", shared["steps"])} aria-label={`Step ${current + 1} of ${total}`}>
       {Array.from({ length: total }, (_, i) => <span key={i} className={i < current ? "done" : i === current ? "now" : ""} />)}
     </div>
   );
@@ -97,9 +98,9 @@ export function Steps({ total, current }: { total: number; current: number }) {
 
 export function Choices({ name, options, value, onChange }: { name: string; options: { id: string; label: string }[]; value: string | undefined; onChange: (v: string) => void }) {
   return (
-    <div className={["choices", shared["choices"]].filter(Boolean).join(' ')}>
+    <div className={cx("choices", shared["choices"])}>
       {options.map((o) => (
-        <label className={["choice m-0 [font-weight:inherit]", shared["choice"]].filter(Boolean).join(' ')} key={o.id}>
+        <label className={cx("choice m-0 [font-weight:inherit]", shared["choice"])} key={o.id}>
           <input type="radio" name={name} value={o.id} checked={value === o.id} onChange={() => onChange(o.id)} />
           <span>{o.label}</span>
         </label>
@@ -109,7 +110,7 @@ export function Choices({ name, options, value, onChange }: { name: string; opti
 }
 
 export function Toast({ text }: { text: string | null }) {
-  return text ? <div className={["toast", shared["toast"]].filter(Boolean).join(' ')} role="status">{text}</div> : null;
+  return text ? <div className={cx("toast", shared["toast"])} role="status">{text}</div> : null;
 }
 
 export function useToast(): [string | null, (s: string) => void] {
@@ -140,7 +141,7 @@ export function PitchTrace({ analysis }: { analysis: any }) {
   const t0: number = analysis?.contour?.t0 ?? 0;
   const vals = f0.filter((v): v is number => v !== null);
   if (!Array.isArray(f0) || vals.length < 3) {
-    return <p className={["small muted", shared["small"], shared["muted"]].filter(Boolean).join(' ')}>No pitch trace: {analysis?.measures?.f0_median_hz?.unavailable_reason?.replace(/_/g, " ") ?? "not enough voiced sound"}.</p>;
+    return <p className={cx("small muted", shared["small"], shared["muted"])}>No pitch trace: {analysis?.measures?.f0_median_hz?.unavailable_reason?.replace(/_/g, " ") ?? "not enough voiced sound"}.</p>;
   }
   const st = (hz: number) => 12 * Math.log2(hz / 100);
   const lo = Math.floor(Math.min(...vals.map(st))) - 1, hi = Math.ceil(Math.max(...vals.map(st))) + 1;
@@ -157,12 +158,12 @@ export function PitchTrace({ analysis }: { analysis: any }) {
   if (cur) paths.push(cur);
   const med = analysis?.measures?.f0_median_hz?.value;
   return (
-    <figure className={["pitch m-0", shared["pitch"]].filter(Boolean).join(' ')}>
+    <figure className={cx("pitch m-0", shared["pitch"])}>
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label={`Pitch trace. Median ${med ? med.toFixed(0) + " Hz" : "unavailable"}. Gaps are unvoiced or silent parts.`}>
         {med && <line x1="0" x2={W} y1={y(med)} y2={y(med)} stroke="var(--muted)" strokeDasharray="4 4" strokeWidth="1" />}
         {paths.map((d, i) => <path key={i} d={d} fill="none" stroke="var(--accent)" strokeWidth="2" vectorEffect="non-scaling-stroke" />)}
       </svg>
-      <figcaption className={["small muted", shared["small"], shared["muted"]].filter(Boolean).join(' ')}>
+      <figcaption className={cx("small muted", shared["small"], shared["muted"])}>
         Pitch over time (log scale). Gaps are unvoiced or silent parts; no line is drawn through them. Dashed: median{med ? ` ${med.toFixed(0)} Hz` : ""}. Descriptive only.
       </figcaption>
     </figure>

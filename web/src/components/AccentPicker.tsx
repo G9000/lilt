@@ -1,3 +1,4 @@
+import { cx } from "../ui/cx";
 import { accent } from "../ui/accent";
 import { useEffect, useId, useState } from 'react';
 import { ACCENTS, DEFAULT_ACCENT, parseAccent } from '../accent-colors';
@@ -14,16 +15,16 @@ export function AccentPicker() {
     const value = parseAccent(draft);
     if (value) choose(value); else setError(true);
   };
-  return <fieldset className={["accent-picker", accent["accent-picker"]].filter(Boolean).join(' ')}>
+  return <fieldset className={cx("accent-picker", accent["accent-picker"])}>
     <legend>Accent color</legend>
-    <div className={["accent-presets", accent["accent-presets"]].filter(Boolean).join(' ')}>
+    <div className={cx("accent-presets", accent["accent-presets"])}>
       {ACCENTS.map(preset => <label key={preset.color} title={preset.name}>
         <input type="radio" name={`${id}-accent`} aria-label={preset.name} checked={color === preset.color}
           onChange={() => choose(preset.color)} />
         <span style={{ backgroundColor: preset.color }} aria-hidden="true" />
       </label>)}
     </div>
-    <div className={["accent-custom", accent["accent-custom"]].filter(Boolean).join(' ')}>
+    <div className={cx("accent-custom", accent["accent-custom"])}>
       <label className="accent-native">Custom color<input type="color" value={color} onChange={e => choose(e.target.value)} /></label>
       <label className="accent-hex" htmlFor={`${id}-hex`}>Hex color
         <input id={`${id}-hex`} type="text" value={draft} spellCheck={false} autoComplete="off" maxLength={7}

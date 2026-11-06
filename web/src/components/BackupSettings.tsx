@@ -58,13 +58,13 @@ export function BackupSettings() {
     <div className={cx(pages.sxGroup, "sx-group")}><Row label="Safety copy" help="Your data from just before this restore. Download it and keep it somewhere safe." stack>
       <a href={restored.safety_backup.download_url} download>Download safety copy</a>
     </Row></div>
-    <button className={[cx(pages.sxBtn, "btn-primary sx-btn"), shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => window.location.reload()}>Reload Lilt</button>
+    <button className={cx(cx(pages.sxBtn, "btn-primary sx-btn"), shared["btn-primary"])} onClick={() => window.location.reload()}>Reload Lilt</button>
   </div>;
   return <div className={cx(pages.sxBackups, "sx-backups")} aria-busy={busy !== null}>
     <p className={cx(pages.sxNote, "sx-note")}>Back up your recordings, courses, practice progress, photos, practice notes and settings. Download the ZIP and keep your copy somewhere safe.</p>
     <div className={cx(pages.sxGroup, "sx-group")}>
       <Row label="Back up your practice" help={status?.last_backup ? `Last backup created ${dateLabel(status.last_backup.created_utc)}. Download it to keep your own copy.` : "Keep a copy somewhere safe, such as an external drive."} stack>
-        <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} disabled={!!busy || !status} onClick={() => void create()}>{busy === "create" ? "Creating backup…" : "Create backup"}</button>
+        <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} disabled={!!busy || !status} onClick={() => void create()}>{busy === "create" ? "Creating backup…" : "Create backup"}</button>
         {(created ?? status?.last_backup) && <a href={(created ?? status!.last_backup!).download_url} download>Download backup</a>}
       </Row>
       <Row label="Restore a backup" help="Choose a ZIP created here. You can review it before replacing your current practice data." stack>
@@ -81,11 +81,11 @@ export function BackupSettings() {
       <p>This replaces your current practice data. Lilt will keep a safety copy first. Finish any recording or analysis before restoring.</p>
       <label className={cx(pages.sxBackupConfirm, "sx-backup-confirm")}><input type="checkbox" checked={confirmed} disabled={!!busy} onChange={e => setConfirmed(e.target.checked)} /> <span>Replace my current practice data with this backup</span></label>
       <div className={cx(pages.sxBackupActions, "sx-backup-actions")}>
-        <button className={[cx(pages.sxBtn, "btn-primary sx-btn"), shared["btn-primary"]].filter(Boolean).join(' ')} disabled={!confirmed || !!busy} onClick={() => void restore()}>{busy === "restore" ? "Restoring…" : "Restore backup"}</button>
-        <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} disabled={!!busy} onClick={() => { setPreview(null); setConfirmed(false); setError(null); }}>Cancel</button>
+        <button className={cx(cx(pages.sxBtn, "btn-primary sx-btn"), shared["btn-primary"])} disabled={!confirmed || !!busy} onClick={() => void restore()}>{busy === "restore" ? "Restoring…" : "Restore backup"}</button>
+        <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} disabled={!!busy} onClick={() => { setPreview(null); setConfirmed(false); setError(null); }}>Cancel</button>
       </div>
     </section>}
-    {error && <div role="alert"><p>{error}</p>{!status && !busy && <button className={[cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void load()}>Try again</button>}</div>}
+    {error && <div role="alert"><p>{error}</p>{!status && !busy && <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={() => void load()}>Try again</button>}</div>}
     <p className={cx(pages.sxNote, "sx-note")}>Sign-ins and AI connections aren’t included. Room appearance, layout, sticky-note styles and uploaded monitor media stay in this browser. Restoring leaves those choices and this computer’s sign-ins as they are.</p>
     <p className={cx(pages.sxNote, "sx-note")}>Backups contain private recordings and notes and aren’t password protected. Keep the file somewhere you trust.</p>
   </div>;

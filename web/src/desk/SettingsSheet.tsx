@@ -1,9 +1,11 @@
 import { roomStyles } from "./roomStyles";
-import { useEffect, useState } from "react";
-import { SettingsPage } from "../pages/Settings";
+import { lazy, useEffect, useState } from "react";
+import type { SettingsPage as SettingsComponent } from "../pages/Settings";
+import { Deferred } from "../components/Deferred";
 import { Icon } from "../components/bits";
 
-type Pane = Parameters<typeof SettingsPage>[0]["start"];
+const SettingsPage = lazy(() => import("../pages/Settings").then(m => ({ default: m.SettingsPage })));
+type Pane = Parameters<typeof SettingsComponent>[0]["start"];
 
 /** Open Settings over the room or the desk, optionally at one pane ("ai" for AI connections). */
 export function openSettings(pane?: Pane) {
@@ -34,7 +36,7 @@ export function SettingsSheet() {
           computer, a card or the radio underneath. */}
       <div className={[`ss-scrim${open ? " on" : ""}`, roomStyles["ss-scrim"]].join(" ")} aria-hidden="true" onClick={() => setOpen(false)} />
       <section className={[`ss${open ? " open" : ""}`, roomStyles["ss"]].join(" ")} role="dialog" aria-label="Settings" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
-        {open && <SettingsPage start={at} onClose={() => setOpen(false)} />}
+        {open && <Deferred><SettingsPage start={at} onClose={() => setOpen(false)} /></Deferred>}
       </section>
     </>
   );

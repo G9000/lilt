@@ -49,7 +49,7 @@ function ComparisonForPair({ a, b }: { a: string; b: string }) {
         {samePrompt && <p className="dv-lede">{ta.prompt_text}</p>}
         <p className="dv-cap">Press <kbd>A</kbd> or <kbd>B</kbd> to play either take.</p>
       </header>
-      <div className={["ab", shared["ab"]].filter(Boolean).join(' ')}>
+      <div className={cx("ab", shared["ab"])}>
         {[ta, tb].map((t, i) => (
           <div key={t.id} className={cx(pages.cmpSide, "cmp-side")}>
             <AudioPlayer src={t.audio_url} tag={"AB"[i]} label={`${label(t, i ? "Second" : "First")}, ${new Date(t.created_utc).toLocaleDateString(undefined, { day: "numeric", month: "short" })}`} segment={i ? cmp.segment_b : cmp.segment_a} segmentLabel="voiced span" />
@@ -70,8 +70,8 @@ function ComparisonForPair({ a, b }: { a: string; b: string }) {
         <p className="dv-cap">{cmp.method_status} Your own listening and comfort matter more here than any number.</p>
         <details className="dv-quiet">
           <summary>Measurements</summary>
-          <div className={["body", shared["body"]].filter(Boolean).join(' ')}>
-            <div className={["table-wrap", shared["table-wrap"]].filter(Boolean).join(' ')}>
+          <div className={cx("body", shared["body"])}>
+            <div className={cx("table-wrap", shared["table-wrap"])}>
               <table className="cmp-table">
                 <thead><tr><th>Measure</th><th>A</th><th>B</th><th>Difference</th></tr></thead>
                 <tbody>

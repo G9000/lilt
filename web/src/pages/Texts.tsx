@@ -45,7 +45,7 @@ function CourseTexts({ course }: { course: string }) {
         <p>{texts.note}</p>
       </header>
 
-      <div className={[cx(pages.txLevels, "segmented tx-levels"), shared["segmented"]].filter(Boolean).join(' ')} role="group" aria-label="Level filter">
+      <div className={cx(cx(pages.txLevels, "segmented tx-levels"), shared["segmented"])} role="group" aria-label="Level filter">
         <button aria-pressed={open === "all"} onClick={(e) => pick(e, "all")} aria-label={`All levels, ${total} texts`}>All</button>
         {texts.levels.map((l) => (
           <button key={l.id} aria-pressed={open === l.id} onClick={(e) => pick(e, l.id)} aria-label={`Level ${l.level}, ${l.title}, ${l.items.length} texts`}>{l.title}</button>
@@ -73,7 +73,7 @@ function CourseTexts({ course }: { course: string }) {
           </ul>
           <p className={cx(pages.txCredit, "tx-credit")}>
             {l.written_by}
-            {l.source_url && <> <a href={l.source_url} target="_blank" rel="noreferrer">Source on {host(l.source_url)}<span className={["sr-only", shared["sr-only"]].filter(Boolean).join(' ')}> (opens in a new tab)</span></a></>}
+            {l.source_url && <> <a href={l.source_url} target="_blank" rel="noreferrer">Source on {host(l.source_url)}<span className={cx("sr-only", shared["sr-only"])}> (opens in a new tab)</span></a></>}
           </p>
         </section>
       ))}

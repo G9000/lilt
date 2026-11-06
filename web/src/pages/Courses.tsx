@@ -92,7 +92,7 @@ function CoursePage({ id }: { id: string }) {
           <p>{c.summary}</p>
           <Status c={c} />
         </div>
-        {open && <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(open)}>Practise</button>}
+        {open && <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(open)}>Practise</button>}
       </header>
       <MixtapeSections m={m} updatesHref={`/courses/${id}/updates`} />
     </div>
@@ -156,7 +156,7 @@ export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixta
       {c.updates_waiting > 0 && (
         <section className={cx(pages.coCallout, "co-callout")}>
           <div><b>The original has {c.updates_waiting} {c.updates_waiting === 1 ? "update" : "updates"} for your mixtape</b><p>Changes to things you haven't touched come straight in; where you both changed something, you choose.</p></div>
-          <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(updatesHref)}>Review updates</button>
+          <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(updatesHref)}>Review updates</button>
         </section>
       )}
 
@@ -168,12 +168,12 @@ export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixta
               <b>{mine ? "Your mixtape" : "The original"}</b>
               <p>{mine ? `${c.changes} ${c.changes === 1 ? "change" : "changes"} so far. The original stays as it is.` : "Remix anything and Lilt makes your own copy first: your mixtape. The original stays as it is."}</p>
             </div>
-            {mine && !confirm && <button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => setConfirm(true)} disabled={busy}>Go back to the original</button>}
+            {mine && !confirm && <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => setConfirm(true)} disabled={busy}>Go back to the original</button>}
           </div>
           {confirm && (
             <div className={cx(pages.coRow, pages.coConfirm, "co-row co-confirm")}>
               <p>Go back to the original? Your mixtape is kept in the history, so you can undo this.</p>
-              <span className={cx(pages.coActions, "co-actions")}><button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => { setConfirm(false); void m.reset(); }} disabled={busy}>Go back</button><button className={["btn-secondary", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => setConfirm(false)}>Cancel</button></span>
+              <span className={cx(pages.coActions, "co-actions")}><button className={cx("btn-primary", shared["btn-primary"])} onClick={() => { setConfirm(false); void m.reset(); }} disabled={busy}>Go back</button><button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => setConfirm(false)}>Cancel</button></span>
             </div>
           )}
         </div>
@@ -184,7 +184,7 @@ export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixta
       <section className={cx(pages.coSec, "co-sec")}>
         <div className={cx(pages.coSecHead, "co-sec-head")}>
           <h2>History</h2>
-          {latest && <button className={["btn-secondary co-small", shared["btn-secondary"]].filter(Boolean).join(' ')} onClick={() => void m.undo()} disabled={busy} title={`Undo “${latest.note}”`}>Undo last change</button>}
+          {latest && <button className={cx("btn-secondary co-small", shared["btn-secondary"])} onClick={() => void m.undo()} disabled={busy} title={`Undo “${latest.note}”`}>Undo last change</button>}
         </div>
         {changes.length === 0 ? (
           <div className={cx(pages.coBox, "co-box")}><div className={cx(pages.coRow, "co-row")}><p>No changes yet. Each change your AI makes shows up here with its note, and can be undone.</p></div></div>
