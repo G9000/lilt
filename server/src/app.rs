@@ -64,6 +64,9 @@ impl Config {
 }
 
 pub struct App {
+    pub activity: Arc<crate::backup::admission::Admission>,
+    pub retired: std::sync::atomic::AtomicBool,
+    _data_lease: Option<Arc<crate::backup::ProcessLease>>,
     pub config: Config,
     pub paths: Paths,
     pub registry: RwLock<Registry>,
@@ -95,6 +98,27 @@ pub struct WriteState {
 
 impl App {
     pub fn open(config: Config) -> Result<Shared> {
+        Self::open_with_activity(
+            config,
+            Arc::new(crate::backup::admission::Admission::default()),
+            None,
+        )
+    }
+
+    pub fn enter(&self) -> Result<crate::backup::admission::Permit> {
+        let permit = self.activity.enter()?;
+        anyhow::ensure!(
+            !self.retired.load(std::sync::atomic::Ordering::Acquire),
+            "This Lilt session belongs to practice data that has been replaced. Reconnect before making changes."
+        );
+        Ok(permit)
+    }
+
+    pub(crate) fn open_with_activity(
+        config: Config,
+        activity: Arc<crate::backup::admission::Admission>,
+        lease: Option<Arc<crate::backup::ProcessLease>>,
+    ) -> Result<Shared> {
         let paths = Paths::new(&config.data_dir);
         paths.ensure_layout()?;
         let registry = crate::practice::exercises::seed_and_load(
@@ -104,6 +128,9 @@ impl App {
         let prompts: Value = store::read_json(&config.content_dir.join("prompts/prompts.json"))
             .context("loading content/prompts/prompts.json")?;
         let app = Arc::new(App {
+            activity,
+            retired: std::sync::atomic::AtomicBool::new(false),
+            _data_lease: lease,
             config,
             texts: RwLock::new(Value::Null),
             texts_stamp: Mutex::new(String::new()),

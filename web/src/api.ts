@@ -1,4 +1,5 @@
 // Typed client for the Lilt server API.
+import { dataClient } from "./dataGeneration";
 
 export type Signal = "target_met" | "target_not_met" | "unsure" | "info" | "comfort_stop";
 
@@ -307,12 +308,12 @@ export class ApiError extends Error {
   }
 }
 
-async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
-  const res = await fetch(path, {
+async function call<T>(method: string, path: string, body?: unknown, originalGeneration?: string | null): Promise<T> {
+  const res = await dataClient.fetch(path, {
     method,
     headers: body !== undefined ? { "content-type": "application/json" } : undefined,
     body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  }, originalGeneration);
   const text = await res.text();
   let data: any = null;
   try { data = text ? JSON.parse(text) : null; } catch {
@@ -326,7 +327,21 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 /** Photos you added (for the clock and the Photos app), and which of Lilt's own pictures you hid. */
 export interface PhotoIndex { uploaded: { id: string; name: string; file: string; mime: string; added_utc: string }[]; hidden: string[] }
 
+export interface BackupSummary { id: string; created_utc: string; files: number; bytes: number; recordings: number; download_url: string }
+export interface BackupStatus { generation: string; last_backup: BackupSummary | null; max_upload_bytes: number }
+export type BackupPreview = Omit<BackupSummary, "download_url">;
+export interface RestoreResult { restored: boolean; generation: string; safety_backup: BackupSummary }
+
 export const api = {
+  backups: () => call<BackupStatus>("GET", "/api/backups"),
+  createBackup: () => call<BackupSummary>("POST", "/api/backups", {}),
+  previewBackup: async (file: File): Promise<BackupPreview> => {
+    const response = await dataClient.fetch("/api/backups/restore-preview", { method: "POST", headers: { "content-type": "application/zip" }, body: file });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data) throw new ApiError(response.status, data?.error ?? "Lilt couldn't read this backup. Please try again.");
+    return data;
+  },
+  restoreBackup: (id: string, generation: string) => call<RestoreResult>("POST", "/api/backups/restore", { id, generation, confirm: true }),
   /** Remix a course (or one chapter) with your connected ChatGPT, into your mixtape. */
   remix: (request: string, chapter?: string, course?: string, history: { role: "user" | "assistant"; content: string }[] = []) =>
     call<{ course: string; reply: string; note: string }>("POST", "/api/mixtape/remix", { request, chapter, course, history }),
@@ -343,7 +358,7 @@ export const api = {
   photos: () => call<PhotoIndex>("GET", "/api/photos"),
   /** Add a photo: the image itself is the request body. */
   addPhoto: async (image: Blob, name: string) => {
-    const res = await fetch(`/api/photos?name=${encodeURIComponent(name)}`, { method: "POST", headers: { "content-type": image.type || "application/octet-stream" }, body: image });
+    const res = await dataClient.fetch(`/api/photos?name=${encodeURIComponent(name)}`, { method: "POST", headers: { "content-type": image.type || "application/octet-stream" }, body: image });
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new ApiError(res.status, data?.error ?? res.statusText);
     return data as PhotoIndex["uploaded"][number];
@@ -372,7 +387,7 @@ export const api = {
   take: (id: string) => call<Take>("GET", `/api/takes/${id}`),
   patchTake: (id: string, body: unknown) => call<Take>("PATCH", `/api/takes/${id}`, body),
   deleteTake: (id: string, deleteReviews: boolean) => call<unknown>("DELETE", `/api/takes/${id}?reviews=${deleteReviews ? "delete" : "mark"}`),
-  finalize: (id: string, chunk_count: number, interrupted = false) => call<Take>("POST", `/api/takes/${id}/finalize`, { chunk_count, interrupted }),
+  finalize: (id: string, chunk_count: number, interrupted = false, generation?: string | null) => call<Take>("POST", `/api/takes/${id}/finalize`, { chunk_count, interrupted }, generation),
   analysis: (id: string) => call<any>("GET", `/api/takes/${id}/analysis`),
   reanalyze: (id: string) => call<Take>("POST", `/api/takes/${id}/reanalyze`),
   /** Measure takes analysed with an older method again; earlier results are kept. */

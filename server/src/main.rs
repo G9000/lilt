@@ -1,6 +1,7 @@
 mod ai;
 mod analysis;
 mod app;
+mod backup;
 mod coach;
 mod courses;
 mod desktop_update;
@@ -31,7 +32,8 @@ async fn main() -> Result<()> {
         .init();
     let config = app::Config::from_env();
     let mode = std::env::args().nth(1).unwrap_or_else(|| "serve".into());
-    let app = app::App::open(config.clone())?;
+    let controller = backup::Controller::open(config.clone())?;
+    let app = controller.app();
     match mode.as_str() {
         "mcp-stdio" => {
             use rmcp::ServiceExt;
@@ -41,7 +43,7 @@ async fn main() -> Result<()> {
             svc.waiting().await?;
             Ok(())
         }
-        "serve" => serve(app, config).await,
+        "serve" => serve(controller, config).await,
         other => anyhow::bail!("unknown command {other}; use `serve` or `mcp-stdio`"),
     }
 }
@@ -85,14 +87,15 @@ pub fn build_router(app: app::Shared, config: &app::Config) -> Router {
         .layer(middleware::from_fn_with_state(app, ai::oauth::gate))
 }
 
-async fn serve(app: app::Shared, config: app::Config) -> Result<()> {
+async fn serve(controller: std::sync::Arc<backup::Controller>, config: app::Config) -> Result<()> {
+    let app = controller.app();
     let requeued = analysis::reconcile(&app)?;
     let interrupted = recordings::reconcile_interrupted(&app)?;
     tracing::info!(
         "startup: {requeued} job(s) requeued, {interrupted} interrupted take(s) recovered"
     );
     tokio::spawn(analysis::worker(app.clone()));
-    let router = build_router(app.clone(), &config);
+    let router = controller.router();
     let listener = tokio::net::TcpListener::bind(&config.bind).await?;
     tracing::info!(
         "Lilt listening on http://{} (data: {})",

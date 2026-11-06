@@ -83,7 +83,7 @@ async fn cancel(State(app): State<Shared>, headers: HeaderMap) -> Response {
 
 /// The normal history helpers omit unreadable records; update admission must not.
 /// Called while holding write_lock, also held by create_take and status changes.
-fn unfinished_take(app: &App) -> anyhow::Result<bool> {
+pub(crate) fn unfinished_take(app: &App) -> anyhow::Result<bool> {
     for session in fs::read_dir(app.paths.sessions())? {
         let session = session?;
         anyhow::ensure!(session.file_type()?.is_dir(), "unexpected session entry");

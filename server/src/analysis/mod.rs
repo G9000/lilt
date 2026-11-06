@@ -184,6 +184,9 @@ pub fn remeasure_stale(app: &App) -> Result<usize> {
 
 /// Run every pending job once (blocking). Used by the worker and by tests.
 pub fn run_pending(app: &App) {
+    let Ok(_permit) = app.enter() else {
+        return;
+    };
     let pending: Vec<Job> = jobs(app)
         .into_iter()
         .filter(|j| j.status == "pending")
@@ -197,6 +200,9 @@ pub fn run_pending(app: &App) {
 
 pub async fn worker(app: Shared) {
     loop {
+        if app.retired.load(std::sync::atomic::Ordering::Acquire) {
+            return;
+        }
         let a = app.clone();
         let _ = tokio::task::spawn_blocking(move || run_pending(&a)).await;
         tokio::select! {

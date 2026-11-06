@@ -390,6 +390,42 @@ whole history.
 
 ### Backup and restore
 
+- **In Settings → Backup & restore**, choose **Create backup**, then **Download backup** and
+  keep the ZIP somewhere safe. The date means the backup was created; Lilt cannot tell whether
+  your browser saved the download. Recording, saving and analysis must finish first.
+  The Mac app saves downloads in Downloads and reveals them in Finder; move your copy to your
+  preferred backup location afterwards.
+- **To restore**, choose a ZIP created in this pane. Lilt checks it and shows its creation date,
+  recordings, file count and unpacked size. Tick **Replace my current practice data with this
+  backup**, then choose **Restore backup**. This replaces rather than merges your practice data.
+  Lilt keeps a safety ZIP of your current data first. After success, download that safety copy
+  and choose **Reload Lilt**; reload any other open Lilt windows too.
+- Backups include recordings, measurements, reviews and practice notes, custom courses and
+  exercises, plans, card progress, Photos and practice settings. Sign-ins, AI connection grants,
+  temporary files and backup-management files are excluded. Restoring preserves this computer's
+  sign-ins. Sticky-note text is included with the profile. Browser-only choices—including room
+  layout, appearance, sticky-note styles and uploaded
+  monitor media—stay in that browser and are not included or replaced.
+- Backup files contain private material and are not encrypted. Save them to a location you trust.
+  Lilt also keeps generated ZIPs in a sibling folder named `.<data-folder-name>.lilt-backups`
+  (normally `~/Lilt/.data.lilt-backups`). The latest one remains downloadable in Settings, including
+  a safety copy after a restore. These are separate copies; deleting a recording does not remove it
+  from an existing backup. There is no automatic backup schedule or automatic ZIP deletion.
+- Import accepts only Lilt's versioned backup ZIPs, up to 2 GiB compressed, 8 GiB unpacked,
+  100,000 files and 2 GiB per file. Damaged, unsupported or unsafe archives are rejected before
+  current data is touched. Individual JSON records and the manifest are limited to 32 MiB.
+  Older **Export everything** ZIPs use the manual restore route below.
+- Backup and restore are available on this computer, not through remote AI connections. If
+  another Lilt server or an MCP process has the same data open, close that process and retry.
+  A stale page or buffered recording from before a restore cannot write into restored data;
+  rejected buffered audio remains in the browser. If interrupted during replacement, Lilt uses
+  its restore journal on startup to recover the previous data or finish a committed restore.
+  Direct HTTP clients must send the current `X-Lilt-Generation` response header back on `/api/`
+  mutations after a restore. MCP, OAuth protocol and authenticated native update controls keep
+  their own admission rules.
+
+The existing export and manual folder-copy routes remain available:
+
 - **Export:** History → **Export everything (.zip)**, or `curl -o lilt.zip http://127.0.0.1:7878/api/export`.
 - **Backup:** with Lilt stopped, copy the data folder, for example `rsync -a ~/Lilt/data/ /Volumes/Backup/lilt-data/`.
   Time Machine also covers `~/Lilt`.

@@ -293,6 +293,7 @@ pub fn call(
     name: &str,
     a: &serde_json::Map<String, Value>,
 ) -> anyhow::Result<CallToolResult> {
+    let _permit = app.enter()?;
     let ok = |v: Value| Ok(CallToolResult::structured(v));
     match name {
         "voice_get_today_plan" => {
@@ -591,10 +592,16 @@ impl ServerHandler for LiltMcp {
                     .unwrap_or_else(|| i.client_info.name.clone())
             })
             .unwrap_or_default();
-        crate::ai::agents::record(&app, &client, &name);
-        let res = tokio::task::spawn_blocking(move || call(&app, &name, &args))
-            .await
+        let permit = app
+            .enter()
             .map_err(|e| McpError::internal_error(e.to_string(), None))?;
+        let res = tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            crate::ai::agents::record(&app, &client, &name);
+            call(&app, &name, &args)
+        })
+        .await
+        .map_err(|e| McpError::internal_error(e.to_string(), None))?;
         Ok(match res {
             Ok(r) => r.into(),
             Err(e) => CallToolResult::error(vec![ContentBlock::text(format!("{e:#}"))]).into(),

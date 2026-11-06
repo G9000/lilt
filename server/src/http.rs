@@ -61,7 +61,7 @@ pub fn router(app: Shared) -> Router {
 
 /// Block cross-site requests to the local API (a web page elsewhere could otherwise
 /// POST to localhost). Same-origin browser requests and non-browser clients pass.
-async fn same_origin_only(req: Request, next: Next) -> Response {
+pub(crate) async fn same_origin_only(req: Request, next: Next) -> Response {
     if let Some(origin) = req
         .headers()
         .get(header::ORIGIN)
@@ -145,9 +145,13 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
 /// Zip of the whole data directory, streamed from a temp file.
 async fn export(State(app): State<Shared>) -> R<Response> {
     let app2 = app.clone();
-    let path = tokio::task::spawn_blocking(move || store::export::write_zip(&app2))
-        .await
-        .map_err(|e| anyhow::anyhow!(e.to_string()))??;
+    let permit = app.enter()?;
+    let path = tokio::task::spawn_blocking(move || {
+        let _permit = permit;
+        store::export::write_zip(&app2)
+    })
+    .await
+    .map_err(|e| anyhow::anyhow!(e.to_string()))??;
     let file = tokio::fs::File::open(&path).await?;
     let _ = std::fs::remove_file(&path); // unlinked; the open handle keeps streaming
     let stream = tokio_util::io::ReaderStream::new(file);

@@ -5,6 +5,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+**Backup & restore** is a Settings pane with Create backup and a separate Download backup link.
+Choosing a ZIP opens a plain preview with date, recording count and size. A checkbox and explicit
+Restore backup action confirm replacement; Cancel leaves practice untouched. A successful restore
+offers Download safety copy and Reload Lilt. Loading, busy and invalid-file states use plain text;
+the last-backup date describes creation, never an unverified successful download. The pane explains
+that sign-ins and browser-only room choices are outside the backup. Controls wrap on narrow screens
+and use the existing light/dark Settings surfaces.
+
 **App updates** live in Settings → Updates and the Mac menu. In the installed app they open
 a small native window with the installed version, a plain status sentence, release notes,
 download progress and separate Download update / Update and restart buttons. Notes are

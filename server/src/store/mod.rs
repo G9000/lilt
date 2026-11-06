@@ -1,6 +1,7 @@
 //! Filesystem persistence: atomic writes, ID validation and data-root paths.
 //! Files under the data root are the canonical record; nothing else is.
 
+pub mod backup_archive;
 pub mod export;
 
 use anyhow::{Context, Result, bail};

@@ -19,18 +19,24 @@ async function fixture(t, { fallback = false } = {}) {
   t.after(async () => { await ctx.close(); assert.deepEqual(errors, [], "no unhandled page errors"); });
   const open = async () => {
     const page = await ctx.newPage();
-    const api = { creates: 0, failCreation: false, creationGate: null };
+    const api = { creates: 0, failCreation: false, creationGate: null, generation: 'original-data', requireGeneration: false, writes: [] };
     page.on("pageerror", (e) => errors.push(e.message));
     if (fallback) await page.addInitScript(() => Object.defineProperty(navigator, "locks", { value: undefined }));
     await page.route("**/__recording_test", (route) => route.fulfill({ contentType: "text/html", body: "<!doctype html><title>Recording lock test</title>" }));
+    await page.route("**/healthz", route => route.fulfill({ headers: { 'X-Lilt-Generation': api.generation }, json: { ok: true } }));
     await page.route("**/api/**", async (route) => {
       const req = route.request();
+      const headers = { 'X-Lilt-Generation': api.generation };
+      if (req.method() !== 'GET') {
+        api.writes.push({ path: new URL(req.url()).pathname, generation: req.headers()['x-lilt-generation'] });
+        if (api.requireGeneration && req.headers()['x-lilt-generation'] !== api.generation) return route.fulfill({ status: 409, headers, json: { error: 'Reload Lilt before making changes.' } });
+      }
       if (new URL(req.url()).pathname === "/api/takes") {
         api.creates++;
         if (api.creationGate) await api.creationGate;
         if (api.failCreation) return route.fulfill({ status: 422, json: { error: "Take creation refused for this test." } });
       }
-      return route.fulfill({ json: { id: "test-take", status: "saved" } });
+      return route.fulfill({ headers, json: { id: "test-take", status: "saved" } });
     });
     await page.goto(`${BASE}/__recording_test`);
     await page.evaluate(async () => {
@@ -183,4 +189,49 @@ test("without Web Locks, separate recorders in the same page are still excluded"
   await a.page.evaluate(() => { window.rec = new window.TakeRecorder(window.stream, () => {}); });
   await start(a.page);
   await stop(a.page);
+});
+
+test("a recording persists its original data identity through chunks and finalization", async t => {
+  const { open } = await fixture(t); const { page, api } = await open();
+  await start(page);
+  const pending = await page.evaluate(() => new Promise(resolve => {
+    const req = indexedDB.open('lilt-capture', 1);
+    req.onsuccess = () => { const db = req.result; const read = db.transaction('takes').objectStore('takes').getAll(); read.onsuccess = () => { resolve(read.result); db.close(); }; };
+  }));
+  assert.equal(pending[0].generation, 'original-data');
+  await stop(page);
+  assert.ok(api.writes.some(x => x.path.includes('/chunks/')));
+  assert.ok(api.writes.every(x => x.generation === 'original-data'));
+});
+
+test("recovery never relabels old or legacy buffered audio after a restore", async t => {
+  const { open } = await fixture(t); const { page, api } = await open();
+  api.generation = 'restored-data'; api.requireGeneration = true;
+  const result = await page.evaluate(async () => {
+    const { dataClient } = await import('/src/dataGeneration.ts');
+    await dataClient.fetch('/healthz');
+    await new Promise((resolve, reject) => {
+      const req = indexedDB.open('lilt-capture', 1);
+      req.onupgradeneeded = () => { req.result.createObjectStore('takes', { keyPath: 'take_id' }); req.result.createObjectStore('chunks', { keyPath: ['take_id', 'seq'] }); };
+      req.onerror = () => reject(req.error);
+      req.onsuccess = () => {
+        const db = req.result, tx = db.transaction(['takes', 'chunks'], 'readwrite');
+        for (const take of [{ take_id: 'old', generation: 'original-data' }, { take_id: 'legacy' }]) {
+          tx.objectStore('takes').put({ ...take, produced: 1, stopped: true });
+          tx.objectStore('chunks').put({ take_id: take.take_id, seq: 0, blob: new Blob(['retained audio']) });
+        }
+        tx.oncomplete = () => { db.close(); resolve(); };
+      };
+    });
+    const recovered = await (await import('/src/recorder.ts')).recoverPending();
+    const remaining = await new Promise(resolve => {
+      const req = indexedDB.open('lilt-capture', 1);
+      req.onsuccess = () => { const db = req.result; const read = db.transaction('chunks').objectStore('chunks').count(); read.onsuccess = () => { resolve(read.result); db.close(); }; };
+    });
+    return { recovered, remaining };
+  });
+  assert.deepEqual(result, { recovered: 0, remaining: 2 });
+  assert.equal(api.writes.find(x => x.path.includes('/old/')).generation, 'original-data');
+  assert.equal(api.writes.find(x => x.path.includes('/legacy/')).generation, undefined);
+  assert.equal(api.writes.some(x => x.path.endsWith('/finalize')), false);
 });

@@ -1,5 +1,42 @@
 # Lilt: validation report
 
+## 7 November 2026: Backup and restore in Settings
+
+Settings → Backup & restore creates downloadable practice-data ZIPs, previews imports, and
+requires explicit replacement confirmation. A safety ZIP is created before replacement; success
+offers its download and Reload Lilt. Last-backup wording describes creation, not an assumed browser
+download. Local credentials and browser-only room choices are excluded and preserved locally.
+
+Passed: 147 web unit tests, types and production build to a scratch output; all 104 server tests,
+formatting and strict all-target/all-feature Clippy; Python 47 passed and one skipped; desktop
+20 tests, formatting and strict release Clippy. The server tests include 11 archive cases and
+15 controller/runtime cases: hashes and original audio, malformed/hostile archives, Windows case
+and Unicode aliases, credentials, stale generations, body/cancellation admission, process leases,
+failed reopen/rollback, orphan cleanup, and subprocess exits at replacement/commit boundaries.
+Independent review found and resolved filename-validation, OAuth compatibility and failed-rollback
+admission issues; the final review found no remaining blocker.
+
+Chrome passed all six backup Settings checks, all 12 recorder checks and all 14 existing updater
+checks. Backup coverage includes create/download, preview without replacement, keyboard confirmation,
+Cancel, invalid/oversized files, busy retry, safety download and actual page reload. Recorder coverage
+checks persisted generation and rejects old/legacy buffered audio without deleting its browser copy.
+Inspected light desktop preview and narrow dark Settings screenshots under
+`server/target/yarn-check/artifacts/backup-shots`. The fixture supplies the app window's background.
+
+The repeatable `scripts/backup-restore-acceptance.py` passed 22 checks against the final rebuilt
+scratch server over real loopback HTTP. It uploads a WAV, finalizes it, runs the real Python helper,
+backs up courses/cards/photos/notes/analysis/audio, changes data and deletes the recording, then
+restores it. All 59 archived files matched restored bytes and the safety ZIP matched pre-restore
+practice data exactly. It verifies auth preservation, stale/missing write rejection, consumed-preview
+rejection, host/origin/tunnel gates, OAuth compatibility, and audio/profile/generation after restart.
+Evidence: `target/backup-network-okh3v2c9/report.json`, `server.log`, `original.zip`, `safety.zip`.
+
+All servers and browsers used scratch data and were stopped by their own handles. Owner data,
+port 7878, normal server binary and web/dist were untouched. Existing bundle-size and Windows
+hard-link-cache warnings remain. Tests establish process-crash recovery, not guaranteed power-loss
+durability on every filesystem. Native Mac ZIP upload/download still needs a packaged-app smoke
+test; Windows browser/HTTP acceptance does not establish that. No release was pushed or published.
+
 ## 7 November 2026: Update notices and version in Settings
 
 Settings → Updates now shows the native installed version and live update status directly.

@@ -10,6 +10,7 @@ import { playSound, setSounds, soundsOn } from "../sounds";
 import { isDesktop, openAppUpdates, useDesktopUpdate } from "../useDesktopUpdate";
 import { updateStatus } from "../desktopUpdate";
 import { CURRENT } from "../release";
+import { BackupSettings } from "../components/BackupSettings";
 
 const ZONES = ["Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Jakarta", "Asia/Bangkok", "Asia/Tokyo", "Australia/Sydney", "Europe/London", "Europe/Berlin", "America/New_York", "America/Los_Angeles", "UTC"];
 
@@ -54,7 +55,7 @@ function SoundsChoice() {
   );
 }
 
-type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy" | "updates";
+type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy" | "backups" | "updates";
 
 /** Each pane: its sidebar icon (a white glyph on a coloured tile, as in System Settings) and words to search by. */
 const PANES: { id: PaneId; title: string; words: string; tile: string; glyph: ReactNode }[] = [
@@ -70,6 +71,8 @@ const PANES: { id: PaneId; title: string; words: string; tile: string; glyph: Re
     glyph: <path d="M10 3.5l5.5 2v4c0 3.4-2.3 6-5.5 7-3.2-1-5.5-3.6-5.5-7v-4z" /> },
   { id: "updates", title: "Updates", words: "updates version download install restart mac desktop", tile: "#8f9bb0,#56627a",
     glyph: <><path d="M15.6 7A6 6 0 1 0 16 11M15.6 3.5V7H12" /><path d="M10 13V7m-2 2 2-2 2 2" /></> },
+  { id: "backups", title: "Backup & restore", words: "backup restore data export import zip recovery copy recordings", tile: "#8f9bb0,#56627a",
+    glyph: <><path d="M4 8h12v8H4zM3 4h14v4H3zM8 11h4" /></> },
 ];
 
 function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number }) {
@@ -182,6 +185,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
     );
     if (id === "ai") return <ConnectAI />;
     if (id === "updates") return <AppUpdates />;
+    if (id === "backups") return <BackupSettings />;
     if (id === "privacy") return (
       <>
         <Callout kind="ok"><p>Recording, saving, playback and local analysis run on this computer. Connecting ChatGPT sends nothing by itself; when Lilt's AI features arrive in Practice, they will say what goes to OpenAI before anything is sent.</p></Callout>
@@ -266,6 +270,7 @@ const HERO: Record<PaneId, string> = {
   time: "The time zone your practice days and reminders follow.",
   privacy: "Practice stays on this computer unless you connect an AI app.",
   updates: "Keep your installed copy of Lilt up to date when you’re ready.",
+  backups: "Keep a copy of your practice, or bring it back when you need it.",
 };
 
 /**

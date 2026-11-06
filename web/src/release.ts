@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Back up and restore your practice", body: "Settings now lets you create a backup ZIP or check one before restoring it. Lilt keeps a safety copy before replacing your practice data, then asks you to reload.", to: "/settings" },
       { title: "Update notices and your app version", body: "Available Mac updates appear quietly in Notification Center. Settings shows your installed version and update status directly; reading or clearing a notice keeps it quiet for that version.", to: "/settings" },
       { title: "Updates in the Mac app", body: "Signed release builds can check for updates from Settings or the Mac menu. Read what's new, download when you're ready, then update and restart after your take finishes saving.", to: "/settings" },
     ],

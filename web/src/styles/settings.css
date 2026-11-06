@@ -68,6 +68,17 @@
 }
 
 /* AI connections: choose your app first, then its steps */
+.sx-backups { display: grid; gap: 16px; min-width: 0; }
+.sx-backups p { margin: 0; }
+.sx-backups .sx-row-c { gap: 12px; }
+.sx-backups input[type="file"] { max-width: 100%; font: inherit; }
+.sx-backups [role="alert"] { color: var(--ink); border-left: 2px solid var(--accent); padding-left: 12px; }
+.sx-backup-preview { display: grid; gap: 12px; border-top: 1px solid var(--hair); padding-top: 16px; overflow-wrap: anywhere; }
+.sx-backup-preview h3 { margin: 0; font-size: 16px; }
+.sx-backup-confirm { display: flex; align-items: flex-start; gap: 8px; }
+.sx-backup-confirm input { flex-shrink: 0; margin-top: 3px; }
+.sx-backup-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
 .st-apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 14px; }
 .sx .st-apps button { min-height: 0; display: grid; justify-content: start; align-content: start; justify-items: start; gap: 2px; padding: 12px 14px; border-radius: 12px; text-align: left; background: var(--panel); box-shadow: 0 0 0 1px var(--hair); color: var(--ink); transition: box-shadow 0.15s ease, background-color 0.15s ease; }
 .sx .st-apps button:hover { box-shadow: 0 0 0 1px var(--line-strong); }

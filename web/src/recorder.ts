@@ -5,6 +5,7 @@
 
 import { claimMic } from "./micuse";
 import { api, Take } from "./api";
+import { dataClient } from "./dataGeneration";
 import { acquireRecordingLock, recordingInProgress } from "./recordingLock";
 
 const MIME_CANDIDATES = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm", "audio/ogg;codecs=opus"];
@@ -119,7 +120,7 @@ async function idb<T>(store: string, mode: IDBTransactionMode, fn: (s: IDBObject
   }
 }
 
-interface PendingTake { take_id: string; produced: number; stopped: boolean }
+interface PendingTake { take_id: string; produced: number; stopped: boolean; generation?: string | null }
 
 // ---- Upload -----------------------------------------------------------------
 
@@ -129,17 +130,17 @@ async function sha256(buf: ArrayBuffer): Promise<string | null> {
   return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function putChunk(takeId: string, seq: number, blob: Blob): Promise<void> {
+async function putChunk(takeId: string, seq: number, blob: Blob, generation: string | null): Promise<void> {
   const buf = await blob.arrayBuffer();
   const hash = await sha256(buf);
   let delay = 500;
   for (let attempt = 0; ; attempt++) {
     try {
-      const res = await fetch(`/api/takes/${takeId}/chunks/${seq}`, {
+      const res = await dataClient.fetch(`/api/takes/${takeId}/chunks/${seq}`, {
         method: "PUT",
         headers: hash ? { "x-content-sha256": hash } : {},
         body: buf,
-      });
+      }, generation);
       if (res.ok) return;
       // A 4xx won't change on retry (except timeouts and rate limits); only 5xx and network
       // failures are worth waiting out.
@@ -187,6 +188,7 @@ export class TakeRecorder {
   private starting = false;
   private captureStarted = false;
   private created: Promise<void> = Promise.resolve();
+  private generation: string | null = null;
   startedAt = 0;
 
   constructor(private stream: MediaStream, private onChange: (r: TakeRecorder) => void) {}
@@ -255,7 +257,11 @@ export class TakeRecorder {
         user_agent: navigator.userAgent,
         pre_roll_s: PRE_ROLL_S,
       },
-    }).then(() => { this.onServer = true; return idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: false } satisfies PendingTake)); });
+    }).then(() => {
+      this.onServer = true;
+      this.generation = dataClient.generation();
+      return idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: false, generation: this.generation } satisfies PendingTake));
+    });
     this.created = created.then(() => undefined);
     void this.created.catch(() => undefined); // The start failure is surfaced below; stop may never be called.
     this.queue = created.then(() => undefined, (e: any) => { this.uploadError = e instanceof Error ? e : new Error(String(e)); });
@@ -266,11 +272,11 @@ export class TakeRecorder {
       const blob = ev.data;
       const takeId = this.takeId;
       void idb("chunks", "readwrite", (s) => s.put({ take_id: takeId, seq, blob }));
-      void idb("takes", "readwrite", (s) => s.put({ take_id: takeId, produced: seq + 1, stopped: false } satisfies PendingTake));
+      void idb("takes", "readwrite", (s) => s.put({ take_id: takeId, produced: seq + 1, stopped: false, generation: this.generation } satisfies PendingTake));
       this.queue = this.queue.then(async () => {
         if (this.uploadError) return;
         try {
-          await putChunk(takeId, seq, blob);
+          await putChunk(takeId, seq, blob, this.generation);
           await idb("chunks", "readwrite", (s) => s.delete([takeId, seq]));
         } catch (e: any) {
           this.uploadError = e;
@@ -306,13 +312,13 @@ export class TakeRecorder {
     await new Promise((r) => setTimeout(r, 0));
     await this.queue;
     await this.created.catch(() => undefined);
-    await idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: true } satisfies PendingTake));
+    await idb("takes", "readwrite", (s) => s.put({ take_id: this.takeId, produced: this.seq, stopped: true, generation: this.generation } satisfies PendingTake));
     if (this.uploadError) {
       this.set("error", this.uploadError.message);
       throw this.uploadError;
     }
     try {
-      const take = await api.finalize(this.takeId, this.seq);
+      const take = await api.finalize(this.takeId, this.seq, false, this.generation);
       await idb("takes", "readwrite", (s) => s.delete(this.takeId));
       this.set("saved");
       return take;
@@ -331,10 +337,10 @@ export class TakeRecorder {
         .filter((c) => c.take_id === this.takeId)
         .sort((a, b) => a.seq - b.seq);
       for (const c of chunks) {
-        await putChunk(this.takeId, c.seq, c.blob);
+        await putChunk(this.takeId, c.seq, c.blob, this.generation);
         await idb("chunks", "readwrite", (s) => s.delete([this.takeId, c.seq]));
       }
-      const take = await api.finalize(this.takeId, this.seq);
+      const take = await api.finalize(this.takeId, this.seq, false, this.generation);
       await idb("takes", "readwrite", (s) => s.delete(this.takeId));
       this.set("saved");
       return take;
@@ -366,10 +372,10 @@ export async function recoverPending(): Promise<number> {
         .filter((c) => c.take_id === p.take_id)
         .sort((a, b) => a.seq - b.seq);
       for (const c of chunks) {
-        await putChunk(p.take_id, c.seq, c.blob);
+        await putChunk(p.take_id, c.seq, c.blob, p.generation ?? null);
         await idb("chunks", "readwrite", (s) => s.delete([p.take_id, c.seq]));
       }
-      if (p.produced > 0) await api.finalize(p.take_id, p.produced, !p.stopped);
+      if (p.produced > 0) await api.finalize(p.take_id, p.produced, !p.stopped, p.generation ?? null);
       await idb("takes", "readwrite", (s) => s.delete(p.take_id));
       recovered++;
     } catch {
