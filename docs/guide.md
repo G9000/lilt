@@ -270,6 +270,8 @@ Monitor uploads and playback have an isolated check with locally generated media
      there. Takes are saved like any chapter take, so they show in Recordings and the chapter's
      progress. **Full chapter** opens it in Practice at that text; <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
      is rated or scheduled, and where you are in each chapter is kept in this browser.
+     If saved progress is damaged, Lilt keeps the readable card entries and starts fresh for
+     anything it cannot read. Duplicate saved entries do not repeat a card.
    - **Yarn** (`#/yarn`, in the dock, or the Ball of yarn card on the desk in the room) is a calm
      voice game: your pitch lifts a woven ball of yarn through an illustrated window-side room while the cat pads after
      it, and loops of yarn drift by to thread it through if you like. Higher floats it up, lower

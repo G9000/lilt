@@ -93,6 +93,31 @@ async function main() {
   await page.locator(".fc-full").click();
   await page.waitForURL(/#\/studio\/pitch/, { timeout: 8000 }).then(() => check("the card opens its full chapter", true), () => check("the card opens its full chapter", false, page.url()));
 
+  // Damaged browser progress must not strand the learner on a blank page.
+  await page.evaluate(() => localStorage.setItem("lilt.flashcards.v1", '{"runs":"broken"}'));
+  await page.goto(`${BASE}/#/flashcards/pitch`);
+  await page.locator(".fc-card.top").waitFor();
+  check("a broken saved container opens a fresh chapter", (await done()) === 0);
+
+  await page.evaluate(() => localStorage.setItem("lilt.flashcards.v1", JSON.stringify({
+    last: "pitch", runs: {
+      pitch: { got: ["pitch:intro", null, "pitch:intro"], order: ["pitch:step-0", "pitch:step-0"] },
+      breath: { got: ["breath:intro"], order: [] },
+      resonance: { got: null, order: 3 },
+    },
+  })));
+  await page.reload();
+  await page.locator(".fc-card.top").waitFor();
+  check("damaged lists keep readable progress", (await done()) === 1 && /Step 1/i.test(await kicker()));
+  await page.keyboard.press("ArrowLeft");
+  await page.waitForTimeout(400);
+  check("Again later does not repeat a duplicate saved card", (await done()) === 1 && !/Step 1\b/i.test(await kicker()));
+  await page.locator(".fc-menu-btn").click();
+  await page.locator(".fc-menu-list").waitFor();
+  check("the chapter menu opens despite another damaged run", await page.locator('.fc-menu-list [role="menuitem"]').count() > 1);
+  const recovered = await page.evaluate(() => JSON.parse(localStorage.getItem("lilt.flashcards.v1")));
+  check("saving repaired progress keeps another chapter's place", recovered.runs.breath.got[0] === "breath:intro");
+
   check("no page errors", errors.length === 0, errors.join("; "));
   await browser.close();
   const failed = results.filter((r) => !r.ok).length;

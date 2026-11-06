@@ -60,8 +60,24 @@ export const progress = (cards: Flashcard[], run: Run) => ({ got: cards.filter((
 /* Runs are kept in this browser, one per chapter, with the chapter you were last on. */
 const KEY = "lilt.flashcards.v1";
 type Saved = { last?: string; runs: Record<string, Run> };
+const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
+const cardIds = (value: unknown): string[] => Array.isArray(value)
+  ? [...new Set(value.filter((id): id is string => typeof id === "string" && id.length > 0))] : [];
+
 export function loadRuns(): Saved {
-  try { const s = JSON.parse(localStorage.getItem(KEY) ?? "null"); return s && typeof s === "object" && s.runs ? s : { runs: {} }; } catch { return { runs: {} }; }
+  // Chapter ids come from editable courses, so none should inherit Object's properties.
+  const saved: Saved = { runs: Object.create(null) };
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(KEY) ?? "null");
+    if (!record(value)) return saved;
+    if (typeof value.last === "string" && value.last) saved.last = value.last;
+    if (record(value.runs)) {
+      for (const [chapter, run] of Object.entries(value.runs)) {
+        if (record(run)) saved.runs[chapter] = { got: cardIds(run.got), order: cardIds(run.order) };
+      }
+    }
+  } catch { /* Unavailable storage or broken JSON starts a fresh run. */ }
+  return saved;
 }
 export function saveRun(chapter: string, run: Run) {
   const s = loadRuns();

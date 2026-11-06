@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import type { TextLevel } from "./api";
-import { chapterCards, EMPTY, pile, progress, swipe } from "./flashcards.ts";
+import { chapterCards, EMPTY, loadRuns, pile, progress, saveRun, swipe } from "./flashcards.ts";
 
 const level = (over: Partial<TextLevel> = {}): TextLevel => ({
   id: "pitch", level: 3, title: "Pitch", subtitle: "", kind: "hum", source_url: null, written_by: "",
@@ -47,4 +47,96 @@ test("a run follows the chapter as it changes", () => {
   const after = chapterCards(level({ basis: "Opening.", items: [{ id: "mm-hm", text: "mm-hm!", hint: "" }, { id: "hum", text: "mmm", hint: "" }] }));
   assert.deepEqual(pile(after, run).map((c) => c.id), ["pitch:intro", "pitch:text-hum"]);
   assert.deepEqual(swipe(after, { got: ["pitch:text-gone"], order: [] }, "got").got, ["pitch:intro"]);
+});
+
+function withSaved(raw: string | null, check: (stored: () => string | null) => void) {
+  const original = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, value: {
+    getItem: () => raw,
+    setItem: (_key: string, value: string) => { raw = value; },
+  } });
+  try { check(() => raw); }
+  finally {
+    if (original) Object.defineProperty(globalThis, "localStorage", original);
+    else Reflect.deleteProperty(globalThis, "localStorage");
+  }
+}
+
+test("broken saved containers start with an empty run", () => {
+  for (const raw of [null, "{", "null", "[]", "42", '{"runs":[]}', '{"runs":"broken"}', '{"runs":true}']) {
+    withSaved(raw, () => {
+      assert.deepEqual(Object.keys(loadRuns().runs), [], raw ?? "missing");
+      assert.doesNotThrow(() => saveRun("pitch", EMPTY));
+    });
+  }
+});
+
+test("a broken chapter does not lose the other chapters' progress", () => {
+  const good = { got: ["pitch:intro"], order: ["pitch:text-glide"] };
+  withSaved(JSON.stringify({ last: "pitch", runs: { pitch: good, broken: { got: null, order: 3 }, missing: {}, array: [] } }), () => {
+    const saved = loadRuns();
+    assert.deepEqual(saved.runs.pitch, good);
+    for (const chapter of ["broken", "missing", "array"]) {
+      assert.doesNotThrow(() => pile(chapterCards(level()), saved.runs[chapter] ?? EMPTY));
+    }
+    assert.equal(saved.last, "pitch");
+  });
+});
+
+test("saved card lists keep valid unique ids in order", () => {
+  withSaved(JSON.stringify({ runs: { pitch: {
+    got: ["pitch:intro", null, "pitch:intro", 3, ""],
+    order: ["pitch:text-glide", "pitch:text-glide", {}, "pitch:text-mm-hm", false],
+  } } }), () => {
+    const saved = loadRuns();
+    assert.deepEqual(saved.runs.pitch, {
+      got: ["pitch:intro"], order: ["pitch:text-glide", "pitch:text-mm-hm"],
+    });
+    assert.deepEqual(pile(chapterCards(level({ basis: "Opening." })), saved.runs.pitch).map(c => c.id),
+      ["pitch:text-glide", "pitch:text-mm-hm"]);
+  });
+});
+
+test("only a chapter id can be remembered as the last chapter", () => {
+  for (const last of [42, true, {}, [], ""]) {
+    withSaved(JSON.stringify({ last, runs: {} }), () => assert.equal(loadRuns().last, undefined));
+  }
+});
+
+test("a damaged card list keeps the usable part of that chapter", () => {
+  withSaved(JSON.stringify({ runs: {
+    pitch: { got: ["pitch:intro"], order: null },
+    breath: { got: "broken", order: ["breath:intro"] },
+  } }), () => {
+    assert.deepEqual(loadRuns().runs.pitch, { got: ["pitch:intro"], order: [] });
+    assert.deepEqual(loadRuns().runs.breath, { got: [], order: ["breath:intro"] });
+  });
+});
+
+test("chapter ids cannot pick up inherited object properties", () => {
+  withSaved(null, () => {
+    for (const chapter of ["constructor", "toString", "__proto__"]) {
+      assert.equal(loadRuns().runs[chapter], undefined);
+      saveRun(chapter, { got: [`${chapter}:intro`], order: [] });
+      assert.deepEqual(loadRuns().runs[chapter], { got: [`${chapter}:intro`], order: [] });
+    }
+  });
+});
+
+test("saving a run preserves the other chapters and remembers the last chapter", () => {
+  const other = { got: ["breath:intro"], order: [] };
+  withSaved(JSON.stringify({ last: "breath", runs: { breath: other } }), stored => {
+    saveRun("pitch", { got: [], order: ["pitch:text-glide"] });
+    assert.deepEqual(JSON.parse(stored()!), {
+      last: "pitch", runs: { breath: other, pitch: { got: [], order: ["pitch:text-glide"] } },
+    });
+  });
+});
+
+test("unavailable browser storage does not interrupt a run", () => {
+  withSaved(null, () => {
+    Object.defineProperty(globalThis, "localStorage", { configurable: true, get: () => { throw new Error("Storage unavailable"); } });
+    assert.deepEqual(Object.keys(loadRuns().runs), []);
+    assert.doesNotThrow(() => saveRun("pitch", EMPTY));
+  });
 });

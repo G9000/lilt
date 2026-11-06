@@ -1,5 +1,25 @@
 # Lilt: validation report
 
+## 6 November 2026: Recoverable Flashcards progress
+
+Flashcards validates saved browser progress before using it. Malformed containers fall back
+to empty runs; readable entries survive damaged lists or other chapters. Card ids are unique
+and keep their order. Chapter names such as `constructor` and `__proto__` round-trip without
+inheriting object properties. The guide and What's new describe recovery.
+
+Eight new unit tests cover damaged JSON and shapes, partial recovery, duplicate ids, chapter
+names, preserving other chapters and unavailable storage. Six regression cases failed before
+the fix. All 137 web tests, web types and the scratch production build passed. The existing
+bundle-size warning remains. Server formatting, strict Clippy and 71 tests passed; Python
+had 47 passed and one skipped; desktop formatting and release Clippy passed.
+
+All 22 Flashcards browser checks passed in Chrome with a fake microphone against a fresh
+data folder on port 17981 and a separate web build. They cover recording/save, swipes, Undo,
+reload, navigation, recovery, duplicate removal and opening the chapter menu with damaged
+progress. Restricted local connections blocked the first launch attempts; the unrestricted
+isolated run passed. This is synthetic-audio verification, not natural-voice acceptance.
+The test server was stopped afterwards. Owner data, port 7878 and `web/dist` were not changed.
+
 ## 6 November 2026: Playful Ball of yarn
 
 Refreshed the canvas scene, wound wool, expressive cartoon cat, room illustration and dock
