@@ -1,5 +1,46 @@
 # Lilt: validation report
 
+## 7 November 2026: Mac app update flow and release preparation
+
+The installed app has a bundled Updates window, a Mac menu entry and Settings access.
+Checking, downloading and installation are separate actions. The native controller verifies
+signed versions, retains downloads after a refused installation, and limits commands to the
+bundled window. Closing Updates hides it; normal Quit is held during replacement.
+
+An authenticated server interlock checks recordings and blocks new takes atomically. Capture
+waits for server admission. Recording, saving and the gap before durable analysis enqueue
+block installation; unreadable records fail closed. Empty interrupted takes remain for the
+owner to review. Installation stops only the app's own server, recovers it after failure, and
+tracks ownership during startup so quitting cannot leave a startup child behind. Reaped
+process ids are forgotten before any later shutdown attempt.
+
+Passed on Windows: web types, all 137 web unit tests and a separate production build; server
+formatting, strict Clippy and all 78 tests; Python 47 passed and one skipped; desktop formatting,
+strict release Clippy and all 16 tests. Native tests cover state transitions, caller/download
+policy, overlapping actions, prepare/cancel/stop/install/recovery failures, startup shutdown
+and reaped-child cleanup. A server that crashes before group shutdown refuses installation.
+These tests do not execute Mac app replacement or Mac process-group signals.
+
+Chrome passed 9 update-window/Settings checks with a stub native bridge, 10 recording-lock
+and admission checks with stubbed APIs, and all 22 Flashcards checks against the real scratch
+server with synthetic microphone audio. Update UI checks include keyboard access, long notes,
+light/dark layouts, retained errors and stale status responses. Scratch servers were stopped;
+owner data, port 7878, the owner's binary and web/dist were not changed.
+
+Release tooling passed 11 fixture tests; the optional real-signer test is skipped by default.
+The real pinned Tauri CLI was also exercised with disposable keys and dummy archives for
+both architectures: matching signed versions verified and tampering was rejected. The keys
+were removed. Version agreement, JavaScript/Bash syntax, workflow YAML and missing-secret
+preflight were checked. The existing bundle-size and Windows incremental hard-link warnings
+remain. The manual workflow produces a draft only and was not run.
+
+**Release gate still open:** Apple Developer membership is confirmed, but real signing
+credentials were not configured or used. This Windows run cannot verify a Mac package,
+Gatekeeper, notarization, microphone permissions, window lifecycle, process-group shutdown,
+or installation/restart between two signed versions. Complete the Apple silicon and Intel
+acceptance checks in [Desktop releases](docs/desktop-releases.md) before publication. Existing
+users need one manual installation of the first signed updater-enabled release.
+
 ## 6 November 2026: Recoverable Flashcards progress
 
 Flashcards validates saved browser progress before using it. Malformed containers fall back

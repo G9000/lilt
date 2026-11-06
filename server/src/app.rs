@@ -29,6 +29,7 @@ pub struct Config {
     pub python: String,
     pub analysis_dir: PathBuf,
     pub mcp_token: Option<String>,
+    pub desktop_token: Option<String>,
     /// Extra host names the app answers on besides local ones, such as a LAN proxy's.
     pub allowed_hosts: Vec<String>,
 }
@@ -48,6 +49,9 @@ impl Config {
             python: env("LILT_PYTHON", DEFAULT_PYTHON),
             analysis_dir: env("LILT_ANALYSIS_DIR", "analysis").into(),
             mcp_token: std::env::var("LILT_MCP_TOKEN")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            desktop_token: std::env::var("LILT_DESKTOP_TOKEN")
                 .ok()
                 .filter(|s| !s.is_empty()),
             allowed_hosts: env("LILT_ALLOWED_HOSTS", "")
@@ -76,13 +80,18 @@ pub struct App {
     /// take_id -> session_id
     take_index: RwLock<HashMap<String, String>>,
     /// Serialises read-modify-write of JSON records.
-    pub write_lock: Mutex<()>,
+    pub write_lock: Mutex<WriteState>,
     /// Serialises plan versions (`write_plan`); separate from `write_lock`, which callers may hold.
     plan_lock: Mutex<()>,
     pub job_notify: Notify,
 }
 
 pub type Shared = Arc<App>;
+
+#[derive(Default)]
+pub struct WriteState {
+    pub desktop_update_pending: bool,
+}
 
 impl App {
     pub fn open(config: Config) -> Result<Shared> {
@@ -105,7 +114,7 @@ impl App {
             registry: RwLock::new(registry),
             prompts,
             take_index: RwLock::new(HashMap::new()),
-            write_lock: Mutex::new(()),
+            write_lock: Mutex::new(WriteState::default()),
             plan_lock: Mutex::new(()),
             job_notify: Notify::new(),
         });

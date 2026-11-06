@@ -1,16 +1,20 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Lilt",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "identifier": "group.envisioning.lilt",
   "build": {
     "frontendDist": "ui"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [],
     "security": {
       "csp": null
     }
+  },
+  "plugins": {
+    "updater": { "pubkey": "", "requireSignedVersion": true }
   },
   "bundle": {
     "active": true,

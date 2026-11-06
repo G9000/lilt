@@ -10,6 +10,13 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: "0.2.1",
+    date: "2026-11-07",
+    items: [
+      { title: "Updates in the Mac app", body: "Signed release builds can check for updates from Settings or the Mac menu. Read what's new, download when you're ready, then update and restart after your take finishes saving.", to: "/settings" },
+    ],
+  },
+  {
     version: "0.2.0",
     date: "2026-11-01",
     items: [

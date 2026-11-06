@@ -1,0 +1,137 @@
+name: Prepare Mac release draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        description: Plain-text release notes shown in Lilt
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-release
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require signing credentials before starting either Mac build
+        env:
+          LILT_UPDATER_PUBLIC_KEY: ${{ secrets.LILT_UPDATER_PUBLIC_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          node desktop/scripts/release.mjs preflight
+          test -n "$APPLE_CERTIFICATE" || { echo 'Missing APPLE_CERTIFICATE'; exit 1; }
+          test -n "$APPLE_CERTIFICATE_PASSWORD" || { echo 'Missing APPLE_CERTIFICATE_PASSWORD'; exit 1; }
+      - name: Check release version and tools
+        id: version
+        run: |
+          echo "version=$(node desktop/scripts/release.mjs version .)" >> "$GITHUB_OUTPUT"
+          node --test desktop/scripts/*.test.mjs
+
+  build:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: aarch64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    env:
+      LILT_UPDATER_PUBLIC_KEY: ${{ secrets.LILT_UPDATER_PUBLIC_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+      - uses: astral-sh/setup-uv@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Import Developer ID into a temporary keychain
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: bash desktop/scripts/import-certificate.sh
+      - name: Build, sign, notarize and verify complete package
+        run: bash desktop/build.sh --release
+      - name: Upload completed release files
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-${{ matrix.arch }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            desktop/dist/*.dmg
+            desktop/dist/*.app.tar.gz
+            desktop/dist/*.app.tar.gz.sig
+            desktop/dist/release-*.json
+      - name: Remove temporary signing credentials
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/lilt-release.keychain-db" || true
+          rm -f "$RUNNER_TEMP/lilt-release.p12"
+
+  draft:
+    needs: [preflight, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: mac-*
+          path: release-files
+          merge-multiple: true
+      - name: Verify both builds and write latest.json
+        env:
+          VERSION: ${{ needs.preflight.outputs.version }}
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+          LILT_UPDATER_PUBLIC_KEY: ${{ secrets.LILT_UPDATER_PUBLIC_KEY }}
+        run: |
+          node -e 'require("node:fs").writeFileSync("release-notes.txt", process.env.RELEASE_NOTES)'
+          node desktop/scripts/release.mjs manifest release-files "$VERSION" release-notes.txt
+      - name: Create draft for owner review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.preflight.outputs.version }}
+        run: |
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo 'This release already exists. Review it instead of overwriting its files.'
+            exit 1
+          fi
+          gh release create "v$VERSION" --draft --target "$GITHUB_SHA" --title "Lilt $VERSION" \
+            --notes-file release-notes.txt release-files/*.dmg release-files/*.app.tar.gz \
+            release-files/*.app.tar.gz.sig release-files/latest.json

@@ -3,6 +3,7 @@ mod analysis;
 mod app;
 mod coach;
 mod courses;
+mod desktop_update;
 mod http;
 mod photos;
 mod practice;

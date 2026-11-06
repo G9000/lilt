@@ -35,6 +35,7 @@ pub fn config(data: &std::path::Path) -> Config {
             .into(),
         analysis_dir: root().join("analysis"),
         mcp_token: None,
+        desktop_token: None,
         allowed_hosts: vec![],
     }
 }

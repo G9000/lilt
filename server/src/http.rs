@@ -21,7 +21,9 @@ impl<E: Into<anyhow::Error>> From<E> for ApiError {
     fn from(e: E) -> Self {
         let e: anyhow::Error = e.into();
         let msg = format!("{e:#}");
-        let code = if msg.contains("not found") || msg.contains("does not exist") {
+        let code = if e.is::<crate::desktop_update::UpdateInProgress>() {
+            StatusCode::CONFLICT
+        } else if msg.contains("not found") || msg.contains("does not exist") {
             StatusCode::NOT_FOUND
         } else if msg.contains("stale plan") || msg.contains("different content") {
             StatusCode::CONFLICT
@@ -52,6 +54,7 @@ pub fn router(app: Shared) -> Router {
         .merge(courses::routes::router())
         .merge(ai::routes::router())
         .merge(photos::routes::router())
+        .merge(crate::desktop_update::router())
         .layer(middleware::from_fn(same_origin_only))
         .with_state(app)
 }

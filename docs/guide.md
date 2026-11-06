@@ -13,9 +13,24 @@ its own window; quitting stops the server.
 - **Build it:** `desktop/build.sh` (needs what `./lilt.sh` needs). It makes `desktop/dist/Lilt.app`
   and `desktop/dist/Lilt-<version>-<arch>.dmg` for this Mac's chip (arm64 or x86_64; build on each
   for both). The `.dmg` is about 56 MB, the installed app about 140 MB.
-- **First open:** the app is signed ad hoc, not with an Apple Developer ID, so macOS blocks the first
+- **Local builds:** the app is signed ad hoc, not with an Apple Developer ID, so macOS blocks the first
   open of a downloaded copy. Open it once, then System Settings → Privacy & Security → **Open
   Anyway**. After that it opens normally. (Signing and notarising with a Developer ID removes this.)
+- **Updates:** in a signed release build, open **Settings → Updates**, or **Check for updates…**
+  in the Mac menu. Lilt also checks quietly when it opens. Read the release notes, choose
+  **Download update**, then **Update and restart**. Downloads are verified before installation;
+  checks alone never install anything. Finish recording and saving first. If a take is still
+  saving, the download stays ready while you finish. Closing the update window leaves a
+  download running; reopen it to see its progress. A normal Quit waits during replacement.
+  If an older unfinished take blocks an update, review it in **Recordings** and finish saving
+  or remove it there. Restarting does not discard unfinished takes, even empty ones.
+  The app, server, Python helper and bundled content update together; your data folder stays
+  separate. A window attached to a separately started server cannot install an update: quit
+  both and open the installed Mac app first. Local ad-hoc builds say updates are not configured.
+  Browser users see an explanation in Settings rather than an install button.
+  Existing builds need one manual installation of the first updater-enabled signed release.
+  Release credentials, the manual draft workflow and Mac acceptance checks are described in
+  [Desktop releases](desktop-releases.md). Live Mac distribution still needs that setup and testing.
 - **Your data:** `~/Lilt/data`, the same folder `./lilt.sh` uses, so both share one desk. If a Lilt
   is already running on port 7878, the app opens that one instead of starting a second. Otherwise
   it runs on 7878, or any free port when 7878 is taken. With `LILT_DATA_DIR` set it always runs its

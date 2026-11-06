@@ -19,14 +19,15 @@ async function fixture(t, { fallback = false } = {}) {
   t.after(async () => { await ctx.close(); assert.deepEqual(errors, [], "no unhandled page errors"); });
   const open = async () => {
     const page = await ctx.newPage();
-    const api = { creates: 0, failCreation: false };
+    const api = { creates: 0, failCreation: false, creationGate: null };
     page.on("pageerror", (e) => errors.push(e.message));
     if (fallback) await page.addInitScript(() => Object.defineProperty(navigator, "locks", { value: undefined }));
     await page.route("**/__recording_test", (route) => route.fulfill({ contentType: "text/html", body: "<!doctype html><title>Recording lock test</title>" }));
-    await page.route("**/api/**", (route) => {
+    await page.route("**/api/**", async (route) => {
       const req = route.request();
       if (new URL(req.url()).pathname === "/api/takes") {
         api.creates++;
+        if (api.creationGate) await api.creationGate;
         if (api.failCreation) return route.fulfill({ status: 422, json: { error: "Take creation refused for this test." } });
       }
       return route.fulfill({ json: { id: "test-take", status: "saved" } });
@@ -38,6 +39,9 @@ async function fixture(t, { fallback = false } = {}) {
       window.stream = await openMic();
       window.rec = new TakeRecorder(window.stream, () => {});
       window.meta = { session_id: "test-session", role: "exercise", prompt_id: "test", prompt_text: "Testing" };
+      window.captureStarts = 0;
+      const nativeStart = MediaRecorder.prototype.start;
+      MediaRecorder.prototype.start = function (...args) { window.captureStarts++; return nativeStart.apply(this, args); };
     });
     return { page, api };
   };
@@ -92,6 +96,7 @@ test("closing a recording tab releases the browser lock", async (t) => {
   const a = await open(), b = await open();
   await start(a.page);
   await a.page.close();
+  await unlocked(b.page);
   await start(b.page);
   await stop(b.page);
 });
@@ -105,22 +110,43 @@ for (const failure of ["constructor", "start"]) {
       if (failure === "constructor") window.MediaRecorder = class extends Native { constructor() { throw new Error("Test constructor failure"); } };
       else Native.prototype.start = () => { throw new Error("Test start failure"); };
     }, failure);
-    await assert.rejects(start(a.page), /Test .* failure/);
+    await assert.rejects(start(a.page), failure === "start" ? /Test start failure.*empty take remains in Recordings/ : /Test constructor failure/);
+    const error = await a.page.evaluate(() => window.rec.error);
+    if (failure === "start") assert.match(error, /empty take remains in Recordings/);
+    else assert.doesNotMatch(error, /empty take/);
     assert.equal(await a.page.evaluate(async () => (await import("/src/micuse.ts")).micInUse()), false);
     await start(b.page);
     await stop(b.page);
   });
 }
 
-test("server refusing take creation stops capture and releases the lock", async (t) => {
+test("server refusing take creation never starts capture and releases the lock", async (t) => {
   const { open } = await fixture(t);
   const a = await open(), b = await open();
   a.api.failCreation = true;
-  await start(a.page);
+  await assert.rejects(start(a.page), /Take creation refused/);
   await a.page.waitForFunction(() => window.rec.state === "error");
+  assert.equal(await a.page.evaluate(() => window.captureStarts), 0);
+  assert.doesNotMatch(await a.page.evaluate(() => window.rec.error), /empty take/);
   await unlocked(a.page);
   await start(b.page);
   await stop(b.page);
+});
+
+test("capture waits for delayed server admission while keeping the browser lock", async (t) => {
+  const { open } = await fixture(t);
+  const a = await open(), b = await open();
+  let admit;
+  a.api.creationGate = new Promise((resolve) => { admit = resolve; });
+  await a.page.evaluate(() => { window.startingTake = window.rec.start(window.meta); });
+  for (let i = 0; i < 100 && a.api.creates === 0; i++) await a.page.waitForTimeout(10);
+  assert.equal(a.api.creates, 1);
+  assert.equal(await a.page.evaluate(() => window.captureStarts), 0, "no audio capture before admission");
+  assert.match(await denied(b.page), /already recording/);
+  admit();
+  await a.page.evaluate(() => window.startingTake);
+  assert.equal(await a.page.evaluate(() => window.captureStarts), 1);
+  await stop(a.page);
 });
 
 test("cancelling capture releases the lock", async (t) => {

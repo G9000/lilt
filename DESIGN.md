@@ -5,6 +5,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+**App updates** live in Settings → Updates and the Mac menu. In the installed app they open
+a small native window with the installed version, a plain status sentence, release notes,
+download progress and separate Download update / Update and restart buttons. Notes are
+plain text. A saved take must finish before installation. The window uses warm surfaces,
+plain ink and coral focus, supports light/dark and keyboard use, and does not interrupt
+practice for a failed background check. Browser Settings explains that updating belongs
+to the installed Mac app. Local builds without a release key say updates are not configured.
+
 **Make it yours** lives in the illustrated room's menu bar. Its small nonmodal panel leaves
 the painting visible: choose automatic/morning/day/sunset/night light, adjust a subtle cool/warm
 wash, set fairy lights to automatic/on/off, and swap the side monitor's picture. Native radio

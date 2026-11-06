@@ -152,6 +152,9 @@ pub fn ext_for_mime(mime: &str) -> &'static str {
 pub fn create_take(app: &App, req: NewTake) -> Result<Take> {
     store::check_id(&req.take_id)?;
     let _g = app.write_lock.lock().unwrap();
+    if _g.desktop_update_pending {
+        return Err(crate::desktop_update::UpdateInProgress.into());
+    }
     if let Ok(existing) = app.take(&req.take_id) {
         if existing.session_id != req.session_id {
             bail!("take id already used in another session");
