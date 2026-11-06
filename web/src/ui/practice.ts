@@ -1341,7 +1341,7 @@ export const practice = {
     `[:root[data-theme="dark"]_.ve_&]:[--sd-paper:#292b29] [:root[data-theme="dark"]_.ve_&]:[--sd-edge:#393d37] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-line:#c5b89d] [:root[data-theme="dark"]_.ve_&]:[--sd-sage:#849680] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-clay:#ce9578]`,
-  "sd-deck": `[.ve_&]:max-w-[920px] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
+  "sd-deck": `[.ve_&]:max-w-[var(--content-width)] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
     `[.ve_&]:pb-[64px] [.ve_&]:[padding-left:var(--page-padding)] [@media_(max-width:_700px)]:[.ve_&]:pt-[24px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pr-[18px] [@media_(max-width:_700px)]:[.ve_&]:pb-[50px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pl-[18px]`,

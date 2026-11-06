@@ -117,3 +117,15 @@ that work was left alone.
 Published only the width changes over the existing UI release, retaining its backend-compatible
 baseline. Confirmed the served index matches and returns HTTP 200 for `index-CiAzURrA.js` and
 `index-Dvx79Hrp.css`. No server restart or practice-data access was needed.
+
+## Today's practice uses the same width
+
+Removed the daily deck's separate 920px limit in favour of the shared 1280px reading width.
+Its centered margins and existing card layout remain. Type checks passed for source and the
+isolated release tree, and the isolated production build passed with the existing size warning.
+The stationery-deck browser suite passed against both source and built output, covering five
+viewport sizes, recording, retry, ratings, completion, comfort stops and dark/largest-text phone
+layouts. Visually inspected desktop and phone screenshots.
+
+Published the checked UI assets and verified the exact served index, plus HTTP 200 for
+`index-C5BJpses.js` and `index-CCIr-d62.css`. No server restart or practice-data access was needed.

@@ -594,7 +594,7 @@ column, with a smaller gap above it and less space at the bottom of the page.
 
 Course homes, chapters, guides, practice texts and course details share a centered 1280px maximum
 column, including other courses and their guided practice and recordings pages. Introductions
-and Markdown fill the same reading width. The daily voice deck keeps its paper layout.
+and Markdown fill the same reading width. Today's practice uses this centered width too.
 Voice exercises stay on the plain reading surface in compact rows, separated by thin rules.
 Selecting one moves the recorder
 below its text, without adding a panel around it.

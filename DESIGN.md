@@ -361,7 +361,7 @@ Weights are 400, 500, 600 and 700 (200 and 300 for big live numbers). The readin
 own sizes. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
 
 Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Reading pages use a centered 1280px column with
-18–40px responsive side padding; the daily recording deck retains its 920px column. Reading
+18–40px responsive side padding, including Today's practice. Reading
 surfaces are opaque `--page` so room artwork does not compete with the text. Course Home's
 shortcuts are quiet links, and its guide is a disclosure between hairlines.
 
@@ -372,7 +372,8 @@ bordered quotes and a separate footnote area. Tables and code scroll within the 
 
 Course homes, chapters, guides, practice texts and course details share this width, including
 other courses and their guided practice and recordings pages. Course browser windows use the
-same 1280px outer width and 40px desktop side padding. The daily voice deck keeps its paper layout.
+same 1280px outer width and 40px desktop side padding. Today's practice uses the same centered
+width with its existing paper cards.
 The active voice exercise keeps the plain reading surface with its recorder below; all exercises
 use compact rows with hairline dividers.
 The chapter stays centered with its original side padding, number gutter and introduction
