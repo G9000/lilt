@@ -585,11 +585,11 @@ Markdown uses compact paragraph and heading spacing, quiet bordered quotes, scro
 and code blocks, and a separate footnote area. The voice chapter's comfort note spans the reading
 column, with a smaller gap above it and less space at the bottom of the page.
 
-Voice chapters use more of a wide screen, with a 1040px maximum column. Exercises stay on the
+Voice chapters use more of a wide screen, with a 1280px maximum column. Exercises stay on the
 plain reading surface in compact rows, separated by thin rules. Selecting one moves the recorder
 below its text, without adding a panel around it.
-Chapters start near the left edge, with a smaller number gutter and a short gap after the
-introduction. Hovering an exercise also keeps the plain page background.
+Chapters stay centered with their original padding and introduction spacing. Hovering an
+exercise also keeps the plain page background.
 
 **In-app Remix is coming soon.** The chapter, course and mixtape screens show a disabled
 **Remix · Coming soon** button. The **New chapter** shortcut is also disabled because it relies on

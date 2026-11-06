@@ -363,11 +363,11 @@ inside it. Course lists use rows between hairlines; course detail pages lead wit
 before copy management. Markdown uses a 1.65 line height and one-em paragraph gaps, with quiet
 bordered quotes and a separate footnote area. Tables and code scroll within the reading column.
 
-Voice chapters use a wider 1040px desktop column. The active exercise keeps the plain reading
+Voice chapters use a wider 1280px desktop column. The active exercise keeps the plain reading
 surface with its recorder below; all exercises use compact rows with hairline dividers. This wider
 layout is specific to the voice chapter, leaving Home and the daily deck at their own widths.
-The chapter is left-aligned with 24px desktop side padding, a 40px exercise number gutter and
-a 16px gap from the introduction to the first exercise. Hover keeps the reading surface plain.
+The chapter stays centered with its original side padding, number gutter and introduction
+spacing. Only the column is wider. Selection and hover keep the reading surface plain.
 
 ## Components
 

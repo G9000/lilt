@@ -71,3 +71,15 @@ the isolated production bundle; the final plain-hover assertion passed against t
 The isolated type check and production build passed. Visually inspected the dark desktop
 result. Published only this UI update using the existing isolated release tree, then verified
 HTTP 200 for the served `index-CnnPBG0X.js` and `index-DlCLWpYX.css` and an exact index match.
+
+## Centered again, wider only
+
+The owner asked to undo the left alignment and spacing reduction, and only widen the content.
+Restored centered margins, original side padding, the 56px number gutter and original intro
+spacing; increased the chapter maximum width from 1040px to 1280px. Selection and hover remain
+plain. The footer fix is retained.
+
+The isolated type check, production build and course-reading browser checks passed. Checks
+verify centering, 1280px desktop width, restored intro spacing and no selection/hover panels.
+Visually inspected the desktop result. Published the checked UI-only bundle to port 7878 and
+verified its exact index plus HTTP 200 for the referenced JavaScript and stylesheet.

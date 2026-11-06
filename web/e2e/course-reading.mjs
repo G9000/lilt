@@ -93,7 +93,7 @@ try {
       const intro = el.querySelector('.ci'), first = el.querySelector('.ve-item:first-child');
       const marker = first.querySelector('.ve-mk'), text = first.querySelector('.ve-checkin, .readtext');
       return { width: el.getBoundingClientRect().width, overflow: el.scrollWidth > el.clientWidth + 1,
-        leftGutter: el.querySelector('.ve-head').getBoundingClientRect().left - el.closest('.ve-page').getBoundingClientRect().left,
+        centerOffset: (el.getBoundingClientRect().left + el.getBoundingClientRect().right) / 2 - (el.closest('.ve-page').getBoundingClientRect().left + el.closest('.ve-page').getBoundingClientRect().right) / 2,
         introGap: text.getBoundingClientRect().top - intro.getBoundingClientRect().bottom,
         markerGap: text.getBoundingClientRect().left - marker.getBoundingClientRect().right,
         selectedBackground: getComputedStyle(row).backgroundColor,
@@ -102,10 +102,10 @@ try {
         activeInk: getComputedStyle(row.querySelector('.readtext')).color };
     });
     assert.ok(!layout.overflow, 'voice chapter fits its column');
-    assert.ok(layout.leftGutter >= 16 && layout.leftGutter <= 25, 'chapter starts near the left edge');
-    assert.ok(layout.introGap >= 12 && layout.introGap <= 20, 'first exercise follows the intro without the large gap');
+    assert.ok(Math.abs(layout.centerOffset) <= 1, 'chapter stays centered');
+    assert.ok(layout.introGap >= 47 && layout.introGap <= 55, `original intro spacing is restored (${width}px: ${layout.introGap}px)`);
     if (width > 860) assert.ok(layout.markerGap >= 8, 'exercise number stays clear of the text');
-    if (width >= 1440) assert.ok(layout.width >= 1000, 'desktop chapter uses the wider reading layout');
+    if (width >= 1440) assert.ok(Math.abs(layout.width - 1280) <= 1, 'desktop chapter uses the wider reading layout');
     assert.equal(layout.selectedBackground, 'rgba(0, 0, 0, 0)', 'selected exercise keeps the plain reading surface');
     assert.deepEqual(layout.selectedBorder, ['0px', '0px', '0px'], 'selected exercise has no enclosing panel');
     assert.ok([layout.hint, layout.activeInk].includes(layout.ink), 'inactive exercise stays readable, including on hover');
