@@ -12,6 +12,8 @@ import { DEFAULT_COURSE, textId } from "../courses";
 import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, sameLabel, textLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
+import { RemixBox } from "../components/RemixBox";
+import { REMIX_AVAILABLE } from "../remix";
 
 /** The course Practice shows. */
 const COURSE = DEFAULT_COURSE;
@@ -154,6 +156,7 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
     return () => window.removeEventListener("lilt:texts-changed", on);
   }, []);
   const newChapter = async () => {
+    if (!REMIX_AVAILABLE) return;
     const r = await api.addChapter(COURSE);
     setTexts(await api.texts());
     go(`/studio/${r.chapter}`);
@@ -380,15 +383,15 @@ function MixtapeDoc({ onTexts }: { onTexts: (t: Texts) => void }) {
       </header>
       <MixtapeSections m={m} updatesHref="/studio/updates" remix={
         <section className="co-sec">
-          <h2>How to remix</h2>
-          <div className="co-box">
+          <h2>{REMIX_AVAILABLE ? "How to remix" : "Remix · Coming soon"}</h2>
+          {!REMIX_AVAILABLE ? <RemixBox /> : <div className="co-box">
             <div className="co-row"><div><b>A chapter</b><p>Open it and press <b className="co-k">Remix</b> below the chapter title. Say what to change; you can keep going or undo.</p></div></div>
             <div className="co-row"><div><b>A new chapter</b><p>Press <b className="co-k">New chapter</b> at the end of the chapter list, then say what it should be about.</p></div></div>
             <div className="co-row">
               <div><b>The whole course</b><p>Ask for your own version of everything: gentler, shorter, about your own days.</p></div>
               <button className="btn-secondary" onClick={() => openRemix({ course: COURSE, title: "The whole course" })}>Remix the whole course</button>
             </div>
-          </div>
+          </div>}
         </section>
       } />
     </div>
@@ -593,7 +596,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
                 </Folder>
               );
             })}
-            {gi === groups.length - 1 && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
+            {gi === groups.length - 1 && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked || !REMIX_AVAILABLE}><span aria-hidden="true">+</span>{REMIX_AVAILABLE ? "New chapter" : "New chapter · Coming soon"}</button></li>}
           </ul>}
         </Fragment>
         );
@@ -1324,9 +1327,9 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             <p className="ve-subtitle">{level.subtitle}</p>
             <p className="ve-meta">{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
             <div className="ve-head-actions">
-              <button className="ve-remix-btn" disabled={recording} title={recording ? "Stop recording first" : undefined} onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
+              <button className="ve-remix-btn" disabled={!REMIX_AVAILABLE || recording} title={!REMIX_AVAILABLE ? "Coming soon" : recording ? "Stop recording first" : undefined} onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              Remix
+              {REMIX_AVAILABLE ? "Remix" : "Remix · Coming soon"}
               </button>
             </div>
             {complete && (

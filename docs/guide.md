@@ -515,6 +515,12 @@ updates** when the original has changed, its chapters (yours marked), the sectio
 change, and what to ask your AI. The changes themselves come from your AI; the app is where you see
 and manage them.
 
+**In-app Remix is coming soon.** The chapter, course and mixtape screens show a disabled
+**Remix · Coming soon** button. The **New chapter** shortcut is also disabled because it relies on
+Remix. **Configure your AI settings** opens AI connections, where you can choose ChatGPT, Claude
+or another compatible AI app. Connecting an app does not enable in-app Remix yet; external AI
+apps can still use Lilt's existing course tools.
+
 **Updates from Lilt.** When Lilt's original changes (a new release, or `git pull` and a rebuild), the
 Practice home page says so under the chapters and links to **Updates from Lilt**
 (`#/studio/updates`). Each file is compared in pieces: a chapter's details, each text by its id, each

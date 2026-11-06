@@ -77,7 +77,7 @@ createRoot(document.getElementById("root")!).render(
         <header className="ve-head ve-head-remix">
           <h1>A chapter with a longer, descriptive title</h1>
           <p className="ve-subtitle">A clear workspace for any subject</p>
-          <div className="ve-head-actions"><button className="ve-edit-btn">Edit</button><button className="ve-remix-btn">Remix</button></div>
+          <div className="ve-head-actions"><button className="ve-edit-btn">Edit</button><button className="ve-remix-btn" disabled>Remix · Coming soon</button></div>
         </header>
         <nav className="ve-course-jumps" aria-label="Course shortcuts"><a href="#example">Continue</a><button>Browse chapters ↓</button></nav>
         <Markdown src={sample} className="ve-md" />

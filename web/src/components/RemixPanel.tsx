@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import { openSettings } from "../desk/SettingsSheet";
+import { REMIX_AVAILABLE } from "../remix";
 
 /** What a remix chat is about: one chapter, or the whole course. */
 export interface RemixScope { course?: string; chapter?: string; title: string; starter?: string }
@@ -41,7 +42,7 @@ export function RemixPanel() {
   }, []);
   useEffect(() => {
     if (!scope) return;
-    void api.chatgptStatus().then((s) => setConnected(s.connected), () => setConnected(false));
+    if (REMIX_AVAILABLE) void api.chatgptStatus().then((s) => setConnected(s.connected), () => setConnected(false));
     window.setTimeout(() => box.current?.focus(), 50);
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape" && !busy) setScope(null); };
     window.addEventListener("keydown", onKey);
@@ -68,7 +69,7 @@ export function RemixPanel() {
   const send = async (e?: FormEvent, again?: string) => {
     e?.preventDefault();
     const text = (again ?? draft).trim();
-    if (!text || busy) return;
+    if (!REMIX_AVAILABLE || !text || busy) return;
     const history = msgs.filter((m) => !m.failed).map(({ role, content }) => ({ role, content }));
     if (!again) add({ role: "user", content: text });
     setDraft(""); setBusy(true);
@@ -105,17 +106,29 @@ export function RemixPanel() {
         <span className="rp-ic" aria-hidden="true">
           <svg viewBox="0 0 16 16"><path d={CASSETTE} fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </span>
-        <div><b>{scope.title}</b><small>Remixing into your mixtape</small></div>
+        <div><b>{scope.title}</b><small>{REMIX_AVAILABLE ? "Remixing into your mixtape" : "Remix · Coming soon"}</small></div>
         <button className="rp-close" onClick={() => setScope(null)} aria-label="Close remix" disabled={busy}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
         </button>
       </header>
 
+      {!REMIX_AVAILABLE ? <>
+        <div className="rp-msgs">
+          <div className="rp-hello">
+            <p className="rp-ask">Remix is coming soon</p>
+            <p className="rp-sub">You'll be able to make your own version of this course. Your original stays as it is.</p>
+          </div>
+        </div>
+        <div className="rp-off">
+          <p>Choose the AI app you want to use.</p>
+          <button className="rp-btn" onClick={() => openSettings("ai")}>Configure your AI settings</button>
+        </div>
+      </> : <>
       <div className="rp-msgs" ref={list} aria-live="polite">
         {msgs.length === 0 && (
           <div className="rp-hello">
             <p className="rp-ask">{scope.starter ?? (scope.chapter ? `What would you like to change in ${scope.title}?` : "How would you like your own version of this course to be?")}</p>
-            <p className="rp-sub">Your ChatGPT rewrites it into your mixtape, your own copy. The original stays as it is, and every change can be undone.</p>
+            <p className="rp-sub">Your AI rewrites it into your mixtape, your own copy. The original stays as it is, and every change can be undone.</p>
             <ul className="rp-try" aria-label="Ideas">
               {(scope.chapter
                 ? ["Make these shorter", "Add two texts about ordering coffee", "Make the hints simpler"]
@@ -145,17 +158,17 @@ export function RemixPanel() {
           </div>
         ))}
         {busy && (
-          <div className="rp-msg assistant rp-typing" role="status" aria-label="Remixing with your ChatGPT">
+          <div className="rp-msg assistant rp-typing" role="status" aria-label="Remixing with your AI">
             <span className="rp-dots" aria-hidden="true"><i /><i /><i /></span>
-            <small>Remixing with your ChatGPT…</small>
+            <small>Remixing with your AI…</small>
           </div>
         )}
       </div>
 
       {connected === false ? (
         <div className="rp-off">
-          <p>Connect your ChatGPT to remix here.</p>
-          <button className="rp-btn" onClick={() => openSettings("ai")}>Connect ChatGPT</button>
+          <p>Choose the AI app you want to use in settings.</p>
+          <button className="rp-btn" onClick={() => openSettings("ai")}>Configure your AI settings</button>
         </div>
       ) : (
         <form className="rp-form" onSubmit={(e) => void send(e)}>
@@ -170,6 +183,7 @@ export function RemixPanel() {
           <p className="rp-hint">Enter to remix · Shift+Enter for a new line</p>
         </form>
       )}
+      </>}
     </aside>
   );
 }

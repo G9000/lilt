@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { api } from "../api";
 import { openSettings } from "../desk/SettingsSheet";
+import { REMIX_AVAILABLE } from "../remix";
 
 /**
  * Remix with your ChatGPT, right where you practise: say what should change, and the rewritten
@@ -13,11 +14,11 @@ export function RemixBox({ course, chapter, chapterTitle, onDone }: { course?: s
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  useEffect(() => { void api.chatgptStatus().then((s) => setConnected(s.connected), () => setConnected(false)); }, []);
+  useEffect(() => { if (REMIX_AVAILABLE) void api.chatgptStatus().then((s) => setConnected(s.connected), () => setConnected(false)); }, []);
 
   const remix = async (e: FormEvent) => {
     e.preventDefault();
-    if (!draft.trim() || busy) return;
+    if (!REMIX_AVAILABLE || !draft.trim() || busy) return;
     setBusy(true); setErr(null); setDone(null);
     try {
       const r = await api.remix(draft.trim(), chapter, course);
@@ -29,11 +30,18 @@ export function RemixBox({ course, chapter, chapterTitle, onDone }: { course?: s
     try { await api.undoSyllabus(course); setDone(null); onDone?.(); } catch (e) { setErr(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); }
   };
 
+  if (!REMIX_AVAILABLE) return (
+    <div className="rx rx-off">
+      <p>Remix is coming soon. Choose the AI app you want to use in settings.</p>
+      <button type="button" className="btn-primary" disabled>Remix · Coming soon</button>
+      <button type="button" className="btn-secondary ss-open" onClick={() => openSettings("ai")}>Configure your AI settings</button>
+    </div>
+  );
   if (connected === null) return null;
   if (!connected) return (
     <div className="rx rx-off">
-      <p>Connect your ChatGPT to remix {chapterTitle ? "this chapter" : "your course"} right here.</p>
-      <button type="button" className="btn-secondary ss-open" onClick={() => openSettings("ai")}>Connect ChatGPT</button>
+      <p>Choose the AI app you want to use in settings.</p>
+      <button type="button" className="btn-secondary ss-open" onClick={() => openSettings("ai")}>Configure your AI settings</button>
     </div>
   );
   return (
@@ -43,7 +51,7 @@ export function RemixBox({ course, chapter, chapterTitle, onDone }: { course?: s
         onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }}
         placeholder={chapterTitle ? "e.g. make these shorter, or add two texts about ordering coffee" : "e.g. make the warm-ups shorter and gentler"} />
       <div className="rx-foot">
-        <span className="rx-note">{busy ? "Remixing with your ChatGPT… this can take up to a minute." : "Your ChatGPT rewrites it into your mixtape. The original stays as it is."}</span>
+        <span className="rx-note">{busy ? "Remixing with your AI… this can take up to a minute." : "Your AI rewrites it into your mixtape. The original stays as it is."}</span>
         <button className="btn-primary" disabled={busy || !draft.trim()}>{busy ? "Remixing…" : "Remix"}</button>
       </div>
       {done && <p className="rx-done" role="status">{done} <button type="button" className="rx-undo" onClick={() => void undo()} disabled={busy}>Undo</button></p>}
