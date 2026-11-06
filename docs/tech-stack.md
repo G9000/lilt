@@ -1,7 +1,9 @@
 # Lilt — tech stack and design
 
-Lilt is a local, single-user voice feminization practice app built from
-`voice_feminization_build_brief.md` (PRD v1.1, 26 Oct 2026). This file records the
+Lilt is a local, single-user learning and practice app. Its first working course is voice practice,
+originally built from `voice_feminization_build_brief.md` (PRD v1.1, 26 Oct 2026). Course storage
+and editing support other subjects; the practice screen, daily deck and analysis still serve
+the built-in voice course. This file records the
 stack, the main contracts and the consequential assumptions. The README covers
 setup; `VALIDATION.md` covers what was actually verified.
 
@@ -28,7 +30,7 @@ goes to that client's model provider; the UI and README say so.
 
 ```
 <LILT_DATA_DIR>/
-  profile.json                       goal, timezone (Asia/Kuala_Lumpur), reminder time, appearance
+  profile.json                       optional goal, timezone (UTC for new profiles), reminder time, appearance
   exercises/<exercise_id>/v<N>.json  versioned registry, seeded from content/exercises, never overwritten
   sessions/<session_id>/
     session.json                     kind (full | check_in | studio | deck), local date, UTC timestamps, comfort, completion

@@ -15,7 +15,7 @@ import { CURRENT } from "../release";
 import { BackupSettings } from "../components/BackupSettings";
 import { StorageSettings } from "../components/StorageSettings";
 
-const ZONES = ["Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Jakarta", "Asia/Bangkok", "Asia/Tokyo", "Australia/Sydney", "Europe/London", "Europe/Berlin", "America/New_York", "America/Los_Angeles", "UTC"];
+const ZONES = [...new Set(["UTC", ...Intl.supportedValuesOf("timeZone")])];
 
 /** Auto (follow the computer), light or dark, kept in step with the menu bar's button. */
 function ThemeChoice() {

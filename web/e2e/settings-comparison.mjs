@@ -29,6 +29,25 @@ const writes = (page, count) => page.waitForFunction((n) => window.regression.wr
 const renderPair = (page, a) => page.evaluate((a) => window.regression.render("compare", a, `${a}-b`), a);
 const finishPair = (page, a) => page.evaluate((a) => window.regression.comparisons.get(a).resolve(), a);
 
+test("time zones cover other regions, preserve saved aliases and save the chosen zone", async (t) => {
+  const page = await fixture(t, "time");
+  const zone = page.locator("#tz");
+  await zone.waitFor();
+  assert.equal(await zone.inputValue(), "US/Eastern", "keep an existing saved alias");
+  const options = await zone.locator("option").evaluateAll(els => els.map(el => el.value));
+  for (const id of ["UTC", "Africa/Nairobi", "Pacific/Auckland", "America/Sao_Paulo"]) {
+    assert.ok(options.includes(id), `${id} is available`);
+  }
+  assert.equal(new Set(options).size, options.length);
+  await zone.selectOption("Pacific/Auckland");
+  await writes(page, 1);
+  assert.equal(await page.evaluate(() => window.regression.writes[0].profile.timezone), "Pacific/Auckland");
+  await page.evaluate(() => window.regression.writes[0].resolve());
+  await page.waitForFunction(() => window.regression.stored().timezone === "Pacific/Auckland");
+  await page.evaluate(() => { window.regression.clear(); window.regression.render("time"); });
+  await page.waitForFunction(() => document.querySelector("#tz")?.value === "Pacific/Auckland");
+});
+
 test("an older save cannot mark a newer edit saved or discard it on leaving", async (t) => {
   const page = await fixture(t);
   await edit(page, 6);

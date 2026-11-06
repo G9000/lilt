@@ -2,12 +2,13 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { api, Profile, Take, Comparison } from "../../src/api";
-import { PracticeSettings, useProfileDraft } from "../../src/pages/Settings";
+import { PracticeSettings, SettingsPage, useProfileDraft } from "../../src/pages/Settings";
 import { ComparePage } from "../../src/pages/Compare";
 
 const root = createRoot(document.getElementById("root")!);
 const profile = {
   goal: { summary: "My voice", descriptors: [] }, session_minutes: 5,
+  timezone: "US/Eastern",
   comparison_window_days: 14, comfort_range_hz: null, reminder_time: null,
 } as Profile;
 const writes: { profile: Profile; resolve: () => void; reject: () => void }[] = [];
@@ -39,8 +40,8 @@ function Draft() {
 Object.assign(window, { regression: {
   writes, comparisons, analyses,
   stored: () => stored,
-  render(view: "draft" | "settings" | "compare", a = "", b = "") {
-    flushSync(() => root.render(view === "draft" ? <Draft /> : view === "settings" ? <PracticeSettings /> : <ComparePage a={a} b={b} />));
+  render(view: "draft" | "settings" | "time" | "compare", a = "", b = "") {
+    flushSync(() => root.render(view === "draft" ? <Draft /> : view === "settings" ? <PracticeSettings /> : view === "time" ? <SettingsPage start="time" /> : <ComparePage a={a} b={b} />));
   },
   clear() { flushSync(() => root.render(null)); },
 } });

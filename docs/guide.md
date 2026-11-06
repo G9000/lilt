@@ -670,6 +670,8 @@ New profiles start with no personal goal or desired voice qualities. Add your go
 settings and separate the qualities you want with commas, such as `soft, bright`. Existing saved
 goals, timezones and plans are kept. Choose your timezone in Settings → Date & time; UTC is a
 neutral starting value, not an estimate of your location. The Docker container clock also uses UTC.
+The timezone picker lists the zones supported by your browser, plus UTC and your saved zone,
+including an older saved name. Opening Settings does not change your timezone automatically.
 Lilt stores UTC timestamps alongside local dates.
 
 **Models:** the optional in-app coach selects from the connected ChatGPT account's model list.

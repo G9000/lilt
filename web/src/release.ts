@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Choose your time zone", body: "Date & time now offers the time zones supported by your browser, including regions missing from the old short list. Your saved choice stays selected.", to: "/settings" },
       { title: "One shared visual system", body: "The room, practice screens, Settings and update window now share one styling system, keeping your chosen accent and familiar layouts consistent." },
       { title: "Lilt on your Windows desktop", body: "Lilt now has a Windows desktop build with its own installer, server and voice analysis tools. Open it from Start and practise in its own window." },
       { title: "A calmer, more consistent Lilt", body: "Settings, Course Home and Today share clearer headings, comfortable controls and quieter surfaces. Practice cards give more space to the exercise, and the desktop Today widget puts your next step first.", to: "/studio" },

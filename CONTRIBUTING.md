@@ -1,9 +1,9 @@
 # Contributing to Lilt
 
-Thank you for wanting to help. Lilt is a structure for practising voice feminization a little every
-day. I put it together while I'm still finding my own voice, so if you already know this world, as a
-coach, a speech and language therapist or someone who's been through it, your experience is exactly
-what it's missing.
+Lilt is a local learning and practice app, with voice practice as its first working course.
+Learners, coaches, speech and language therapists and developers can help improve it.
+Courses can cover other subjects; [Courses and kinds of practice](docs/courses.md) explains
+what can be reused and which practice features still need a screen for the new subject.
 
 You don't need to write code to contribute content.
 
