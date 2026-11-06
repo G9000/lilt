@@ -63,3 +63,9 @@ export function byPart<T extends { part?: string | null }>(levels: T[]): { part:
   }
   return out;
 }
+
+/** Whether two labels say the same thing ("Warm-ups" and "Warm-up"), so a tag needn't repeat its chapter. */
+export const sameLabel = (a: string, b: string) => {
+  const plain = (s: string) => s.toLowerCase().replace(/[^\p{L}]/gu, "").replace(/s$/, "");
+  return plain(a) === plain(b);
+};

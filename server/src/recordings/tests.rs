@@ -93,6 +93,21 @@ fn finalize_twice_and_missing_tail_are_labelled() {
         1,
         "duplicate finalisation must not queue a second job"
     );
+    // Resends after saving (a restart finalised the take mid-upload) settle at once instead of
+    // failing in a way the browser would keep retrying.
+    assert!(matches!(
+        recordings::put_chunk(&app, &id, 0, chunks[0], None).unwrap(),
+        ChunkOutcome::AlreadyStored
+    ));
+    let late = (chunks.len() - 2) as u32;
+    assert!(matches!(
+        recordings::put_chunk(&app, &id, late, chunks[late as usize], None),
+        Err(UploadError::Finalized(n)) if n == late
+    ));
+    assert!(
+        !app.paths.take_dir(&s.id, &id).join("chunks").exists(),
+        "a late chunk must not recreate the chunks folder"
+    );
     analysis::run_pending(&app);
     let t = app.take(&id).unwrap();
     assert_eq!(

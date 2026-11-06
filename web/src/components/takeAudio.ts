@@ -3,6 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 // One audio element per recording, shared by everything that shows it (the listen-back button and
 // the pitch chart under it), so they play, pause and follow the same position together.
 const players = new Map<string, HTMLAudioElement>();
+// How many mounted components show each one; an element nobody shows is let go, so scrolling a long
+// history doesn't keep every recording loaded.
+const users = new Map<HTMLAudioElement, number>();
 
 // Starting a recording stops all playback (recorder.ts sends this); these elements aren't in the page.
 if (typeof window !== "undefined") window.addEventListener("lilt:stop-playback", () => players.forEach((a) => a.pause()));
@@ -29,6 +32,17 @@ export function useTakeAudio(src: string) {
   }, [src]);
   const [, bump] = useState(0);
   useEffect(() => {
+    players.set(src, a);
+    users.set(a, (users.get(a) ?? 0) + 1);
+    return () => {
+      const n = (users.get(a) ?? 1) - 1;
+      if (n > 0) { users.set(a, n); return; }
+      users.delete(a);
+      // Still playing (its row scrolled away): keep it reachable so Stop and Record can pause it.
+      if (a.paused && players.get(src) === a) players.delete(src);
+    };
+  }, [src, a]);
+  useEffect(() => {
     const on = () => bump((n) => n + 1);
     let raf = 0;
     // While playing, follow every frame so the playhead glides rather than stepping.
@@ -45,8 +59,9 @@ export function useTakeAudio(src: string) {
     playing: !a.paused,
     t: a.currentTime,
     dur: isFinite(a.duration) ? a.duration : 0,
-    toggle: () => { if (a.paused) { pauseOthers(); void a.play(); } else a.pause(); },
-    seek: (t: number) => { a.currentTime = Math.max(0, t); if (a.paused) { pauseOthers(); void a.play(); } },
+    // play() rejects if the file can't be decoded or playback is interrupted; the button just stays on Play.
+    toggle: () => { if (a.paused) { pauseOthers(); a.play().catch(() => {}); } else a.pause(); },
+    seek: (t: number) => { a.currentTime = Math.max(0, t); if (a.paused) { pauseOthers(); a.play().catch(() => {}); } },
     ended: a.ended,
   };
 }

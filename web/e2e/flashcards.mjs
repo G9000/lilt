@@ -5,11 +5,12 @@
 //
 // Usage: LILT_URL=http://127.0.0.1:7979 node e2e/flashcards.mjs
 
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import path from "node:path";
 
 const BASE = process.env.LILT_URL ?? "http://127.0.0.1:7979";
-const wav = path.resolve(path.dirname(new URL(import.meta.url).pathname), "fake-mic.wav");
+const wav = fileURLToPath(new URL("fake-mic.wav", import.meta.url));
 
 const results = [];
 const check = (name, ok, detail = "") => { results.push({ name, ok }); console.log(`${ok ? "PASS" : "FAIL"} ${name}${detail ? ` — ${detail}` : ""}`); };

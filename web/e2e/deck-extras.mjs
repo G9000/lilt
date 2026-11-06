@@ -5,13 +5,14 @@
 //
 // Usage: LILT_URL=http://127.0.0.1:7979 LILT_DATA_DIR=/tmp/lilt-e2e node e2e/deck-extras.mjs
 
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import path from "node:path";
 import fs from "node:fs";
 
 const BASE = process.env.LILT_URL ?? "http://127.0.0.1:7979";
 const DATA = process.env.LILT_DATA_DIR;
-const wav = path.resolve(path.dirname(new URL(import.meta.url).pathname), "fake-mic.wav");
+const wav = fileURLToPath(new URL("fake-mic.wav", import.meta.url));
 
 const results = [];
 const check = (name, ok, detail = "") => { results.push({ name, ok }); console.log(`${ok ? "PASS" : "FAIL"} ${name}${detail ? ` — ${detail}` : ""}`); };

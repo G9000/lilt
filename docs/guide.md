@@ -572,7 +572,8 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/yarn.mjs /tmp/shots   # Yarn: 
   then use **Retry analysis** in History. Pending jobs also resume when Lilt restarts.
 - **Upload problems:** chunks stay in the browser's IndexedDB until the server confirms them, and
   they're re-sent the next time Lilt opens. The server also recovers interrupted takes at startup and
-  labels them "interrupted".
+  labels them "interrupted". Chunks re-sent after that are accepted if the saved take already holds
+  them; anything the server turns away (a 4xx reply) fails at once rather than being retried for minutes.
 - **Laptop was asleep:** nothing runs while it sleeps. Pending analysis catches up on wake, and
   you'll see at most one reminder, not a backlog.
 

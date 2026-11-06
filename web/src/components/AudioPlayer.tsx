@@ -98,7 +98,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
     const playTag = (e: Event) => {
       const a = audio.current;
       if (!a || !tag) return;
-      if ((e as CustomEvent).detail === tag) { if (a.paused) void a.play(); else a.pause(); }
+      if ((e as CustomEvent).detail === tag) { if (a.paused) a.play().catch(() => {}); else a.pause(); }
       else a.pause();
     };
     window.addEventListener("lilt:stop-playback", stop);
@@ -111,7 +111,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
     const a = audio.current;
     a.currentTime = Math.max(0, segment[0] - 0.2);
     stopAt.current = segment[1] + 0.2;
-    void a.play();
+    a.play().catch(() => {});
   }, [playSegmentSignal]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Draw.
@@ -157,7 +157,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
     stopAt.current = null;
     if (a.paused) {
       window.dispatchEvent(new Event("lilt:stop-playback"));
-      void a.play();
+      a.play().catch(() => {});
     } else a.pause();
   };
 
@@ -218,7 +218,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
       {pitch && isFinite(dur) && (
         <div style={{ marginTop: 10 }}>
           <PianoRoll points={pitch} duration={dur} currentTime={t} band={band}
-            onSeek={(x) => { const a = audio.current!; a.currentTime = x; if (a.paused) void a.play(); }}
+            onSeek={(x) => { const a = audio.current!; a.currentTime = x; if (a.paused) a.play().catch(() => {}); }}
             label={`Measured pitch line for ${label}. Click to play from a point.`} height={compact ? 140 : 180} />
           <p className="small muted" style={{ margin: "4px 0 0" }}>Measured pitch (Praat). Click the line to play from there. Gaps are unvoiced or silent.</p>
         </div>

@@ -9,7 +9,7 @@ import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
-import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, textLabel } from "../chapters";
+import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, sameLabel, textLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 
@@ -100,11 +100,13 @@ function Resizer({ className, label, onDrag, onNudge, onReset }: {
     const move = (ev: PointerEvent) => onDrag(ev.clientX);
     const up = () => {
       el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
       document.documentElement.classList.remove("ve-dragging");
     };
     el.addEventListener("pointermove", move);
-    el.addEventListener("pointerup", up, { once: true });
-    el.addEventListener("pointercancel", up, { once: true });
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
   };
   return (
     <div className={`ve-resize ${className}`} role="separator" aria-orientation="vertical" aria-label={label} tabIndex={0}
@@ -1421,6 +1423,8 @@ const everyDay = (it?: DeckItem) => !!it && (it.kind === "warmup" || it.kind ===
 /** After rating an eyes-off take, "reveal" shows its pitch before moving on (q: the queue to go on with). */
 type Phase = { k: "say"; retryOf: string | null } | { k: "rate"; take: Take } | { k: "reveal"; take: Take; q: DeckItem[] } | { k: "end" } | { k: "hurt" };
 const KIND_TAG: Partial<Record<DeckItem["kind"], string>> = { new: "New card", again: "Again", warmup: "Warm-up", cooldown: "Cool-down", before_after: "Before and after" };
+/** The card's kind as a tag, unless its chapter is already called that ("Warm-ups"). */
+const kindTag = (it: DeckItem) => { const t = KIND_TAG[it.kind]; return t && !sameLabel(t, deckName(it)) ? t : null; };
 
 /** How the before-and-after is answered: 1 to 5, the learner's own view. */
 const BEFORE_AFTER_QS = [
@@ -1712,7 +1716,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               return (
                 <li key={`q-${j}-${it.card.id}`} ref={curRef} tabIndex={-1} aria-label={`Current card: ${it.card.front}`} className="ve-item on sd-current">
                   <div className="sd-card-top"><span>Card {doneCount + 1} of {total}</span><DeckIllustration kind={it.kind === "warmup" || it.kind === "cooldown" ? "tea" : it.card.text_kind === "passage" || it.kind === "before_after" ? "book" : "mic"} /></div>
-                  <p className="ve-kind">{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{KIND_TAG[it.kind] && it.card.deck_title !== KIND_TAG[it.kind] && <span className="ve-tag next">{KIND_TAG[it.kind]}</span>}
+                  <p className="ve-kind">{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{kindTag(it) && <span className="ve-tag next">{kindTag(it)}</span>}
                     {it.eyes_off && <span className="ve-tag">Eyes off</span>}
                     {!chosen && k === 0 && phase.k === "say" && <span className="ve-tag start">Start here</span>}</p>
                   {on && it.card.kind !== "exercise"
@@ -1741,7 +1745,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
             <summary>Up next <span>{queue.length - idx - 1} cards</span></summary>
             <ol>{queue.slice(idx + 1).map((it, k) => <li key={`${idx + k}-${it.card.id}`}>
               <button className="sd-queue-pick" disabled={phase.k !== "say" || recOn} onClick={() => choose(idx + k + 1)} aria-label={`Practise ${it.card.front.slice(0, 40)} next`}>
-                <span className="sd-queue-number">{doneCount + k + 2}</span><span><b>{it.card.front}</b><small className="ve-kind">{deckName(it)}{KIND_TAG[it.kind] && <span>{KIND_TAG[it.kind]}</span>}{it.eyes_off && <span>Eyes off</span>}</small></span>
+                <span className="sd-queue-number">{doneCount + k + 2}</span><span><b>{it.card.front}</b><small className="ve-kind">{deckName(it)}{kindTag(it) && <span>{kindTag(it)}</span>}{it.eyes_off && <span>Eyes off</span>}</small></span>
               </button>
             </li>)}</ol>
           </details>}

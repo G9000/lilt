@@ -119,12 +119,12 @@ function TakeRow({ take, title, onUpdate, onDelete, more, sub }: { take: Take; t
     void loadPeaks(take.audio_url, 64).then((p) => { if (live && p) { const max = Math.max(0.01, ...Array.from(p)); setBars(Array.from(p, (v) => 0.14 + 0.86 * (v / max))); } });
     return () => { live = false; };
   }, [take.audio_url]);
-  const toggle = () => { const a = audio.current; if (a) { if (a.paused) void a.play(); else a.pause(); } };
+  const toggle = () => { const a = audio.current; if (a) { if (a.paused) a.play().catch(() => {}); else a.pause(); } };
   // Recorded WebM often carries no duration header (the browser says Infinity); the measured length stands in.
   const duration = (a: HTMLAudioElement) => (isFinite(a.duration) && a.duration > 0 ? a.duration : take.analysis_summary?.duration_s ?? 0);
   const seek = (e: React.MouseEvent<HTMLDivElement>) => {
     const a = audio.current, r = e.currentTarget.getBoundingClientRect();
-    if (a && duration(a)) { a.currentTime = ((e.clientX - r.left) / r.width) * duration(a); void a.play(); }
+    if (a && duration(a)) { a.currentTime = ((e.clientX - r.left) / r.width) * duration(a); a.play().catch(() => {}); }
   };
   const status = STATUS[take.status];
   const text = take.prompt_id === "free" ? null : take.prompt_text;

@@ -1,6 +1,7 @@
 // Installed Safari smoke harness, without enabling Remote Automation or microphone access.
 // Run Lilt against a disposable data directory on :7979, then run this script and open :5175.
 // Audio is generated in the browser. The real recorder, local API, storage and Praat are used.
+import { fileURLToPath } from "node:url";
 import { createServer, request } from "node:http";
 import { createRequire } from "node:module";
 import { writeFile } from "node:fs/promises";
@@ -12,7 +13,7 @@ const port = Number(process.env.SAFARI_TEST_PORT ?? 5175);
 const resultsPath = process.env.SAFARI_RESULTS ?? "/private/tmp/lilt-safari-results.json";
 let latest = null;
 const bundle = await build({
-  entryPoints: [new URL("safari-browser.ts", import.meta.url).pathname],
+  entryPoints: [fileURLToPath(new URL("safari-browser.ts", import.meta.url))],
   bundle: true, platform: "browser", format: "iife", target: "safari16", write: false,
   plugins: [{ name: "browser-pitch-tests", setup(builder) {
     builder.onResolve({ filter: /^node:(test|assert\/strict)$/ }, ({ path }) => ({ path, namespace: "test-shim" }));

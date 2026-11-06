@@ -3,13 +3,10 @@
   "configurations": [
     {
       "name": "web",
-      "runtimeExecutable": "pnpm",
+      "runtimeExecutable": "bun",
       "runtimeArgs": [
-        "--dir",
-        "web",
-        "dev",
-        "--host",
-        "127.0.0.1"
+        "run",
+        "dev:web"
       ],
       "port": 5173
     },

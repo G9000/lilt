@@ -229,11 +229,9 @@ async fn put_chunk(
             Json(json!({"stored": true, "duplicate": true, "seq": seq})),
         )
             .into_response(),
-        Err(recordings::UploadError::Conflict(s)) => (
-            StatusCode::CONFLICT,
-            Json(json!({"error": format!("chunk {s} already stored with different content")})),
-        )
-            .into_response(),
+        Err(e @ (recordings::UploadError::Conflict(_) | recordings::UploadError::Finalized(_))) => {
+            (StatusCode::CONFLICT, Json(json!({"error": e.to_string()}))).into_response()
+        }
         Err(recordings::UploadError::BadChecksum(s)) => (
             StatusCode::UNPROCESSABLE_ENTITY,
             Json(json!({"error": format!("checksum mismatch for chunk {s}")})),

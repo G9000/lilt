@@ -1,7 +1,7 @@
 // node --test src/chapters.test.ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byPart, passageTitle, readingTime, textLabel } from "./chapters.ts";
+import { byPart, passageTitle, readingTime, sameLabel, textLabel } from "./chapters.ts";
 
 test("a vocalise is named by its id", () => {
   assert.equal(textLabel("mmmmmmm", "forward-hum"), "Forward hum");
@@ -39,4 +39,11 @@ test("a long passage is named by its title, with its parts numbered", () => {
   assert.equal(readingTime(long), "about 1 min");
   assert.equal(readingTime("word ".repeat(300)), "about 2 min");
   assert.equal(textLabel("One, two, three, four, five.", "count-5"), "One, two, three, four, five.", "short texts keep their words");
+});
+
+test("a card's tag that repeats its chapter's name counts as the same", () => {
+  assert.equal(sameLabel("Warm-ups", "Warm-up"), true);
+  assert.equal(sameLabel("Cool-down", "Cool down"), true);
+  assert.equal(sameLabel("Warm-ups", "New card"), false);
+  assert.equal(sameLabel("Pitch", "Before and after"), false);
 });

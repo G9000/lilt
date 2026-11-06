@@ -29,6 +29,8 @@ pub enum UploadError {
     Conflict(u32),
     #[error("checksum mismatch for chunk {0}")]
     BadChecksum(u32),
+    #[error("this take was already saved without chunk {0}")]
+    Finalized(u32),
     #[error("{0}")]
     Other(#[from] anyhow::Error),
 }
@@ -215,12 +217,23 @@ pub fn put_chunk(
     bytes: &[u8],
     claimed_sha: Option<&str>,
 ) -> Result<ChunkOutcome, UploadError> {
-    let t = app.take(tid)?;
     let actual = store::sha256_hex(bytes);
     if let Some(c) = claimed_sha
         && !c.eq_ignore_ascii_case(&actual)
     {
         return Err(UploadError::BadChecksum(seq));
+    }
+    // Held so a chunk can't land after finalize has assembled the file and removed the chunks.
+    let _g = app.write_lock.lock().unwrap();
+    let t = app.take(tid)?;
+    if let Some(orig) = &t.original {
+        // A resend after saving (the server restarted mid-take, or a reply was lost): the chunks
+        // the original was built from are in it already, so say so instead of failing forever.
+        return if seq < orig.chunk_count {
+            Ok(ChunkOutcome::AlreadyStored)
+        } else {
+            Err(UploadError::Finalized(seq))
+        };
     }
     let path = chunk_path(app, &t, seq);
     if path.exists() {
@@ -230,9 +243,6 @@ pub fn put_chunk(
         } else {
             Err(UploadError::Conflict(seq))
         };
-    }
-    if t.original.is_some() {
-        return Err(UploadError::Other(anyhow!("take is already finalized")));
     }
     store::write_atomic(&path, bytes).map_err(UploadError::Other)?;
     Ok(ChunkOutcome::Stored)
@@ -251,6 +261,12 @@ pub fn finalize(app: &App, tid: &str, req: FinalizeReq) -> Result<Take> {
     let _g = app.write_lock.lock().unwrap();
     let mut t = app.take(tid)?;
     if t.original.is_some() {
+        // Saved but never queued for analysis (queuing failed last time): queue it now.
+        if matches!(t.status, TakeStatus::Saved) {
+            drop(_g);
+            crate::analysis::enqueue_analysis(app, &t)?;
+            return app.take(tid);
+        }
         return Ok(t);
     }
     t.status = TakeStatus::Saving;

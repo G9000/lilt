@@ -36,7 +36,10 @@ pub struct Config {
 impl Config {
     pub fn from_env() -> Self {
         let env = |k: &str, d: &str| std::env::var(k).unwrap_or_else(|_| d.to_string());
-        let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
+        // Windows sets USERPROFILE rather than HOME; without it data would land beside wherever Lilt was started.
+        let home = std::env::var("HOME")
+            .or_else(|_| std::env::var("USERPROFILE"))
+            .unwrap_or_else(|_| ".".into());
         Config {
             data_dir: env("LILT_DATA_DIR", &format!("{home}/Lilt/data")).into(),
             content_dir: env("LILT_CONTENT_DIR", "content").into(),

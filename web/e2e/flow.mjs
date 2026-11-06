@@ -5,13 +5,14 @@
 //
 // Usage: LILT_URL=http://127.0.0.1:7979 node e2e/flow.mjs [screenshot-dir]
 
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import path from "node:path";
 import fs from "node:fs";
 
 const BASE = process.env.LILT_URL ?? "http://127.0.0.1:7979";
 const shots = process.argv[2] ?? null;
-const wav = path.resolve(path.dirname(new URL(import.meta.url).pathname), "fake-mic.wav");
+const wav = fileURLToPath(new URL("fake-mic.wav", import.meta.url));
 if (shots) fs.mkdirSync(shots, { recursive: true });
 
 const results = [];
@@ -44,6 +45,8 @@ async function main() {
   await page.goto(BASE);
   const stack = page.locator(".cs");
   await page.locator(".cs-card.top .cs-phrase").waitFor();
+  // The room's hit areas can mount a moment after the stack.
+  await page.getByRole("button", { name: /^Sit down at the computer/ }).waitFor();
   check("The room shows today's cards as a stack and a way in",
     /^Today's practice: \d+ cards?/.test(await stack.getAttribute("aria-label")) && await page.getByRole("button", { name: /^Sit down at the computer/ }).count() === 1);
   const topText = () => page.locator(".cs-card.top .cs-phrase").innerText();
@@ -161,7 +164,7 @@ async function main() {
   await snap("06-comfort");
   await page.getByRole("button", { name: "Finish session" }).click();
   await page.getByRole("heading", { name: "Session complete" }).waitFor({ timeout: 15000 });
-  const doneText = await page.locator("main").innerText();
+  const doneText = await page.locator("#main").innerText();
   check("All recordings confirmed saved", /are saved on your computer/.test(doneText));
   await page.waitForTimeout(4000);
   await snap("07-done");
@@ -181,7 +184,7 @@ async function main() {
   await page.getByRole("heading", { name: "1 · Hear the moment" }).waitFor();
   // The evidence take loads after the heading; wait for it rather than reading too early.
   const noMarker = await page.getByText(/no moment is marked/).first().waitFor({ timeout: 10000 }).then(() => true, () => false);
-  const feedback = await page.locator("main").innerText();
+  const feedback = await page.locator("#main").innerText();
   check("Self-report evidence shows no invented timestamp", noMarker && !/Highlighted: evidence/.test(feedback));
   check("Cue shown from the registry", /2 · Try this/.test(feedback));
   await snap("08-feedback");
@@ -197,7 +200,7 @@ async function main() {
   await page.waitForTimeout(2500);
   await page.getByRole("button", { name: "Stop recording" }).click();
   await page.getByRole("heading", { name: "4 · Compare" }).waitFor({ timeout: 15000 });
-  const cmp = await page.locator("main").innerText();
+  const cmp = await page.locator("#main").innerText();
   check("Retry opens the original/retry A/B pair", /Original/i.test(cmp) && /Retry with the cue/i.test(cmp));
   await snap("09-compare");
   // Answer the recheck as met and save
@@ -208,7 +211,7 @@ async function main() {
   await page.locator("label.choice", { hasText: "B, the retry" }).click();
   await page.getByRole("button", { name: "Save and see what's next" }).click();
   await page.getByText(/This time you answered “brighter, and easy”/i).first().waitFor({ timeout: 15000 });
-  const after = await page.locator("main").innerText();
+  const after = await page.locator("#main").innerText();
   check("Updated review reflects the retry's own self-check", /Another session will show whether it repeats/.test(after), after.split("\n").slice(1, 3).join(" | "));
   await snap("10-after-retry");
 

@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.0",
     date: "2026-11-01",
     items: [
+      { title: "Steadier saving", body: "If Lilt restarts while you're recording, your take finishes saving straight away instead of retrying for minutes. Browsing a long list of recordings uses less memory, and a card no longer repeats its chapter's name as a tag." },
       { title: "A quieter daily deck", body: "Practise one paper card at a time, with small illustrations, clearer text and record/listen/review controls together. Open Reading tips or Up next when you need them. Your review schedule stays the same.", to: "/deck" },
       { title: "A cozier Ball of yarn", body: "Play beside an illustrated window with a woven yarn ball and a curious cat. Setup is simpler, instructions open when you need them, and play controls stay within reach on small and large screens.", to: "/yarn" },
       { title: "A little motion on your screens", body: "Make it yours now lets each monitor show your own picture, GIF or silent looping video. Preview, pause or remove it whenever you like. Files stay in this browser." },

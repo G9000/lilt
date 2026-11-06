@@ -56,7 +56,8 @@ export function MusicWindow({ open }: { open: boolean }) {
       </div>
       <div className="ds-title">Music</div>
     </div>
-    <main id={open ? "main" : undefined} tabIndex={-1} className="ds-body music-body">
+    {/* Hidden itself too: a page may have only one <main> without the hidden attribute. */}
+    <main id={open ? "main" : undefined} hidden={!open} tabIndex={-1} className="ds-body music-body">
       <fieldset className="music-source">
         <legend className="sr-only">Listen to</legend>
         {(["lofi", "spotify"] as const).map(source => <label key={source}>

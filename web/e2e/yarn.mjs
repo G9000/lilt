@@ -61,10 +61,13 @@ async function main() {
     const me = m.fls.find((f) => f.me);
     const hit = (a, b) => !(a.r < b.l + 4 || a.l > b.r - 4 || a.b < b.t + 4 || a.t > b.b - 4);
     const over = m.fls.filter((f) => !f.me && !f.off && hit(me.b, f.b)).map((f) => f.label);
-    check(`${w}×${h}: the yarn widget shows (not off)`, !me.off);
+    // The familiar layout (room-layout.mjs) keeps its home under the screen; on a 1024-wide screen
+    // that meets today's cards, so the widget steps aside there instead of covering them.
+    const onCards = !!m.stack && hit(me.b, m.stack);
+    check(`${w}×${h}: the yarn widget shows${w < 1280 ? ", or steps aside for today's cards" : " (not off)"}`, !me.off || (w < 1280 && onCards));
     check(`${w}×${h}: it's fully on screen`, me.b.l >= 0 && me.b.t >= 30 && me.b.r <= m.vw && me.b.b <= m.vh, JSON.stringify(me.b));
-    check(`${w}×${h}: it covers no other widget`, over.length === 0, over.join(", "));
-    check(`${w}×${h}: it's clear of today's cards`, !m.stack || !hit(me.b, m.stack));
+    check(`${w}×${h}: it covers no other widget`, me.off || over.length === 0, over.join(", "));
+    check(`${w}×${h}: it's clear of today's cards`, me.off || !onCards);
     if (w === 1440) {
       await shot(page, "yarn-room-1440");
       await page.locator(".fl-yarn").click({ force: true }); // it bobs gently, so it never holds still

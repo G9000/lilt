@@ -110,6 +110,9 @@ async function idb<T>(store: string, mode: IDBTransactionMode, fn: (s: IDBObject
       const r = fn(tx.objectStore(store));
       r.onsuccess = () => resolve(r.result);
       r.onerror = () => reject(r.error);
+      // Recording writes and deletes a chunk every second; close each connection once its
+      // transaction is done (close waits for it) rather than leaving them all open.
+      d.close();
     });
   } catch {
     return undefined; // private mode or storage blocked: upload still works, just no local backup
@@ -138,7 +141,9 @@ async function putChunk(takeId: string, seq: number, blob: Blob): Promise<void> 
         body: buf,
       });
       if (res.ok) return;
-      if (res.status === 409 || res.status === 422 || res.status === 404) {
+      // A 4xx won't change on retry (except timeouts and rate limits); only 5xx and network
+      // failures are worth waiting out.
+      if (res.status >= 400 && res.status < 500 && res.status !== 408 && res.status !== 429) {
         const j = await res.json().catch(() => ({}));
         throw Object.assign(new Error(j.error ?? `upload rejected (${res.status})`), { fatal: true });
       }
