@@ -181,6 +181,17 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back and stays available after resetting (a reset-arrow icon on phones).
+     **Tea break** is a little mug beside the monitor. Click it to choose cream stoneware, sage,
+     blue stripes or sleepy cat, then start a **3, 5 or 10 minute** break. Drag it anywhere like
+     the other widgets. Steam rises while the timer runs; when it ends, the mug quietly says
+     “Whenever you're ready.” **End break** clears the timer whenever you like. An optional soft
+     clink is off by default and only plays if this room is focused when the break finishes,
+     never during recording. Returning later or reloading an expired timer stays quiet.
+     The mug, duration and deadline stay in this browser (`lilt.room.tea`; the clink choice uses
+     `lilt.room.tea.clink`). Reloading, leaving the room or a sleeping computer doesn't restart
+     the countdown. Reset layout moves the mug home without changing the timer or your mug.
+     Like the other floating widgets, the mug hides on phone-width screens. Reduced motion
+     keeps its steam still. No timer data is sent to the server or included in practice backups.
      Widgets near an edge slide inward rather than disappear. On smaller or squarer screens they
      shrink a little, and one still at home slides just clear of its neighbours and of the Photos,
      Practice and Music shortcuts under the menu bar. A widget whose spot

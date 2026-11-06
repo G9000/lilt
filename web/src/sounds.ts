@@ -4,7 +4,7 @@
 
 import { micInUse } from "./micuse.ts";
 
-export type Sound = "rustle" | "pencil" | "chime";
+export type Sound = "rustle" | "pencil" | "chime" | "clink";
 export const SOUNDS_KEY = "lilt.sounds";
 
 /** Saved as "on"; anything else, or nothing, is off. */
@@ -31,6 +31,9 @@ function audio(): AudioContext | null {
   if (ctx.state === "suspended") void ctx.resume();
   return ctx;
 }
+
+/** Unlock an opted-in timer sound during its Start button gesture. */
+export function prepareSound() { if (!micInUse()) audio(); }
 
 /** A second of soft noise, made once: paper and pencil are both shaped from it. */
 function noiseBuffer(c: AudioContext): AudioBuffer {
@@ -78,6 +81,8 @@ export function playSound(kind: Sound, force = false): boolean {
     burst(c, t + 0.09, 0.2, 0.035, "bandpass", 3200, 2200);
   } else if (kind === "pencil") {
     for (let i = 0; i < 5; i++) burst(c, t + i * 0.055 + Math.random() * 0.015, 0.045, 0.022 + Math.random() * 0.012, "highpass", 3500, 4200, 0.5);
+  } else if (kind === "clink") {
+    bell(c, t, 1568, 0.018);
   } else {
     bell(c, t, 784, 0.045); // G5
     bell(c, t + 0.14, 1175, 0.035); // D6

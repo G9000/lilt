@@ -5,6 +5,13 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+**Tea break** is a draggable illustrated mug in the room, with cream stoneware, sage, blue stripes
+and sleepy cat designs. Its compact modal offers 3, 5 or 10 minutes and an optional soft clink
+(off by default, suppressed during recording). Steam moves only during a break and respects
+reduced motion. At the end it settles and says “Whenever you're ready.” No automatic navigation,
+scoring or missed-break state. The deadline and mug stay in this browser; resetting the layout
+only moves it. Like the other floating room widgets, it hides on phone-width screens.
+
 **Storage** is a Settings pane with one total and four rows: recordings and analysis, Photos,
 backups and recovery files, and other saved data. Plain numbers describe file sizes, not drive
 capacity. Refresh updates the count; partial or failed scans say so without showing a false zero.
