@@ -17,3 +17,7 @@ to 480px: the cats and plants are CC0, the space images public domain (NASA, ESA
 | plant-succulents.webp | Milada Vigerova | https://commons.wikimedia.org/wiki/File:Potted_succulents_in_window_(Unsplash).jpg |
 | plant-office.webp | Alvin Engler | https://commons.wikimedia.org/wiki/File:Succulent_office_plants_(Unsplash).jpg |
 | plant-fern.webp | Mar Mkrtchyan | https://commons.wikimedia.org/wiki/File:Green_fern_leaf_in_Syunik.jpg |
+
+`room-coffee.webp`, `room-sea.webp`, `room-crickets.webp` and `room-jazz.webp` are square crops of Lilt's own
+room paintings (`public/room/room-morning-v3.webp`, `-day-v3`, `-sunset-v3` and `-night-v3`; see
+`public/room/CREDITS.md`), cut and resized to 480px with FFmpeg for the radio's newer moods.

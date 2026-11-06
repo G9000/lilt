@@ -5,8 +5,9 @@ import { SpotifyRadio } from "./Spotify";
 import { Volume } from "./Volume";
 import "./music.css";
 
-const covers = ["window", "desk", "nebula-cliffs", "galaxy-whirlpool", "plant-succulents", "cat-window-nap", "cat-blanket", "cat-keyboard", "plant-fern"];
-const cover = (mood: string) => `/pictures/${covers[Math.max(0, radioMoods.findIndex(item => item.name === mood))]}.webp`;
+/** The moods in two groups by how they're played, so the newer instruments are easy to find. */
+const MOOD_SHELVES = [{ title: "Keys and beats", keys: true }, { title: "Strings, tines and pads", keys: false }];
+const cover = (mood: string) => (radioMoods.find(item => item.name === mood) ?? radioMoods[0]).cover;
 export function PlayIcon({ paused }: { paused: boolean }) {
   return <svg viewBox="0 0 16 16" aria-hidden="true"><path d={paused ? "M5 3l8 5-8 5z" : "M4 3h3v10H4zM9 3h3v10H9z"} fill="currentColor" /></svg>;
 }
@@ -80,7 +81,7 @@ function SpotifyContent({ selected }: { selected: boolean }) {
 }
 
 function LofiPlayer() {
-  const r = useRadio();
+  const r = useRadio(), id = useId();
   return <div className="music-layout">
     <section className="music-now" aria-label="Lo-fi radio">
       <div className="music-sleeve" aria-hidden="true">
@@ -100,12 +101,18 @@ function LofiPlayer() {
     <section className="music-moods" aria-labelledby="music-moods-title">
       <h2 id="music-moods-title">A mood for now</h2>
       <p>Pick somewhere to settle in.</p>
-      <ul>{radioMoods.map(mood => <li key={mood.name}>
-        <button onClick={() => radio.selectMood(mood.index)} aria-pressed={r.mood === mood.name}>
-          <img src={cover(mood.name)} alt="" /><span><b>{mood.name}</b><small>{mood.description}</small></span>
-          <span className="music-selected" aria-hidden="true">{r.mood === mood.name && <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m3 8 3 3 7-7" /></svg>}</span>
-        </button>
-      </li>)}</ul>
+      {MOOD_SHELVES.map(shelf => {
+        const moods = radioMoods.filter(m => shelf.keys === (m.voice === "keys"));
+        return <div key={shelf.title} className="music-shelf">
+          <h3 id={`${id}-${shelf.keys ? "keys" : "more"}`}>{shelf.title}</h3>
+          <ul aria-labelledby={`${id}-${shelf.keys ? "keys" : "more"}`}>{moods.map(mood => <li key={mood.name}>
+            <button onClick={() => radio.selectMood(mood.index)} aria-pressed={r.mood === mood.name}>
+              <img src={cover(mood.name)} alt="" /><span><b>{mood.name}</b><small>{mood.description}</small></span>
+              <span className="music-selected" aria-hidden="true">{r.mood === mood.name && <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m3 8 3 3 7-7" /></svg>}</span>
+            </button>
+          </li>)}</ul>
+        </div>;
+      })}
     </section>
   </div>;
 }

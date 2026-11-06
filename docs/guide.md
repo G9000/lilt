@@ -144,8 +144,13 @@ Monitor uploads and playback have an isolated check with locally generated media
      plant (a leaf for each day you practised this week; it never shrinks or scolds, and a fresh week
      reads "A new week" rather than a zero) live in the
      room instead, as floating widgets you can drag. Music opens from the painted player.
-   - **Lo-fi radio:** nine moods, including "Rain on the window", "Desk lamp" and "City at dusk", made live in
-     the browser: electric-piano chords, a soft bass, swung drums and ambient textures. The
+   - **Lo-fi radio:** seventeen moods, made live in the browser. **Keys and beats** are the original nine
+     ("Rain on the window", "Desk lamp", "City at dusk"…) plus "Midnight jazz" with a walking bass.
+     **Strings, tines and pads** bring other instruments and places: plucked strings ("Morning coffee",
+     "Fireplace"), a music box, a kalimba ("Summer crickets", "Greenhouse") and slow pads ("Sea breeze",
+     "Stargazing"), with the sea, a crackling fire, crickets or birdsong around them. Moods live in
+     `web/src/desk/moods.ts`; `lofi.ts` plays them. The Music app's player stays in place while the
+     list scrolls. The
      radio has a volume slider and a mute button, remembered in this browser. Nothing is
      downloaded or sent anywhere. The current mood shows in the menu
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live

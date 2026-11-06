@@ -29,7 +29,10 @@ Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice
 keeps these actions reachable when their painted objects are cropped. Music opens without
 playing, in a responsive window with a fully visible metallic CD and a mood library.
 There are no expand/restore controls. Mood rows use fixed artwork, text and checkmark
-columns, so choosing one never shifts the others. The CD spins gently only during
+columns, so choosing one never shifts the others. The library has two small headings (12px,
+`--ink-2`): **Keys and beats** and **Strings, tines and pads**; side by side, the player is sticky
+while the list scrolls (on phones it scrolls with it). Covers are square photos or square crops
+of the room's own paintings. The CD spins gently only during
 playback and remains still with reduced motion.
 Closing or pressing Escape returns to the previous view while music continues. A compact
 player in both menu bars shows the selection with a separate play/pause button; clicking

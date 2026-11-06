@@ -12,6 +12,8 @@
 .music-window :is(button, input):focus-visible, .music-source input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
 .music-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, .95fr); gap: 32px; }
 .music-now { min-width: 0; text-align: center; padding: 16px 0 0; }
+/* Side by side, the player stays put while the list of moods scrolls past it. */
+.music-layout > .music-now { position: sticky; top: 0; align-self: start; }
 .music-sleeve { width: min(100%, 232px); aspect-ratio: 1; margin: 0 auto 26px; }
 .music-record { position: relative; width: 100%; height: 100%; border-radius: 50%; display: grid; place-items: center;
   background: conic-gradient(from 25deg, #babfc6, #f3f1e9 12%, #becbd5 23%, #9b9fa9 30%, #e0ccbd 39%, #faf9f1 47%, #afb4bd 55%, #c5d4d8 65%, #e6d6db 75%, #faf8ef 85%, #a3aab5 94%, #babfc6);
@@ -46,6 +48,8 @@
 .music-moods h2 { font-size: 17px; font-weight: 600; letter-spacing: -.025em; margin: 0 0 4px; }
 .music-moods > p { font-size: 12px; color: var(--ink-2); margin: 0 0 13px; }
 .music-moods ul { list-style: none; padding: 0; margin: 0; }
+.music-shelf + .music-shelf { margin-top: 16px; }
+.music-moods h3 { margin: 0 0 4px; padding: 0 7px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
 .music-moods li + li { border-top: 1px solid var(--hair); }
 .music-moods button { display: grid; grid-template-columns: 35px minmax(0, 1fr) 16px; align-items: center; justify-content: start; gap: 10px; width: 100%; min-height: 54px; padding: 8px 7px; border-radius: 8px; text-align: left; color: var(--ink); }
 .music-moods button:hover { background: var(--fill); }
@@ -88,6 +92,7 @@
   .music-window .music-body { padding: 16px 20px 24px; }
   .music-layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .music-now { padding-top: 0; }
+  .music-layout > .music-now { position: static; }
   .music-moods { border-left: 0; border-top: 1px solid var(--hair); padding: 24px 0 0; }
   .music-moods button { min-height: 58px; }
   .music-moods b { font-size: 13px; }

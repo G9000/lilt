@@ -12,6 +12,24 @@ let browser;
 try {
   browser=await chromium.launch({channel:'chrome',headless:true});
   const context=await browser.newContext({viewport:{width:1440,height:950},reducedMotion:'reduce'});
+  // Listen to what the page plays: anything sent to the speakers also goes to an analyser.
+  await context.addInitScript(()=>{
+    const connect=AudioNode.prototype.connect;
+    AudioNode.prototype.connect=function(dest,...rest){
+      if(dest instanceof AudioDestinationNode){
+        const ctx=dest.context;
+        if(!ctx.__ear){ctx.__ear=ctx.createAnalyser();ctx.__ear.fftSize=2048;window.__ears=[...(window.__ears||[]),ctx.__ear];}
+        connect.call(this,ctx.__ear);
+      }
+      return connect.call(this,dest,...rest);
+    };
+    window.__hear=async(ms)=>{
+      const ears=window.__ears||[], buf=new Float32Array(2048);let rms=0,peak=0,bad=false;
+      for(const end=performance.now()+ms;performance.now()<end;await new Promise(r=>setTimeout(r,40)))
+        for(const ear of ears){ear.getFloatTimeDomainData(buf);let s=0;for(const v of buf){if(!Number.isFinite(v))bad=true;s+=v*v;peak=Math.max(peak,Math.abs(v));}rms=Math.max(rms,Math.sqrt(s/buf.length));}
+      return {rms,peak,bad};
+    };
+  });
   const page=await context.newPage();
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
@@ -60,6 +78,17 @@ try {
   await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).click();
   await music.getByRole('button',{name:'Pause lo-fi radio',exact:true}).waitFor();
   assert.equal(await music.getByRole('button',{name:/Expand|Restore/}).count(),0,'music has no expand/restore controls');
+  // Every mood, the newer ones with their own instruments and places too, plays: sound, no clipping, no broken samples.
+  const moods=await music.locator('.music-moods button b').allTextContents();
+  assert.ok(moods.length>=17,'the radio has the newer moods too');
+  for(const name of moods){
+    await music.locator('.music-moods').getByRole('button',{name:new RegExp(name)}).click();
+    assert.match(await title.textContent(),new RegExp(name));
+    const heard=await page.evaluate(()=>window.__hear(2600));
+    assert.ok(heard.rms>0.002&&heard.peak<0.99&&!heard.bad,`${name} plays cleanly: ${JSON.stringify(heard)}`);
+    console.log(`PASS ${name} plays — rms ${heard.rms.toFixed(3)}, peak ${heard.peak.toFixed(2)}`);
+  }
+  await music.locator('.music-moods').getByRole('button',{name:/Rain on the window/}).click();
   if(shots) await page.screenshot({path:path.join(shots,'music-app.png')});
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
   await page.waitForFunction(()=>location.hash==='#/');
