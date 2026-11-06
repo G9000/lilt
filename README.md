@@ -4,17 +4,23 @@ A small, private app for self-directed courses. Practise a few minutes a day at 
 read, try a task, and revisit it when you're ready. Courses are plain Markdown you can write or remix, practice
 comes back on a schedule you set, and every recording stays on your computer.
 
-![The room: today's cards, a radio, a clock and a plant that grows when you practise](docs/images/room.webp)
+![Lilt's room with today's paper practice cards, a tea-break mug, a sleeping cat and a plant beside the desk](docs/images/room.webp)
+
+The room in November 2026, shown with demo practice data.
 
 ## What it does
 
-- **A cosy room to practise in.** Today's cards sit in a stack; sit down at the computer to start.
+- **A cosy room to practise in.** Today's cards sit in a paper stack. Start a card, sit down at the
+  computer, or take a quiet tea break. Choose your room's light, accent colour and monitor pictures.
 - **Courses you can write.** A course is a folder of Markdown chapters, each explaining one skill
   before you practise it. Every installed course has reading screens, chapter cards and a daily deck.
 - **Spaced practice, rated by you.** Cards come back on a schedule your own rating sets. Nothing grades you.
+- **Record and reflect in any course.** Save optional audio and a written reflection during guided
+  practice, then return to the session from that course's recordings.
 - **Record, listen, compare in the voice course.** Each take is measured and described in plain words, with one thing to
   try next. Put it beside your first take, or see every take of a text on one line.
-- **Make it yours.** Remix any chapter by asking your AI (ChatGPT, or any agent over MCP). Every change can be undone.
+- **Remix with your AI.** Connected AI apps can edit courses through MCP, with changes you can undo.
+  The in-app Remix chat is coming soon.
 
 | Practise a text, then compare with last time | One text over time |
 | --- | --- |
@@ -83,6 +89,8 @@ Keep test recordings in a scratch data folder on another port, as described in [
 ## Good to know
 
 - **Private by default.** Takes are ordinary audio and JSON files; Recordings → Export all makes a full copy.
+- **Back up your practice.** Settings → Backup & restore creates a backup ZIP and lets you preview
+  one before restoring it. Lilt keeps a safety copy before replacing your practice data.
 - **Describes, never diagnoses.** Lilt isn't a clinical tool and doesn't score you.
 - **Write a course:** see [docs/courses.md](docs/courses.md). Course texts live in `content/courses`.
 - **More:** the [guide](docs/guide.md) (every feature, MCP, other devices, settings, troubleshooting,
