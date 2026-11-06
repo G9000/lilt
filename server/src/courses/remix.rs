@@ -228,8 +228,13 @@ fn blank_chapter(app: &Shared, c: &Course) -> Result<Value> {
         .unwrap();
     let id = format!("my-chapter-{k}");
     let file = format!("{next:02}-{id}.md");
+    let kind = if c.id == courses::DEFAULT {
+        "phrases"
+    } else {
+        "practice"
+    };
     let md = format!(
-        "---\nid: {id}\ntitle: New chapter\nsubtitle: Ask your AI to fill this in\nkind: phrases\nwritten_by: You and your AI.\ndraft: true\n---\n\nSay what this chapter is for, and your AI writes it.\n\n## first\n\nYour first text goes here.\n\n> A hint goes here.\n"
+        "---\nid: {id}\ntitle: New chapter\nsubtitle: Ask your AI to fill this in\nkind: {kind}\nwritten_by: You and your AI.\ndraft: true\n---\n\nSay what this chapter is for, and your AI writes it.\n\n## first\n\nYour first text goes here.\n\n> A hint goes here.\n"
     );
     let saved = syllabus::write(app, c, &file, &md, "Added a blank chapter")?;
     Ok(json!({ "course": c.id, "chapter": id, "file": file, "saved": saved }))

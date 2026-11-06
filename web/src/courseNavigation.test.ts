@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { dailyPath, flashcardsPath, practicePath, rememberCourse, routeCourse, routeSegments, savedCourse } from "./courseNavigation.ts";
+import { dailyPath, flashcardsPath, practicePath, rememberCourse, routeCourse, routeSegments, savedCourse, textsPath } from "./courseNavigation.ts";
 
 test("voice keeps its links while any other course gets scoped practice links", () => {
   assert.equal(practicePath("voice", "warmup", "hum"), "/studio/warmup/hum");
@@ -19,6 +19,10 @@ test("explicit routes select their course, and unrelated routes keep the saved c
   assert.equal(routeCourse("/studio/warmup", empty), "voice");
   assert.equal(routeCourse("/", empty), null);
   assert.equal(routeCourse("/courses/drawing", empty), null);
+  assert.equal(routeCourse("/texts", empty), null);
+  assert.equal(routeCourse("/texts", new URLSearchParams("course=drawing")), "drawing");
+  assert.equal(routeCourse("/texts", new URLSearchParams("course=")), "");
+  assert.equal(textsPath("voice"), "/texts?course=voice");
   assert.equal(routeCourse("/learn/missing", empty), "missing");
 });
 

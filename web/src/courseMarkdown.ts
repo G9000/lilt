@@ -1,4 +1,5 @@
 import { DEFAULT_COURSE } from "./courseIds.ts";
+import { flashcardsPath, textsPath } from "./courseNavigation.ts";
 
 export function coursePicture(src: string, course = DEFAULT_COURSE): string | undefined {
   if (/^https?:\/\//i.test(src)) return src;
@@ -12,6 +13,14 @@ export function courseLink(href: string, course = DEFAULT_COURSE, chapters: read
   const base = `#/learn/${encodeURIComponent(course)}`;
   if (href === "#/studio" || href === "index.md" || href === "./index.md") return base;
   if (href === "#/deck") return `${base}/today`;
+  if (href === "#/texts") return `#${textsPath(course)}`;
+  if (href === "#/flashcards") return `#${flashcardsPath(course)}`;
+  const cards = href.match(/^#\/flashcards\/([^/?#]+)$/);
+  if (cards) {
+    let chapter: string;
+    try { chapter = decodeURIComponent(cards[1]); } catch { return undefined; }
+    return chapters.includes(chapter) ? `#${flashcardsPath(course, chapter)}` : undefined;
+  }
   const studio = href.match(/^#\/studio\/([^/?#]+)(?:\/([^/?#]+))?$/);
   const relative = href.match(/^(?:\.\/)?([\w-]+)\.md(?:#([\w.-]+))?$/);
   const match = studio ?? relative;

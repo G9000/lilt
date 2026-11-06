@@ -2,6 +2,7 @@ import { roomStyles } from "./roomStyles";
 import { animate, AnimatePresence, motion, type PanInfo, useDragControls, useMotionValue, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Deck, DeckItem } from "../api";
+import { DEFAULT_COURSE } from "../courseIds";
 import { setSpot, useLayoutStore } from "./Floaters";
 
 /**
@@ -22,7 +23,7 @@ const rest = (d: number) => ({
 });
 const SPRING = { type: "spring", stiffness: 320, damping: 28, mass: 0.9 } as const;
 
-export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (cardId: string | null) => void }) {
+export function CardStack({ deck, onStart, course = DEFAULT_COURSE }: { deck: Deck | null; onStart: (cardId: string | null) => void; course?: string }) {
   const items = deck ? deck.items.filter((i) => !i.done_today) : [];
   const ids = items.map((i) => i.card.id).join(",");
   const [order, setOrder] = useState<string[]>([]);
@@ -94,7 +95,7 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
             {pile.slice(0, 4).map((id, d) => {
               const it = byId.get(id)!, i = items.indexOf(it);
               return (
-                <StackCard key={id} item={it} depth={d} index={i} count={n}
+                <StackCard key={id} item={it} depth={d} index={i} count={n} voice={course === DEFAULT_COURSE}
                   first={i === 0} delay={dealt ? 0 : 0.3 + (Math.min(n, 4) - 1 - d) * 0.12} onSwipe={cycle} onStart={() => onStart(id)} />
               );
             })}
@@ -113,9 +114,10 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   );
 }
 
-function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart }: {
+function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart, voice }: {
   item: DeckItem; depth: number; index: number; count: number; first: boolean; delay: number;
   onSwipe: (dir: 1 | -1) => void; onStart: () => void;
+  voice: boolean;
 }) {
   const top = depth === 0;
   const x = useMotionValue(0);
@@ -174,11 +176,11 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart }
         <div className={["cs-body", roomStyles["cs-body"]].join(" ")}>
           <div className={["cs-head", roomStyles["cs-head"]].join(" ")}><div className={["cs-title", roomStyles["cs-title"]].join(" ")}>Today's practice</div>
             <span className={[`cs-chip${first ? " next" : ""}`, roomStyles["cs-chip"]].join(" ")}>{first ? "Up next" : KIND[item.kind]}</span></div>
-          <div className={["cs-kind", roomStyles["cs-kind"]].join(" ")}>{item.card.deck_title} · {SUB[item.card.kind] ?? item.card.kind}</div>
+          <div className={["cs-kind", roomStyles["cs-kind"]].join(" ")}>{item.card.deck_title} · {voice ? SUB[item.card.kind] ?? item.card.kind : "Practice"}</div>
           <div className={["cs-phrase", roomStyles["cs-phrase"]].join(" ")}>{item.card.front}</div>
           {item.card.hint && <div className={["cs-hint", roomStyles["cs-hint"]].join(" ")}>{item.card.hint}</div>}
           <div className={["cs-foot", roomStyles["cs-foot"]].join(" ")}>
-            <span className={["cs-count", roomStyles["cs-count"]].join(" ")}><b>{index + 1}</b> of {count}, about {count} minute{count === 1 ? "" : "s"}</span>
+            <span className={["cs-count", roomStyles["cs-count"]].join(" ")}><b>{index + 1}</b> of {count}{voice ? `, about ${count} minute${count === 1 ? "" : "s"}` : " · at your own pace"}</span>
             <span className={["cs-go", roomStyles["cs-go"]].join(" ")} aria-hidden="true">Start <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
           </div>
         </div>

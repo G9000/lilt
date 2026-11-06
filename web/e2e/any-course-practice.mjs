@@ -14,7 +14,7 @@ const prompts = { drawing: ['Draw three loose circles.', 'Draw the outline of a 
 const chapterTitle = course => `${courses.find(c => c.id === course).title}: a beginning`;
 const texts = course => ({ note: '', home: 'A little practice, in your own time.', levels: course === 'empty' ? [] : [{
   id: 'shared', level: 1, title: chapterTitle(course), subtitle: 'Try a small beginning', kind: 'phrase', part: 'Begin',
-  basis: `Start with ${courses.find(c => c.id === course).title.toLowerCase()}.`,
+  basis: `Start with ${courses.find(c => c.id === course).title.toLowerCase()}. [Study cards](#/flashcards/shared). [Browse texts](#/texts).`,
   items: prompts[course].map((text, i) => ({ id: `item-${i + 1}`, text, hint: 'Take your time and notice what happens.' })),
 }] });
 const makeDeck = course => ({ local_date: '2026-11-07', paused: false, all_done: false, counts: { new: 2, review: 0, again: 0 }, open_stage: 1, cap: 8,
@@ -65,7 +65,7 @@ async function fixture(t) {
         return send({ card_id: body.card_id, deck });
       }
     }
-    if (p === '/api/profile') return send({ goal: { summary: 'A little practice.', descriptors: [] }, comfort_range_hz: [100, 260], session_minutes: 5 });
+    if (p === '/api/profile') return send({ goal: { summary: 'My private voice goal.', descriptors: [] }, room_note: state.roomNote, comfort_range_hz: [100, 260], session_minutes: 5 });
     if (p === '/api/history') return send({ takes: [{ id: 'existing-baseline' }] });
     if (p === '/api/photos') return send({ uploaded: [], hidden: [] });
     if (p === '/api/studio/session') return send({ id: 'voice-session' });
@@ -234,4 +234,46 @@ test('a saved rating whose reply is lost keeps its retry identity', async t => {
   assert.equal(state.applied.size, 1, 'one logical rating is applied');
   await reveal(page); await rating(page, 'Good').click();
   assert.notEqual(state.reviews[2].request_id, state.reviews[0].request_id, 'the next card gets a new identity');
+});
+
+test('room cards and notes do not impose speaking or voice goals on other courses', async t => {
+  const { page, state, open } = await fixture(t);
+  await open('/learn/drawing');
+  await page.getByRole('heading', { name: 'Drawing gently', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Leave desk', exact: true }).click();
+  await page.getByLabel('Note: empty. Press Enter to write on it.', { exact: true }).waitFor();
+  await page.locator('.cs-card.top').waitFor();
+  assert.doesNotMatch(await page.locator('.cs').innerText(), /Read aloud|about \d+ minute/);
+  assert.match(await page.locator('.cs').innerText(), /at your own pace/);
+  state.roomNote = 'My own note, for any course.';
+  await page.reload();
+  await page.getByLabel('Note: My own note, for any course.. Press Enter to write on it.', { exact: true }).waitFor();
+  await open('/desk');
+  const widget = page.getByRole('article', { name: "Today's practice", exact: true });
+  await widget.getByText('at your own pace', { exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Voice recordings', exact: true }).waitFor();
+  assert.deepEqual(state.voiceWrites, []);
+});
+
+test('the text browser and Markdown card links keep the selected course', async t => {
+  const { page, state, open } = await fixture(t);
+  await open('/learn/gardening/chapter/shared');
+  await page.getByRole('link', { name: 'Study cards', exact: true }).click();
+  await page.waitForURL('**/#/flashcards/shared?course=gardening');
+  await page.getByRole('link', { name: 'Browse texts', exact: true }).click();
+  await page.waitForURL('**/#/texts?course=gardening');
+  await page.getByRole('heading', { name: 'Practice texts', exact: true }).waitFor();
+  assert.doesNotMatch(await page.locator('.tx').innerText(), /guided exercises|comfortable hello/);
+  await page.getByRole('button', { name: /^Practise “Feel the soil/ }).click();
+  await page.waitForURL('**/#/learn/gardening/chapter/shared/item-1');
+  await open('/texts');
+  await page.getByRole('button', { name: /^Practise “Feel the soil/ }).waitFor();
+  await open('/texts?course=voice');
+  await page.getByRole('button', { name: /^Practise “Say a comfortable hello/ }).waitFor();
+  await open('/texts?course=missing');
+  await page.getByRole('alert').waitFor();
+  await open('/texts?course=');
+  await page.getByRole('alert').waitFor();
+  assert.match(await page.getByRole('alert').innerText(), /address isn't valid/);
+  assert.deepEqual(state.voiceWrites, []);
 });

@@ -55,7 +55,7 @@ pub(crate) fn front_matter(src: &str) -> Result<(Map<String, Value>, &str)> {
     Ok((meta, body))
 }
 
-/// The skills a chapter can say it trains (`area:`), as Progress shows them.
+/// The built-in voice course's skills (`area:`), as its Progress page shows them.
 pub const AREAS: [&str; 6] = [
     "recording",
     "resonance",
@@ -74,6 +74,7 @@ fn joined<'a>(lines: impl Iterator<Item = &'a str>) -> String {
         .join(" ")
 }
 
+/// Parse subject-neutral chapter content; course-specific checks happen when loading the course.
 pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
     let normalized;
     let src = if src.contains("\r\n") {
@@ -134,8 +135,8 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
     if items.is_empty() {
         bail!("has no texts (each starts with `## <id>`)");
     }
-    // Optional course keys: the area it trains, built-in exercises that join it, its check-in text
-    // (recorded every visit), and `today: false` to keep its texts out of Today's cards.
+    // Voice uses the optional exercises and check-in text for recording. Other courses may name
+    // their own area; `today: false` keeps a chapter out of daily cards for every course.
     let text = |k: &str| {
         meta.get(k)
             .and_then(Value::as_str)
@@ -150,11 +151,6 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
         bail!("check_in `{c}` is not a text in this chapter");
     }
     let area = text("area");
-    if let Some(a) = &area
-        && !AREAS.contains(&a.as_str())
-    {
-        bail!("area `{a}` isn't one of {}", AREAS.join(", "));
-    }
     // An optional video for the chapter: `video: <YouTube link or id>`, with `video_title` and
     // `video_by`. Practice loads nothing from YouTube until you press play.
     let mut video = None;
@@ -227,8 +223,8 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
     Ok(Value::Object(meta))
 }
 
-/// Load `_about.md` and every chapter file from `dir`.
-pub fn load(dir: &Path) -> Result<Value> {
+/// Load a course's metadata and chapters, retaining the built-in voice area's validation.
+pub fn load(dir: &Path, course: &str) -> Result<Value> {
     let read =
         |p: &Path| std::fs::read_to_string(p).with_context(|| format!("reading {}", p.display()));
     let about = dir.join("_about.md");
@@ -294,6 +290,16 @@ pub fn load(dir: &Path) -> Result<Value> {
     for (i, path) in files.iter().enumerate() {
         let level =
             chapter(&read(path)?, i + 1).with_context(|| format!("in {}", path.display()))?;
+        if course == crate::courses::DEFAULT
+            && let Some(area) = level["area"].as_str()
+            && !AREAS.contains(&area)
+        {
+            bail!(
+                "in {}: area `{area}` isn't one of {}",
+                path.display(),
+                AREAS.join(", ")
+            );
+        }
         if levels.iter().any(|l: &Value| l["id"] == level["id"]) {
             bail!(
                 "chapter id `{}` is used twice (in {})",
@@ -369,11 +375,10 @@ mod tests {
             .unwrap_err()
             .to_string();
         assert!(e.contains("check_in"), "{e}");
-        assert!(
-            chapter(&src.replace("area: pitch", "area: singing"), 1)
-                .unwrap_err()
-                .to_string()
-                .contains("area")
+        assert_eq!(
+            chapter(&src.replace("area: pitch", "area: drawing"), 1).unwrap()["area"],
+            "drawing",
+            "the chapter parser keeps areas for each course to validate"
         );
         assert_eq!(
             chapter(&src.replace("exercises: a.one, b.two", "exercises:"), 1).unwrap()["exercises"],
@@ -444,7 +449,7 @@ mod tests {
     #[test]
     fn loads_the_shipped_texts() {
         let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../content/courses/voice");
-        let t = load(&dir).unwrap();
+        let t = load(&dir, crate::courses::DEFAULT).unwrap();
         assert_eq!(t["schema"], "lilt.texts/1");
         assert!(t["home"].as_str().unwrap().contains("## Sources"));
         assert_eq!(t["pitch_reference"]["women_mean"], 199.0);

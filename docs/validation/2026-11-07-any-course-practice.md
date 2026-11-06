@@ -1,5 +1,22 @@
 # Practice any course — 7 November 2026
 
+## Follow-up audit
+
+The room stack's read-aloud label and per-card duration, desk duration, voice-goal fallback note,
+unscoped Practice texts screen, default course Markdown flashcard/text links, voice-only area
+validation and generic blank-chapter kind were still assuming voice. Those are now scoped or
+neutral. Generic screens label the recordings shortcut as Voice recordings. Recording, analysis,
+guided exercises and the Yarn voice game remain deliberately voice-specific tools.
+
+Regression coverage exercises generic room cards/notes, authored shared notes, course links and
+the text browser, plus generic area metadata through loading, daily cards, editing, remix lookup,
+diffs, updates and blank creation. Voice still rejects invalid voice areas. Server formatting,
+strict Clippy and all 124 tests passed; web types, 161 unit tests and 8 isolated Chrome scenarios
+passed. The staged feature snapshot also passed typecheck and a production build independently
+of the concurrent styling/loading edits. A separate staged-code review found no blockers.
+
+## Initial implementation
+
 Implemented shared course home/chapter screens, per-course daily queues and ratings, course-aware
 chapter flashcards, and remembered room/desk navigation. The built-in voice routes retain their
 recording, analysis and comfort flow. Course state is included in backup/restore.

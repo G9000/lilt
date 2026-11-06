@@ -10,8 +10,8 @@
 //! - `.base` keeps the original as it was when the copy was made, to compare against later
 //!   updates of the original.
 //!
-//! Progress is kept by chapter and text id (`text.<chapter>.<text>`), so rewording a text keeps
-//! its history; removing or renaming an id leaves its past takes in Recordings only.
+//! Progress is kept by course, chapter and text id, so rewording a text keeps its history.
+//! Removing or renaming an id leaves its saved history under the original id.
 
 use crate::app::App;
 use crate::courses::texts;
@@ -49,7 +49,7 @@ fn using(app: &App, c: &Course) -> &'static str {
 
 pub fn load_active(app: &App, c: &Course) -> Result<Value> {
     let dir = active_dir(app, c);
-    let mut t = texts::load(&dir).with_context(|| format!("loading {}", dir.display()))?;
+    let mut t = texts::load(&dir, &c.id).with_context(|| format!("loading {}", dir.display()))?;
     let updates = if has_mine(app, c) {
         crate::courses::updates::waiting(app, c)
     } else {
@@ -147,7 +147,7 @@ fn section(src: &str, heading: &str) -> Option<String> {
     Some(rest[..end].split_whitespace().collect::<Vec<_>>().join(" "))
 }
 
-/// Each text id maps to its spoken text and hint.
+/// Each text id maps to its practice text and hint.
 type TextAndHintById = BTreeMap<String, (String, String)>;
 
 /// Ids, texts and hints of a chapter file, or None for files that aren't chapters.
@@ -350,7 +350,7 @@ pub fn commit_with_base(
     let staging = app.paths.tmp().join(format!("course-check-{}", c.id));
     let _ = std::fs::remove_dir_all(&staging);
     write_files(&staging, &next)?;
-    let checked = texts::load(&staging);
+    let checked = texts::load(&staging, &c.id);
     let _ = std::fs::remove_dir_all(&staging);
     if let Err(e) = checked {
         let why = format!("{e:#}").replace(&format!("{}/", staging.display()), "");

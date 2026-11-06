@@ -116,7 +116,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         {dockApp(practicePath(course), "Practice", <StudioIcon />, section === "studio" || section === "learn" || section === "texts" || section === "library")}
         {dockApp(flashcardsPath(course), "Flashcards", <FlashcardsIcon />, section === "flashcards")}
         {dockApp("/yarn", "Yarn", <YarnIcon />, section === "yarn")}
-        {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
+        {dockApp("/history", course === DEFAULT_COURSE ? "Recordings" : "Voice recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
         {dockApp("/photos", "Photos", <PhotosIcon />, section === "photos")}
         <button className={[`ds-app${section === "music" ? " on" : ""}`, roomStyles["ds-app"]].join(" ")} onClick={openMusic} aria-label="Music" aria-current={section === "music" ? "page" : undefined}>
@@ -154,7 +154,7 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
           </>
         ) : (
           <>
-            <div className={["ds-t-row", roomStyles["ds-t-row"]].join(" ")}><span className={["ds-t-num", roomStyles["ds-t-num"]].join(" ")}>{left.length}<small>card{left.length === 1 ? "" : "s"}</small></span><span className={["ds-t-min", roomStyles["ds-t-min"]].join(" ")}>about {minutes} min</span></div>
+            <div className={["ds-t-row", roomStyles["ds-t-row"]].join(" ")}><span className={["ds-t-num", roomStyles["ds-t-num"]].join(" ")}>{left.length}<small>card{left.length === 1 ? "" : "s"}</small></span><span className={["ds-t-min", roomStyles["ds-t-min"]].join(" ")}>{course === DEFAULT_COURSE ? `about ${minutes} min` : "at your own pace"}</span></div>
             <ul className={["ds-t-list", roomStyles["ds-t-list"]].join(" ")}>
               {left.slice(0, 3).map((it, i) => (
                 <li key={it.card.id}><i className={i === 0 ? "next" : ""} /><b>{it.card.front}</b><span>{i === 0 ? "up next" : KIND[it.kind]}</span></li>

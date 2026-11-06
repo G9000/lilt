@@ -16,6 +16,11 @@ test("course links resolve only known chapters and preserve document fragments",
   assert.equal(link("missing.md"), undefined);
   assert.equal(link("#/studio/missing"), undefined);
   assert.equal(link("#/deck"), "#/learn/reading/today");
+  assert.equal(link("#/texts"), "#/texts?course=reading");
+  assert.equal(link("#/flashcards"), "#/flashcards?course=reading");
+  assert.equal(link("#/flashcards/basics"), "#/flashcards/basics?course=reading");
+  assert.equal(link("#/flashcards/missing"), undefined);
+  assert.equal(link("#/flashcards/basics?course=voice"), "#/flashcards/basics?course=voice");
   assert.equal(link("#note"), "#note");
   assert.equal(link("https://example.com"), "https://example.com");
   assert.equal(link("javascript:alert(1)"), undefined);

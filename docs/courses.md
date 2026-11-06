@@ -53,6 +53,11 @@ analysis for other course subjects.
   cannot count the rating twice. The app supplies this id for generic daily ratings.
 - Generic card state and review logs live in `<data>/cards/<id>/`; voice keeps `<data>/cards/`.
   Backups include both. Chapter flashcard runs stay in the browser, isolated by course.
+- The text browser (`#/texts?course=<id>`) and course Markdown links to chapter cards and texts
+  keep the selected course. An unscoped `#/texts` follows the browser's selected course.
+  Generic room cards describe practice at your own pace, without read-aloud instructions or a
+  guessed duration. A saved voice goal is only used as the default room note for voice; notes you
+  write yourself remain shared room notes.
 
 ## Voice-specific tools
 
@@ -69,6 +74,8 @@ recording or analysis would need their own implementation and validation.
    record every visit), `exercises` (built-in exercises that join it in Today) and `today: false`
    (no Today cards). The built-in voice course uses `check_in` and `exercises`, with its original
    fallback tables for older copies. Other courses use their text cards without those voice additions.
+   Their `area` can name their own subject or skill, such as `drawing`; voice retains its validated
+   voice skill names. New blank chapters use `kind: practice` outside voice.
    A chapter with `draft: true` in its front matter (as "New chapter" makes) shows in Practice but
    makes no cards in Today until the line is gone.
 2. Pick its `kind`. An existing one (`voice`, `language`) gets that kind's name and tile; a new word

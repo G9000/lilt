@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api, type Course, type Deck, type Rating, type TextLevel, type Texts } from "../api";
 import { byPart, idLabel } from "../chapters";
 import { Markdown, picture } from "../components/Markdown";
-import { dailyPath, flashcardsPath, practicePath, validCourseId } from "../courseNavigation";
+import { dailyPath, flashcardsPath, practicePath, textsPath, validCourseId } from "../courseNavigation";
 import { parseTextId } from "../courseIds";
 import { shared } from "../ui/shared";
 import { ChapterVideo } from "./Voice";
@@ -44,6 +44,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
           <a className={quiet} href="#/courses">All courses</a>
           <a className={quiet} href={`#${practicePath(course)}`} aria-current={!view && !chapter ? "page" : undefined}>{data?.course.title ?? "Course home"}</a>
           <a className={quiet} href={`#${dailyPath(course)}`} aria-current={view === "today" ? "page" : undefined}>Today's cards</a>
+          <a className={quiet} href={`#${textsPath(course)}`}>Practice texts</a>
         </nav>
         {error ? <><p role="alert">{error}</p><button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button></>
           : !data ? <p role="status">Opening your course…</p>

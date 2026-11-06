@@ -40,6 +40,121 @@ fn text_ids_keep_voice_as_it_was_and_name_other_courses() {
     assert_eq!(parse_text_id("ref.count-1-10"), None);
 }
 
+#[tokio::test]
+async fn generic_subject_areas_work_in_load_edit_remix_and_new_chapters() {
+    use super::{syllabus, updates};
+    use axum::body::{Body, to_bytes};
+    use axum::http::Request;
+    use serde_json::{Value, json};
+    use tower::ServiceExt;
+
+    let dir = tempfile::tempdir().unwrap();
+    let content = dir.path().join("content");
+    copy_dir(&root().join("content"), &content);
+    let drawing = content.join("courses/drawing");
+    std::fs::create_dir_all(&drawing).unwrap();
+    std::fs::write(
+        drawing.join("course.md"),
+        "---\nid: drawing\ntitle: Drawing\nkind: art\n---\n",
+    )
+    .unwrap();
+    std::fs::write(drawing.join("_about.md"), "---\nversion: 1\n---\n").unwrap();
+    let chapter = "---\nid: my-chapter-1\ntitle: Line studies\nkind: drawing\narea: drawing\ncheck_in: first\n---\n\n## first\n\nDraw a line.\n\n> Notice its shape.\n";
+    std::fs::write(drawing.join("01-lines.md"), chapter).unwrap();
+    let mut cfg = config(&dir.path().join("data"));
+    cfg.content_dir = content;
+    let app = App::open(cfg).unwrap();
+    let course = super::get(&app, "drawing").unwrap();
+    let texts = syllabus::course_texts(&app, &course).unwrap();
+    assert_eq!(texts["levels"][0]["area"], "drawing");
+    assert_eq!(texts["levels"][0]["check_in"], "first");
+    assert_eq!(texts["levels"][0]["written_by"], "");
+    assert!(texts["levels"][0]["source_url"].is_null());
+    assert!(texts["pitch_reference"].is_null());
+    let cards = crate::practice::cards::all_cards_for_course(&app, &course).unwrap();
+    assert_eq!(cards[0].area, "drawing");
+    assert!(cards[0].source.is_empty());
+    assert_eq!(
+        syllabus::list(&app, &course)["files"][0]["chapter_id"],
+        "my-chapter-1"
+    );
+
+    let edited = chapter.replace("Draw a line.", "Draw a curved line.");
+    syllabus::write_many(
+        &app,
+        &course,
+        vec![("01-lines.md".into(), edited)],
+        "A curved line",
+    )
+    .unwrap();
+    let compared = syllabus::compare(&app, &course, Some("01-lines.md")).unwrap();
+    assert_eq!(
+        compared["differences_from_original"][0]["texts_changed"],
+        json!(["first"])
+    );
+    std::fs::write(
+        drawing.join("01-lines.md"),
+        chapter.replace("Notice its shape.", "Notice its direction."),
+    )
+    .unwrap();
+    let changes = updates::list(&app, &course);
+    assert_eq!(changes["changes"][0]["title"], "Line studies");
+
+    let router = super::routes::router().with_state(app.clone());
+    for (path, input, expected) in [
+        (
+            "/api/mixtape/remix",
+            json!({"course": "drawing", "chapter": "my-chapter-1", "request": "Add curved lines"}),
+            400,
+        ),
+        ("/api/mixtape/chapter", json!({"course": "drawing"}), 200),
+    ] {
+        let response = router
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri(path)
+                    .header("content-type", "application/json")
+                    .body(Body::from(input.to_string()))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status().as_u16(), expected);
+        let value: Value =
+            serde_json::from_slice(&to_bytes(response.into_body(), 1024 * 1024).await.unwrap())
+                .unwrap();
+        if path.ends_with("remix") {
+            assert!(
+                value["error"].as_str().unwrap().contains("Connect ChatGPT"),
+                "chapter lookup must succeed before the connection check: {value}"
+            );
+        } else {
+            assert_eq!(
+                value["chapter"], "my-chapter-2",
+                "existing generic chapter ids are reserved"
+            );
+        }
+    }
+    let loaded = syllabus::course_texts(&app, &course).unwrap();
+    assert_eq!(loaded["levels"][1]["kind"], "practice");
+    assert!(loaded["levels"][1]["area"].is_null());
+    assert!(loaded["levels"][1]["check_in"].is_null());
+
+    let voice = super::get(&app, "voice").unwrap();
+    assert!(
+        syllabus::write(&app, &voice, "17-drawing.md", chapter, "Invalid voice area")
+            .unwrap_err()
+            .to_string()
+            .contains("area `drawing`")
+    );
+    assert!(
+        !syllabus::has_mine(&app, &voice),
+        "rejected voice metadata must not create a copy"
+    );
+}
+
 #[test]
 fn the_voice_course_describes_itself() {
     let c = read(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../content/courses/voice"))

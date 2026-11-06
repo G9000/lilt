@@ -342,8 +342,8 @@ export function RoomFloaters({ deck, inside, course = DEFAULT_COURSE }: { deck?:
   const box = useRef<HTMLDivElement>(null);
   const store = useLayoutStore();
   useEffect(() => {
-    void api.profile().then((p) => { setNote(p.room_note ?? p.goal.summary.trim()); setNote2(p.room_note_2 ?? null); }, () => setNote(null));
-  }, [inside]);
+    void api.profile().then((p) => { setNote(p.room_note ?? (course === DEFAULT_COURSE ? p.goal.summary.trim() : "")); setNote2(p.room_note_2 ?? null); }, () => setNote(null));
+  }, [inside, course]);
   // One save at a time, each reading the profile afresh, so two quick changes can't undo each other.
   const saving = useRef<Promise<unknown>>(Promise.resolve());
   const saveNotes = (patch: { room_note?: string; room_note_2?: string | null }) => {

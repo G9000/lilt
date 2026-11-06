@@ -23,12 +23,17 @@ export function flashcardsPath(course: string, chapter?: string): string {
   return `/flashcards${chapter ? `/${encodeURIComponent(chapter)}` : ""}${course === DEFAULT_COURSE ? "" : `?course=${encodeURIComponent(course)}`}`;
 }
 
+export function textsPath(course: string): string {
+  return `/texts?course=${encodeURIComponent(course)}`;
+}
+
 /** An explicit practice link wins over the remembered course, including old voice links. */
 export function routeCourse(path: string, params: URLSearchParams): string | null {
   const [section, course] = routeSegments(path);
   if (section === "learn") return course ?? "";
   if (section === "flashcards") return params.get("course") ?? DEFAULT_COURSE;
-  if (["studio", "deck", "guided", "practice", "texts"].includes(section)) return DEFAULT_COURSE;
+  if (section === "texts") return params.get("course");
+  if (["studio", "deck", "guided", "practice"].includes(section)) return DEFAULT_COURSE;
   return null;
 }
 

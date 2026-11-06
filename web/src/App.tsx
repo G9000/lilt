@@ -182,7 +182,7 @@ export function App() {
     case "flashcards": page = <FlashcardsPage key={course} course={course} chapter={seg[1]} />; break;
     case "photos": page = <PhotosPage />; break;
     case "yarn": page = <YarnPage />; break;
-    case "texts": page = <TextsPage />; break;
+    case "texts": page = <TextsPage key={course} course={course} />; break;
     case "progress": page = <VoicePage doc="progress" />; break;
     case "history": page = <VoicePage doc="recordings" text={params.get("text")} />; break;
     case "library": page = <LibraryPage />; break;
@@ -203,7 +203,7 @@ export function App() {
       </Room>
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>
         <RoomTop inbox={inbox} courseTitle={courseTitle} />
-        <CardStack key={course} deck={deck} onStart={(id) => go(dailyPath(course, id))} />
+        <CardStack key={course} course={course} deck={deck} onStart={(id) => go(dailyPath(course, id))} />
       </div>
       <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}
         onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox}

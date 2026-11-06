@@ -4,15 +4,30 @@ import { cx } from "../ui/cx";
 import { MouseEvent, useEffect, useState } from "react";
 import { api, Texts } from "../api";
 import { go } from "../App";
+import { DEFAULT_COURSE } from "../courseIds";
+import { dailyPath, practicePath, validCourseId } from "../courseNavigation";
 
 const host = (url: string) => {
   try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return "the original page"; }
 };
 
-export function TextsPage() {
+export function TextsPage({ course = DEFAULT_COURSE }: { course?: string }) {
+  return <CourseTexts key={course} course={course} />;
+}
+
+function CourseTexts({ course }: { course: string }) {
   const [texts, setTexts] = useState<Texts | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [open, setOpen] = useState<string>("all");
-  useEffect(() => { void api.texts().then(setTexts); }, []);
+  useEffect(() => {
+    let ignore = false;
+    setError(null);
+    if (!validCourseId(course)) { setError("This course address isn't valid."); return; }
+    void api.texts(course).then(value => { if (!ignore) setTexts(value); }, (e: Error) => { if (!ignore) setError(e.message); });
+    return () => { ignore = true; };
+  }, [course, attempt]);
+  if (error) return <div className={cx(pages.tx, "tx")}><p role="alert">{error}</p><button className={shared["btn-secondary"]} onClick={() => setAttempt(n => n + 1)}>Try again</button><p><a href="#/courses">All courses</a></p></div>;
   if (!texts) return <p className={cx(pages.txLoading, "tx-loading")}>Loading texts…</p>;
 
   const levels = texts.levels.filter((l) => open === "all" || l.id === open);
@@ -25,7 +40,8 @@ export function TextsPage() {
   return (
     <div className={cx(pages.tx, "tx")}>
       <header className={cx(pages.txHead, "tx-head")}>
-        <h1>Start small, build up</h1>
+        <h1>{course === DEFAULT_COURSE ? "Start small, build up" : "Practice texts"}</h1>
+        <a href={`#${practicePath(course)}`}>Course home</a>
         <p>{texts.note}</p>
       </header>
 
@@ -45,7 +61,7 @@ export function TextsPage() {
           <ul className={cx(pages.txList, "tx-list")}>
             {l.items.map((i) => (
               <li key={i.id}>
-                <button className={cx(pages.txRow, "tx-row")} onClick={() => go(`/studio/${l.id}/${i.id}`)} aria-label={`Practise “${i.text.slice(0, 40)}”`}>
+                <button className={cx(pages.txRow, "tx-row")} onClick={() => go(practicePath(course, l.id, i.id))} aria-label={`Practise “${i.text.slice(0, 40)}”`}>
                   <span className={cx(pages.txSay, "tx-say")}>
                     <span className={cx(pages.txText, `tx-text${l.kind === "passage" ? " passage" : ""}`)}>{i.text}</span>
                     <span className={cx(pages.txHint, "tx-hint")}>{i.hint}</span>
@@ -62,7 +78,8 @@ export function TextsPage() {
         </section>
       ))}
 
-      <p className={cx(pages.txFoot, "tx-foot")}>Looking for the guided exercises? They're in <a href="#/library">Exercises</a>, and today's is always waiting on <a href="#/desk">the desk</a>.</p>
+      {total === 0 && <p>This course has no practice texts yet.</p>}
+      <p className={cx(pages.txFoot, "tx-foot")}>{course === DEFAULT_COURSE ? <>Looking for the guided exercises? They're in <a href="#/library">Exercises</a>, and today's is always waiting on <a href="#/desk">the desk</a>.</> : <a href={`#${dailyPath(course)}`}>Today's cards</a>}</p>
     </div>
   );
 }
