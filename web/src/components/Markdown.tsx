@@ -2,9 +2,10 @@ import { markdown } from "../ui/markdown";
 import ReactMarkdown, { defaultUrlTransform, type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useId, useMemo, type KeyboardEvent } from "react";
+import { courseLink, coursePicture } from "../courseMarkdown";
 
 /** Course-local images use the existing media endpoint; arbitrary local paths stay blocked. */
-export const picture = (src: string) => (/^https?:\/\//i.test(src) ? src : /^images\/[\w.-]+$/.test(src) ? `/texts/${src}` : undefined);
+export const picture = coursePicture;
 
 // Keyboard scrolling inside a document must not trigger exercise/recording shortcuts.
 function readingKeys(event: KeyboardEvent<HTMLElement>) {
@@ -38,7 +39,7 @@ const components: Components = {
 };
 
 /** One safe, shared reading surface for any course. Raw HTML is never executed. */
-export function Markdown({ src, className, headingOffset = 0 }: { src: string; className?: string; headingOffset?: 0 | 1 | 2 }) {
+export function Markdown({ src, className, headingOffset = 0, course, chapters }: { src: string; className?: string; headingOffset?: 0 | 1 | 2; course?: string; chapters?: readonly string[] }) {
   const id = useId();
   const renderers = useMemo<Components>(() => ({ ...components,
     ...(headingOffset ? Object.fromEntries([1, 2, 3, 4, 5, 6].map(level => [`h${level}`, `h${Math.min(6, level + headingOffset)}`])) : {}),
@@ -51,8 +52,9 @@ export function Markdown({ src, className, headingOffset = 0 }: { src: string; c
         components={renderers}
         skipHtml
         urlTransform={(url, key) => {
-          if (key === "src") return picture(url);
-          return /^(https?:|#|mailto:)/i.test(url) ? defaultUrlTransform(url) : undefined;
+          if (key === "src") return picture(url, course);
+          const href = courseLink(url, course, chapters);
+          return href === undefined ? undefined : defaultUrlTransform(href);
         }}
       >{src}</ReactMarkdown>
     </div>

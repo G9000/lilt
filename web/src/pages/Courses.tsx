@@ -60,7 +60,7 @@ function CourseList() {
                 <KindTile kind={c.kind} />
                 <span className={cx(pages.coCard, "co-card")}>
                   <b>{c.title}</b>
-                  <small>{kindOf(c.kind).label}{kindOf(c.kind).practice(c) ? "" : " · practice coming later"}</small>
+                  <small>{kindOf(c.kind).label}</small>
                   <span className={cx(pages.coSum, "co-sum")}>{c.summary}</span>
                   <Status c={c} />
                 </span>

@@ -2,6 +2,8 @@ import { shared } from "../ui/shared";
 import { roomStyles } from "./roomStyles";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, AREA_LABEL, Deck, Today } from "../api";
+import { DEFAULT_COURSE } from "../courseIds";
+import { dailyPath, practicePath } from "../courseNavigation";
 import { go } from "../App";
 import { updateNotice } from "../desktopUpdate";
 import { openAppUpdates, useDesktopUpdate } from "../useDesktopUpdate";
@@ -19,7 +21,7 @@ const load = (k: string): string[] => { try { return JSON.parse(localStorage.get
 const save = (k: string, v: string[]) => { try { localStorage.setItem(k, JSON.stringify(v.slice(-200))); } catch { /* private mode: forget */ } };
 const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
-function build(today: Today | null, deck: Deck | null, recovered: number): Note[] {
+function build(today: Today | null, deck: Deck | null, recovered: number, course: string): Note[] {
   const out: Note[] = [];
   const date = deck?.local_date ?? today?.local_date ?? "";
   const r = today?.latest_review;
@@ -32,11 +34,11 @@ function build(today: Today | null, deck: Deck | null, recovered: number): Note[
   }
   if (deck && deck.open_stage > 1) {
     const ch = deck.open_chapter;
-    out.push({ id: `stage-${deck.open_stage}`, kind: "stage", title: ch ? `${ch.title} is open` : `Stage ${deck.open_stage} is open`, to: ch ? `/studio/${ch.id}` : "/studio", when: "Today",
+    out.push({ id: `${course === DEFAULT_COURSE ? "" : `${course}/`}stage-${deck.open_stage}`, kind: "stage", title: ch ? `${ch.title} is open` : `Stage ${deck.open_stage} is open`, to: practicePath(course, ch?.id), when: "Today",
       body: ch ? "Read its steps when you have a minute. New cards arrive a couple at a time, no rush." : "New cards arrive a couple at a time, no rush." });
   }
   if (deck?.paused) {
-    out.push({ id: `rest-${date}`, kind: "rest", title: "Resting today", to: "/deck", when: "Today",
+    out.push({ id: `${course === DEFAULT_COURSE ? "" : `${course}/`}rest-${date}`, kind: "rest", title: "Resting today", to: dailyPath(course), when: "Today",
       body: "Cards that hurt stay paused until you feel ready. Open Today to resume. Nothing is lost." });
   } else if (today?.reminder.due && deck && !deck.all_done) {
     const left = deck.items.filter((i) => !i.done_today).length;
@@ -50,17 +52,22 @@ function build(today: Today | null, deck: Deck | null, recovered: number): Note[
   return out;
 }
 
-export function useInbox(deck: Deck | null, recovered: number) {
+export function useInbox(deck: Deck | null, recovered: number, course = DEFAULT_COURSE) {
   const update = useDesktopUpdate();
   const [today, setToday] = useState<Today | null>(null);
   const [read, setRead] = useState(() => load(READ));
   const [cleared, setCleared] = useState(() => load(CLEARED));
   const [open, setOpen] = useState(false);
-  useEffect(() => { void api.today().then(setToday, () => setToday(null)); }, [deck]);
+  useEffect(() => {
+    let ignore = false;
+    setToday(null);
+    if (course === DEFAULT_COURSE) void api.today().then((value) => { if (!ignore) setToday(value); }, () => {});
+    return () => { ignore = true; };
+  }, [deck, course]);
   const notes = useMemo(() => {
     const notice = updateNotice(update);
-    return [...(notice ? [notice] : []), ...build(today, deck, recovered)].filter((n) => !cleared.includes(n.id));
-  }, [today, deck, recovered, cleared, update]);
+    return [...(notice ? [notice] : []), ...build(course === DEFAULT_COURSE ? today : null, deck, recovered, course)].filter((n) => !cleared.includes(n.id));
+  }, [today, deck, recovered, cleared, update, course]);
   const unread = notes.filter((n) => !read.includes(n.id)).length;
   const markRead = (ids: string[]) => setRead((r) => { const v = [...new Set([...r, ...ids])]; save(READ, v); return v; });
   return {

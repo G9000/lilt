@@ -58,6 +58,7 @@ fn rate(app: &App, card: &str, take: Option<String>, rating: &str) -> serde_json
     cards::rate(
         app,
         RateReq {
+            request_id: None,
             card_id: card.into(),
             take_id: take,
             rating: rating.into(),
@@ -150,7 +151,16 @@ fn rating_schedules_card_is_idempotent_and_again_returns_today() {
     );
     let q = queue_ids(&app);
     let (first, second) = (q[1].0.clone(), q[2].0.clone());
-    let take = new_take(&app, &s.id, T::default(), "audio/wav");
+    let take = new_take(
+        &app,
+        &s.id,
+        T {
+            prompt: "ref.count-1-10",
+            exercise: None,
+            ..T::default()
+        },
+        "audio/wav",
+    );
     let r = rate(&app, &first, Some(take.clone()), "good");
     assert_eq!(r["next"], "tomorrow");
     assert_eq!(
@@ -478,6 +488,7 @@ fn before_texts_come_back_for_a_before_and_after() {
         cards::rate(
             &app,
             RateReq {
+                request_id: None,
                 card_id: "text.warmup.hum-to-hello".into(),
                 take_id: None,
                 rating: "later".into()
@@ -491,6 +502,7 @@ fn before_texts_come_back_for_a_before_and_after() {
         cards::rate(
             &app,
             RateReq {
+                request_id: None,
                 card_id: "text.start-here.baseline-read".into(),
                 take_id: None,
                 rating: "good".into()

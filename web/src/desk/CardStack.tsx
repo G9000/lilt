@@ -34,7 +34,8 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
   const byId = new Map(items.map((i) => [i.card.id, i]));
   const pile = order.filter((id) => byId.has(id));
   const n = pile.length;
-  const done = !!deck && !deck.paused && n === 0;
+  const empty = !!deck && !deck.paused && n === 0;
+  const done = empty && !!deck.all_done;
 
   const cycle = (dir: 1 | -1) => setOrder((o) => (o.length < 2 ? o : dir > 0 ? [...o.slice(1), o[0]] : [o[o.length - 1], ...o.slice(0, -1)]));
   const onKey = (e: React.KeyboardEvent) => {
@@ -44,7 +45,7 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onStart(pile[0] ?? null); }
   };
   const top = pile[0] ? byId.get(pile[0])! : null;
-  const label = !deck ? "Today's practice, loading" : done ? "Today's practice is done" : deck.paused ? "Resting today"
+  const label = !deck ? "Today's practice, loading" : done ? "Today's practice is done" : empty ? "No cards due today" : deck.paused ? "Resting today"
     : `Today's practice: ${n} card${n === 1 ? "" : "s"}. Card on top: ${top?.card.front}. Swipe or use the arrow keys to see the others; press Enter to start it.`;
 
   // The whole pile can be moved by its grip (swiping the cards still flips through them). Where
@@ -85,9 +86,9 @@ export function CardStack({ deck, onStart }: { deck: Deck | null; onStart: (card
       style={{ x: sx, y: sy }} drag dragListener={false} dragControls={grip} dragMomentum={false}
       onDragStart={() => setMoving(true)} onDragEnd={placed}>
       <div className={["cs-cards", roomStyles["cs-cards"]].join(" ")}>
-        {!deck || done || deck.paused ? (
-          <StaticCard title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : "All done"}
-            sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : "The lights are on. Nice work."} onStart={() => onStart(null)} />
+        {!deck || empty || deck.paused ? (
+          <StaticCard title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : done ? "All done" : "No cards due today"}
+            sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : done ? "The lights are on. Nice work." : "Explore a chapter whenever you like."} onStart={() => onStart(null)} />
         ) : (
           <AnimatePresence initial>
             {pile.slice(0, 4).map((id, d) => {

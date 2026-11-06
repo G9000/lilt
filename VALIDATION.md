@@ -1,5 +1,13 @@
 # Lilt: validation report
 
+## 7 November 2026: Practice any course
+
+All installed courses have reading screens, chapter flashcards and isolated daily schedules. The
+room and desk remember the selected course. Server tests passed 123/123, web tests 161/161, new
+Chrome scenarios 6/6, existing voice Practice 24/24 and Flashcards 22/22. Types, strict server
+Clippy, formatting and scratch production build passed; Python passed 47 with one skip.
+See [course practice validation](docs/validation/2026-11-07-any-course-practice.md) for scope and limits.
+
 ## 7 November 2026: Windows desktop app
 
 Built the unsigned Windows x64 NSIS installer with bundled server, Python, analysis dependencies,

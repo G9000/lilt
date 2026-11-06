@@ -2,8 +2,8 @@
 
 Lilt is a local, single-user learning and practice app. Its first working course is voice practice,
 originally built from `voice_feminization_build_brief.md` (PRD v1.1, 26 Oct 2026). Course storage
-and editing support other subjects; the practice screen, daily deck and analysis still serve
-the built-in voice course. This file records the
+and editing, reading screens, chapter flashcards and daily review queues support other subjects.
+Recording, analysis and guided feedback remain specific to the built-in voice course. This file records the
 stack, the main contracts and the consequential assumptions. The README covers
 setup; `VALIDATION.md` covers what was actually verified.
 

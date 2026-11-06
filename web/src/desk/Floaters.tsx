@@ -6,6 +6,8 @@ import { ClockWidget, PlantWidget } from "./Desk";
 import { openSettings } from "./SettingsSheet";
 import { SettingsAppIcon } from "./icons";
 import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
+import { DEFAULT_COURSE } from "../courseIds";
+import { flashcardsPath } from "../courseNavigation";
 import { Illustration } from "../components/Illustrations";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
@@ -281,17 +283,17 @@ function NewsWidget() {
  * Flashcards, in the room: a small pile of cards, the top one drawn with an open study book and a
  * card rising from it, then the chapter you're on and a segment per card. A click opens it.
  */
-function FlashcardsWidget({ texts }: { texts: Texts }) {
-  const { last, runs } = loadRuns();
+function FlashcardsWidget({ texts, course }: { texts: Texts; course: string }) {
+  const { last, runs } = loadRuns(course);
   // The chapter you were last on, else the first one you haven't finished.
   const level = texts.levels.find((l) => l.id === last)
-    ?? texts.levels.find((l) => { const c = chapterCards(l); return progress(c, runs[l.id] ?? EMPTY).got < c.length; })
+    ?? texts.levels.find((l) => { const c = chapterCards(l, course); return progress(c, runs[l.id] ?? EMPTY).got < c.length; })
     ?? texts.levels[0];
   if (!level) return null;
-  const cards = chapterCards(level), run = runs[level.id] ?? EMPTY;
+  const cards = chapterCards(level, course), run = runs[level.id] ?? EMPTY;
   const { got, total } = progress(cards, run);
   return (
-    <button className={["fl-cards", roomStyles["fl-cards"]].join(" ")} onClick={() => go(`/flashcards/${level.id}`)} aria-label={`Flashcards: ${level.title}, ${got} of ${total} cards done`}>
+    <button className={["fl-cards", roomStyles["fl-cards"]].join(" ")} onClick={() => go(flashcardsPath(course, level.id))} aria-label={`Flashcards: ${level.title}, ${got} of ${total} cards done`}>
       <span className={["fl-cards-back b2", roomStyles["fl-cards-back"]].join(" ")} aria-hidden="true" />
       <span className={["fl-cards-back b1", roomStyles["fl-cards-back"]].join(" ")} aria-hidden="true" />
       <span className={["fl-cards-card", roomStyles["fl-cards-card"]].join(" ")} aria-hidden="true">
@@ -323,14 +325,19 @@ function YarnWidget() {
   );
 }
 
-export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boolean }) {
+export function RoomFloaters({ deck, inside, course = DEFAULT_COURSE }: { deck?: Deck | null; inside: boolean; course?: string }) {
   const [note, setNote] = useState<string | null>(null);
   // The second note: null when there isn't one. `added` opens it for writing as it appears.
   const [note2, setNote2] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
   const [texts, setTexts] = useState<Texts | null>(null);
   // Read again each time you come back to the room, so the widget shows where you got to.
-  useEffect(() => { if (!inside) void api.texts().then(setTexts, () => setTexts(null)); }, [inside]);
+  useEffect(() => {
+    let ignore = false;
+    setTexts(null);
+    if (!inside) void api.texts(course).then((value) => { if (!ignore) setTexts(value); }, () => {});
+    return () => { ignore = true; };
+  }, [inside, course]);
   const [writing, setWriting] = useState<Record<NoteId, boolean>>({ note: false, note2: false });
   const box = useRef<HTMLDivElement>(null);
   const store = useLayoutStore();
@@ -425,7 +432,7 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
       )}
       {texts && (
         <Widget id="flashcards" delay={-4.2} label="Flashcards">
-          <FlashcardsWidget texts={texts} />
+          <FlashcardsWidget texts={texts} course={course} />
         </Widget>
       )}
       <Widget id="yarn" delay={-5} label="Ball of yarn">

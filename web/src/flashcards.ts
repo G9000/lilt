@@ -1,6 +1,7 @@
 // Flashcards: a chapter dealt out as cards, gone through at your own pace, apart from Today.
 import type { TextItem, TextLevel } from "./api";
 import { chapterSteps, howTo, isCare } from "./chapters.ts";
+import { DEFAULT_COURSE } from "./courseIds.ts";
 
 export type Flashcard =
   /** The chapter's opening paragraph (or its whole intro, when that isn't written as steps). */
@@ -12,10 +13,11 @@ export type Flashcard =
   | { kind: "text"; id: string; item: TextItem };
 
 /** A chapter as cards: its opening, each step, its video, then each text. */
-export function chapterCards(level: TextLevel): Flashcard[] {
+export function chapterCards(level: TextLevel, course = DEFAULT_COURSE): Flashcard[] {
   const out: Flashcard[] = [];
-  const steps = chapterSteps(level.basis);
-  const intro = steps ? steps.lede : howTo(level.basis).trim();
+  const voice = course === DEFAULT_COURSE;
+  const steps = voice ? chapterSteps(level.basis) : null;
+  const intro = steps ? steps.lede : (voice ? howTo(level.basis) : level.basis).trim();
   if (intro) out.push({ kind: "lede", id: `${level.id}:intro`, markdown: intro });
   const counted = (steps?.tips ?? []).filter((t) => !isCare(t.label)).length;
   let n = 0;
@@ -59,16 +61,17 @@ export const progress = (cards: Flashcard[], run: Run) => ({ got: cards.filter((
 
 /* Runs are kept in this browser, one per chapter, with the chapter you were last on. */
 const KEY = "lilt.flashcards.v1";
+const storageKey = (course: string) => course === DEFAULT_COURSE ? KEY : `${KEY}.course.${encodeURIComponent(course)}`;
 type Saved = { last?: string; runs: Record<string, Run> };
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 const cardIds = (value: unknown): string[] => Array.isArray(value)
   ? [...new Set(value.filter((id): id is string => typeof id === "string" && id.length > 0))] : [];
 
-export function loadRuns(): Saved {
+export function loadRuns(course = DEFAULT_COURSE): Saved {
   // Chapter ids come from editable courses, so none should inherit Object's properties.
   const saved: Saved = { runs: Object.create(null) };
   try {
-    const value: unknown = JSON.parse(localStorage.getItem(KEY) ?? "null");
+    const value: unknown = JSON.parse(localStorage.getItem(storageKey(course)) ?? "null");
     if (!record(value)) return saved;
     if (typeof value.last === "string" && value.last) saved.last = value.last;
     if (record(value.runs)) {
@@ -79,9 +82,9 @@ export function loadRuns(): Saved {
   } catch { /* Unavailable storage or broken JSON starts a fresh run. */ }
   return saved;
 }
-export function saveRun(chapter: string, run: Run) {
-  const s = loadRuns();
+export function saveRun(chapter: string, run: Run, course = DEFAULT_COURSE) {
+  const s = loadRuns(course);
   s.runs[chapter] = run;
   s.last = chapter;
-  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* private mode: the run lasts until you leave */ }
+  try { localStorage.setItem(storageKey(course), JSON.stringify(s)); } catch { /* private mode: the run lasts until you leave */ }
 }

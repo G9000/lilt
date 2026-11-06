@@ -24,11 +24,9 @@ analysis for other course subjects.
 - **Your copy of a course** lives in `<data>/courses/<id>`, made by your AI, with `.history` (every
   change, undoable) and `.base` (the original it follows). Server: `syllabus.rs` (copy, checks,
   history, undo, reset) and `updates.rs` (bringing in changes to the original).
-- **A kind of practice is code.** `kind` in `course.md` says how a course is practised. The web app
-  keeps a registry of kinds in `web/src/courses.tsx`: each kind's name, tile, and the screen that
-  practises it. `voice` is registered with Practice (`#/studio`). `language` is registered with a
-  name and tile and no screen yet. A course whose kind has no screen still lists in Courses, and
-  your AI can still edit it.
+- **Kinds share a practice screen.** The registry in `web/src/courses.tsx` supplies names and tiles.
+  Every course can use the shared home, chapters and daily deck at `#/learn/<id>`; unfamiliar kinds
+  use the same screen. The built-in `voice` course keeps its recorder at `#/studio` and `#/deck`.
 - **Text ids** name a course's texts for takes, cards and progress: `text.<chapter>.<text>` for the
   app's course (voice, unchanged from before courses), `<course>/text.<chapter>.<text>` for any other.
   One rule, in `courses::text_id` (server) and `web/src/courseIds.ts` (web), so two courses can
@@ -44,20 +42,24 @@ analysis for other course subjects.
   also at `/texts/images` and `/texts/audio`).
 - MCP: `courses_list`, and every `syllabus_*` tool takes `course`.
 - The Courses app (`#/courses`): each course, your copy, history, undo, reset, updates.
+- Practice (`#/learn/<id>`), chapter flashcards (`#/flashcards?course=<id>`) and daily cards
+  (`#/learn/<id>/today`). Open **Courses → a course → Practise**. The room and desk remember this
+  course in the browser; explicit voice links still open voice. A missing course shows an error.
+- `GET /api/deck/today?course=<id>` and `POST /api/deck/review?course=<id>`: separate schedules,
+  ratings and participation for each course. Omission still means voice. Generic courses use
+  their texts and the learner's Again/Hard/Good/Easy ratings without requiring a recording.
+  Voice reference tasks, exercises, check-ins and comfort plan pauses belong only to voice.
+  A review may include `request_id`; retry the same operation with the same id so a lost reply
+  cannot count the rating twice. The app supplies this id for generic daily ratings.
+- Generic card state and review logs live in `<data>/cards/<id>/`; voice keeps `<data>/cards/`.
+  Backups include both. Chapter flashcard runs stay in the browser, isolated by course.
 
-## Still the app's course only
+## Voice-specific tools
 
-These follow the app's course (voice) today. A second kind of practice would decide how far to take
-each:
-
-- **Practice** (`web/src/pages/Voice.tsx`) loads the app's course; its sidebar, home page and
-  chapters are voice's.
-- **Flashcards** (`web/src/pages/Flashcards.tsx`, cards from `web/src/flashcards.ts`) deals the app's
-  course; the cards come from any chapter's intro and texts, so another course would only need its id.
-- **Today's cards** (`server/src/practice/cards.rs`) are built from the app's course, plus the voice
-  exercises and the reference phrase.
-- **Recordings** names a take by its chapter only for the app's course.
-- **Analysis** (`analysis/`) measures pitch, which suits voice and would also suit tones.
+The built-in voice course retains its recorder, listening and comparison screens, guided sessions,
+comfort reports, pitch measurements and `voice_*` MCP tools. Other courses use self-directed tasks
+and text review. They do not create voice sessions or request a microphone. Additional kinds of
+recording or analysis would need their own implementation and validation.
 
 ## Adding a course
 
@@ -65,27 +67,22 @@ each:
    `index.md`, and one or more `NN-name.md` chapters. Put pictures in `images/`.
    Optional front matter: `area` (the skill it trains, for Progress), `check_in` (the text to
    record every visit), `exercises` (built-in exercises that join it in Today) and `today: false`
-   (no Today cards). Without `area` or `exercises`, the voice course's built-in tables by chapter
-   id apply, so copies made before course version 2 keep working.
+   (no Today cards). The built-in voice course uses `check_in` and `exercises`, with its original
+   fallback tables for older copies. Other courses use their text cards without those voice additions.
    A chapter with `draft: true` in its front matter (as "New chapter" makes) shows in Practice but
    makes no cards in Today until the line is gone.
 2. Pick its `kind`. An existing one (`voice`, `language`) gets that kind's name and tile; a new word
    lists as a plain "Course" until the kind is registered.
 3. Restart Lilt (with Docker, `docker compose up -d --build`). It shows in Courses, and your AI can
-   make your own copy of it.
+   make your own copy of it. Choose **Practise** to open it; no new screen is needed.
 
 ## Adding a kind of practice
 
-1. **Register it** in `KINDS` in `web/src/courses.tsx`: a label, a tile, and `practice`, the route of
-   its screen for a course (or null while there is none).
-2. **Add the route** in `web/src/App.tsx`, and the window in `WINDOWS` in `web/src/desk/Desk.tsx`
-   if it opens on the desk.
-3. **Build the screen.** Load the course with `api.texts(course.id)`. Record with the existing
-   recorder (`Dock` in `Voice.tsx`) or your own, and name each text's takes with
-   `textId(course.id, chapter, text)` so its takes and progress stay with that course.
-4. **Feedback**, if the kind needs a different measurement: add it to `analysis/` and to the take's
-   analysis run, as pitch is today.
-5. **Cards**, if it should join Today: build its cards in `cards.rs` with `courses::text_id`.
+No code is needed for ordinary reading and practice courses. Optionally register a new label and
+tile in `KINDS`. If a subject needs specialised interaction, add that screen and route separately,
+load `api.texts(course.id)` and use `textId(course.id, chapter, text)` to retain course isolation.
+Any new measurement or feedback needs its own evidence contract; voice measurements are not a
+general grading system.
 
 ## Next
 

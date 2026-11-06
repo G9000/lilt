@@ -1,6 +1,7 @@
 //! Today's home screen, the card deck, exercises, the plan, and progress.
 
 use crate::app::Shared;
+use crate::courses;
 use crate::http::R;
 use crate::practice::model::Plan;
 use crate::practice::{cards, exercises, progress};
@@ -8,7 +9,7 @@ use crate::recordings::model::*;
 use crate::{analysis, coach::routes::review_view, recordings, util};
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     routing::{get, post},
 };
 use serde::Deserialize;
@@ -118,11 +119,26 @@ async fn plan_history(State(app): State<Shared>) -> Json<Vec<Plan>> {
     Json(app.plan_history())
 }
 
-async fn deck_today(State(app): State<Shared>) -> R<Json<Value>> {
-    let mut v = cards::today_queue(&app)?;
+#[derive(Deserialize)]
+struct CourseQuery {
+    course: Option<String>,
+}
+
+impl CourseQuery {
+    fn pick(&self, app: &crate::app::App) -> anyhow::Result<courses::Course> {
+        match &self.course {
+            Some(id) => courses::get(app, id),
+            None => courses::pick(app, None),
+        }
+    }
+}
+
+async fn deck_today(State(app): State<Shared>, Query(q): Query<CourseQuery>) -> R<Json<Value>> {
+    let course = q.pick(&app)?;
+    let mut v = cards::today_queue_for_course(&app, &course)?;
     // Practice days this week, for the calendar on the room's wall.
     v["participation"] =
-        progress::participation(&app, v["local_date"].as_str().unwrap_or_default());
+        cards::participation(&app, &course, v["local_date"].as_str().unwrap_or_default());
     Ok(Json(v))
 }
 
@@ -130,10 +146,19 @@ async fn deck_session(State(app): State<Shared>) -> R<Json<Session>> {
     Ok(Json(recordings::deck_session(&app)?))
 }
 
-async fn deck_review(State(app): State<Shared>, Json(req): Json<cards::RateReq>) -> R<Json<Value>> {
+async fn deck_review(
+    State(app): State<Shared>,
+    Query(q): Query<CourseQuery>,
+    Json(req): Json<cards::RateReq>,
+) -> R<Json<Value>> {
+    let course = q.pick(&app)?;
     let ouch = req.rating == "ouch";
     let take = req.take_id.clone();
-    let mut out = cards::rate(&app, req)?;
+    let mut out = if course.id == courses::DEFAULT {
+        cards::rate(&app, req)?
+    } else {
+        cards::rate_for_course(&app, &course, req)?
+    };
     if ouch {
         // Record the comfort report on the session the card was practised in.
         if let Some(sid) = take.and_then(|t| app.take(&t).ok()).map(|t| t.session_id) {
@@ -155,7 +180,7 @@ async fn deck_review(State(app): State<Shared>, Json(req): Json<cards::RateReq>)
             )?;
         }
     }
-    out["deck"] = cards::today_queue(&app)?;
+    out["deck"] = cards::today_queue_for_course(&app, &course)?;
     Ok(Json(out))
 }
 

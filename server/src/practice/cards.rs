@@ -1,21 +1,27 @@
-//! Voice cards with spaced repetition ("Anki for your voice").
+//! Course cards with spaced repetition, with recording and comfort support for voice practice.
 //!
 //! Cards are generated from the content (reference phrase, exercises, practice texts);
 //! only their scheduling state and the review log live in the data root:
-//! `cards/state.json` (atomic rewrite) and `cards/reviews.jsonl` (append-only).
+//! `cards/state.json` (atomic rewrite) and `cards/reviews.jsonl` (append-only) for voice;
+//! other courses keep those files under `cards/<course>/`.
 //! Ratings are the learner's own judgement. Pitch measurements never set a rating.
 //! Differences from Anki, on purpose: a daily cap so missed days never become a backlog,
 //! and an "it hurt" answer that suspends the card and pauses the plan.
 
 use crate::app::App;
+use crate::courses::{self, Course, syllabus};
 use crate::practice::model::Plan;
 use crate::store;
 use crate::util;
-use anyhow::{Result, anyhow, bail};
-use chrono::{Duration, NaiveDate};
+use anyhow::{Result, anyhow, bail, ensure};
+use chrono::{Datelike, Duration, NaiveDate};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
+
+#[cfg(test)]
+#[path = "course_card_tests.rs"]
+mod course_tests;
 
 pub const REFERENCE_CARD: &str = "ref.daily";
 const START_EASE: f64 = 2.5;
@@ -82,6 +88,8 @@ impl CardState {
 pub struct ReviewLog {
     pub card_id: String,
     pub take_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request_id: Option<String>,
     pub rating: String,
     pub reviewed_utc: String,
     pub local_date: String,
@@ -105,32 +113,51 @@ fn level_area(level: &str) -> &'static str {
 
 /// All cards in introduction order. Exercises join the stage they fit.
 pub fn all_cards(app: &App) -> Vec<Card> {
+    cards_from_texts(app, courses::DEFAULT, syllabus::texts(app))
+}
+
+/// The selected course's cards, without voice tasks in other courses.
+pub fn all_cards_for_course(app: &App, course: &Course) -> Result<Vec<Card>> {
+    if course.id == courses::DEFAULT {
+        return Ok(all_cards(app));
+    }
+    Ok(cards_from_texts(
+        app,
+        &course.id,
+        syllabus::course_texts(app, course)?,
+    ))
+}
+
+fn cards_from_texts(app: &App, course: &str, texts: Value) -> Vec<Card> {
+    let voice = course == courses::DEFAULT;
     let reg = app.registry.read().unwrap();
     let mut out = vec![];
-    let ref_text = app.prompts["reference"]["text"]
-        .as_str()
-        .unwrap_or("Count from one to ten.")
-        .to_string();
-    let ref_prompt = app.prompts["reference"]["prompt_id"]
-        .as_str()
-        .unwrap_or("ref.count-1-10")
-        .to_string();
-    out.push(Card {
-        id: REFERENCE_CARD.into(),
-        stage: 0,
-        deck: "reference".into(),
-        deck_title: "Reference".into(),
-        kind: "reference".into(),
-        front: "One, two, three, four, five, six, seven, eight, nine, ten.".into(),
-        hint: format!("{ref_text} Same every day, so your recordings stay comparable."),
-        area: "baseline".into(),
-        level_id: "automatic".into(),
-        text_kind: "automatic".into(),
-        exercise_id: None,
-        exercise_version: None,
-        prompt_id: ref_prompt,
-        source: "Lilt reference task (NHS Fife automatic speech)".into(),
-    });
+    if voice {
+        let ref_text = app.prompts["reference"]["text"]
+            .as_str()
+            .unwrap_or("Count from one to ten.")
+            .to_string();
+        let ref_prompt = app.prompts["reference"]["prompt_id"]
+            .as_str()
+            .unwrap_or("ref.count-1-10")
+            .to_string();
+        out.push(Card {
+            id: REFERENCE_CARD.into(),
+            stage: 0,
+            deck: "reference".into(),
+            deck_title: "Reference".into(),
+            kind: "reference".into(),
+            front: "One, two, three, four, five, six, seven, eight, nine, ten.".into(),
+            hint: format!("{ref_text} Same every day, so your recordings stay comparable."),
+            area: "baseline".into(),
+            level_id: "automatic".into(),
+            text_kind: "automatic".into(),
+            exercise_id: None,
+            exercise_version: None,
+            prompt_id: ref_prompt,
+            source: "Lilt reference task (NHS Fife automatic speech)".into(),
+        });
+    }
     // Built-in exercises for a chapter with no `exercises:` (a copy made before course version 2).
     let exercise_after: BTreeMap<&str, Vec<&str>> = BTreeMap::from([
         ("warmup", vec!["nhsfife.forward-hum"]),
@@ -140,10 +167,7 @@ pub fn all_cards(app: &App) -> Vec<Card> {
             vec!["nhsfife.smile-brighten", "nhsfife.real-phrases-intonation"],
         ),
     ]);
-    let levels = crate::courses::syllabus::texts(app)["levels"]
-        .as_array()
-        .cloned()
-        .unwrap_or_default();
+    let levels = texts["levels"].as_array().cloned().unwrap_or_default();
     // A draft chapter (a blank "New chapter" not filled in yet) has placeholder texts: no cards.
     // A chapter marked `today: false` (Start here) has no cards either, and takes no stage, so the
     // next chapter opens on day one.
@@ -159,21 +183,27 @@ pub fn all_cards(app: &App) -> Vec<Card> {
         for it in l["items"].as_array().cloned().unwrap_or_default() {
             let iid = it["id"].as_str().unwrap_or_default();
             out.push(Card {
-                id: crate::courses::text_id(crate::courses::DEFAULT, lid, iid),
+                id: courses::text_id(course, lid, iid),
                 stage,
                 deck: lid.into(),
                 deck_title: ltitle.into(),
                 kind: "text".into(),
                 front: it["text"].as_str().unwrap_or_default().into(),
                 hint: it["hint"].as_str().unwrap_or_default().into(),
-                area: l["area"].as_str().unwrap_or(level_area(lid)).into(),
+                area: l["area"]
+                    .as_str()
+                    .unwrap_or(if voice { level_area(lid) } else { "practice" })
+                    .into(),
                 level_id: lid.into(),
                 text_kind: lkind.into(),
                 exercise_id: None,
                 exercise_version: None,
-                prompt_id: crate::courses::text_id(crate::courses::DEFAULT, lid, iid),
+                prompt_id: courses::text_id(course, lid, iid),
                 source: l["written_by"].as_str().unwrap_or_default().into(),
             });
+        }
+        if !voice {
+            continue;
         }
         let exercises: Vec<String> = match l["exercises"].as_array() {
             Some(a) => a
@@ -215,26 +245,65 @@ pub fn all_cards(app: &App) -> Vec<Card> {
     out
 }
 
-fn state_path(app: &App) -> std::path::PathBuf {
-    app.paths.root.join("cards").join("state.json")
+fn cards_dir(app: &App, course: &str) -> std::path::PathBuf {
+    let dir = app.paths.root.join("cards");
+    if course == courses::DEFAULT {
+        dir
+    } else {
+        dir.join(course)
+    }
 }
-fn log_path(app: &App) -> std::path::PathBuf {
-    app.paths.root.join("cards").join("reviews.jsonl")
+fn state_path(app: &App, course: &str) -> std::path::PathBuf {
+    cards_dir(app, course).join("state.json")
+}
+fn log_path(app: &App, course: &str) -> std::path::PathBuf {
+    cards_dir(app, course).join("reviews.jsonl")
 }
 
 pub fn load_state(app: &App) -> BTreeMap<String, CardState> {
-    store::read_json_opt(&state_path(app))
+    course_state(app, courses::DEFAULT)
+}
+
+fn course_state(app: &App, course: &str) -> BTreeMap<String, CardState> {
+    store::read_json_opt(&state_path(app, course))
         .ok()
         .flatten()
         .unwrap_or_default()
 }
 
 pub fn reviews(app: &App) -> Vec<ReviewLog> {
-    std::fs::read_to_string(log_path(app))
+    course_reviews(app, courses::DEFAULT)
+}
+
+fn course_reviews(app: &App, course: &str) -> Vec<ReviewLog> {
+    std::fs::read_to_string(log_path(app, course))
         .unwrap_or_default()
         .lines()
         .filter_map(|l| serde_json::from_str(l).ok())
         .collect()
+}
+
+/// Practice days for a course: recordings for voice, its own card reviews for other courses.
+pub fn participation(app: &App, course: &Course, today: &str) -> Value {
+    if course.id == courses::DEFAULT {
+        return crate::practice::progress::participation(app, today);
+    }
+    let td = date(today);
+    let monday = td - Duration::days(td.weekday().num_days_from_monday() as i64);
+    let logs = course_reviews(app, &course.id);
+    let mut days: Vec<_> = logs
+        .iter()
+        .filter(|l| {
+            NaiveDate::parse_from_str(&l.local_date, "%Y-%m-%d")
+                .is_ok_and(|d| d >= monday && d <= td)
+        })
+        .map(|l| l.local_date.clone())
+        .collect();
+    days.sort();
+    days.dedup();
+    let last = logs.iter().map(|l| &l.local_date).max();
+    json!({"days_this_week": days.len(), "dates_this_week": days, "last_practice_date": last,
+        "partial_sessions": 0, "practised_today": days.iter().any(|d| d == today)})
 }
 
 fn date(s: &str) -> NaiveDate {
@@ -376,13 +445,19 @@ pub struct QueueItem {
 /// Today's deck. Capped so a missed week never turns into a pile: overdue cards
 /// beyond the cap simply wait, oldest first, with no catch-up debt shown.
 pub fn today_queue(app: &App) -> Result<Value> {
+    today_queue_for_course(app, &courses::pick(app, None)?)
+}
+
+/// Today's capped deck and schedule for the selected course.
+pub fn today_queue_for_course(app: &App, course: &Course) -> Result<Value> {
+    let voice = course.id == courses::DEFAULT;
     let profile = app.profile();
     let (today, _) = util::local_now(&profile.timezone);
     let td = date(&today);
-    let cards = all_cards(app);
-    let state = load_state(app);
-    let logs = reviews(app);
-    let paused = app.current_plan().map(|p| p.paused).unwrap_or(false);
+    let cards = all_cards_for_course(app, course)?;
+    let state = course_state(app, &course.id);
+    let logs = course_reviews(app, &course.id);
+    let paused = voice && app.current_plan().map(|p| p.paused).unwrap_or(false);
     let cap = (profile.session_minutes as usize).clamp(4, 15);
     let new_per_day = profile.new_cards_per_day.min(5) as usize;
 
@@ -394,7 +469,11 @@ pub fn today_queue(app: &App) -> Result<Value> {
             .find(|l| l.card_id == id)
             .map(|l| l.rating.clone())
     };
-    let (warm, cool) = pinned(app, &cards);
+    let (warm, cool) = if voice {
+        pinned(app, &cards)
+    } else {
+        (None, None)
+    };
     let daily = |id: &str| {
         id == REFERENCE_CARD || warm.as_deref() == Some(id) || cool.as_deref() == Some(id)
     };
@@ -441,7 +520,11 @@ pub fn today_queue(app: &App) -> Result<Value> {
     if let Some(r) = cards.iter().find(|c| c.id == REFERENCE_CARD) {
         picked.push((r.clone(), "daily".into()));
     }
-    let before_after = before_after(app, &today);
+    let before_after = if voice {
+        before_after(app, &today)
+    } else {
+        vec![]
+    };
     for (c, _) in &before_after {
         picked.push((c.clone(), "before_after".into()));
     }
@@ -553,7 +636,7 @@ pub fn today_queue(app: &App) -> Result<Value> {
                     (r.to_string(), describe_interval(days))
                 })
                 .collect();
-            let eyes_off = kind == "review" && st.reps >= 3 && st.reps % 2 == 1;
+            let eyes_off = voice && kind == "review" && st.reps >= 3 && st.reps % 2 == 1;
             QueueItem {
                 card: c,
                 kind,
@@ -591,22 +674,48 @@ pub fn today_queue(app: &App) -> Result<Value> {
 pub struct RateReq {
     pub card_id: String,
     pub take_id: Option<String>,
+    #[serde(default)]
+    pub request_id: Option<String>,
     /// "again" | "hard" | "good" | "easy" | "ouch"
     pub rating: String,
 }
 
 /// Apply a rating. Idempotent per (card, take): repeating it changes nothing.
 pub fn rate(app: &App, req: RateReq) -> Result<Value> {
+    rate_for_course(app, &courses::pick(app, None)?, req)
+}
+
+/// Rate a card in the selected course; generic courses need only the learner's rating.
+pub fn rate_for_course(app: &App, course: &Course, req: RateReq) -> Result<Value> {
+    let voice = course.id == courses::DEFAULT;
+    if let Some(id) = &req.request_id {
+        ensure!(
+            !id.is_empty()
+                && id.len() <= 100
+                && id
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_')),
+            "request id must be 1 to 100 letters, digits, dashes or underscores"
+        );
+    }
     // "later" is "Not today" on a before-and-after.
     if !["again", "hard", "good", "easy", "ouch", "later"].contains(&req.rating.as_str()) {
         bail!("unknown rating");
     }
-    let cards = all_cards(app);
+    ensure!(
+        voice || ["again", "hard", "good", "easy"].contains(&req.rating.as_str()),
+        "this course uses Again, Hard, Good or Easy"
+    );
+    ensure!(
+        voice || req.take_id.is_none(),
+        "this course does not use voice recordings"
+    );
+    let cards = all_cards_for_course(app, course)?;
     // A before-and-after isn't a spaced card: it can only be put off ("later") or reported as hurting.
     let card = match cards.iter().find(|c| c.id == req.card_id) {
         Some(c) if req.rating != "later" => c.clone(),
         Some(_) => bail!("only a before-and-after can be put off"),
-        None => {
+        None if voice => {
             let (today, _) = util::local_now(&app.profile().timezone);
             before_after(app, &today)
                 .into_iter()
@@ -614,13 +723,32 @@ pub fn rate(app: &App, req: RateReq) -> Result<Value> {
                 .find(|c| c.id == req.card_id && (req.rating == "ouch" || req.rating == "later"))
                 .ok_or_else(|| anyhow!("card not found"))?
         }
+        None => bail!("card not found"),
     };
     if let Some(t) = &req.take_id {
-        app.take(t).map_err(|_| anyhow!("take does not exist"))?;
+        let take = app.take(t).map_err(|_| anyhow!("take does not exist"))?;
+        ensure!(
+            take.prompt_id == card.prompt_id,
+            "take does not belong to this card"
+        );
     }
     let _g = app.write_lock.lock().unwrap();
+    let logs = course_reviews(app, &course.id);
+    if let Some(request_id) = req.request_id.as_deref()
+        && let Some(previous) = logs
+            .iter()
+            .find(|l| l.request_id.as_deref() == Some(request_id))
+    {
+        ensure!(
+            previous.card_id == card.id
+                && previous.rating == req.rating
+                && previous.take_id == req.take_id,
+            "request id was already used for a different review"
+        );
+        return Ok(json!({"duplicate": true, "card_id": card.id}));
+    }
     if let Some(t) = &req.take_id
-        && reviews(app)
+        && logs
             .iter()
             .any(|l| l.card_id == card.id && l.take_id.as_deref() == Some(t.as_str()))
     {
@@ -628,13 +756,13 @@ pub fn rate(app: &App, req: RateReq) -> Result<Value> {
     }
     let profile = app.profile();
     let (today, _) = util::local_now(&profile.timezone);
-    let mut all = load_state(app);
+    let mut all = course_state(app, &course.id);
     let mut st = all.get(&card.id).cloned().unwrap_or_default();
     if st.ease == 0.0 {
         st.ease = START_EASE;
     }
     // A before-and-after isn't a new card, so it never uses up today's allowance.
-    if st.introduced_date.is_none() && card.level_id != "start-here" {
+    if st.introduced_date.is_none() && (!voice || card.level_id != "start-here") {
         st.introduced_date = Some(today.clone());
     }
     let before = st.interval_days;
@@ -653,7 +781,7 @@ pub fn rate(app: &App, req: RateReq) -> Result<Value> {
     } else if req.rating == "later" {
         st.due = Some((date(&today) + Duration::days(BEFORE_AFTER_SNOOZE_DAYS)).to_string());
         st.last_rating = Some("later".into());
-    } else if is_daily(app, &cards, &card.id) {
+    } else if voice && is_daily(app, &cards, &card.id) {
         // The reference and the pinned warm-up and cool-down aren't spaced; they're recorded each
         // day. Good or Easy still counts towards learning the warm-up chapter.
         st.reps += 1;
@@ -690,10 +818,11 @@ pub fn rate(app: &App, req: RateReq) -> Result<Value> {
     st.last_reviewed_utc = Some(util::now_utc());
     st.last_reviewed_date = Some(today.clone());
     all.insert(card.id.clone(), st.clone());
-    store::write_json(&state_path(app), &all)?;
+    store::write_json(&state_path(app, &course.id), &all)?;
     let log = ReviewLog {
         card_id: card.id.clone(),
         take_id: req.take_id.clone(),
+        request_id: req.request_id.clone(),
         rating: req.rating.clone(),
         reviewed_utc: util::now_utc(),
         local_date: today,
@@ -701,7 +830,7 @@ pub fn rate(app: &App, req: RateReq) -> Result<Value> {
         interval_after: st.interval_days,
         due_after: st.due.clone(),
     };
-    store::append_line(&log_path(app), &serde_json::to_string(&log)?)?;
+    store::append_line(&log_path(app, &course.id), &serde_json::to_string(&log)?)?;
     // Keep the rating with the recording too (it's the learner's own report).
     if let Some(t) = &req.take_id
         && let Ok(mut take) = app.take(t)
@@ -729,5 +858,5 @@ pub fn resume_suspended(app: &App) -> Result<()> {
             }
         }
     }
-    store::write_json(&state_path(app), &all)
+    store::write_json(&state_path(app, courses::DEFAULT), &all)
 }

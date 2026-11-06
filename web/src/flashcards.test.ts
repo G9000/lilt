@@ -140,3 +140,33 @@ test("unavailable browser storage does not interrupt a run", () => {
     assert.doesNotThrow(() => saveRun("pitch", EMPTY));
   });
 });
+
+test("courses keep separate chapter runs while voice retains its original storage", () => {
+  const original = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  const values = new Map<string, string>();
+  const voice = { got: ["pitch:intro"], order: [] };
+  values.set("lilt.flashcards.v1", JSON.stringify({ last: "pitch", runs: { pitch: voice } }));
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, value: {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => values.set(key, value),
+  } });
+  try {
+    assert.deepEqual(loadRuns("voice").runs.pitch, voice);
+    assert.equal(loadRuns("spanish").last, undefined);
+    saveRun("pitch", { got: [], order: ["pitch:intro"] }, "spanish");
+    saveRun("pitch", { got: ["pitch:text-glide"], order: [] }, "music");
+    assert.deepEqual(loadRuns().runs.pitch, voice);
+    assert.deepEqual(loadRuns("spanish").runs.pitch, { got: [], order: ["pitch:intro"] });
+    assert.deepEqual(loadRuns("music").runs.pitch, { got: ["pitch:text-glide"], order: [] });
+  } finally {
+    if (original) Object.defineProperty(globalThis, "localStorage", original);
+    else Reflect.deleteProperty(globalThis, "localStorage");
+  }
+});
+
+test("generic cards preserve the course's introduction without voice care rewriting", () => {
+  const chapter = level({ basis: "Read this.\n\n**Careful reading.** Find the subject.\n\n**On track when** you can explain it." });
+  const cards = chapterCards(chapter, "reading");
+  assert.deepEqual(cards.map(card => card.kind), ["lede", "text", "text"]);
+  assert.equal(cards[0].kind === "lede" && cards[0].markdown, chapter.basis);
+});

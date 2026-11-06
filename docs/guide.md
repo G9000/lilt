@@ -228,7 +228,14 @@ Monitor uploads and playback have an isolated check with locally generated media
      `cat-v2.webp` cutout). Swap them for other art of the same size, then re-measure the
      screen/coffee targets in `web/src/room/scene.ts` and object targets in
      `web/src/room/room-objects.css`. The look is documented in `DESIGN.md`.
-2. **Today** is your **voice deck**: Anki-style spaced repetition, but for your voice. The deck
+2. **Today** follows the course you opened for practice. **Courses → a course → Practise** opens
+   any installed course's home and chapters. The room, desk shortcuts and chapter flashcards remember
+   that course in this browser. Other courses use their texts and hints, with Again/Hard/Good/Easy
+   ratings to set the next review; no microphone is required. Each course keeps its own history.
+   You can read any chapter even before it enters the daily queue. Empty courses and days with no
+   cards say so. The following recording tools and extra daily tasks belong to the built-in voice course.
+
+   **Voice Today** is your **voice deck**: Anki-style spaced repetition, but for your voice. The deck
    holds the daily reference phrase, any cards due for review, and a couple of new cards (2 a day
    by default, `new_cards_per_day` in the profile). **Start** opens the Practice window: say the
    line, listen back, then rate how it felt: **Again** (later today), **Hard**, **Good** or
@@ -333,7 +340,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      recorder, docked below with the live pitch line: then your take is on the card to play, with
      its pitch details, and it swipes. **Tips** on a text's card opens the chapter's steps right
      there. Takes are saved like any chapter take, so they show in Recordings and the chapter's
-     progress. **Full chapter** opens it in Practice at that text; <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
+     progress. Other courses use the same chapter cards without recording; their progress stays
+     separate in this browser. **Full chapter** opens the selected course at that text;
+     <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
      is rated or scheduled, and where you are in each chapter is kept in this browser.
      If saved progress is damaged, Lilt keeps the readable card entries and starts fresh for
      anything it cannot read. Duplicate saved entries do not repeat a card.
@@ -527,7 +536,8 @@ filesystem or shell access.
 **Courses, and your own copy.** Lilt holds courses: each a folder in `content/courses/<id>`
 with its Markdown (home page, chapters, pictures, audio) and a `course.md` that names it, its kind
 of practice, its version, where updates come from, and the sections an AI may never change
-(`locked:`). Voice practice (`content/courses/voice`) is the course the app shows today. Ask your
+(`locked:`). Every installed course opens from Courses; voice (`content/courses/voice`) also has
+recording and guided feedback. Ask your
 agent to rewrite a chapter, add one, or overhaul a course ("make the warm-ups shorter", "add a
 chapter of phone-call phrases"); `courses_list` shows the courses, and every syllabus tool takes the
 course's id (voice when left out). Changes go to your own copy in `<data>/courses/<id>`; the

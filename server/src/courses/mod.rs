@@ -16,7 +16,7 @@
 //!
 //! `kind` names the kind of practice (voice: record, then pitch and comfort). `locked` lists `## `
 //! sections an AI may never change in your copy. The folder is the original; your own copy of a
-//! course lives in `<data>/courses/<id>` (see `syllabus`). Voice is the course the app shows today.
+//! course lives in `<data>/courses/<id>` (see `syllabus`). Every installed course can be practised.
 
 pub mod remix;
 pub mod routes;
@@ -31,7 +31,7 @@ use anyhow::{Context, Result, anyhow, ensure};
 use serde_json::{Value, json};
 use std::path::PathBuf;
 
-/// The course the app shows (Practice), and the one tools use when none is named.
+/// The backward-compatible voice default when a request does not name a course.
 pub const DEFAULT: &str = "voice";
 
 /// The id of a course's text, used for its takes, cards and progress. The app's course keeps the
@@ -160,7 +160,7 @@ pub fn list(app: &App) -> Value {
             "locked_sections": c.locked, "using": if mine { "mine" } else { "original" },
             "changes": crate::courses::syllabus::change_count(app, c),
             "updates_waiting": if mine { crate::courses::updates::waiting(app, c) } else { 0 },
-            "shown_in_app": c.id == DEFAULT,
+            "shown_in_app": true,
         })
     }).collect();
     json!({ "courses": rows })

@@ -739,6 +739,19 @@ pub fn validate(root: &Path) -> Result<()> {
                     let _: BTreeMap<String, crate::practice::cards::CardState> =
                         serde_json::from_value(value)?;
                 }
+                ["cards", course, "state.json"] => {
+                    ensure!(
+                        crate::courses::valid_id(course) && *course != crate::courses::DEFAULT,
+                        "invalid card course"
+                    );
+                    let states: BTreeMap<String, crate::practice::cards::CardState> =
+                        serde_json::from_value(value)?;
+                    ensure!(
+                        states.keys().all(|id| crate::courses::parse_text_id(id)
+                            .is_some_and(|(owner, _, _)| owner == *course)),
+                        "card belongs to another course"
+                    );
+                }
                 ["courses" | "syllabus", ..] => {}
                 _ => bail!("unrecognized practice record {name}"),
             }
@@ -746,6 +759,12 @@ pub fn validate(root: &Path) -> Result<()> {
             ensure!(name.ends_with(".jsonl"), "noncanonical JSONL record name");
             match parts.as_slice() {
                 ["deletions.jsonl"] | ["cards", "reviews.jsonl"] | ["courses" | "syllabus", ..] => {
+                }
+                ["cards", course, "reviews.jsonl"] => {
+                    ensure!(
+                        crate::courses::valid_id(course) && *course != crate::courses::DEFAULT,
+                        "invalid card course"
+                    );
                 }
                 ["sessions", sid, "reviews", filename] => {
                     id(sid)?;

@@ -1,6 +1,6 @@
 // Text ids, shared by takes, cards and progress (the same rule as server/src/courses.rs).
 
-/** The course the Practice app shows. */
+/** The default for older links and callers that do not name a course. */
 export const DEFAULT_COURSE = "voice";
 
 /** A text's id for takes, cards and progress: the app's course keeps `text.<chapter>.<text>`; others are `<course>/text.<chapter>.<text>` (as on the server). */

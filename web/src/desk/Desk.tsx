@@ -3,6 +3,8 @@ import { practice } from "../ui/practice";
 import { roomStyles } from "./roomStyles";
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
+import { DEFAULT_COURSE } from "../courseIds";
+import { dailyPath, flashcardsPath, practicePath } from "../courseNavigation";
 import { go } from "../App";
 import { Icon } from "../components/bits";
 import { currentLight, type Light, roomUrl } from "../room/scene";
@@ -22,6 +24,7 @@ import { CoursesIcon, FlashcardsIcon, LeaveIcon, PhotosIcon, Mark, RecordingsIco
  */
 
 export const WINDOWS: Record<string, { title: string; width: number; full?: boolean }> = {
+  learn: { title: "Practice", width: 1120, full: true },
   deck: { title: "Practice", width: 1120, full: true },
   guided: { title: "Guided session", width: 700 },
   practice: { title: "Exercise", width: 760 },
@@ -49,16 +52,13 @@ function useNow(ms = 15000) {
 
 type Theme = "light" | "dark";
 
-export function Desktop({ section, page, inside, instant, theme, onTheme, recovered, inbox }: {
+export function Desktop({ section, page, inside, instant, theme, onTheme, recovered, inbox, course, courseTitle, deck, reloadDeck }: {
   section: string; page: ReactNode | null; inside: boolean; instant: boolean;
   theme: Theme; onTheme: () => void; recovered: number; inbox: InboxState;
+  course: string; courseTitle?: string; deck: Deck | null; reloadDeck: () => void;
 }) {
   const now = useNow();
   const light = currentLight();
-  const [deck, setDeck] = useState<Deck | null>(null);
-  // Refresh the widgets whenever you come back to the desktop.
-  const loadDeck = () => api.deck().then(setDeck, () => setDeck(null));
-  useEffect(() => { if (inside) void loadDeck(); }, [inside, section]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const win = page ? WINDOWS[section] ?? { title: "Lilt", width: 760 } : null;
   const appName = section === "music" ? "Music" : win ? win.title : "Lilt";
@@ -75,6 +75,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
       <header className={["ds-menubar ds-boot", roomStyles["ds-menubar"], roomStyles["ds-boot"]].join(" ")}>
         <Mark />
         <b>{appName}</b>
+        {courseTitle && <button className="max-w-40 truncate text-xs text-inherit" onClick={() => go("/courses")} title="Choose a course" aria-label={`Choose a course. Current course: ${courseTitle}`}>{courseTitle}</button>}
         <div className={["ds-mr", roomStyles["ds-mr"]].join(" ")}>
           <MusicMini />
           <InboxButton inbox={inbox} />
@@ -90,7 +91,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
       </header>
 
       <section className={[["ds-widgets ds-boot", roomStyles["ds-widgets"], roomStyles["ds-boot"]].join(" "), practice["ds-widgets"]].filter(Boolean).join(' ')} aria-label="Widgets">
-        <TodayWidget deck={deck} reload={() => void loadDeck()} />
+        <TodayWidget deck={deck} reload={reloadDeck} course={course} courseTitle={courseTitle} />
       </section>
 
       {win && (
@@ -111,9 +112,9 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
       <nav className={[["ds-dock ds-boot", roomStyles["ds-dock"], roomStyles["ds-boot"]].join(" "), practice["ds-dock"]].filter(Boolean).join(' ')} aria-label="Apps">
         {/* Named for what they open. Practice texts and Progress stay reachable by link but aren't
             apps until they offer more than the chapters (and Progress has something to show). */}
-        {dockApp("/deck", "Today", <TodayIcon date={now} />, (!page && section !== "music") || section === "deck" || section === "guided" || section === "practice" || section === "review")}
-        {dockApp("/studio", "Practice", <StudioIcon />, section === "studio" || section === "texts" || section === "library")}
-        {dockApp("/flashcards", "Flashcards", <FlashcardsIcon />, section === "flashcards")}
+        {dockApp(dailyPath(course), "Today", <TodayIcon date={now} />, (!page && section !== "music") || section === "deck" || section === "guided" || section === "practice" || section === "review")}
+        {dockApp(practicePath(course), "Practice", <StudioIcon />, section === "studio" || section === "learn" || section === "texts" || section === "library")}
+        {dockApp(flashcardsPath(course), "Flashcards", <FlashcardsIcon />, section === "flashcards")}
         {dockApp("/yarn", "Yarn", <YarnIcon />, section === "yarn")}
         {dockApp("/history", "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
@@ -133,7 +134,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
 
 const KIND: Record<string, string> = { warmup: "warm-up", daily: "daily", before_after: "reference", new: "new", review: "review", again: "again", cooldown: "cool-down" };
 
-function TodayWidget({ deck, reload }: { deck: Deck | null; reload: () => void }) {
+function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null; reload: () => void; course: string; courseTitle?: string }) {
   const left = deck ? deck.items.filter((i) => !i.done_today) : [];
   const done = !!deck && (deck.all_done || left.length === 0);
   const minutes = Math.max(1, left.length);
@@ -143,12 +144,13 @@ function TodayWidget({ deck, reload }: { deck: Deck | null; reload: () => void }
     <article className={[["ds-w ds-today", roomStyles["ds-w"], roomStyles["ds-today"]].join(" "), practice["ds-w"]].filter(Boolean).join(' ')} aria-label="Today's practice">
       <div className={["ds-t-body", roomStyles["ds-t-body"]].join(" ")}>
         <h2 className={["ds-t-title", roomStyles["ds-t-title"]].join(" ")}>{deck?.paused ? "Resting today" : "Today's practice"}</h2>
+        {courseTitle && <p className="text-sm text-(--ink-2)">{courseTitle}</p>}
         {!deck ? <p className={["ds-t-min", roomStyles["ds-t-min"]].join(" ")}>Getting your cards…</p> : deck.paused ? (
           <p className={["ds-t-msg", roomStyles["ds-t-msg"]].join(" ")}>{deck.message ?? "Cards that hurt stay paused until you resume."}</p>
         ) : done ? (
           <>
-            <div className={["ds-t-row", roomStyles["ds-t-row"]].join(" ")}><span className={["ds-t-num", roomStyles["ds-t-num"]].join(" ")}>Done</span><span className={["ds-t-min", roomStyles["ds-t-min"]].join(" ")}>for today</span></div>
-            <p className={["ds-t-msg", roomStyles["ds-t-msg"]].join(" ")}>Next cards come back tomorrow. Anything more today is a bonus.</p>
+            <div className={["ds-t-row", roomStyles["ds-t-row"]].join(" ")}><span className={["ds-t-num", roomStyles["ds-t-num"]].join(" ")}>{deck.all_done ? "Done" : "No cards"}</span><span className={["ds-t-min", roomStyles["ds-t-min"]].join(" ")}>for today</span></div>
+            <p className={["ds-t-msg", roomStyles["ds-t-msg"]].join(" ")}>{deck.next_due ? `Next review: ${deck.next_due}.` : "You can explore a chapter whenever you like."}</p>
           </>
         ) : (
           <>
@@ -160,11 +162,11 @@ function TodayWidget({ deck, reload }: { deck: Deck | null; reload: () => void }
             </ul>
           </>
         )}
-        <a className={["ds-t-link", roomStyles["ds-t-link"]].join(" ")} href="#/guided">Guided session with feedback</a>
+        {course === DEFAULT_COURSE && <a className={["ds-t-link", roomStyles["ds-t-link"]].join(" ")} href="#/guided">Guided session with feedback</a>}
         <div className={["ds-t-foot", roomStyles["ds-t-foot"]].join(" ")}>
           {deck?.paused ? <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
-            : done ? <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go("/studio")}>Free practice</button>
-            : <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go("/deck")} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
+            : done ? <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(practicePath(course))}>Free practice</button>
+            : <button className={["btn-primary", shared["btn-primary"]].filter(Boolean).join(' ')} onClick={() => go(dailyPath(course))} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
           <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>Stage {deck?.open_stage ?? 1} of {stages}<span className={["ds-t-bar", roomStyles["ds-t-bar"]].join(" ")}><i style={{ width: `${Math.max(4, learned * 100)}%` }} /></span></span>
         </div>
       </div>
@@ -277,11 +279,12 @@ export const ShuffleIcon = () => (
 );
 
 /** The room's menu bar, the same as the desk's: the mark, what's playing, notifications, date and time. */
-export function RoomTop({ inbox }: { inbox: InboxState }) {
+export function RoomTop({ inbox, courseTitle }: { inbox: InboxState; courseTitle?: string }) {
   const now = useNow();
   return (
     <header className={["ds-roomtop", roomStyles["ds-roomtop"]].join(" ")}>
       <span className={["ds-rt-mark", roomStyles["ds-rt-mark"]].join(" ")}><Mark />Lilt</span>
+      <button className="max-w-40 truncate text-xs text-inherit" onClick={() => go("/courses")} title="Choose a course" aria-label={courseTitle ? `Choose a course. Current course: ${courseTitle}` : "Choose a course"}>{courseTitle ?? "Courses"}</button>
       <span className={["ds-rt-r", roomStyles["ds-rt-r"]].join(" ")}>
         <RoomAppearance />
         <MusicMini />

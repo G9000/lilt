@@ -375,11 +375,11 @@ export const api = {
   profile: () => call<Profile>("GET", "/api/profile"),
   saveProfile: (p: Profile) => call<Profile>("PUT", "/api/profile", p),
   exercises: () => call<{ exercises: Exercise[]; capability_matrix: { area: string; capability: SkillCard["capability"] }[] }>("GET", "/api/exercises"),
-  deck: () => call<Deck>("GET", "/api/deck/today"),
+  deck: (course?: string) => call<Deck>("GET", `/api/deck/today${course === undefined ? "" : `?course=${encodeURIComponent(course)}`}`),
   deckSession: () => call<Session>("POST", "/api/deck/session"),
   /** "later" puts a before-and-after off for a week. */
-  rateCard: (card_id: string, take_id: string | null, rating: Rating | "ouch" | "later") =>
-    call<{ card_id: string; next?: string; paused?: boolean; duplicate?: boolean; deck: Deck }>("POST", "/api/deck/review", { card_id, take_id, rating }),
+  rateCard: (card_id: string, take_id: string | null, rating: Rating | "ouch" | "later", course?: string, request_id?: string) =>
+    call<{ card_id: string; next?: string; paused?: boolean; duplicate?: boolean; deck: Deck }>("POST", `/api/deck/review${course === undefined ? "" : `?course=${encodeURIComponent(course)}`}`, { card_id, take_id, rating, request_id }),
   resumePlan: () => call<Plan>("POST", "/api/plan/resume"),
   choosePlan: (exercise_id: string) => call<Plan>("POST", "/api/plan/choose", { exercise_id }),
   planHistory: () => call<Plan[]>("GET", "/api/plan/history"),

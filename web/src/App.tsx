@@ -3,7 +3,7 @@ import { CoursesPage } from "./pages/Courses";
 import './accent';
 import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { api, Deck } from "./api";
+import { api, Course, Deck } from "./api";
 import { CardStack } from "./desk/CardStack";
 import { RoomFloaters } from "./desk/Floaters";
 import { Desktop, RoomTop } from "./desk/Desk";
@@ -22,6 +22,10 @@ import { TextsPage } from "./pages/Texts";
 import { FlashcardsPage } from "./pages/Flashcards";
 import { PhotosPage } from "./pages/Photos";
 import { YarnPage } from "./pages/Yarn";
+
+import { DEFAULT_COURSE } from "./courseIds";
+import { dailyPath, practicePath, rememberCourse, routeCourse, routeSegments, savedCourse } from "./courseNavigation";
+import { CoursePracticePage } from "./pages/CoursePractice";
 
 export function useRoute(): [string, URLSearchParams] {
   const read = () => {
@@ -71,18 +75,44 @@ export function applyTheme(t: Theme) {
 // Before the first render, so a dark computer never flashes the light theme.
 applyTheme(resolveTheme(readThemeMode()));
 
-const SECTIONS = new Set(["deck", "flashcards", "photos", "yarn", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses", "music"]);
+const SECTIONS = new Set(["learn", "deck", "flashcards", "photos", "yarn", "guided", "practice", "review", "compare", "studio", "texts", "progress", "history", "library", "settings", "courses", "music"]);
 
 export function App() {
   const [path, params] = useRoute();
   const [recovered, setRecovered] = useState(0);
   const [mode, setMode] = useState<ThemeMode>(readThemeMode);
   const [theme, setTheme] = useState<Theme>(() => resolveTheme(mode));
-  const seg = path.split("/").filter(Boolean);
+  const seg = routeSegments(path);
   const inside = seg.length > 0;
   // Opening straight onto a desktop route skips the walk to the desk.
   const [instant, setInstant] = useState(inside);
-  const [deck, setDeck] = useState<Deck | null>(null);
+  const [remembered, setRemembered] = useState(savedCourse);
+  const [courses, setCourses] = useState<Course[] | null>(null);
+  const explicitCourse = routeCourse(path, params);
+  const course = explicitCourse ?? (courses && !courses.some((c) => c.id === remembered) ? DEFAULT_COURSE : remembered);
+  const courseTitle = courses?.find((c) => c.id === course)?.title;
+  const [deckResult, setDeckResult] = useState<{ course: string; deck: Deck } | null>(null);
+  const deck = deckResult?.course === course ? deckResult.deck : null;
+  const [deckRevision, refreshDeck] = useState(0);
+  useEffect(() => {
+    if (seg[0] !== "learn" || seg[1] !== DEFAULT_COURSE) return;
+    const to = seg[2] === "today" ? dailyPath(DEFAULT_COURSE, params.get("card")) : practicePath(DEFAULT_COURSE, seg[2] === "chapter" ? seg[3] : undefined, seg[4]);
+    window.location.replace(`#${to}`);
+  }, [path]); // The built-in voice course always uses its recording and comfort flow.
+  useEffect(() => {
+    let ignore = false;
+    void api.courses().then((r) => { if (!ignore) setCourses(r.courses); }, () => {});
+    return () => { ignore = true; };
+  }, [inside, seg[0]]); // Refresh when returning from course changes.
+  useEffect(() => {
+    if (!courses?.some((c) => c.id === course)) return;
+    setRemembered(course); rememberCourse(course);
+  }, [course, courses]);
+  useEffect(() => {
+    const changed = () => refreshDeck((n) => n + 1);
+    window.addEventListener("lilt:deck-changed", changed);
+    return () => window.removeEventListener("lilt:deck-changed", changed);
+  }, []);
 
   useEffect(() => { applyTheme(theme); }, [theme]);
   // Remember the choice; on Auto, follow the computer as it switches between light and dark.
@@ -111,12 +141,21 @@ export function App() {
   useEffect(() => { void recoverPending().then(setRecovered); }, []);
   useEffect(() => { if (!inside) setInstant(false); }, [inside]);
   // The room, the inbox and the lights all follow today's deck; refresh it as you move around.
-  useEffect(() => { void api.deck().then(setDeck, () => setDeck(null)); }, [inside, seg[0]]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    let ignore = false;
+    void api.deck(course).then((deck) => { if (!ignore) setDeckResult({ course, deck }); }, () => { if (!ignore) setDeckResult(null); });
+    return () => { ignore = true; };
+  }, [inside, path, course, deckRevision]);
   // Until you've recorded your "before", sitting down opens Start here (mic setup and baseline), not Today.
   const [needsStart, setNeedsStart] = useState(false);
-  useEffect(() => { void api.history({ prompt_id: "text.start-here.baseline-read", days: 3650 }).then((h) => setNeedsStart(h.takes.length === 0), () => setNeedsStart(false)); }, [inside]);
+  useEffect(() => {
+    let ignore = false;
+    setNeedsStart(false);
+    if (course === DEFAULT_COURSE) void api.history({ prompt_id: "text.start-here.baseline-read", days: 3650 }).then((h) => { if (!ignore) setNeedsStart(h.takes.length === 0); }, () => {});
+    return () => { ignore = true; };
+  }, [inside, course]);
   const sitDown = useRef(() => go("/deck"));
-  sitDown.current = () => go(needsStart ? "/studio/start-here" : "/deck");
+  sitDown.current = () => go(course === DEFAULT_COURSE && needsStart ? "/studio/start-here" : dailyPath(course));
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
@@ -133,13 +172,14 @@ export function App() {
 
   let page: ReactNode = null;
   switch (seg[0]) {
+    case "learn": page = seg[1] === DEFAULT_COURSE ? <p role="status">Opening voice practice…</p> : <CoursePracticePage key={seg[1]} course={seg[1] ?? ""} view={seg[2]} chapter={seg[3]} item={seg[4]} first={params.get("card")} />; break;
     case "deck": page = <VoicePage doc="today" first={params.get("card")} />; break;
     case "guided": page = <TodayPage recovered={0} />; break;
     case "practice": page = <PracticePage sessionId={seg[1]} />; break;
     case "review": page = <FeedbackPage reviewId={seg[1]} />; break;
     case "compare": page = <ComparePage a={params.get("a") ?? ""} b={params.get("b") ?? ""} />; break;
     case "studio": page = seg[1] === "start" ? <VoicePage doc="start" /> : seg[1] === "updates" ? <VoicePage doc="updates" /> : seg[1] === "mixtape" ? <VoicePage doc="mixtape" /> : seg[1] === "settings" ? <VoicePage doc="settings" /> : seg[1] === "free" ? <VoicePage doc="free" /> : seg[1] ? <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} /> : <VoicePage doc="home" />; break;
-    case "flashcards": page = <FlashcardsPage chapter={seg[1]} />; break;
+    case "flashcards": page = <FlashcardsPage key={course} course={course} chapter={seg[1]} />; break;
     case "photos": page = <PhotosPage />; break;
     case "yarn": page = <YarnPage />; break;
     case "texts": page = <TextsPage />; break;
@@ -152,21 +192,22 @@ export function App() {
   }
   const section = seg[0] && SECTIONS.has(seg[0]) ? seg[0] : "desk";
   const left = deck ? deck.items.filter((i) => !i.done_today).length : null;
-  const done = !!deck && !deck.paused && left === 0;
-  const inbox = useInbox(deck, recovered);
+  const done = !!deck && !deck.paused && !!deck.all_done;
+  const inbox = useInbox(deck, recovered, course);
 
   return (
     <MicProvider>
       <a className={["skip", shared["skip"]].filter(Boolean).join(' ')} href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
       <Room inside={inside} onEnter={() => sitDown.current()} cards={left} done={done}>
-        <RoomFloaters deck={deck} inside={inside} />
+        <RoomFloaters key={course} deck={deck} inside={inside} course={course} />
       </Room>
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>
-        <RoomTop inbox={inbox} />
-        <CardStack deck={deck} onStart={(id) => go(id ? `/deck?card=${encodeURIComponent(id)}` : "/deck")} />
+        <RoomTop inbox={inbox} courseTitle={courseTitle} />
+        <CardStack key={course} deck={deck} onStart={(id) => go(dailyPath(course, id))} />
       </div>
       <Desktop section={section} page={page} inside={inside} instant={instant} theme={theme}
-        onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox} />
+        onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox}
+        course={course} courseTitle={courseTitle} deck={deck} reloadDeck={() => refreshDeck((n) => n + 1)} />
       <NotificationCenter inbox={inbox} />
       <SettingsSheet />
     </MicProvider>

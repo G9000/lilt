@@ -255,7 +255,7 @@ const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13
  * A chapter's video. Until you press play it is only a card drawn here (no request to YouTube, so
  * nothing about you leaves this computer); then YouTube's no-cookie player loads in its place.
  */
-export function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]> }) {
+export function ChapterVideo({ video, course }: { video: NonNullable<TextLevel["video"]>; course?: string }) {
   const [on, setOn] = useState(false);
   const watch = `https://www.youtube.com/watch?v=${video.id}`;
   if (on) return (
@@ -265,7 +265,7 @@ export function ChapterVideo({ video }: { video: NonNullable<TextLevel["video"]>
     </div>
   );
   // The thumbnail is a copy saved with the course, so showing it asks nothing of YouTube.
-  const poster = video.image ? picture(video.image) : undefined;
+  const poster = video.image ? picture(video.image, course) : undefined;
   // Small until you want it: a thumbnail row; pressing it opens the full player.
   return (
     <button type="button" className={["ci-vrow", practice["ci-vrow"]].filter(Boolean).join(' ')} onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>

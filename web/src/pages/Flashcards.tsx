@@ -6,14 +6,15 @@ import { api, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown } from "../components/Markdown";
 import { byPart, chapterSteps, isCare, isLong } from "../chapters";
-import { DEFAULT_COURSE, textId } from "../courses";
+import { DEFAULT_COURSE, textId } from "../courseIds";
+import { flashcardsPath, practicePath, validCourseId } from "../courseNavigation";
 import { chapterCards, EMPTY, Flashcard, loadRuns, pile, progress, Run, saveRun, swipe } from "../flashcards";
 import { Art, Illustration, wash } from "../components/Illustrations";
 import { ChapterVideo, Dock, FoldedMeasures, ListenBack } from "./Voice";
 
 /**
  * Flashcards: a chapter dealt out as the room's cards, one at a time, full screen. Swipe right when
- * you've got it, left to see it again later in this run. A text's card won't swipe until you've
+ * you've got it, left to see it again later in this run. A voice text's card won't swipe until you've
  * recorded it with the recorder docked below (Practice's, with the live pitch line); its tips and
  * your take sit on the card. Apart from Today: nothing is rated or scheduled, and where you are is
  * kept in this browser.
@@ -22,44 +23,56 @@ import { ChapterVideo, Dock, FoldedMeasures, ListenBack } from "./Voice";
 const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z";
 const HURT = "It hurts or feels strained";
 
-export function FlashcardsPage({ chapter }: { chapter?: string }) {
+export function FlashcardsPage({ chapter, course = DEFAULT_COURSE }: { chapter?: string; course?: string }) {
+  if (!validCourseId(course)) return <div className="p-6"><p role="alert">This course address isn't valid.</p><a href="#/courses">All courses</a></div>;
+  return <CourseFlashcards key={course} chapter={chapter} course={course} />;
+}
+
+function CourseFlashcards({ chapter, course }: { chapter?: string; course: string }) {
   const [texts, setTexts] = useState<Texts | null>(null);
   const [band, setBand] = useState<[number, number] | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    void api.texts().then(setTexts, (e: any) => setErr(`Lilt couldn't load the chapters: ${e.message}. Is the Lilt server running?`));
-    void api.profile().then((p) => setBand(p.comfort_range_hz ?? null), () => {});
-  }, []);
-  // The chapter in the address, else the one you were last on, else the first.
-  const level = texts ? texts.levels.find((l) => l.id === (chapter ?? loadRuns().last)) ?? texts.levels[0] : null;
+    let ignore = false;
+    setErr(null);
+    void api.texts(course).then(t => { if (!ignore) setTexts(t); }, (e: Error) => {
+      if (!ignore) setErr(`Lilt couldn't load the chapters: ${e.message}`);
+    });
+    if (course === DEFAULT_COURSE) void api.profile().then(p => { if (!ignore) setBand(p.comfort_range_hz ?? null); }, () => {});
+    return () => { ignore = true; };
+  }, [course, attempt]);
+  const level = texts ? texts.levels.find(l => l.id === (chapter ?? loadRuns(course).last)) ?? (chapter ? null : texts.levels[0]) : null;
   return (
     <div className={["fc", practice["fc"]].filter(Boolean).join(' ')}>
-      {err ? <p role="alert" className={["fc-err fc-msg", practice["fc-msg"], practice["fc-err"]].filter(Boolean).join(' ')}>{err}</p>
-        : !texts || !level ? <p className={["fc-quiet fc-msg", practice["fc-msg"], practice["fc-quiet"]].filter(Boolean).join(' ')}>Dealing the cards…</p>
-        : <ChapterDeck key={level.id} texts={texts} level={level} band={band} />}
+      {err ? <div className={practice["fc-msg"]}><p role="alert">{err}</p><button className={`btn ${shared.btn} ${shared["btn-secondary"]}`} onClick={() => setAttempt(n => n + 1)}>Try again</button></div>
+        : !texts ? <p role="status" className={practice["fc-msg"]}>Dealing the cards…</p>
+        : !level ? <div className={practice["fc-msg"]}><p>{chapter ? "This chapter isn't in the course." : "This course has no chapters yet."}</p><a href={`#${practicePath(course)}`}>Back to the course</a></div>
+        : <ChapterDeck key={`${course}:${level.id}`} course={course} texts={texts} level={level} band={band} />}
     </div>
   );
 }
 
-function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; band: [number, number] | null }) {
-  const cards = useMemo(() => chapterCards(level), [level]);
-  const tips = useMemo(() => chapterSteps(level.basis)?.tips ?? [], [level]);
+function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: TextLevel; band: [number, number] | null; course: string }) {
+  const voice = course === DEFAULT_COURSE;
+  const cards = useMemo(() => chapterCards(level, course), [level, course]);
+  const tips = useMemo(() => voice ? chapterSteps(level.basis)?.tips ?? [] : [], [level, voice]);
   const next = texts.levels[texts.levels.indexOf(level) + 1] ?? null;
-  const [run, setRun] = useState<Run>(() => loadRuns().runs[level.id] ?? EMPTY);
+  const [run, setRun] = useState<Run>(() => loadRuns(course).runs[level.id] ?? EMPTY);
   // Takes recorded on this visit, by card: a text's card swipes only once it has one.
   const [takes, setTakes] = useState<Record<string, Take>>({});
   const [recording, setRecording] = useState(false);
   const [undo, setUndo] = useState<{ run: Run; label: string } | null>(null);
   const [hurt, setHurt] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  useEffect(() => { saveRun(level.id, run); }, [level.id, run]);
-  useEffect(() => { void api.studioSession().then((s) => setSessionId(s.id), () => {}); }, []);
+  useEffect(() => { saveRun(level.id, run, course); }, [level.id, run, course]);
+  useEffect(() => { if (voice) void api.studioSession().then((s) => setSessionId(s.id), () => {}); }, [voice]);
   useEffect(() => { if (!undo) return; const id = window.setTimeout(() => setUndo(null), 6000); return () => window.clearTimeout(id); }, [undo]);
 
   const left = pile(cards, run);
   const top = left[0] ?? null;
   const { got, total } = progress(cards, run);
-  const locked = !!top && top.kind === "text" && !takes[top.id];
+  const locked = voice && !!top && top.kind === "text" && !takes[top.id];
   const [nudge, setNudge] = useState(0);
   // Which way the last card went, so it flies off that way whether swiped, clicked or keyed.
   const [flung, setFlung] = useState(1);
@@ -83,7 +96,7 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
     return () => window.removeEventListener("keydown", onKey);
   }); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const full = `#/studio/${level.id}${top?.kind === "text" ? `/${top.item.id}` : ""}`;
+  const full = `#${practicePath(course, level.id, top?.kind === "text" ? top.item.id : undefined)}`;
 
   return (
     <>
@@ -91,7 +104,7 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
         <button className={["fc-close", practice["fc-close"]].filter(Boolean).join(' ')} onClick={() => go("/desk")} aria-label="Close Flashcards" title="Close (Esc)">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
         </button>
-        <ChapterMenu texts={texts} level={level} locked={recording} />
+        <ChapterMenu course={course} texts={texts} level={level} locked={recording} />
         <div className={["fc-progress", practice["fc-progress"]].filter(Boolean).join(' ')} aria-label={`${got} of ${total} cards done`}>
           <span className={["fc-segs", practice["fc-segs"]].filter(Boolean).join(' ')} aria-hidden="true">{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : c.id === top?.id ? "now" : undefined} />)}</span>
           <span className={["fc-count", practice["fc-count"]].filter(Boolean).join(' ')}><b>{got}</b> of {total}</span>
@@ -111,8 +124,8 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
           </EndCard>
         ) : !top ? (
           <EndCard art="medal" chip="Chapter done" title={`That's ${level.title}`}
-            body={<>Every card is done. Your takes are in <a href="#/history">Recordings</a>; go through it again any time.</>}>
-            {next && <button className={["fc-primary", practice["fc-primary"]].filter(Boolean).join(' ')} onClick={() => go(`/flashcards/${next.id}`)}>Next: {next.title}</button>}
+            body={voice ? <>Every card is done. Your takes are in <a href="#/history">Recordings</a>; go through it again any time.</> : "Every card is done. Go through this chapter again any time."}>
+            {next && <button className={["fc-primary", practice["fc-primary"]].filter(Boolean).join(' ')} onClick={() => go(flashcardsPath(course, next.id))}>Next: {next.title}</button>}
             <button className={[next ? "fc-ghost" : "fc-primary", practice["fc-primary"], practice["fc-ghost"]].filter(Boolean).join(' ')} onClick={() => { setUndo(null); setRun(EMPTY); }}>Go through it again</button>
           </EndCard>
         ) : (
@@ -122,7 +135,7 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
               <AnimatePresence initial={false} custom={flung}>
                 {left.slice(0, 3).map((c, d) => d === 0
                   ? <TopCard key={c.id} dir={flung} locked={locked} nudge={nudge} recording={recording} onSwipe={move} label={cardTitle(c, level)}>
-                      <CardFace card={c} level={level} tips={tips} take={takes[c.id] ?? null} band={band} onHurt={() => setHurt(true)} />
+                      <CardFace course={course} chapters={texts.levels.map(l => l.id)} card={c} level={level} tips={tips} take={takes[c.id] ?? null} band={band} onHurt={() => setHurt(true)} />
                     </TopCard>
                   : <motion.article key={c.id} className={["fc-card under", practice["fc-card"]].filter(Boolean).join(' ')} aria-hidden="true"
                       initial={false} animate={{ y: -d * 16, scale: 1 - d * 0.05, rotate: d % 2 ? -1.2 : 1 }} exit={{ opacity: 0 }}
@@ -142,7 +155,7 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
             <button onClick={() => { setRun(undo.run); setUndo(null); }}>Undo</button>
           </div>
         )}
-        {!hurt && top?.kind === "text" ? (
+        {voice && !hurt && top?.kind === "text" ? (
           <div className={["ve fc-ve", practice["ve"], practice["fc-ve"]].filter(Boolean).join(' ')}>
             <Dock key={top.id} band={band} allowRetake retake={!!takes[top.id]}
               meta={sessionId ? { session_id: sessionId, role: "free", prompt_id: textId(DEFAULT_COURSE, level.id, top.item.id), prompt_text: top.item.text } : null}
@@ -162,7 +175,7 @@ function ChapterDeck({ texts, level, band }: { texts: Texts; level: TextLevel; b
 }
 
 /** The chapter's name as a menu: every chapter by part, with how far through each you are. */
-function ChapterMenu({ texts, level, locked }: { texts: Texts; level: TextLevel; locked: boolean }) {
+function ChapterMenu({ texts, level, locked, course }: { texts: Texts; level: TextLevel; locked: boolean; course: string }) {
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -174,7 +187,7 @@ function ChapterMenu({ texts, level, locked }: { texts: Texts; level: TextLevel;
     window.addEventListener("keydown", esc, true);
     return () => { document.removeEventListener("pointerdown", away); window.removeEventListener("keydown", esc, true); };
   }, [open]);
-  const runs = loadRuns().runs;
+  const runs = loadRuns(course).runs;
   return (
     <div className={[`fc-menu${open ? " open" : ""}`, practice["fc-menu"]].filter(Boolean).join(' ')} ref={box}>
       <button className={["fc-menu-btn", practice["fc-menu-btn"]].filter(Boolean).join(' ')} onClick={() => setOpen((o) => !o)} disabled={locked} aria-expanded={open} aria-haspopup="menu">
@@ -187,9 +200,9 @@ function ChapterMenu({ texts, level, locked }: { texts: Texts; level: TextLevel;
             <div key={i} className={["fc-menu-part", practice["fc-menu-part"]].filter(Boolean).join(' ')}>
               {g.part && <p>{g.part}</p>}
               {g.levels.map((l) => {
-                const p = progress(chapterCards(l), runs[l.id] ?? EMPTY);
+                const p = progress(chapterCards(l, course), runs[l.id] ?? EMPTY);
                 return (
-                  <button key={l.id} role="menuitem" aria-current={l.id === level.id ? "true" : undefined} onClick={() => { setOpen(false); go(`/flashcards/${l.id}`); }}>
+                  <button key={l.id} role="menuitem" aria-current={l.id === level.id ? "true" : undefined} onClick={() => { setOpen(false); go(flashcardsPath(course, l.id)); }}>
                     <span>{l.title}</span>
                     <i className={p.got === p.total ? "done" : undefined}>{p.got === p.total ? "Done" : p.got ? `${p.got}/${p.total}` : `${p.total} cards`}</i>
                   </button>
@@ -276,21 +289,24 @@ function CardArt({ art, chip, care }: { art: Art; chip: string; care?: boolean }
   );
 }
 
-function CardFace({ card, level, tips, take, band, onHurt }: {
+function CardFace({ card, level, tips, take, band, onHurt, course, chapters }: {
+  course: string; chapters: string[];
   card: Flashcard; level: TextLevel; tips: { label: string; body: string }[];
   take: Take | null; band: [number, number] | null; onHurt: () => void;
 }) {
   const [showTips, setShowTips] = useState(false);
   return (
     <>
-      <CardArt art={artFor(card)} chip={kicker(card, !!take)} care={card.kind === "step" && card.care} />
+      <CardArt art={course !== DEFAULT_COURSE && card.kind === "text" ? "book" : artFor(card)} chip={course !== DEFAULT_COURSE && card.kind === "text" ? "Practise" : kicker(card, !!take)} care={card.kind === "step" && card.care} />
       <div className={[`fc-body ${card.kind}`, practice["fc-body"]].filter(Boolean).join(' ')}>
-        {card.kind === "lede" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>{level.title}</h2><Markdown src={card.markdown} className={["fc-md", practice["fc-md"]].filter(Boolean).join(' ')} headingOffset={2} /></>}
-        {card.kind === "step" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>{card.label}</h2><Markdown src={card.body} className={["fc-md", practice["fc-md"]].filter(Boolean).join(' ')} headingOffset={2} /></>}
-        {card.kind === "video" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>Watch first</h2><ChapterVideo video={card.video} /></>}
+        {card.kind === "lede" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>{level.title}</h2><Markdown course={course} chapters={chapters} src={card.markdown} className={["fc-md", practice["fc-md"]].filter(Boolean).join(' ')} headingOffset={2} /></>}
+        {card.kind === "step" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>{card.label}</h2><Markdown course={course} chapters={chapters} src={card.body} className={["fc-md", practice["fc-md"]].filter(Boolean).join(' ')} headingOffset={2} /></>}
+        {card.kind === "video" && <><h2 className={["fc-title", practice["fc-title"]].filter(Boolean).join(' ')}>Watch first</h2><ChapterVideo video={card.video} course={course} /></>}
         {card.kind === "text" && <>
-          <p className={[`fc-say${isLong(card.item.text) ? " long" : ""}`, practice["fc-say"]].filter(Boolean).join(' ')}>{card.item.text}</p>
-          {card.item.hint && <p className={["fc-hint", practice["fc-hint"]].filter(Boolean).join(' ')}>{card.item.hint}</p>}
+          {course === DEFAULT_COURSE ? <p className={[`fc-say${isLong(card.item.text) ? " long" : ""}`, practice["fc-say"]].filter(Boolean).join(' ')}>{card.item.text}</p>
+            : <Markdown course={course} chapters={chapters} src={card.item.text} className={`fc-md ${practice["fc-md"]}`} headingOffset={2} />}
+          {card.item.hint && (course === DEFAULT_COURSE ? <p className={["fc-hint", practice["fc-hint"]].filter(Boolean).join(' ')}>{card.item.hint}</p>
+            : <Markdown course={course} chapters={chapters} src={card.item.hint} className={`fc-md small ${practice["fc-md"]}`} headingOffset={2} />)}
           {take && (
             <section className={["fc-take", practice["fc-take"]].filter(Boolean).join(' ')} aria-label="Your take">
               <div className={["prc", practice["prc"]].filter(Boolean).join(' ')}><ListenBack src={take.audio_url} /></div>
@@ -308,14 +324,14 @@ function CardFace({ card, level, tips, take, band, onHurt }: {
                   {tips.map((t, i) => (
                     <li key={i} className={isCare(t.label) ? "care" : undefined}>
                       <b>{t.label}</b>
-                      <Markdown src={t.body} className={[["fc-md small", practice["fc-md"]].filter(Boolean).join(' '), shared["small"]].filter(Boolean).join(' ')} headingOffset={2} />
+                      <Markdown course={course} chapters={chapters} src={t.body} className={[["fc-md small", practice["fc-md"]].filter(Boolean).join(' '), shared["small"]].filter(Boolean).join(' ')} headingOffset={2} />
                     </li>
                   ))}
                 </ol>
               )}
             </div>
           )}
-          <button className={["fc-hurt", practice["fc-hurt"]].filter(Boolean).join(' ')} onClick={onHurt}>{HURT}</button>
+          {course === DEFAULT_COURSE && <button className={["fc-hurt", practice["fc-hurt"]].filter(Boolean).join(' ')} onClick={onHurt}>{HURT}</button>}
         </>}
       </div>
     </>
