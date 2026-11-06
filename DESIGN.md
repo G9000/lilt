@@ -84,7 +84,8 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   breathes faster and shows one small paper bubble while recording, and a pink heart rises once
   when you stop. Finished cards stack as a tiny tilted pile beside the count. The end of the deck
   is a slightly tilted paper slip: the date, one italic serif sentence and the cards by chapter,
-  with the cat on top. The prompt leads in the reading serif, followed by one hint
+  with the cat on top. Optional soft sounds (off by default) are paper, pencil and a two-note
+  G5–D6 chime, synthesised quietly and silent whenever the microphone is in use. The prompt leads in the reading serif, followed by one hint
   and optional **Reading tips**. Record, replay and neutral Again/Hard/Good/Easy buttons share
   the area below the prompt. **How to practise**, **Up next** and **Practised today** fold away;
   upcoming choices are keyboard buttons, disabled while recording or reviewing. The centred

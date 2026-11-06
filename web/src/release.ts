@@ -14,6 +14,7 @@ export const RELEASES: Release[] = [
     date: "2026-11-01",
     items: [
       { title: "The cat practises with you", body: "The room's cat curls up on the edge of your card, listens while you record and sends up a heart when you stop. Finished cards make a little pile, and the day ends with a paper slip of what you said.", to: "/deck" },
+      { title: "Soft sounds, if you like", body: "Turn on soft sounds in Settings → Appearance for a paper rustle as a card is put away, a pencil as you keep a note and a small chime when the deck is done. They're off until you choose them, and never play while the microphone is on." },
       { title: "Handwriting and a second note", body: "Write your sticky note in handwriting, and add a second note under the first for another reminder. Each has its own paper, tape and size." },
       { title: "Room for every screen", body: "On smaller and squarer screens the room's widgets shrink a little and keep clear of each other, today's cards and the Photos, Practice and Music shortcuts." },
       { title: "A gentler new week", body: "The plant in the room says \"A new week\" instead of a zero, and grows a leaf each day you practise." },

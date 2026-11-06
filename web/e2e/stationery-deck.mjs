@@ -56,6 +56,16 @@ try {
     if (p === '/api/plan/resume') { deck.paused = false; return send({}); }
     return route.fulfill({ status: 503, json: { error: 'Isolated deck test' } });
   });
+  // Count the sounds the page makes: soft sounds are made from buffer sources (paper, pencil) and
+  // oscillators (the chime); nothing else on the deck page makes either.
+  await context.addInitScript(() => {
+    window.__sound = { sources: 0, oscillators: 0, busy: 0 };
+    const C = window.AudioContext;
+    const bs = C.prototype.createBufferSource, os = C.prototype.createOscillator;
+    const busy = () => document.querySelector('[aria-label="Stop recording"]') ? 1 : 0;
+    C.prototype.createBufferSource = function () { window.__sound.sources++; window.__sound.busy += busy(); return bs.call(this); };
+    C.prototype.createOscillator = function () { window.__sound.oscillators++; window.__sound.busy += busy(); return os.call(this); };
+  });
   const page = await context.newPage();
   page.on('pageerror', e => { errors.push(e.message); console.error(e.message); });
   await page.goto(`${server.resolvedUrls.local[0]}#/deck`);
@@ -139,6 +149,25 @@ try {
   assert.doesNotMatch(await page.locator('.sd-slip').innerText(), /score|missed|well done|perfect|%/i, 'the slip never grades');
   assert.equal(await page.locator('.sd-heading .sd-pile i').count(), 4, 'finished cards make a small pile by the count');
   await shot('deck-complete');
+  assert.deepEqual(await page.evaluate(() => window.__sound), { sources: 0, oscillators: 0, busy: 0 }, 'soft sounds are off until you turn them on');
+
+  // Turned on: a rustle as a card is put away and a chime at the end, never while recording.
+  reset([makeItem('first', 'Good morning. How are you today?'), makeItem('last', 'Let your voice settle.', 'cooldown')]);
+  await page.evaluate(() => localStorage.setItem('lilt.sounds', 'on'));
+  await page.reload();
+  await record();
+  assert.deepEqual(await page.evaluate(() => window.__sound), { sources: 0, oscillators: 0, busy: 0 }, 'no sound while recording or before rating');
+  await page.keyboard.press('3');
+  await page.locator('.sd-current').filter({ hasText: 'Let your voice settle.' }).waitFor();
+  const rustled = await page.evaluate(() => window.__sound);
+  assert.ok(rustled.sources > 0 && rustled.oscillators === 0, 'a rustle as the card is put away');
+  await record();
+  await page.getByRole('button', { name: 'Good', exact: true }).click();
+  await page.getByRole('heading', { name: "That's today's deck" }).waitFor();
+  const chimed = await page.evaluate(() => window.__sound);
+  assert.ok(chimed.oscillators > 0 && chimed.sources === rustled.sources, 'a chime, not a rustle, when the deck is done');
+  assert.equal(chimed.busy, 0, 'never while the microphone is on');
+  await page.evaluate(() => localStorage.removeItem('lilt.sounds'));
   reset(); await page.reload();
   await page.getByRole('button', { name: 'It hurts or feels strained', exact: true }).click();
   await page.getByRole('heading', { name: "Let's stop here" }).waitFor();

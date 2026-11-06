@@ -8,6 +8,7 @@ import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
 import { Illustration } from "../components/Illustrations";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
+import { playSound } from "../sounds";
 import { DEFAULT_NOTE, DEFAULT_NOTE_2, isDefaultNote, NOTE_KEY, NOTE_KEY_2, NOTE_PAPERS, NOTE_TAPES, NoteStyle, NotePaper, NoteTape, readNoteStyle, resized } from "../room/note-style";
 
 /**
@@ -114,7 +115,7 @@ function Note({ id, text, onSave, onEditing, startEditing, onAddSecond, onRemove
   const done = (keep: boolean) => {
     setEditing(false);
     const t = draft.trim();
-    if (keep && t !== text) onSave(t); else setDraft(text);
+    if (keep && t !== text) { onSave(t); playSound("pencil"); } else setDraft(text);
   };
   const choose = (s: NoteStyle) => { setLook(s); saveNoteStyle(id, s); };
   useEffect(() => { if (!editing) setRemoving(false); }, [editing]);

@@ -171,6 +171,10 @@ Monitor uploads and playback have an isolated check with locally generated media
    - **The cat comes too:** the room's cat dozes on the top edge of the card, perks up and says
      "i'm listening :3" while you record, and sends up a heart when you stop. It reacts to your
      saying something, never to how it went.
+   - **Soft sounds** (Settings → Appearance, off until you turn them on, kept in this browser as
+     `lilt.sounds`): a paper rustle as a card is put away, a pencil scratch as you keep a sticky
+     note, and a small two-note chime when the deck is done. They're made in the browser
+     (`web/src/sounds.ts`), quiet, and never play while the microphone is on or in a hidden tab.
    - **A pile and a slip:** each finished card adds a slip to a small pile by the count. When the
      deck is done, a paper slip says what you said today, chapter by chapter (each card once, no
      ratings); the itemised list stays under **Practised today**. The wording lives in

@@ -20,6 +20,7 @@ import { TextHistory } from "./TextHistory";
 import { setRoom } from "../room/Room";
 import { CatMode, DeckCat } from "../components/DeckCat";
 import { daySlip } from "../daySlip";
+import { playSound } from "../sounds";
 import { CAT_URL, currentLight, roomUrl } from "../room/scene";
 import { AudioPlayer, loadPeaks, useTakePitch } from "../components/AudioPlayer";
 import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../components/bits";
@@ -1633,6 +1634,15 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   const catMode: CatMode = recOn ? "watch" : phase.k === "rate" || phase.k === "reveal" ? "awake" : phase.k === "end" ? "happy" : "sleep";
   const catSay = phase.k === "hurt" ? "take a break, sip some water" : phase.k === "end" ? "all done! drink water :3" : recOn ? "i'm listening :3" : phase.k === "rate" ? "let's listen :3" : "zzz… press record";
   useEffect(() => { setRoom({ mode: catMode, say: catSay }); }, [catMode, catSay]);
+  // Soft sounds (when turned on): a rustle as each card is put away, a chime when the deck is done.
+  const putAway = results.length;
+  const heard = useRef(putAway);
+  useEffect(() => {
+    if (putAway > heard.current && phase.k !== "end") playSound("rustle");
+    heard.current = putAway;
+  }, [putAway]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The chime is for finishing the deck in this visit, not for opening one already done.
+  useEffect(() => { if (phase.k === "end" && putAway > 0) playSound("chime"); }, [phase.k]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (err && !deck) return <div className="ve-page"><article className="ve-col"><p role="alert" className="ve-err">{err}</p></article></div>;
   if (!deck || !session) return <div className="ve-page"><article className="ve-col"><p className="ve-subtitle">Getting your cards…</p></article></div>;
