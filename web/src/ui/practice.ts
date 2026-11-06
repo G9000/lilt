@@ -576,10 +576,8 @@ export const practice = {
   "ve-chapter": `[--content-width:1040px] [&_>_.ve-head]:border-b [&_>_.ve-head]:border-hair [&_>_.ve-head]:pb-5 ` +
     `[&_.ve-items]:grid [&_.ve-items]:gap-0 [&_.ve-items_>_.ve-item]:m-0 ` +
     `[&_.ve-items_>_.ve-item]:rounded-none [&_.ve-items_>_.ve-item]:border-b [&_.ve-items_>_.ve-item]:border-hair ` +
-    `[&_.ve-items_>_.ve-item:last-child:not(.on)]:border-b-0 ` +
+    `[&_.ve-items_>_.ve-item:last-child]:border-b-0 ` +
     `[&_.ve-items_>_.ve-item]:py-5 [&_.ve-items_>_.ve-item]:pr-5 [&_.ve-items_>_.ve-item]:pl-14 ` +
-    `[&_.ve-items_>_.ve-item.on]:my-3 [&_.ve-items_>_.ve-item.on]:rounded-control ` +
-    `[&_.ve-items_>_.ve-item.on]:border [&_.ve-items_>_.ve-item.on]:border-line-strong [&_.ve-items_>_.ve-item.on]:bg-panel ` +
     `[&_.ve-item:not(.on):not(.done)_.readtext]:text-ink-2 [&_.ve-item:not(.on)_.ve-hint]:text-ink-2 ` +
     `[&_.ve-item_.ve-hint]:max-w-none [&_.ve-item_.ve-hint]:block [&_.ve-item_.ve-hint]:text-[14px] ` +
     `[&_.ve-item_.ve-mk.num]:top-8 [&_.ve-item:has(>_.ve-checkin)_.ve-mk.num]:top-7 ` +

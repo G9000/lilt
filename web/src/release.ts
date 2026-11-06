@@ -13,7 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
-      { title: "More room for your voice", body: "Voice chapters now use a wider reading layout, clearly highlight your selected exercise, and keep the other texts readable in compact rows.", to: "/studio/start-here" },
+      { title: "More room for your voice", body: "Voice chapters now use a wider reading layout and keep the texts readable in compact rows. The selected exercise keeps its plain appearance, with the recorder below it.", to: "/studio/start-here" },
       { title: "A tidier place to read and practise", body: "Course pages put linked chapters first, Markdown has tighter spacing and clearer notes, and the comfort footer fills the reading column with less empty space.", to: "/courses" },
       { title: "Record and practise with any course", body: "Other courses now have optional audio recording, their own recordings list, and guided practice using their prompts and hints. Save a reflection with or without audio, and reopen the session later.", to: "/courses" },
       { title: "Course details that stay with your course", body: "Practice texts and chapter-card links keep your chosen course. Other courses use their own skill names and no longer inherit read-aloud prompts, voice goals or guessed card durations.", to: "/courses" },

@@ -45,3 +45,15 @@ a selected-exercise panel, readable inactive text and compact divided rows.
 
 This last step intentionally updated the served web UI after notifying the owner. No server
 restart or practice-data access was needed. Browser tests still used only stubbed APIs.
+
+## Active exercise panel reverted
+
+At the owner's request, removed the selected exercise's background, enclosing border,
+rounded corners and extra vertical margin. The recorder remains below the selected text.
+Kept the footer fix and the other layout changes.
+
+Type checking, the isolated production build, and course-reading browser checks against
+both source and built output passed. The browser checks now verify a transparent active
+row with no enclosing border, along with exercise switching and responsive layouts.
+Visually inspected the dark desktop result. Updated the served assets and confirmed port
+7878 serves the checked index, with HTTP 200 for `index-CSYwdL__.js` and `index-BGMr6LwW.css`.

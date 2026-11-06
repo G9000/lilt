@@ -88,13 +88,15 @@ try {
     const layout = await page.locator('.ve-chapter').evaluate(el => {
       const row = el.querySelector('.ve-item.on'), other = el.querySelector('.ve-item:not(.on)');
       return { width: el.getBoundingClientRect().width, overflow: el.scrollWidth > el.clientWidth + 1,
-        selectedBackground: getComputedStyle(row).backgroundColor, background: getComputedStyle(el.closest('.ve-page')).backgroundColor,
+        selectedBackground: getComputedStyle(row).backgroundColor,
+        selectedBorder: ['borderTopWidth', 'borderLeftWidth', 'borderRightWidth'].map(property => getComputedStyle(row)[property]),
         ink: getComputedStyle(other.querySelector('.readtext')).color, hint: getComputedStyle(other.querySelector('.ve-hint')).color,
         activeInk: getComputedStyle(row.querySelector('.readtext')).color };
     });
     assert.ok(!layout.overflow, 'voice chapter fits its column');
     if (width >= 1440) assert.ok(layout.width >= 1000, 'desktop chapter uses the wider reading layout');
-    assert.notEqual(layout.selectedBackground, layout.background, 'selected exercise is visibly distinct');
+    assert.equal(layout.selectedBackground, 'rgba(0, 0, 0, 0)', 'selected exercise keeps the plain reading surface');
+    assert.deepEqual(layout.selectedBorder, ['0px', '0px', '0px'], 'selected exercise has no enclosing panel');
     assert.ok([layout.hint, layout.activeInk].includes(layout.ink), 'inactive exercise stays readable, including on hover');
     await page.locator('.ve-page').evaluate(el => { el.scrollTop = 0; });
     await page.screenshot({ path: path.join(shots, `voice-chapter-${width}-${theme}.png`) });
