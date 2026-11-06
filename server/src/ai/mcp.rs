@@ -19,17 +19,21 @@ use rmcp::{
 use serde_json::{Value, json};
 use std::sync::Arc;
 
-const INSTRUCTIONS: &str = "Lilt is Julio's local voice feminization practice app. Her goal is a more feminine speaking voice that sounds natural, feels comfortable and works in everyday conversation, with interest in a lighter sound and forward resonance. Use these tools to read her practice evidence and to save grounded reviews.
+const INSTRUCTIONS: &str = "Lilt is a local learning and practice app. Courses can cover different subjects. Do not assume the learner's name, pronouns or goals, or that their course is about voice feminization. Use the learner's request and stored evidence to guide your help; do not invent personal details.
 
-Rules the server enforces:
+Start with courses_list to discover courses and their kinds. Use the course the learner requested; ask if the intended course is unclear. Pass its id explicitly to syllabus_* tools: omitting course defaults to voice, not to a selected course. Read syllabus_list for that course before editing, then read the relevant files. Follow its chapter format and locked sections, write one file at a time with a short note, and keep text ids when rewording. Changes go to the learner's own copy, called their mixtape; the original is never changed. Follow the course's subject and the learner's request without imposing a voice goal on other courses.
+
+The voice_* tools are specific to the built-in voice practice, not general course tools. For voice coaching, first read voice_get_today_plan for the learner's saved goal and current plan, then read relevant practice evidence. Do not treat that voice goal as a goal for other courses. Course listing and editing support other subjects; the current practice screen, daily deck and analysis still serve the built-in voice course. Do not promise practice or analysis capabilities for other courses.
+
+Rules for voice reviews and practice plans:
 - Every observation needs evidence: session/take IDs, analysis run IDs for any quoted measure, and the learner's recorded self-report answers. Quoted numbers must match stored analyses.
 - Next actions must use an eligible exercise ID and version, and a cue ID from that exercise.
 - Pitch measurements are descriptive only. They have not been validated on natural speech, so don't use them to justify corrective feedback or progress.
-- You cannot hear her voice through these tools unless you actually received and perceived audio. Model-perceived feedback is disabled in this release. Never claim to hear resonance, lightness or femininity.
+- You cannot hear the learner's voice through these tools unless you actually received and perceived audio. Model-perceived feedback is disabled in this release. Never claim to hear resonance, lightness or femininity.
 - No diagnosis, no anatomy or larynx claims, no femininity percentages, no clinical claims. Comfort reports (strain, pain, hoarseness) outrank everything.
 - If evidence is insufficient, save an abstention with a reason and a useful next action.
 
-Lilt holds courses (courses_list); voice practice is the one the app shows today. A course's chapters and home page can be rewritten for this learner with the syllabus_* tools, naming the course (voice when left out). Changes go to the learner's own copy only, which Lilt calls their mixtape (their own remix of the course); the course's original is never changed. Read syllabus_list first, follow its chapter format, write one file at a time with a short note, and keep text ids when rewording. Practice texts stay gentle: nothing that pushes through strain, pain or hoarseness.";
+All practice stays gentle. For any course involving voice, never suggest pushing through strain, pain or hoarseness.";
 
 pub struct LiltMcp {
     app: Shared,
@@ -156,7 +160,7 @@ pub fn tools() -> Vec<Tool> {
         ),
         tool(
             "syllabus_list",
-            "The learner's syllabus: every Markdown file (home page, about, pitch reference, chapters in order) with how it differs from Lilt's original, the chapter format, and the editing rules. Start here before changing anything.",
+            "The requested course's syllabus: every editable Markdown file with how it differs from Lilt's original, the chapter format, and the editing rules. Start here before changing anything.",
             json!({"type": "object", "properties": {}}),
             true,
         ),
@@ -174,7 +178,7 @@ pub fn tools() -> Vec<Tool> {
         ),
         tool(
             "syllabus_write",
-            "Create or replace one syllabus file in the learner's own version (Lilt's original is never changed). The whole syllabus is checked first; a file Lilt can't read, or a change to the home page's \"Be gentle with your voice\" section, is refused and nothing is saved. Keep text ids (## id) when rewording so progress stays with the text. Every change can be undone.",
+            "Create or replace one syllabus file in the learner's own version (Lilt's original is never changed). The whole syllabus is checked first; a file Lilt can't read, or a change to the course's locked sections, is refused and nothing is saved. Keep text ids (## id) when rewording so progress stays with the text. Every change can be undone.",
             json!({"type": "object", "required": ["file", "markdown", "note"], "properties": {"file": file_arg, "markdown": {"type": "string"}, "note": {"type": "string", "description": "A few words on what changed and why, shown in the history."}}}),
             false,
         ),
@@ -555,7 +559,7 @@ impl ServerHandler for LiltMcp {
     fn get_info(&self) -> ServerConfig {
         let mut info = Implementation::from_build_env();
         info.name = "lilt".into();
-        info.title = Some("Lilt voice practice".into());
+        info.title = Some("Lilt learning and practice".into());
         info.version = env!("CARGO_PKG_VERSION").into();
         ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
             .with_server_info(info)

@@ -3,6 +3,17 @@
 Lilt is built so that voice practice is the first course, not the only one. This page says how the
 pieces fit, what is already per course, and what to add for a new course or a new kind of practice.
 
+The shared AI instructions do not contain a learner's name, pronouns or personal goal. Agents
+start with `courses_list`, use the requested course's id explicitly with `syllabus_*`, and read
+that course's format and locked sections before editing. Omitting the id still defaults to
+`voice`; it does not follow a course selected in the app. Course editing follows the course's
+subject and the learner's request, without imposing a voice goal on other subjects.
+
+The `voice_*` tools remain specific to the built-in voice course. For voice coaching, agents
+read the saved goal from `voice_get_today_plan` and use recorded practice evidence. Its evidence,
+comfort and audio limitations still apply. These tools do not provide general practice or
+analysis for other course subjects.
+
 ## The pieces
 
 - **A course is content.** A folder in `content/courses/<id>` with a `course.md` (id, title, `kind`,
