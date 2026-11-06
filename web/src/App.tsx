@@ -211,7 +211,7 @@ export function App() {
   return (
     <MicProvider>
       <a className={cx("skip", shared["skip"])} href="#main" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
-      <Room inside={inside} onEnter={() => sitDown.current()} cards={left} done={done}>
+      <Room inside={inside} onEnter={() => sitDown.current()} cards={left} done={done} days={deck?.participation?.days_this_week ?? 0}>
         <RoomFloaters key={course} deck={deck} inside={inside} course={course} />
       </Room>
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>

@@ -158,7 +158,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      practice-card covers; the smaller paper stack keeps the content easy to read.
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: a
-     clock in the window, the plant by the potted plant, a sticky note taped to the photo wall, and
+     clock in the window, a sticky note taped to the photo wall, and
      **What's new**: the version you're running (now 0.2) and what came with it, with a dot until
      you've opened it; each item opens the feature. New releases go at the top of
      `web/src/release.ts`.
@@ -192,16 +192,18 @@ Monitor uploads and playback have an isolated check with locally generated media
      the countdown. Reset layout moves the mug home without changing the timer or your mug.
      Like the other floating widgets, the mug hides on phone-width screens. Reduced motion
      keeps its steam still. No timer data is sent to the server or included in practice backups.
-     Click the **weekly plant** to choose **Original sprout, Monstera, Fern or Succulent**.
-     Each preview shows this week's growth; choosing one keeps the same practice days and fills
-     one more leaf or frond each day you practise. A fresh week still says **A new week**.
+     Click the **painted floor plant beside the drawers** to choose **Ficus, Monstera, Fern or Jade plant**.
+     Its shaded artwork is part of the room, follows the room's lighting, and subtly grows with
+     each day you practise. The pot stays fixed; a fresh week says **A new week** in the picker.
      Your choice stays in this browser (`lilt.room.plant`), including after Reset layout, and
-     doesn't change your practice data. The plant stays by the painted plant unless you drag it.
+     doesn't change your practice data. It replaces the old floating weekly tile and stays anchored
+     beside the drawers. On smaller screens, **Plants** in the room shortcuts opens the same picker.
      **Done**, <kbd>Esc</kbd> or a click outside closes the picker. If the browser cannot save,
-     the choice still works for this visit and the picker tells you it won't be kept.
+     the choice still works for this visit and the picker tells you it won't be kept. If artwork
+     can't load, the previous plant stays visible and **Try again** retries the choice.
      Widgets near an edge slide inward rather than disappear. On smaller or squarer screens they
      shrink a little, and one still at home slides just clear of its neighbours and of the Photos,
-     Practice and Music shortcuts under the menu bar. A widget whose spot
+     Practice, Music and Plants shortcuts under the menu bar. A widget whose spot
      is cropped off a small screen steps aside; a phone keeps the stack and room shortcuts.
    - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
      <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,
@@ -223,10 +225,10 @@ Monitor uploads and playback have an isolated check with locally generated media
      with a greeting for the time of day. It only holds real things: your feedback is ready, a new
      stage opened, your reminder time, resting today, recordings recovered from a closed page. Never
      streaks or missed days. Read and cleared notifications are remembered in this browser only.
-   - **The desk** shows today's practice as a folder (the cards waiting and Start). The clock, the
-     plant (a leaf for each day you practised this week; it never shrinks or scolds, and a fresh week
-     reads "A new week" rather than a zero) live in the
-     room instead, as floating widgets you can drag. Music opens from the painted player.
+   - **The desk** shows today's practice as a folder (the cards waiting and Start). The clock lives
+     in the room as a floating widget you can drag. The weekly plant is part of the painting;
+     its picker describes the week's practice days, with "A new week" rather than a zero.
+     Music opens from the painted player.
    - **Lo-fi radio:** seventeen moods, made live in the browser. **Keys and beats** are the original nine
      ("Rain on the window", "Desk lamp", "City at dusk"…) plus "Midnight jazz" with a walking bass.
      **Strings, tines and pads** bring other instruments and places: plucked strings ("Morning coffee",

@@ -8,6 +8,8 @@ import { useRoomAppearance } from './appearance';
 import { roomWeights } from './appearance-settings';
 import { MonitorScreen } from './MonitorMedia';
 import { RoomObjects } from './RoomObjects';
+import { RoomPlant } from './RoomPlant';
+import { plantLight } from './plant';
 
 /**
  * The illustrated room. Outside, it is the whole screen; the middle monitor is a way in. Inside,
@@ -64,7 +66,7 @@ const FLY_MS = 1100;
 const PET_SAYS = ["purr… :3", "prrrr <3", "mrrp!", "*happy cat noises*"];
 
 /** `children` float in the painting: position them in painting pixels; `--inv` undoes the camera's scale. */
-export function Room({ inside, onEnter, cards, done, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; children?: ReactNode }) {
+export function Room({ inside, onEnter, cards, done, days = 0, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; days?: number; children?: ReactNode }) {
   const appearance = useRoomAppearance();
   const appearanceRef = useRef(appearance); appearanceRef.current = appearance;
   const screenGlowId = useId();
@@ -155,6 +157,8 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
         f.w = roomWeights(choice.light, minuteNow());
         const o = layerOpacity(f.w);
         for (const l of LIGHTS) { const im = arts.current[l]; if (im) im.style.opacity = String(o[l]); }
+        for (const l of LIGHTS) stage.current?.style.setProperty(`--room-${l}-opacity`, String(o[l]));
+        for (const [key, value] of Object.entries(plantLight(f.w))) stage.current?.style.setProperty(`--plant-${key}`, String(value));
       }
       // the lights ease on (or off) over a couple of seconds
       const lightTarget = choice.lights === 'auto' ? Number(doneRef.current) : Number(choice.lights === 'on');
@@ -254,6 +258,7 @@ export function Room({ inside, onEnter, cards, done, children }: { inside: boole
         ))}
         <MonitorScreen monitor="main" appearance={appearance} inside={inside} />
         <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
+        <RoomPlant days={days} inside={inside} />
         <canvas ref={canvas} className={["room-fx", roomStyles["room-fx"]].join(" ")} width={W} height={H} />
         <div className={["room-color-wash", roomStyles["room-color-wash"]].join(" ")} style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
         </div>

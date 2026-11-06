@@ -3,7 +3,6 @@ import { motion, useDragControls, useMotionValue } from "motion/react";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { api, Deck, Texts } from "../api";
 import { ClockWidget } from "./Desk";
-import { PlantWidget } from "../room/PlantWidget";
 import { openSettings } from "./SettingsSheet";
 import { SettingsAppIcon } from "./icons";
 import { chapterCards, EMPTY, loadRuns, progress } from "../flashcards";
@@ -18,8 +17,7 @@ import { DEFAULT_NOTE, DEFAULT_NOTE_2, isDefaultNote, NOTE_KEY, NOTE_KEY_2, NOTE
 
 /**
  * Small things that float in the room, each over a spot in the painting (painting pixels): the
- * note on the wall of photos, a clock in the window, the plant (the
- * days you practised this week) by the potted plant, Settings (theme, AI connection and
+ * note on the wall of photos, a clock in the window, Settings (theme, AI connection and
  * everything else, over the room) on the window beside the clock, and What's new (this version and
  * what came with it, from release.ts) up by the hanging lights, and Flashcards (the chapter you're
  * going through, a card at a time) beside the plant, and Yarn (the voice game) on the desk under the
@@ -31,7 +29,7 @@ import { DEFAULT_NOTE, DEFAULT_NOTE_2, isDefaultNote, NOTE_KEY, NOTE_KEY_2, NOTE
 type Spot = { x: number; y: number };
 // Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
 // 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, note2: { x: 470, y: 420 }, clock: { x: 930, y: 270 }, plant: { x: 490, y: 630 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 }, tea: { x: 935, y: 540 } };
+const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, note2: { x: 470, y: 420 }, clock: { x: 930, y: 270 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 }, tea: { x: 935, y: 540 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -427,11 +425,6 @@ export function RoomFloaters({ deck, inside, course = DEFAULT_COURSE }: { deck?:
       <Widget id="clock" delay={-1.1} label="Clock">
         <ClockWidget />
       </Widget>
-      {deck && (
-        <Widget id="plant" delay={-3.4} label="This week">
-          <PlantWidget days={deck.participation?.days_this_week ?? 0} inside={inside} />
-        </Widget>
-      )}
       {texts && (
         <Widget id="flashcards" delay={-4.2} label="Flashcards">
           <FlashcardsWidget texts={texts} course={course} />

@@ -5,12 +5,12 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
-**Weekly plant** keeps its existing place by the painted plant and the same footprint. Clicking
-it opens a compact light/dark picker: Original sprout, Monstera, Fern and Succulent, with the
-current week's growth in every preview. Each day fills a leaf or frond; zero days says “A new
-week.” Choices change only the art and stay in browser storage. The original warm paper tile
-remains, with a quiet Choose plant cue. Keyboard dismissal restores focus, dragging never
-opens the picker, and reduced motion keeps the leaves still.
+**Weekly plant** is the painted floor plant beside the drawers, with shaded ficus, monstera,
+fern and jade artwork. Clicking it opens a light/dark picker; Plants in the room shortcuts
+opens it on smaller screens. The pot stays anchored while the canopy subtly grows with this
+week's practice days. Zero days says “A new week.” There is no floating tile. Choices stay in
+browser storage; Reset layout leaves the plant alone. The art follows the room's lighting,
+keyboard dismissal restores focus, and reduced motion removes the growth transition.
 
 **Tea break** is a draggable illustrated mug beside the painted desk mug, with cream stoneware, sage, blue stripes
 and sleepy cat designs. Its compact modal offers 3, 5 or 10 minutes and an optional soft clink
