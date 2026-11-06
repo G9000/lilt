@@ -3,6 +3,8 @@ target/
 .venv/
 web/dist/
 lilt-data*/
+# Disposable test builds, audit copies, and screenshots.
+/.tmp/
 __pycache__/
 .DS_Store
 
