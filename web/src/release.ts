@@ -14,7 +14,7 @@ export const RELEASES: Release[] = [
     date: "2026-11-07",
     items: [
       { title: "A plant inside your room", body: "Click the painted floor plant beside the drawers to choose a ficus, monstera, fern or jade plant. Shaded artwork follows the room's light and grows gently with your week. On smaller screens, use Plants. Your choice stays in this browser." },
-      { title: "A little tea break", body: "Choose a cream, sage, striped or sleepy cat mug and take 3, 5 or 10 quiet minutes. The steam settles when you're done, with an optional soft clink. Your mug and timer stay in this browser." },
+      { title: "Tea from your desk cup", body: "Click the painted cup beside the keyboard to choose a shaded cream, sage, striped or sleepy cat mug and take 3, 5 or 10 quiet minutes. It follows the room's light, with steam and an optional soft clink. On smaller screens, use Tea. Your mug and timer stay in this browser." },
       { title: "More room for your courses", body: "Course homes, chapters, guides, practice texts and Today's practice share a wider, centered reading layout. Introductions and Markdown fill the same column, and selected voice exercises keep their plain appearance.", to: "/courses" },
       { title: "A tidier place to read and practise", body: "Course pages put linked chapters first, Markdown has tighter spacing and clearer notes, and the comfort footer fills the reading column with less empty space.", to: "/courses" },
       { title: "Record and practise with any course", body: "Other courses now have optional audio recording, their own recordings list, and guided practice using their prompts and hints. Save a reflection with or without audio, and reopen the session later.", to: "/courses" },

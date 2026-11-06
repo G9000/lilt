@@ -181,17 +181,19 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back and stays available after resetting (a reset-arrow icon on phones).
-     **Tea break** sits beside the painted mug on the desk. Click it to choose cream stoneware, sage,
-     blue stripes or sleepy cat, then start a **3, 5 or 10 minute** break. Drag it anywhere like
-     the other widgets. Steam rises while the timer runs; when it ends, the mug quietly says
+     **Tea break** opens from the painted mug on the desk, left of the keyboard. Click it to choose
+     shaded cream stoneware, sage, blue stripes or sleepy cat, then start a **3, 5 or 10 minute**
+     break. The cup stays in its painted spot and follows the room's light. Steam rises while
+     the timer runs; when it ends, the controls and hover/focus cue quietly say
      “Whenever you're ready.” **End break** clears the timer whenever you like. An optional soft
      clink is off by default and only plays if this room is focused when the break finishes,
      never during recording. Returning later or reloading an expired timer stays quiet.
      The mug, duration and deadline stay in this browser (`lilt.room.tea`; the clink choice uses
      `lilt.room.tea.clink`). Reloading, leaving the room or a sleeping computer doesn't restart
-     the countdown. Reset layout moves the mug home without changing the timer or your mug.
-     Like the other floating widgets, the mug hides on phone-width screens. Reduced motion
-     keeps its steam still. No timer data is sent to the server or included in practice backups.
+     the countdown. Reset layout leaves the cup, timer and mug choice alone. On smaller screens,
+     **Tea** in the room shortcuts opens the same controls. Reduced motion keeps its steam still.
+     If artwork can't load, the previous cup stays visible and **Try again** retries the choice.
+     No timer data is sent to the server or included in practice backups.
      Click the **painted floor plant beside the drawers** to choose **Ficus, Monstera, Fern or Jade plant**.
      Its shaded artwork is part of the room, follows the room's lighting, and subtly grows with
      each day you practise. The pot stays fixed; a fresh week says **A new week** in the picker.
@@ -203,7 +205,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      can't load, the previous plant stays visible and **Try again** retries the choice.
      Widgets near an edge slide inward rather than disappear. On smaller or squarer screens they
      shrink a little, and one still at home slides just clear of its neighbours and of the Photos,
-     Practice, Music and Plants shortcuts under the menu bar. A widget whose spot
+     Practice, Music, Plants and Tea shortcuts under the menu bar. A widget whose spot
      is cropped off a small screen steps aside; a phone keeps the stack and room shortcuts.
    - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
      <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,

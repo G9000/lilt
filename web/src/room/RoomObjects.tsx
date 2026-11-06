@@ -2,6 +2,7 @@ import { roomStyles } from "../desk/roomStyles";
 import { createPortal } from "react-dom";
 import { openMusic } from "../desk/musicState";
 import { openRoomPlant } from './RoomPlant';
+import { openTeaBreak } from './TeaBreak';
 
 /** Transparent targets follow the painted objects; narrow screens keep the same shortcuts. */
 export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () => void }) {
@@ -26,6 +27,7 @@ export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () 
         <button type="button" onClick={onEnter}>Practice</button>
         <button type="button" onClick={openMusic}>Music</button>
         <button type="button" onClick={openRoomPlant}>Plants</button>
+        <button type="button" onClick={openTeaBreak}>Tea</button>
       </div>, document.body)}
   </>;
 }

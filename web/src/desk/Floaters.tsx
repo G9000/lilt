@@ -12,7 +12,6 @@ import { Illustration } from "../components/Illustrations";
 import { go } from "../App";
 import { CURRENT, shortVersion } from "../release";
 import { playSound } from "../sounds";
-import { TeaBreak } from "../room/TeaBreak";
 import { DEFAULT_NOTE, DEFAULT_NOTE_2, isDefaultNote, NOTE_KEY, NOTE_KEY_2, NOTE_PAPERS, NOTE_TAPES, NoteStyle, NotePaper, NoteTape, readNoteStyle, resized } from "../room/note-style";
 
 /**
@@ -29,7 +28,7 @@ import { DEFAULT_NOTE, DEFAULT_NOTE_2, isDefaultNote, NOTE_KEY, NOTE_KEY_2, NOTE
 type Spot = { x: number; y: number };
 // Chosen so no two overlap each other, today's cards, the hint or the monitors from 1024×768 to
 // 3440×1440 (widgets keep their size while the painting scales, so smaller screens are tighter).
-const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, note2: { x: 470, y: 420 }, clock: { x: 930, y: 270 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 }, tea: { x: 935, y: 540 } };
+const HOME: Record<string, Spot> = { note: { x: 460, y: 260 }, note2: { x: 470, y: 420 }, clock: { x: 930, y: 270 }, settings: { x: 1090, y: 180 }, news: { x: 680, y: 170 }, flashcards: { x: 800, y: 640 }, yarn: { x: 1060, y: 720 } };
 // Spots are painting pixels, so they're keyed to the painting: new art starts everyone from home.
 const KEY = "lilt.room.layout.cel-studio.2";
 const load = (): Record<string, Spot> => { try { return JSON.parse(localStorage.getItem(KEY) ?? "{}"); } catch { return {}; } };
@@ -445,9 +444,6 @@ export function RoomFloaters({ deck, inside, course = DEFAULT_COURSE }: { deck?:
             onRemove={() => { setAdded(false); setSpot("note2", null); saveNote2(null); }} />
         </Widget>
       )}
-      <Widget id="tea" delay={-2.2} label="Tea break timer">
-        <TeaBreak inside={inside} />
-      </Widget>
     </div>
   );
 }

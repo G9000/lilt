@@ -27,15 +27,23 @@ try {
     });
     await page.goto(server.resolvedUrls.local[0]);
     await page.locator('.room-stage.settled').waitFor();
+    assert.equal(await page.locator('.tea-widget').count(), 0, 'floating cup is gone');
     const mug = page.getByRole('button', { name: 'Tea break', exact: true });
+    const art = page.locator('.room-mug-art');
+    const chosen = id => page.waitForFunction(id => document.querySelector('.room-mug-art')?.dataset.mug === id, id);
+    const shot = async name => { if (shots) await page.screenshot({ path: path.join(shots, `${name}-${colorScheme}.png`) }); };
+    await chosen('cream');
+    assert.equal(await mug.evaluate(el => !!el.closest('.fl')), false);
     await mug.click();
     const dialog = page.getByRole('dialog', { name: 'Tea break', exact: true });
     await dialog.waitFor();
     assert.equal(await dialog.getByRole('checkbox').isChecked(), false);
     assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).getAttribute('aria-pressed'), 'true');
-    for (const [name, id] of [['Sage cup','sage'], ['Blue stripes','blue'], ['Sleepy cat','cat']]) {
+    for (const [name, id] of [['Cream stoneware','cream'], ['Sage cup','sage'], ['Blue stripes','blue'], ['Sleepy cat','cat']]) {
       await dialog.getByRole('button', { name, exact: true }).click();
-      assert.equal(await mug.locator('svg').getAttribute('data-mug'), id);
+      await chosen(id);
+      await page.keyboard.press('Escape'); await page.mouse.move(1400, 900); await mug.evaluate(el => el.blur());
+      await shot(`mug-${id}`); await mug.click();
     }
     if (shots) await page.screenshot({ path: path.join(shots, `tea-picker-${colorScheme}.png`) });
     await dialog.getByRole('button', { name: '3 min', exact: true }).click();
@@ -47,7 +55,7 @@ try {
     assert.equal(saved.minutes, 3);
     await page.reload();
     await page.locator('.room-stage.settled').waitFor();
-    assert.equal(await mug.locator('svg').getAttribute('data-mug'), 'cat');
+    await chosen('cat');
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lilt.room.tea')).endsAt), saved.endsAt);
     await page.getByRole('button', { name: 'Reset layout', exact: true }).click();
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lilt.room.tea')).endsAt), saved.endsAt);
@@ -55,7 +63,7 @@ try {
     await page.clock.setFixedTime(saved.endsAt + 1000);
     await page.waitForTimeout(1200);
     assert.match(await mug.innerText(), /Whenever you're ready/);
-    assert.equal(await mug.locator('.tea-steam').evaluate(el => getComputedStyle(el).opacity), '0');
+    assert.equal(await art.locator('.tea-steam').evaluate(el => getComputedStyle(el).opacity), '0');
     await mug.click();
     await dialog.getByRole('button', { name: '10 min', exact: true }).click();
     await dialog.getByRole('button', { name: 'Start break', exact: true }).click();
@@ -67,32 +75,31 @@ try {
     await page.keyboard.press('Escape');
     await dialog.waitFor({ state: 'detached' });
     assert.equal(await mug.evaluate(el => el === document.activeElement), true);
-    // Dragging moves the mug, without also opening its controls.
-    const before = await mug.boundingBox();
-    await page.mouse.move(before.x + 55, before.y + 75); await page.mouse.down();
-    await page.mouse.move(before.x + 15, before.y + 110, { steps: 8 }); await page.mouse.up();
-    assert.equal(await dialog.count(), 0);
-    await page.waitForFunction(() => JSON.parse(localStorage.getItem('lilt.room.layout.cel-studio.2') ?? '{}').tea);
+    const home = await art.evaluate(el => [el.style.left, el.style.top, el.style.width, el.style.height]);
     await page.getByRole('button', { name: 'Reset layout', exact: true }).click();
-    await page.waitForTimeout(500);
+    assert.deepEqual(await art.evaluate(el => [el.style.left, el.style.top, el.style.width, el.style.height]), home);
     if (shots) await page.screenshot({ path: path.join(shots, `tea-room-${colorScheme}.png`) });
     await page.setViewportSize({ width: 800, height: 600 });
     await page.waitForTimeout(600);
-    await mug.click(); await dialog.waitFor();
+    const shortcut = page.getByRole('button', { name: 'Tea', exact: true });
+    await shortcut.click(); await dialog.waitFor();
     const box = await dialog.boundingBox();
     assert.ok(box.x >= 0 && box.y >= 0 && box.x + box.width <= 800 && box.y + box.height <= 600);
     if (shots) await page.screenshot({ path: path.join(shots, `tea-small-${colorScheme}.png`) });
     await page.keyboard.press('Escape');
+    assert.equal(await shortcut.evaluate(el => el === document.activeElement), true);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await shortcut.click(); await dialog.waitFor(); await shot('tea-phone'); await page.keyboard.press('Escape');
     await page.setViewportSize({ width: 1440, height: 950 });
     await page.waitForTimeout(500);
     // A second room can cancel a break without leaving this tab's timer stale.
     const other = await page.context().newPage();
     await other.goto(server.resolvedUrls.local[0]);
     await other.evaluate(() => localStorage.setItem('lilt.room.tea', JSON.stringify({ mug: 'sage', minutes: 5, endsAt: Date.now() + 300000 })));
-    await page.waitForFunction(() => document.querySelector('.tea-widget svg')?.getAttribute('data-mug') === 'sage');
+    await chosen('sage');
     assert.match(await mug.innerText(), /Tea break ·/);
     await other.evaluate(() => localStorage.setItem('lilt.room.tea', JSON.stringify({ mug: 'sage', minutes: 5, endsAt: null })));
-    await page.waitForFunction(() => document.querySelector('.tea-widget').textContent === 'Tea break');
+    await page.waitForFunction(() => document.querySelector('.room-mug-target').textContent === 'Tea break');
     await other.close();
     await page.bringToFront();
     // Audio synthesis is observable without relying on speakers in a headless browser.
@@ -126,8 +133,8 @@ try {
     await page.waitForTimeout(1200);
     assert.equal(await page.evaluate(() => window.teaNotes), 2, 'returning after suspension is quiet');
     await page.evaluate(() => { location.hash = '/desk'; });
-    await page.waitForFunction(() => document.querySelector('.tea-widget').disabled);
-    await page.locator('.tea-widget').evaluate(el => el.click());
+    await page.waitForFunction(() => document.querySelector('.room-mug-target').disabled);
+    await page.locator('.room-mug-target').evaluate(el => el.click());
     assert.equal(await dialog.count(), 0, 'hidden mug cannot open a dialog in practice');
     await page.evaluate(() => { location.hash = '/'; });
     await page.locator('.room-stage.settled').waitFor();
@@ -139,8 +146,38 @@ try {
     assert.match(await dialog.innerText(), /couldn't save/);
     await dialog.getByRole('button', { name: 'Start break', exact: true }).click();
     assert.match(await mug.innerText(), /Tea break · 5:00/);
+    await chosen('blue');
+    for (const light of ['day', 'morning', 'sunset', 'night']) {
+      await page.evaluate(async light => { const { setRoomAppearance } = await import('/src/room/appearance.ts'); await setRoomAppearance({ light }); }, light);
+      await page.waitForFunction(light => document.querySelector('.room-stage').style.getPropertyValue(`--room-${light}-opacity`) === '1', light);
+      assert.equal(await art.evaluate(el => getComputedStyle(el).filter), await page.locator('.room-plant-art').evaluate(el => getComputedStyle(el).filter));
+      await mug.evaluate(el => el.blur()); await page.mouse.move(1400, 900); await shot(`tea-${light}`);
+    }
+    assert.equal(await page.locator('.room-mug-clear img').count(), 4);
+    assert.equal(await art.locator('.tea-steam path').first().evaluate(el => getComputedStyle(el).animationName), 'none');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    assert.equal(await art.locator('.tea-steam path').first().evaluate(el => getComputedStyle(el).animationName), 'tea-steam');
+    const transitions = await page.evaluate(() => ['img.room-art', '.room-mug-clear img', '.room-mug-art'].map(selector => {
+      const s = getComputedStyle(document.querySelector(selector)); return [s.transitionDuration, s.transitionTimingFunction];
+    }));
+    assert.deepEqual(transitions, [['2s', 'ease'], ['2s', 'ease'], ['2s', 'ease']]);
+    // Reload clears the storage-denial shim and decoded-image cache before simulating missing art.
+    await page.route('**/room/mugs/blue.png', route => route.abort());
+    await page.reload(); await chosen('sage'); await mug.click();
+    await dialog.getByRole('button', { name: 'Blue stripes', exact: true }).click();
+    await dialog.getByText(/Couldn't load this mug/).waitFor();
+    assert.equal(await art.getAttribute('data-mug'), 'sage');
+    await page.unroute('**/room/mugs/blue.png');
+    await dialog.getByRole('button', { name: 'Try again', exact: true }).click(); await chosen('blue');
+    await page.keyboard.press('Escape');
+    await page.route('**/room/mugs/clear-day.png', route => route.abort()); await page.reload();
+    await mug.click(); await dialog.getByText(/Couldn't load this mug/).waitFor();
+    assert.equal(await art.count(), 0, 'first-load failure leaves original painted cup');
+    assert.equal(await page.locator('img.room-art').count(), 4);
+    await page.unroute('**/room/mugs/clear-day.png');
+    await dialog.getByRole('button', { name: 'Try again', exact: true }).click(); await chosen('blue');
     assert.deepEqual(errors, []);
-    console.log(`PASS ${colorScheme}: mugs, timer recovery, cancellation, reset, keyboard, drag, small screen, cross-tab sync, clink, microphone suppression and unavailable storage`);
+    console.log(`PASS ${colorScheme}: painted mugs, timer recovery, cancellation, fixed placement, keyboard, phone shortcut, cross-tab sync, clink, microphone suppression, lighting/steam, load/storage fallback`);
     await context.close();
   }
 } finally { await browser?.close(); await server.close(); }
