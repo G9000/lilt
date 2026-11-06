@@ -50,8 +50,8 @@
 /* a card is the room's card, bigger: a picture strip with a tab cut into it, then a dark body. It's
    always dark (like the room's), so anything drawn on it reads with the dark theme's colours. */
 .fc-card { --ink: #f2f2f5; --ink-2: #c9c9d3; --ink-3: #9a9aa6; --hair: rgba(255, 255, 255, 0.1); --fill: rgba(255, 255, 255, 0.07); --fill-2: rgba(255, 255, 255, 0.12);
-  --page: #1c1c21; --panel: #26262d; --wave: rgba(255, 255, 255, 0.22); --wave-played: #fff; --ve-card: rgba(255, 255, 255, 0.07); --ve-paper: #1c1c22; --accent-ink: #ff9a72;
-  --ok: #4cc38a; --ok-soft: rgba(76, 195, 138, 0.16); --accent-soft: rgba(224, 100, 60, 0.2);
+  --page: #1c1c21; --panel: #26262d; --wave: rgba(255, 255, 255, 0.22); --wave-played: #fff; --ve-card: rgba(255, 255, 255, 0.07); --ve-paper: #1c1c22; --accent: var(--chosen-dark-accent, #e0643c); --focus: var(--accent); --accent-rgb: var(--chosen-dark-rgb, 224, 100, 60); --accent-on: var(--chosen-dark-on, #fff); --accent-ink: var(--accent-dark-ink);
+  --ok: #4cc38a; --ok-soft: rgba(76, 195, 138, 0.16); --accent-soft: rgba(var(--accent-rgb), 0.2);
   grid-area: 1 / 1; position: relative; display: flex; flex-direction: column; min-height: 0; border-radius: 28px; overflow: hidden; background: #1c1c21; color: var(--ink);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.06), 0 30px 60px -28px rgba(0, 0, 0, 0.7); touch-action: pan-y; transform-origin: 50% 85%; }
 .fc-card.top { cursor: grab; }
@@ -92,7 +92,7 @@
 .fc-stamp { position: absolute; top: 58px; z-index: 3; padding: 5px 12px; border: 3px solid currentColor; border-radius: 12px; background: rgba(15, 15, 22, 0.45);
   font: 800 18px/1.1 var(--font); letter-spacing: 0.08em; text-transform: uppercase; pointer-events: none; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .fc-stamp.got { left: 22px; color: #5be0a0; rotate: -10deg; }
-.fc-stamp.again { right: 22px; color: #ff9a72; rotate: 10deg; }
+.fc-stamp.again { right: 22px; color: var(--accent-dark-ink); rotate: 10deg; }
 
 /* your take, and the chapter's tips, on a text's card */
 .fc-take { display: grid; gap: 4px; padding: 12px 14px; border-radius: 16px; background: var(--fill); }
@@ -104,10 +104,10 @@
 .fc-tips ol { list-style: none; counter-reset: tip; margin: 6px 0 0; padding: 0; display: grid; gap: 12px; }
 .fc-tips li { counter-increment: tip; position: relative; padding-left: 32px; }
 .fc-tips li::before { content: counter(tip); position: absolute; left: 0; top: 1px; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 7px; background: var(--fill-2); color: var(--ink-2); font: 600 12px var(--font); }
-.fc-tips li.care::before { content: "♥"; color: #ff9a72; }
+.fc-tips li.care::before { content: "♥"; color: var(--accent-dark-ink); }
 .fc-tips li b { display: block; margin-bottom: 2px; font-size: 14.5px; }
 .fc-hurt { align-self: flex-start; min-height: 0; padding: 2px 0; background: none; color: var(--ink-3); font-size: 12.5px; font-weight: 500; }
-.fc-hurt:hover { color: #ff9a72; }
+.fc-hurt:hover { color: var(--accent-dark-ink); }
 
 /* Again and Got it, either side of the pile */
 .fc-side { min-height: 0; padding: 0; display: grid; justify-items: center; gap: 8px; background: none; color: var(--ink-2); font-size: 13px; font-weight: 600; }
@@ -115,10 +115,10 @@
   transition: transform 0.18s var(--ease), background-color 0.2s ease, color 0.2s ease; }
 .fc-side-ic svg { width: 26px; height: 26px; }
 .fc-side.got .fc-side-ic { color: var(--ok); }
-.fc-side.again .fc-side-ic { color: var(--accent); }
+.fc-side.again .fc-side-ic { color: var(--accent-ink); }
 .fc-side:hover:not(:disabled):not([aria-disabled="true"]) .fc-side-ic { transform: translateY(-2px) scale(1.04); }
 .fc-side.got:hover:not(:disabled):not([aria-disabled="true"]) .fc-side-ic { background: var(--ok); color: #fff; }
-.fc-side.again:hover:not(:disabled):not([aria-disabled="true"]) .fc-side-ic { background: var(--accent); color: #fff; }
+.fc-side.again:hover:not(:disabled):not([aria-disabled="true"]) .fc-side-ic { background: var(--accent); color: var(--accent-on); }
 .fc-side:active:not(:disabled) .fc-side-ic { transform: scale(0.95); }
 .fc-side[aria-disabled="true"], .fc-side:disabled { opacity: 0.4; cursor: not-allowed; }
 

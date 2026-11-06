@@ -49,7 +49,7 @@
 .ph-note.bad { background: var(--rec); color: #fff; }
 
 .ph-dropzone { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; border: 2px dashed var(--accent); border-radius: 18px; background: color-mix(in srgb, var(--accent) 12%, transparent); pointer-events: none; }
-.ph-dropzone span { padding: 10px 18px; border-radius: 99px; background: var(--accent); color: #fff; font-weight: 600; }
+.ph-dropzone span { padding: 10px 18px; border-radius: 99px; background: var(--accent); color: var(--accent-on); font-weight: 600; }
 
 /* the viewer covers the screen: the photo, ‹ and ›, and a bar of what you can do */
 .ph-viewer { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 56px 72px 96px; background: rgba(8, 8, 12, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: ph-in 0.2s ease-out; }
@@ -65,7 +65,7 @@
 .ph-viewer-bar span { color: rgba(255, 255, 255, 0.55); white-space: nowrap; }
 .ph-viewer-bar button { min-height: 32px; padding: 0 13px; border-radius: 99px; background: rgba(255, 255, 255, 0.12); color: #fff; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
 .ph-viewer-bar button:hover:not(:disabled) { background: rgba(255, 255, 255, 0.22); }
-.ph-viewer-bar button:disabled { background: var(--accent); opacity: 1; }
+.ph-viewer-bar button:disabled { background: var(--accent); color: var(--accent-on); opacity: 1; }
 @media (max-width: 640px) {
   .ph-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .ph-viewer { padding: 48px 12px 120px; }

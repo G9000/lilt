@@ -3,6 +3,7 @@ import { resetRoomAppearance, setRoomAppearance, useRoomAppearance, uploadMonito
 import type { MonitorMedia as Media } from './appearance-settings';
 import { MonitorMedia, allowMonitorMotion, useMonitorIssue, useMonitorPaused } from './MonitorMedia';
 import "./room-appearance.css";
+import { AccentPicker } from '../components/AccentPicker';
 
 const LIGHTS: { value: RoomAppearancePrefs["light"]; label: string }[] = [
   { value: "auto", label: "Follow the day" }, { value: "morning", label: "Morning" },
@@ -126,6 +127,7 @@ export function RoomAppearance() {
           </button>
         </div>
         <p id={`${id}-intro`} className="room-appearance-intro">A little more you. Saved in this browser.</p>
+        <AccentPicker />
         <fieldset>
           <legend>Light</legend>
           <div className="room-appearance-segments room-appearance-light">

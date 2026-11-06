@@ -66,6 +66,15 @@ in this browser. **Reset room** returns the original colors, artwork and automat
 The panel closes with Escape or a click outside. Your bed, computer, microphone and animated
 cat stay in the original illustration. The experimental 3D views have been removed.
 
+**Choose your accent color.** In **Make it yours → Accent color**, choose a preset or open
+**Custom color** for a picker. You can also type a three- or six-digit hex color and press Enter
+or leave the field to apply it. The same controls are in **Settings → Appearance**. Controls,
+highlights and pitch charts update immediately; shades adjust for light and dark backgrounds.
+Your choice stays in this browser and follows you between Lilt's pages. **Reset to orange**
+changes only the accent; **Reset room** also restores it. If browser storage is unavailable,
+the color works for the visit and a note explains it could not be saved. Room paintings and
+recording, warning and success colors keep their original colors.
+
 **Put something on your screens.** Under **Main monitor** or **Side monitor**, choose
 **Picture**, **GIF** or **Video** to pick a local file. Each screen keeps its own upload,
 preview and Play/Pause control. Videos loop silently; pausing a GIF shows a still, and

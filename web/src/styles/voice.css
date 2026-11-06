@@ -35,9 +35,9 @@
 .vrec .readtext .w { position: relative; cursor: default; padding: 0 0.1em; margin: 0 -0.1em; border-radius: 0.2em; color: inherit; transition: background-color 0.15s ease-out, color 0.15s ease-out; }
 .vrec .readtext.is-following .w { cursor: pointer; }
 .vrec .readtext.is-following .w.done { color: var(--ink-3); }
-.vrec .readtext .w.now { background: var(--accent); color: #fff; }
+.vrec .readtext .w.now { background: var(--accent); color: var(--accent-on); }
 .vrec .readtext .w.annotated::after { content: attr(data-n); position: relative; top: -0.95em; margin-left: 0.08em; font-size: 0.4em; font-weight: 600; letter-spacing: 0; color: var(--accent-ink); }
-.vrec .readtext .w.now.annotated::after { color: #fff; }
+.vrec .readtext .w.now.annotated::after { color: var(--accent-on); }
 .vrec .readtext .w .wpitch { position: absolute; left: 0; right: 0; bottom: -0.36em; height: 0.36em; pointer-events: none; overflow: visible; }
 .vrec .follow-status { font: 500 13px/1.4 var(--font); letter-spacing: 0; text-transform: none; color: var(--ink-3); min-height: 18px; margin-top: 8px; }
 
@@ -145,7 +145,7 @@
 .vplan .setlist li .mk svg { width: 13px; height: 13px; }
 .vplan .setlist li.done .mk { background: var(--ok-soft); color: var(--ok); }
 .vplan .setlist li.done .tx { color: var(--ink-3); }
-.vplan .setlist li.now .mk { background: var(--accent); color: #fff; }
+.vplan .setlist li.now .mk { background: var(--accent); color: var(--accent-on); }
 .vplan .setlist li.now .tx { font-weight: 600; }
 .vplan-note h2 { font-size: 17px; letter-spacing: -0.015em; margin: 0 0 6px; }
 .vplan-note p { margin: 0 0 4px; color: var(--ink-2); }

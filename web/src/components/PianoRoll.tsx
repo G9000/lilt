@@ -45,7 +45,9 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
     if (!c) return;
     const ro = new ResizeObserver(() => setSize((n) => n + 1));
     ro.observe(c);
-    return () => ro.disconnect();
+    const theme = new MutationObserver(() => setSize(n => n + 1));
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'style'] });
+    return () => { ro.disconnect(); theme.disconnect(); };
   }, []);
 
   const padL = compact ? 4 : 40;
@@ -65,7 +67,8 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
     const css = getComputedStyle(c);
     const v = (name: string, fb: string) => css.getPropertyValue(name).trim() || fb;
     const ink = v("--ink", "#333"), muted = v("--ink-3", v("--muted", "#888")), grid = v("--ink-3", "#999");
-    const accent = "#e0643c";
+    const accent = v('--accent', '#e0643c');
+    const accentRgb = v('--accent-rgb', '224, 100, 60');
 
     // Only the visible stretch (and a little before it) is cleaned and drawn.
     const seen = points.filter((p) => p.t >= tStart - 0.3);
@@ -92,7 +95,7 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
     g.clearRect(0, 0, w, h);
     // Your comfortable range.
     if (band) {
-      g.fillStyle = "rgba(224,100,60,0.09)";
+      g.fillStyle = `rgba(${accentRgb},0.09)`;
       const y1 = yHz(band[1]), y0 = yHz(band[0]);
       g.fillRect(padL, y1, w - padL, y0 - y1);
     }
@@ -153,7 +156,7 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
     g.globalAlpha = 1;
     // The smooth line through them.
     g.strokeStyle = accent; g.lineWidth = compact ? 2 : 2.5; g.lineJoin = g.lineCap = "round";
-    g.shadowColor = "rgba(224,100,60,0.35)"; g.shadowBlur = 6;
+    g.shadowColor = `rgba(${accentRgb},0.35)`; g.shadowBlur = 6;
     g.beginPath();
     let pen = false, tip: [number, number] | null = null;
     for (const p of clean) {
@@ -165,7 +168,7 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
     g.stroke(); g.shadowBlur = 0;
     // Live: the newest point.
     if (live && tip && clean.length && tEnd - clean[clean.length - 1].t < 0.2) {
-      g.fillStyle = "rgba(224,100,60,0.22)"; g.beginPath(); g.arc(tip[0], tip[1], 9, 0, Math.PI * 2); g.fill();
+      g.fillStyle = `rgba(${accentRgb},0.22)`; g.beginPath(); g.arc(tip[0], tip[1], 9, 0, Math.PI * 2); g.fill();
       g.fillStyle = accent; g.beginPath(); g.arc(tip[0], tip[1], 4, 0, Math.PI * 2); g.fill();
     }
     // Playhead, with a dot where it meets the line.

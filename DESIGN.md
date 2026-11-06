@@ -33,7 +33,12 @@ per version to Notification Center. Opening it opens Updates; reading or clearin
 remembered like other notices. No toast, sound, system notification or automatic download.
 
 **Make it yours** lives in the illustrated room's menu bar. Its small nonmodal panel leaves
-the painting visible: choose automatic/morning/day/sunset/night light, adjust a subtle cool/warm
+the painting visible. **Accent color** comes first: six named swatches, a native color picker,
+a labelled hex field and Reset to orange. It also appears in Settings → Appearance. The chosen
+color is saved in this browser and applies immediately to shared controls, highlights and pitch
+charts. Light/dark text, focus and button-label shades are derived for readability; always-dark
+cards use dark shades. Recording red and warning/success colors keep their meanings, as do the
+paintings and illustrated app icons. Reset room restores orange too. Then choose automatic/morning/day/sunset/night light, adjust a subtle cool/warm
 wash, set fairy lights to automatic/on/off, and swap the side monitor's picture. Native radio
 controls and a labeled slider work by keyboard; Escape closes and returns focus. Choices stay
 in this browser and Reset room restores the default look. Both monitors have independent
@@ -320,7 +325,7 @@ Breathing breaks freeze decorative game time as well as play.
 | `--hair` | `rgba(0,0,0,.07)` | dividers |
 | `--fill` / `--fill-2` | `rgba(0,0,0,.04)` / `.075` | quiet surfaces, hover |
 | `--win` | `rgba(250,249,247,.92)` + `blur(30px) saturate(1.7)` | windows |
-| `--accent` / `--accent-ink` / `--accent-soft` | `#e0643c` / `#b8461f` / `rgba(224,100,60,.12)` | the one warm accent: next-up, progress, current selection |
+| `--accent` / `--accent-ink` / `--accent-soft` | orange defaults: `#e0643c` / `#b8461f` / `rgba(224,100,60,.12)` | next-up, progress, current selection; custom light/dark shades from Accent color |
 | `--rec` | `#ff4255` | the record dot only |
 | `--ok` / `--warn` | `#16936a` / `#b26a00` | status text |
 | radii | window 22, control 12, small 8, pill 999 | |

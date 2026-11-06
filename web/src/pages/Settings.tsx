@@ -4,6 +4,7 @@ import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "re
 import { api, Profile, TextItem } from "../api";
 import { idLabel } from "../chapters";
 import { applyTextSize, readTextSize, readThemeMode, TEXT_SIZES, type TextSize, type ThemeMode } from "../App";
+import { AccentPicker } from '../components/AccentPicker';
 import { Callout } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
 import { playSound, setSounds, soundsOn } from "../sounds";
@@ -60,7 +61,7 @@ type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy" | "back
 
 /** Each pane: its sidebar icon (a white glyph on a coloured tile, as in System Settings) and words to search by. */
 const PANES: { id: PaneId; title: string; words: string; tile: string; glyph: ReactNode }[] = [
-  { id: "appearance", title: "Appearance", words: "theme dark light mode text size font bigger smaller sound sounds audio chime quiet", tile: "#4a4a55,#1f1f26",
+  { id: "appearance", title: "Appearance", words: "theme dark light mode accent color colour picker orange text size font bigger smaller sound sounds audio chime quiet", tile: "#4a4a55,#1f1f26",
     glyph: <><circle cx="10" cy="10" r="6" /><path d="M10 4a6 6 0 0 1 0 12z" fill="currentColor" stroke="none" /></> },
   { id: "ai", title: "AI connections", words: "ai claude chatgpt mcp connect agent assistant desktop code tunnel", tile: "#f59a6c,#e0643c",
     glyph: <path d="M10 3l1.5 4 4 1.5-4 1.5L10 14l-1.5-4-4-1.5 4-1.5zM15 13l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z" fill="currentColor" stroke="none" /> },
@@ -183,6 +184,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
       <div className="sx-group">
         <Row label="Theme" help="Auto follows your computer's light or dark setting. The sun or moon button in the menu bar picks one." stack><ThemeChoice /></Row>
         <Row label="Text size" help="For the practice texts, your recordings and these pages." stack><TextSizeChoice /></Row>
+        <div className="sx-row"><AccentPicker /></div>
         <Row label="Soft sounds" help="A paper rustle as a card is put away, a pencil as you keep a note, a small chime when the deck is done. Never while the microphone is on. Kept in this browser." stack><SoundsChoice /></Row>
       </div>
     );

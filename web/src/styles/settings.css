@@ -12,7 +12,7 @@
 .sx-side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
 .sx-side li button { width: 100%; min-height: 0; display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 5px 8px; border-radius: 8px; font: 500 13.5px var(--font); color: var(--ink); text-align: left; }
 .sx-side li button:hover { background: var(--fill-2); }
-.sx-side li button.on { background: var(--accent); color: #fff; }
+.sx-side li button.on { background: var(--accent); color: var(--accent-on); }
 .sx-none { padding: 8px 10px; font-size: 13px; color: var(--ink-3); }
 .sx-tile { flex: none; display: grid; place-items: center; border-radius: 22%; color: #fff; box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.4), 0 0.5px 1px rgba(0, 0, 0, 0.2); }
 .sx-tile svg { width: 64%; height: 64%; }

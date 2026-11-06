@@ -1,4 +1,6 @@
 import { useSyncExternalStore } from 'react';
+import { setAccent } from '../accent';
+import { DEFAULT_ACCENT } from '../accent-colors';
 import { DEFAULT_APPEARANCE, readAppearance, type RoomAppearancePrefs } from './appearance-settings';
 import type { Monitor, MonitorMedia } from './appearance-settings';
 import { prepareMonitorMedia, saveMonitorFile, removeMonitorFile } from './monitor-media';
@@ -65,6 +67,7 @@ export function resetRoomAppearance() {
   return locked(async () => {
     const saved = load();
     const old = commit({ ...DEFAULT_APPEARANCE, mainMedia: undefined, sideMedia: undefined }, !!(saved.mainMedia || saved.sideMedia));
+    setAccent(DEFAULT_ACCENT);
     await Promise.all([retire(old.mainMedia), retire(old.sideMedia)]);
   });
 }

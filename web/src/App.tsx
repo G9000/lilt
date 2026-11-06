@@ -1,4 +1,5 @@
 import { CoursesPage } from "./pages/Courses";
+import './accent';
 import { openSettings, SettingsSheet } from "./desk/SettingsSheet";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "./api";

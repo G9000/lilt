@@ -74,7 +74,7 @@
 .ve .rl-play { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--ve-paper); transition: transform 0.16s var(--ease), background-color 0.15s ease; }
 .ve .rl-play:active { transform: scale(0.94); }
 .rl-play svg { width: 12px; height: 12px; fill: currentColor; }
-.rl-row.playing .rl-play { background: var(--accent); color: #fff; }
+.rl-row.playing .rl-play { background: var(--accent); color: var(--accent-on); }
 .rl-what { min-width: 0; display: grid; }
 .rl-what b { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ve .rl-more-takes { flex: none; display: inline-flex; gap: 3px; margin-left: 4px; padding: 1px 8px; border-radius: 99px; background: var(--fill-2); color: var(--ink-2); font-size: 12px; font-weight: 600; }
@@ -83,7 +83,7 @@
 .rl-row.sub { margin-left: 28px; padding-top: 6px; padding-bottom: 6px; }
 .rl-row.sub .rl-what b { font-size: 13.5px; font-weight: 500; color: var(--ink-2); }
 .rl-what span { font-size: 13px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rl-fav { display: inline-flex; color: var(--accent); }
+.rl-fav { display: inline-flex; color: var(--accent-ink); }
 .rl-fav svg { width: 12px; height: 12px; fill: currentColor; }
 .rl-wave { height: 30px; display: flex; align-items: center; gap: 2px; cursor: pointer; }
 .rl-wave i { flex: 1; height: 100%; border-radius: 2px; background: color-mix(in srgb, var(--ink) 20%, transparent); transform-origin: center; }
@@ -93,7 +93,7 @@
 .rl-actions { display: flex; gap: 2px; }
 .ve .rl-actions button { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: var(--ink-3); opacity: 0.55; transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease; }
 .rl-actions svg { width: 15px; height: 15px; }
-.ve .rl-actions button[aria-pressed="true"] { color: var(--accent); opacity: 1; }
+.ve .rl-actions button[aria-pressed="true"] { color: var(--accent-ink); opacity: 1; }
 .ve .rl-actions button[aria-pressed="true"] svg { fill: currentColor; }
 .rl-note { grid-column: 2 / -1; }
 .rl-note p { margin: 0; font-size: 13px; color: var(--ink-2); font-style: italic; }
@@ -145,7 +145,7 @@
 .ve-tick { width: 13px; height: 13px; flex: none; color: var(--ok); }
 .ve-note-row { padding: 4px 8px; font-size: 12px; color: var(--ink-3); }
 /* The first unfinished chapter: its count in the accent */
-.ve-row .c.next { color: var(--accent); font-weight: 600; }
+.ve-row .c.next { color: var(--accent-ink); font-weight: 600; }
 
 .ve-side-foot { margin-top: auto; padding: 12px 0 0; display: grid; gap: 1px; border-top: 1px solid var(--hair); }
 .ve-side-foot a { display: flex; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--ink-2); text-decoration: none; transition: background-color 0.12s ease, color 0.12s ease; }
@@ -170,7 +170,7 @@
 /* chapter complete: a medal and a line, popping in when it is earned on this visit */
 .ve-award { display: flex; align-items: center; gap: 14px; margin: 20px 0 0; padding: 14px 18px 14px 14px; border-radius: 16px; background: var(--accent-soft); color: var(--ink-2); font-size: 14px; line-height: 1.45; }
 .ve-award b { display: block; color: var(--accent-ink); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-.ve-award-medal { flex: none; width: 44px; height: 44px; filter: drop-shadow(0 6px 10px rgba(224, 100, 60, 0.35)); }
+.ve-award-medal { flex: none; width: 44px; height: 44px; filter: drop-shadow(0 6px 10px rgba(var(--accent-rgb), 0.35)); }
 .ve-award.fresh { animation: ve-award-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .ve-award.fresh .ve-award-medal { animation: ve-medal-in 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both; }
 @keyframes ve-award-in { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
@@ -192,7 +192,7 @@
 .ci-ic svg { width: 15px; height: 15px; }
 .ci-tips > li > div > b { display: block; margin: 3px 0 6px; font-size: 15px; line-height: 1.4; font-weight: 600; color: var(--ink); }
 .ci-tips .md { --md-body-size: 15px; }
-.ci-tips li.care .ci-ic { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.ci-tips li.care .ci-ic { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-ink); }
 .ci-tips li.care b { color: color-mix(in srgb, var(--accent) 75%, var(--ink)); }
 /* the steps are numbered: the number sits in the tip's square */
 .ci-n { font: 600 13px/1 var(--font); font-variant-numeric: tabular-nums; }
@@ -244,7 +244,7 @@
 .ve-item:has(.ve-kind) .ve-mk.num { top: 58px; }
 .ve-item:has(> .ve-checkin) .ve-mk.num { top: 24px; }
 .ve-item.on { cursor: default; }
-.ve-item.on .ve-mk.num { color: var(--accent); }
+.ve-item.on .ve-mk.num { color: var(--accent-ink); }
 .ve-item.done { cursor: default; padding-top: 10px; padding-bottom: 12px; }
 .ve-item.done .ve-mk.num { top: 15px; color: var(--ok); }
 .ve-item.done .readtext { font-size: 19px; color: var(--ink-3); }
@@ -260,9 +260,9 @@
 .ve .readtext .w { position: relative; padding: 0 0.1em; margin: 0 -0.1em; border-radius: 0.2em; transition: background-color 0.15s ease-out, color 0.15s ease-out; }
 .ve .readtext.is-following .w { cursor: pointer; }
 .ve .readtext.is-following .w.done { color: var(--ink-3); }
-.ve .readtext .w.now { background: var(--accent); color: #fff; }
+.ve .readtext .w.now { background: var(--accent); color: var(--accent-on); }
 .ve .readtext .w.annotated::after { content: attr(data-n); position: relative; top: -0.95em; margin-left: 0.08em; font: 600 0.42em var(--font); color: var(--accent-ink); }
-.ve .readtext .w.now.annotated::after { color: #fff; }
+.ve .readtext .w.now.annotated::after { color: var(--accent-on); }
 .ve .readtext .w .wpitch { position: absolute; left: 0; right: 0; bottom: -0.36em; height: 0.36em; pointer-events: none; overflow: visible; }
 .ve .follow-status { font: 500 12px/1.4 var(--font); color: var(--ink-3); min-height: 0; margin: 4px 0 0; }
 .ve .follow-status:empty { display: none; }
@@ -441,7 +441,7 @@
 .ve-part-group:last-of-type .ve-chapters { margin-bottom: 40px; }
 .ve-chapters .t b { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .ve-chapters .ve-tag { font-size: 11.5px; letter-spacing: 0; }
-.ve-chapters a.next .n { background: var(--accent); color: #fff; }
+.ve-chapters a.next .n { background: var(--accent); color: var(--accent-on); }
 @media (hover: hover) and (pointer: fine) {
   .ve .ve-start-card .ve-start-go:hover::after { transform: translate(3px, -1px) rotate(45deg); }
   .ve-chapters a:hover { background: var(--fill); }
@@ -504,7 +504,7 @@
 .pscale-track .either { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--ink) 10%, transparent) 0 3px, transparent 3px 6px); }
 .pscale-track .women { background: color-mix(in srgb, var(--accent) 30%, transparent); }
 .pscale-track .avg { position: absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 35%, transparent); }
-.pscale-track .you { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card), 0 2px 6px rgba(224, 100, 60, 0.45); }
+.pscale-track .you { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card), 0 2px 6px rgba(var(--accent-rgb), 0.45); }
 .pscale-labels { position: relative; height: 34px; margin-top: 8px; }
 .pscale-labels span { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; font-size: 12px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .pscale-labels small { font-size: 12px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
@@ -516,7 +516,7 @@
 .rz-track { position: relative; height: 10px; border-radius: 99px; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 16%, transparent), var(--fill) 50%, color-mix(in srgb, var(--accent) 24%, transparent)); }
 .rz-first { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 45%, transparent); }
 .rz-last { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ink) 40%, transparent); background: var(--ve-card, var(--panel)); }
-.rz-you { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card, var(--panel)), 0 2px 6px rgba(224, 100, 60, 0.45); transition: left 400ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.rz-you { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card, var(--panel)), 0 2px 6px rgba(var(--accent-rgb), 0.45); transition: left 400ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 .rz-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; font-weight: 500; color: var(--ink-3); }
 .rz-say { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
 .rz-foot { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--ink-3); }
@@ -758,7 +758,7 @@ details > .ve-up-text, details > .ve-up-md { margin: 12px 0 0 18px; }
 .ve-bright-start { position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; border-radius: 1px; background: color-mix(in srgb, var(--ink) 45%, transparent); }
 /* the full track wide, so translateX(50%) puts the dot at the brighter end */
 .ve-bright-pos { position: absolute; inset: 0; transition: transform 0.22s var(--ease), opacity 0.3s ease; }
-.ve-bright-pos b { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card), 0 2px 6px rgba(224, 100, 60, 0.45); }
+.ve-bright-pos b { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--ve-card), 0 2px 6px rgba(var(--accent-rgb), 0.45); }
 .ve-bright-pos.wait { opacity: 0; }
 /* through a pause the dot stays where you left it, quieter, like the Now readout */
 .ve-bright-pos.held { opacity: 0.45; }
