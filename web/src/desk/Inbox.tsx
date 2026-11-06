@@ -1,13 +1,15 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, AREA_LABEL, Deck, Today } from "../api";
 import { go } from "../App";
+import { updateNotice } from "../desktopUpdate";
+import { openAppUpdates, useDesktopUpdate } from "../useDesktopUpdate";
 
 /**
  * The inbox: only things worth knowing, built from what Lilt already tracks. Never streaks,
  * never missed days. What you've read or cleared is remembered in this browser only.
  */
 
-type Kind = "feedback" | "stage" | "reminder" | "rest" | "recovered";
+type Kind = "feedback" | "stage" | "reminder" | "rest" | "recovered" | "update";
 export interface Note { id: string; kind: Kind; title: string; body: string; when: string; to: string }
 
 const READ = "lilt.inbox.read", CLEARED = "lilt.inbox.cleared";
@@ -47,19 +49,23 @@ function build(today: Today | null, deck: Deck | null, recovered: number): Note[
 }
 
 export function useInbox(deck: Deck | null, recovered: number) {
+  const update = useDesktopUpdate();
   const [today, setToday] = useState<Today | null>(null);
   const [read, setRead] = useState(() => load(READ));
   const [cleared, setCleared] = useState(() => load(CLEARED));
   const [open, setOpen] = useState(false);
   useEffect(() => { void api.today().then(setToday, () => setToday(null)); }, [deck]);
-  const notes = useMemo(() => build(today, deck, recovered).filter((n) => !cleared.includes(n.id)), [today, deck, recovered, cleared]);
+  const notes = useMemo(() => {
+    const notice = updateNotice(update);
+    return [...(notice ? [notice] : []), ...build(today, deck, recovered)].filter((n) => !cleared.includes(n.id));
+  }, [today, deck, recovered, cleared, update]);
   const unread = notes.filter((n) => !read.includes(n.id)).length;
   const markRead = (ids: string[]) => setRead((r) => { const v = [...new Set([...r, ...ids])]; save(READ, v); return v; });
   return {
     notes, unread, open, read,
     setOpen,
     toggle: () => setOpen((o) => { if (o) markRead(notes.map((n) => n.id)); return !o; }),
-    openNote: (n: Note) => { markRead([n.id]); setOpen(false); go(n.to); },
+    openNote: (n: Note) => { markRead([n.id]); setOpen(false); if (n.kind === "update") openAppUpdates(); else go(n.to); },
     clearAll: () => { const v = [...new Set([...cleared, ...notes.map((n) => n.id)])]; save(CLEARED, v); setCleared(v); markRead(notes.map((n) => n.id)); },
   };
 }
@@ -77,6 +83,7 @@ export function InboxButton({ inbox }: { inbox: InboxState }) {
 }
 
 const ICON: Record<Kind, ReactNode> = {
+  update: <><path d="M15.6 7A6 6 0 1 0 16 11M15.6 3.5V7H12" /><path d="M10 7v6m-2-2 2 2 2-2" /></>,
   feedback: <path d="M4 5h12v8H9l-4 3v-3H4z" />,
   stage: <path d="M10 16V7M6 10.5c0-3 1.8-5 4-6 2.2 1 4 3 4 6M10 9c-1.6-1.2-3.4-1.4-5-1M10 9c1.6-1.2 3.4-1.4 5-1" />,
   reminder: <><circle cx="10" cy="10.5" r="6" /><path d="M10 7.5v3l2 1.5M7 3.5L4.5 5.5M13 3.5l2.5 2" /></>,

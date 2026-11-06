@@ -1,9 +1,10 @@
 //! Signed whole-app updates, controlled only by the bundled update window.
 
 use crate::update_lifecycle::{self, Lifecycle};
+use crate::update_notice::{self, Notice};
 use crate::update_policy;
 use crate::update_state::{Action, Phase, Snapshot};
-use std::sync::Mutex;
+use std::sync::{Mutex, OnceLock};
 use std::time::Duration;
 use tauri::webview::NewWindowResponse;
 use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
@@ -21,6 +22,7 @@ pub struct Updates {
     operation: tokio::sync::Mutex<()>,
     snapshot: Mutex<Snapshot>,
     pending: Mutex<Option<Pending>>,
+    publisher: OnceLock<AppHandle>,
 }
 
 impl Updates {
@@ -29,6 +31,7 @@ impl Updates {
             operation: tokio::sync::Mutex::new(()),
             snapshot: Mutex::new(Snapshot::new(version, PUBLIC_KEY)),
             pending: Mutex::new(None),
+            publisher: OnceLock::new(),
         }
     }
 
@@ -39,8 +42,32 @@ impl Updates {
             .clone()
     }
 
-    fn change(&self, change: impl FnOnce(&mut Snapshot)) {
-        change(&mut self.snapshot.lock().expect("update snapshot lock poisoned"));
+    pub fn set_publisher(&self, app: AppHandle) {
+        let _ = self.publisher.set(app);
+    }
+
+    pub fn publish(&self) {
+        if let Some(app) = self.publisher.get() {
+            let handle = app.clone();
+            let _ = app.run_on_main_thread(move || {
+                // Read the latest state on delivery, so queued changes cannot replay stale status.
+                let notice = Notice::from(&handle.state::<Updates>().snapshot());
+                update_notice::publish(&handle, &notice);
+            });
+        }
+    }
+
+    fn change<T>(&self, change: impl FnOnce(&mut Snapshot) -> T) -> T {
+        let (result, changed) = {
+            let mut snapshot = self.snapshot.lock().expect("update snapshot lock poisoned");
+            let before = Notice::from(&*snapshot);
+            let result = change(&mut snapshot);
+            (result, Notice::from(&*snapshot) != before)
+        };
+        if changed {
+            self.publish();
+        }
+        result
     }
 
     fn begin(&self, action: Action) -> Result<tokio::sync::MutexGuard<'_, ()>, String> {
@@ -48,10 +75,7 @@ impl Updates {
             .operation
             .try_lock()
             .map_err(|_| "An update step is already in progress.")?;
-        self.snapshot
-            .lock()
-            .expect("update snapshot lock poisoned")
-            .begin(action)?;
+        self.change(|snapshot| snapshot.begin(action))?;
         Ok(operation)
     }
 

@@ -3,7 +3,7 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer as httpServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { chromium } from 'playwright-core';
@@ -32,16 +32,147 @@ before(async () => {
       import React from 'react';
       import { createRoot } from 'react-dom/client';
       import { SettingsPage } from '/src/pages/Settings.tsx';
+      import { InboxButton, NotificationCenter, useInbox } from '/src/desk/Inbox.tsx';
       import { api } from '/src/api.ts';
       import '/src/styles.css';
       api.profile = async () => ({ timezone: 'UTC' });
-      createRoot(document.getElementById('root')).render(React.createElement(SettingsPage));
+      api.today = async () => null;
+      function Fixture() {
+        const inbox = useInbox(null, 0);
+        return React.createElement(React.Fragment, null,
+          React.createElement(InboxButton, { inbox }),
+          React.createElement(SettingsPage),
+          React.createElement(NotificationCenter, { inbox }));
+      }
+      createRoot(document.getElementById('root')).render(React.createElement(React.StrictMode, null, React.createElement(Fixture)));
     </script></body></html>`);
     res.setHeader('Content-Type', 'text/html'); res.end(html);
     }); } }],
   });
   await vite.listen();
   browser = await chromium.launch({ channel: 'chrome', headless: true });
+});
+
+const noticeState = { current: '0.8.1', phase: 'available', version: '0.8.2', failed: false };
+async function settingsFixture(t, { desktop = true, snapshot = noticeState } = {}) {
+  const page = await browser.newPage({ viewport: { width: 1000, height: 760 } });
+  page.setDefaultTimeout(4000);
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  t.after(async () => { await page.close(); assert.deepEqual(errors, []); });
+  await page.addInitScript(({ desktop, snapshot }) => {
+    window.__LILT_DESKTOP__ = desktop;
+    window.__LILT_APP_UPDATE__ = snapshot;
+  }, { desktop, snapshot });
+  await page.goto(`${vite.resolvedUrls.local[0]}update-settings-fixture.html`, { timeout: 15000 });
+  await page.getByRole('button', { name: 'Updates', exact: true }).click();
+  return page;
+}
+async function publishNotice(page, patch) {
+  await page.evaluate(patch => {
+    window.__LILT_APP_UPDATE__ = { ...window.__LILT_APP_UPDATE__, ...patch };
+    window.dispatchEvent(new Event('lilt:app-update'));
+  }, patch);
+}
+const settingsRow = (page, label) => page.locator('.sx-row').filter({ has: page.getByText(label, { exact: true }) });
+
+test('Settings shows the native installed version and live status before opening the updater', async t => {
+  const page = await settingsFixture(t);
+  assert.match(await settingsRow(page, 'Installed version').innerText(), /0\.8\.1/);
+  assert.match(await settingsRow(page, 'Update status').innerText(), /0\.8\.2 is available/);
+  for (const [phase, failed, expected] of [
+    ['checking', false, 'Checking for updates'], ['up_to_date', false, 'up to date'],
+    ['idle', true, "Couldn't check"], ['unconfigured', false, 'not configured'],
+    ['downloading', false, 'Downloading Lilt 0.8.2'], ['ready', false, 'ready to install'],
+    ['ready', true, 'Open app updates for details'], ['installing', false, 'Your app will restart'],
+  ]) {
+    await publishNotice(page, { phase, failed, version: '0.8.2' });
+    await settingsRow(page, 'Update status').getByText(expected, { exact: false }).waitFor();
+  }
+  await page.reload();
+  await page.getByRole('button', { name: 'Updates', exact: true }).click();
+  assert.match(await settingsRow(page, 'Installed version').innerText(), /0\.8\.1/);
+  assert.match(await settingsRow(page, 'Update status').innerText(), /0\.8\.2 is available/);
+});
+
+test('update notices stay read or cleared across phases and reload, and a new version is unread', async t => {
+  const page = await settingsFixture(t);
+  const unread = page.getByRole('button', { name: 'Notifications, 1 new', exact: true });
+  await unread.click();
+  const notice = page.getByRole('button', { name: /Lilt 0\.8\.2 is available/ });
+  await notice.waitFor();
+  for (const phase of ['available', 'downloading', 'ready', 'available']) await publishNotice(page, { phase });
+  assert.equal(await notice.count(), 1);
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Page.enable');
+  const requested = new Promise(resolve => cdp.on('Page.frameRequestedNavigation', event => resolve(event.url)));
+  await notice.focus(); await page.keyboard.press('Enter');
+  assert.equal(await Promise.race([requested, new Promise((_, reject) => setTimeout(() => reject(new Error('No update navigation')), 4000))]), 'lilt://updates');
+  await cdp.detach();
+  await page.locator('.ib-btn[aria-label="Notifications"]').waitFor();
+  await page.reload();
+  await page.locator('.ib-btn[aria-label="Notifications"]').click();
+  await notice.waitFor();
+  await page.getByRole('button', { name: 'Clear all', exact: true }).click();
+  await page.getByText('No notifications. All quiet.', { exact: true }).waitFor();
+  await page.reload();
+  await page.locator('.ib-btn[aria-label="Notifications"]').click();
+  await page.getByText('No notifications. All quiet.', { exact: true }).waitFor();
+  await publishNotice(page, { phase: 'ready' });
+  assert.equal(await notice.count(), 0);
+  await publishNotice(page, { phase: 'available', version: '0.8.3' });
+  await unread.waitFor();
+  await page.getByRole('button', { name: /Lilt 0\.8\.3 is available/ }).waitFor();
+});
+
+test('late native status creates a quiet notice, while failed checks and installed updates do not', async t => {
+  const page = await settingsFixture(t, { snapshot: null });
+  await settingsRow(page, 'Installed version').getByText('Reading app version…', { exact: true }).waitFor();
+  await page.locator('.ib-btn[aria-label="Notifications"]').waitFor();
+  await publishNotice(page, { ...noticeState, phase: 'idle', failed: true, version: null });
+  await settingsRow(page, 'Update status').getByText("Couldn't check", { exact: false }).waitFor();
+  assert.equal(await page.locator('.nc').getAttribute('aria-hidden'), 'true');
+  await publishNotice(page, noticeState);
+  await page.getByRole('button', { name: 'Notifications, 1 new', exact: true }).waitFor();
+  assert.equal(await page.locator('.nc').getAttribute('aria-hidden'), 'true');
+  await publishNotice(page, { current: '0.8.2', phase: 'up_to_date', version: null });
+  await page.locator('.ib-btn[aria-label="Notifications"]').waitFor();
+  await settingsRow(page, 'Installed version').getByText('0.8.2', { exact: true }).waitFor();
+});
+
+test('browser Settings labels its web version and ignores desktop update projection', async t => {
+  const page = await settingsFixture(t, { desktop: false });
+  assert.match(await settingsRow(page, 'Web version').innerText(), /0\.2\.1/);
+  assert.equal(await settingsRow(page, 'Installed version').count(), 0);
+  assert.equal(await page.getByRole('button', { name: 'Open app updates', exact: true }).count(), 0);
+  await page.locator('.ib-btn[aria-label="Notifications"]').waitFor();
+  await publishNotice(page, { version: '0.8.3' });
+  assert.equal(await page.getByRole('button', { name: /Notifications, .* new/ }).count(), 0);
+});
+
+test('inline status and the quiet notice remain readable in narrow light and dark layouts', async t => {
+  const shots = fileURLToPath(new URL('../../desktop/target/update-notice-shots/', import.meta.url));
+  await mkdir(shots, { recursive: true });
+  for (const dark of [false, true]) {
+    const page = await settingsFixture(t);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(dark => document.documentElement.dataset.theme = dark ? 'dark' : 'light', dark);
+    await settingsRow(page, 'Installed version').waitFor();
+    const button = page.getByRole('button', { name: 'Open app updates', exact: true });
+    await button.focus();
+    assert.equal(await button.evaluate(el => document.activeElement === el), true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+    await page.screenshot({ path: path.join(shots, `settings-${dark ? 'dark' : 'light'}.png`) });
+    await page.getByRole('button', { name: 'Notifications, 1 new', exact: true }).click();
+    await page.getByRole('button', { name: /Lilt 0\.8\.2 is available/ }).waitFor();
+    await page.waitForFunction(() => {
+      const panel = document.querySelector('.nc');
+      const bounds = panel.getBoundingClientRect();
+      return bounds.left >= 0 && bounds.right <= window.innerWidth && getComputedStyle(panel).opacity === '1' && !document.getAnimations().some(animation => animation.playState === 'running');
+    });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+    await page.screenshot({ path: path.join(shots, `notice-${dark ? 'dark' : 'light'}.png`) });
+  }
 });
 after(async () => { await browser?.close(); await vite?.close(); await new Promise(resolve => files ? files.close(resolve) : resolve()); });
 

@@ -12,6 +12,10 @@ plain text. A saved take must finish before installation. The window uses warm s
 plain ink and coral focus, supports light/dark and keyboard use, and does not interrupt
 practice for a failed background check. Browser Settings explains that updating belongs
 to the installed Mac app. Local builds without a release key say updates are not configured.
+Settings shows the native installed version and live update status directly; browser-only
+use labels the bundled version as Web version. An available release adds one quiet notification
+per version to Notification Center. Opening it opens Updates; reading or clearing it is
+remembered like other notices. No toast, sound, system notification or automatic download.
 
 **Make it yours** lives in the illustrated room's menu bar. Its small nonmodal panel leaves
 the painting visible: choose automatic/morning/day/sunset/night light, adjust a subtle cool/warm

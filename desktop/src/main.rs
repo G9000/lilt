@@ -11,10 +11,13 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
-use tauri::webview::{DownloadEvent, NewWindowResponse, PermissionKind, PermissionResponse};
+use tauri::webview::{
+    DownloadEvent, NewWindowResponse, PageLoadEvent, PermissionKind, PermissionResponse,
+};
 use tauri::{Manager, RunEvent, Url, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
 mod update_lifecycle;
+mod update_notice;
 mod update_policy;
 mod update_state;
 mod updates;
@@ -338,6 +341,11 @@ fn window(app: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
         // Links to other sites open in your browser, not in Lilt's window. (Navigation is also
         // asked for every embedded video and player, so only the sign-in is sent out here.)
         .initialization_script(LINKS_OUTSIDE)
+        .on_page_load(|window, payload| {
+            if payload.event() == PageLoadEvent::Finished {
+                window.state::<updates::Updates>().publish();
+            }
+        })
         .on_navigation(move |url| {
             if url.as_str() == "lilt://updates" || url.as_str() == "lilt://updates/" {
                 let _ = updates::open(&handle);
@@ -417,6 +425,8 @@ fn main() {
             }
         })
         .setup(|app| {
+            app.state::<updates::Updates>()
+                .set_publisher(app.handle().clone());
             let menu = tauri::menu::Menu::default(app.handle())?;
             let item = tauri::menu::MenuItem::with_id(
                 app,

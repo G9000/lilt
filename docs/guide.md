@@ -17,7 +17,12 @@ its own window; quitting stops the server.
   open of a downloaded copy. Open it once, then System Settings → Privacy & Security → **Open
   Anyway**. After that it opens normally. (Signing and notarising with a Developer ID removes this.)
 - **Updates:** in a signed release build, open **Settings → Updates**, or **Check for updates…**
-  in the Mac menu. Lilt also checks quietly when it opens. Read the release notes, choose
+  in the Mac menu. Settings shows your installed app version and current update status directly.
+  Lilt also checks quietly when it opens. An available version appears in **Notification Center**;
+  choose the notice to open Updates. Reading or clearing it is remembered in this browser for
+  that version, so another check or completed download does not make it unread again. A newer
+  version gets its own notice. There is no sound, pop-up or system notification.
+  Read the release notes, choose
   **Download update**, then **Update and restart**. Downloads are verified before installation;
   checks alone never install anything. Finish recording and saving first. If a take is still
   saving, the download stays ready while you finish. Closing the update window leaves a
@@ -27,7 +32,7 @@ its own window; quitting stops the server.
   The app, server, Python helper and bundled content update together; your data folder stays
   separate. A window attached to a separately started server cannot install an update: quit
   both and open the installed Mac app first. Local ad-hoc builds say updates are not configured.
-  Browser users see an explanation in Settings rather than an install button.
+  Browser users see the **Web version** and an explanation in Settings rather than an install button.
   Existing builds need one manual installation of the first updater-enabled signed release.
   Release credentials, the manual draft workflow and Mac acceptance checks are described in
   [Desktop releases](desktop-releases.md). Live Mac distribution still needs that setup and testing.

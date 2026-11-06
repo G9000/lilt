@@ -1,5 +1,35 @@
 # Lilt: validation report
 
+## 7 November 2026: Update notices and version in Settings
+
+Settings → Updates now shows the native installed version and live update status directly.
+Browser-only use labels the bundled version as Web version. The notification center shows an
+available release with a version-based identity: repeated checks, downloading and readiness
+keep its read/cleared state, while a newer version gets a new notice. Opening the notice only
+opens the native Updates window. No sound, toast, system notification or automatic action.
+
+Native code sends four display fields to the main window at its configured loopback HTTP
+origin after page load and visible status changes. Both native delivery and the evaluated
+script check the origin. No additional IPC grants, control tokens, release notes or download
+URLs are exposed. Byte progress does not create broadcasts; reload receives the latest state.
+
+Passed: all 143 web unit tests, types and separate production build; all 78 server tests,
+formatting and strict Clippy; Python 47 passed and one skipped; all 20 desktop tests,
+formatting and strict release Clippy. Six new web tests cover validation, status wording and
+notification identity. Four new native tests cover projection, stale version suppression,
+origin restrictions and safe serialization. Independent review found no blockers.
+
+All 14 isolated Chrome updater/Settings/notification checks passed, including initial and
+late native status, reload, clear/read persistence, newer-version notices, keyboard opening,
+browser mode and light/dark layouts. The layout check was rerun after the final icon style
+and screenshot timing changes; inspected the narrow light/dark Settings and notification
+screenshots under `desktop/target/update-notice-shots`. These tests inject native display
+state; actual delivery in the packaged Mac app still needs native acceptance.
+
+Existing bundle-size and Windows hard-link cache warnings remain. All outputs used scratch
+directories; owner data, running app, normal server binary and web/dist were not changed.
+No release credentials were configured and nothing was pushed or published.
+
 ## 7 November 2026: Mac app update flow and release preparation
 
 The installed app has a bundled Updates window, a Mac menu entry and Settings access.

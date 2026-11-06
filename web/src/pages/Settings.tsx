@@ -7,6 +7,9 @@ import { applyTextSize, readTextSize, readThemeMode, TEXT_SIZES, type TextSize, 
 import { Callout } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
 import { playSound, setSounds, soundsOn } from "../sounds";
+import { isDesktop, openAppUpdates, useDesktopUpdate } from "../useDesktopUpdate";
+import { updateStatus } from "../desktopUpdate";
+import { CURRENT } from "../release";
 
 const ZONES = ["Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Jakarta", "Asia/Bangkok", "Asia/Tokyo", "Australia/Sydney", "Europe/London", "Europe/Berlin", "America/New_York", "America/Los_Angeles", "UTC"];
 
@@ -133,6 +136,23 @@ export function useProfileDraft() {
 
 export const savedLabel = (s: ReturnType<typeof useProfileDraft>["saved"]) => (s === "saving" ? "Saving…" : s === "saved" ? "Saved" : s === "error" ? "Not saved" : "");
 
+function AppUpdates() {
+  const status = useDesktopUpdate();
+  return (
+    <div className="sx-group">
+      {isDesktop() ? <>
+        <Row label="Installed version"><span>{status?.current ?? "Reading app version…"}</span></Row>
+        <Row label="Update status" help={<span role="status">{updateStatus(status)}</span>} stack>
+          <button className="btn-secondary sx-btn" onClick={openAppUpdates}>Open app updates</button>
+        </Row>
+      </> : <>
+        <Row label="Web version"><span>{CURRENT.version}</span></Row>
+        <Row label="App updates" help="App updates are available in the installed Mac app." />
+      </>}
+    </div>
+  );
+}
+
 /**
  * Settings, laid out like System Settings: categories with coloured icons in a sidebar (with
  * search), one pane at a time on the right, changes saved as you make them. On a narrow screen the
@@ -161,15 +181,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
       </div>
     );
     if (id === "ai") return <ConnectAI />;
-    if (id === "updates") return (
-      <div className="sx-group">
-        {(window as Window & { __LILT_DESKTOP__?: boolean }).__LILT_DESKTOP__ === true ? (
-          <Row label="App updates" help="See your installed version, check what’s new, and choose when to download and restart." stack>
-            <button className="btn-secondary sx-btn" onClick={() => { window.location.href = "lilt://updates"; }}>Open app updates</button>
-          </Row>
-        ) : <Row label="App updates" help="App updates are available in the installed Mac app." />}
-      </div>
-    );
+    if (id === "updates") return <AppUpdates />;
     if (id === "privacy") return (
       <>
         <Callout kind="ok"><p>Recording, saving, playback and local analysis run on this computer. Connecting ChatGPT sends nothing by itself; when Lilt's AI features arrive in Practice, they will say what goes to OpenAI before anything is sent.</p></Callout>
