@@ -113,7 +113,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back and stays available after resetting (a reset-arrow icon on phones).
-     Widgets near an edge slide inward rather than disappear. A widget whose spot
+     Widgets near an edge slide inward rather than disappear. On smaller or squarer screens they
+     shrink a little, and one still at home slides just clear of its neighbours and of the Photos,
+     Practice and Music shortcuts under the menu bar. A widget whose spot
      is cropped off a small screen steps aside; a phone keeps the stack and room shortcuts.
    - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
      <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,

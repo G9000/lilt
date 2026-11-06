@@ -295,6 +295,10 @@
 .fl.off { opacity: 0; pointer-events: none; }
 .fl.off * { pointer-events: none !important; }
 .fl-bob { display: grid; justify-items: center; animation: fl-bob 5.5s ease-in-out infinite; animation-delay: var(--d); }
+/* Widgets keep their size while the painting shrinks, so on smaller screens they shrink a little too
+   (their contents, not the drag handle, so dragging still follows the pointer). */
+@media (max-width: 1100px), (max-height: 800px) { .fl-bob { zoom: 0.88; } }
+@media (max-width: 860px), (max-height: 660px) { .fl-bob { zoom: 0.76; } }
 @keyframes fl-bob { 50% { translate: 0 -5px; } }
 .fl-nudge { translate: var(--nudge, 0px) var(--nudge-y, 0px); }
 .fl-drag { pointer-events: auto; cursor: grab; touch-action: none; }

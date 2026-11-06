@@ -14,6 +14,7 @@ export const RELEASES: Release[] = [
     date: "2026-11-01",
     items: [
       { title: "The cat practises with you", body: "The room's cat curls up on the edge of your card, listens while you record and sends up a heart when you stop. Finished cards make a little pile, and the day ends with a paper slip of what you said.", to: "/deck" },
+      { title: "Room for every screen", body: "On smaller and squarer screens the room's widgets shrink a little and keep clear of each other, today's cards and the Photos, Practice and Music shortcuts." },
       { title: "A gentler new week", body: "The plant in the room says \"A new week\" instead of a zero, and grows a leaf each day you practise." },
       { title: "A sticky note that's yours", body: "Click the note in the room to write on it, then pick its paper and washi tape from the tray underneath, and drag its corner to make it bigger or smaller. Back to the original note puts the yellow one back." },
       { title: "Steadier saving", body: "If Lilt restarts while you're recording, your take finishes saving straight away instead of retrying for minutes. Browsing a long list of recordings uses less memory, and a card no longer repeats its chapter's name as a tag." },

@@ -40,7 +40,10 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   lower in the room as a swipeable stack (folder-style cards, one per practice card, Motion springs);
   tapping the top card starts it. The default stack sits in the lower-right corner on desktop
   and lower-center on phones. A few small widgets float in the painting (clock, note), riding
-  the camera and draggable (Motion); they step aside rather than cover the stack. The sticky note
+  the camera and draggable (Motion); they step aside rather than cover the stack. On smaller screens
+  (under 1100×800, and again under 860×660) their contents shrink a little with CSS `zoom`; a widget
+  still at home slides just clear of a neighbour, and of the Photos/Practice/Music shortcuts strip
+  that replaces the painted desk objects on squarer screens. One you placed never moves. The sticky note
   is paper, not UI: six soft papers and six washi tapes drawn in CSS (no images), chosen in a small
   `--win` tray that appears under it only while you write; the selection gets a 2px `--accent` ring,
   and a round handle on its top-right corner resizes it (130–300px wide). The plant reads "A new

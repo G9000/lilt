@@ -322,24 +322,49 @@ export function RoomFloaters({ deck, inside }: { deck?: Deck | null; inside: boo
       if (!box.current?.closest(".room-stage.settled")) return;
       const stack = document.querySelector(".cs")?.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
+      // On squarer screens the room's shortcuts (Photos, Practice, Music) sit under the menu bar.
+      const strip = document.querySelector<HTMLElement>(".room-object-shortcuts");
+      const shortcuts = strip && getComputedStyle(strip).display !== "none" ? strip.getBoundingClientRect() : null;
+      type Box = { left: number; right: number; top: number; bottom: number };
+      const overlap = (a: Box, b: Box) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2;
+      // Widgets already placed this round, in page order; a widget at home steps clear of them.
+      const placed: Box[] = [];
       box.current?.querySelectorAll<HTMLElement>(".fl").forEach((el) => {
+        const r = el.querySelector<HTMLElement>(".fl-nudge")!.getBoundingClientRect();
         // Being dragged or written on (the note): leave it where it is until you're done.
-        if (el.classList.contains("dragging") || el.classList.contains("still")) return;
+        if (el.classList.contains("dragging") || el.classList.contains("still")) { placed.push(r); return; }
         el.classList.remove("off");
         // the card slides inward (and below the menu bar) to stay fully on screen; measure where it
         // would be without the current slide, so nothing resets or flickers between checks
         const was = [parseFloat(el.style.getPropertyValue("--nudge")) || 0, parseFloat(el.style.getPropertyValue("--nudge-y")) || 0];
-        const r = el.querySelector<HTMLElement>(".fl-nudge")!.getBoundingClientRect();
         const card = { left: r.left - was[0], right: r.right - was[0], top: r.top - was[1], bottom: r.bottom - was[1] };
-        const nx = card.left < 12 ? 12 - card.left : card.right > vw - 12 ? vw - 12 - card.right : 0;
-        const ny = card.top < 44 ? 44 - card.top : card.bottom > vh - 12 ? vh - 12 - card.bottom : 0;
+        let nx = card.left < 12 ? 12 - card.left : card.right > vw - 12 ? vw - 12 - card.right : 0;
+        // Below the menu bar, and below the shortcuts too if it sits under them.
+        const under = shortcuts && card.right + nx > shortcuts.left - 8 && card.left + nx < shortcuts.right + 8;
+        const top = under ? Math.max(44, shortcuts.bottom + 10) : 44;
+        let ny = card.top < top ? top - card.top : card.bottom > vh - 12 ? vh - 12 - card.bottom : 0;
+        const at = () => ({ left: card.left + nx, right: card.right + nx, top: card.top + ny, bottom: card.bottom + ny });
+        // On a small screen two homes can touch: a widget still at home slides just clear of the
+        // one before it, sideways if that stays on screen, else down. One you placed never moves.
+        if (!el.classList.contains("moved")) {
+          for (const p of placed) {
+            const b = at();
+            if (!overlap(b, p)) continue;
+            const right = p.right + 8 - b.left, left = b.right - (p.left - 8), down = p.bottom + 8 - b.top;
+            const goRight = (b.left + b.right) / 2 >= (p.left + p.right) / 2;
+            if (goRight && b.right + right <= vw - 12) nx += right;
+            else if (!goRight && b.left - left >= 12) nx -= left;
+            else if (b.bottom + down <= vh - 12) ny += down;
+          }
+        }
         if (Math.abs(nx - was[0]) > 0.5) el.style.setProperty("--nudge", `${nx}px`);
         if (Math.abs(ny - was[1]) > 0.5) el.style.setProperty("--nudge-y", `${ny}px`);
-        const b = { left: card.left + nx, right: card.right + nx, top: card.top + ny, bottom: card.bottom + ny };
+        const b = at();
         const outside = b.right - b.left > vw - 24 || b.bottom - b.top > vh - 56;
         // once you've placed the cards yourself, nothing hides for them: it just sits behind
         const onCards = !layout.stack && !el.classList.contains("moved") && stack && !(b.right < stack.left - 8 || b.left > stack.right + 8 || b.bottom < stack.top - 8 || b.top > stack.bottom);
         el.classList.toggle("off", outside || !!onCards);
+        if (!outside && !onCards) placed.push(b);
       });
     };
     check();

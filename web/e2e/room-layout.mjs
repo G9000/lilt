@@ -60,12 +60,26 @@ try {
       assert.ok(page.viewportSize().width - stack.x - stack.width <= 41, `${label}: today's practice returns to the right corner`);
     }
     assert.equal(await reset.isVisible(), true, `${label}: reset remains visible`);
+    // Nothing that shows covers another widget, today's cards or the room's shortcuts strip.
+    const crowded = await page.evaluate(() => {
+      const box = el => el.getBoundingClientRect();
+      const shown = [...document.querySelectorAll('.fl')].filter(el => !el.classList.contains('off'))
+        .map(el => ({ n: el.querySelector('[aria-label]').getAttribute('aria-label'), b: box(el.querySelector('.fl-nudge')) }));
+      const sc = document.querySelector('.room-object-shortcuts');
+      if (sc && getComputedStyle(sc).display !== 'none') shown.push({ n: 'shortcuts', b: box(sc) });
+      const cs = document.querySelector('.cs'); if (cs) shown.push({ n: 'cards', b: box(cs) });
+      const hit = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 4 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 4;
+      const out = [];
+      for (let i = 0; i < shown.length; i++) for (let j = i + 1; j < shown.length; j++) if (hit(shown[i].b, shown[j].b)) out.push(`${shown[i].n} × ${shown[j].n}`);
+      return out;
+    });
+    assert.deepEqual(crowded, [], `${label}: widgets keep clear of each other`);
     assert.equal(await reset.evaluate(el => { const r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }), true, `${label}: reset is reachable`);
     console.log(`PASS ${label}: original positions restored; Reset layout remains available`);
   };
   await inspect('wide');
   const sizes = density === 1
-    ? [[2560,1440],[3440,1440],[3840,2160],[1440,950],[1024,768],[1024,1366]]
+    ? [[2560,1440],[3440,1440],[3840,2160],[1440,950],[1280,720],[1024,768],[1024,1366],[768,1024],[800,600]]
     : [[1920,1080]]; // A 4K display at 200% scaling has a 1920×1080 CSS viewport.
   for (const [width, height] of sizes) {
     await page.setViewportSize({width,height});
