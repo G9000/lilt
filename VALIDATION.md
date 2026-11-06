@@ -1,5 +1,44 @@
 # Lilt: validation report
 
+## 7 November 2026: Storage overview in Settings
+
+Settings → Storage shows file-size totals for recordings/analysis, Photos, backups/recovery and
+other saved data, with Refresh, actual folder paths, Copy folder path and a desktop Open data
+folder action. Partial counts say At least; failed refreshes retain the previous count with an
+explanation. Browser requests abort on leaving the pane and time out after 15 seconds. Installed
+app files, browser-only room media and downloaded copies elsewhere are explicitly outside totals.
+
+Passed: all 150 web unit tests, types and production build to a scratch output; all 113 server
+tests, formatting and strict all-target/all-feature Clippy; Python 47 passed and one skipped;
+all 23 desktop tests, formatting and strict release Clippy. New server coverage checks exact
+categories, private/recovery files, large lengths, bounded and partial scans, Windows junctions
+and cycles, local request guards, cancellation admission and the authenticated fixed folder path.
+The native action checks its owned server and exact main-window origin, avoids proxies/redirects,
+uses a five-second HTTP timeout and publishes a safely serialized outcome. It grants no new IPC
+permissions and accepts no frontend path. Native policy/serialization/overlap tests passed.
+
+All 29 isolated Chrome Settings checks passed: nine Storage, six backup and 14 updater checks.
+Storage covers refresh, empty and partial counts, initial/refresh failures, clipboard failure,
+scan timeout/retry, unmount cancellation, native error/success/timeout, keyboard opening and
+narrow light/dark layouts. Inspected both Storage screenshots under
+`server/target/yarn-check/artifacts/storage-shots`. A first regression run exposed fixtures
+inheriting the development proxy; connections to the normal server were refused. The shared
+`web/e2e/isolated-vite.mjs` helper now disables config loading/proxies and selects temporary strict
+ports. The clean final run uses that helper for Storage, backup and updater fixtures.
+
+The repeatable `scripts/storage-acceptance.py` passed 16 checks over real loopback HTTP against
+the rebuilt scratch binary. Every category's file count and byte count matched an independent
+filesystem scan; added/removed files changed totals correctly. Private file sizes and recovery
+files were included without exposing contents or per-file names. Descriptor authentication,
+fixed path despite query parameters, and host/origin/tunnel restrictions passed for both APIs.
+Evidence: `target/storage-network-qmqkxu6y/report.json`, `storage-response.json`, `server.log`.
+
+Independent review found a stalled browser scan needed timeout/cancellation; that was fixed and
+verified, with no remaining implementation blockers. Scratch children were stopped by their own
+handles. No owner practice data was read or changed, and the normal app was not restarted.
+Actual file-manager opening in the packaged Mac app remains unverified. Existing bundle-size and
+Windows incremental hard-link warnings remain. No release was pushed or published.
+
 ## 7 November 2026: Backup and restore in Settings
 
 Settings → Backup & restore creates downloadable practice-data ZIPs, previews imports, and

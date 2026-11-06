@@ -28,7 +28,7 @@ impl From<&Snapshot> for Notice {
     }
 }
 
-fn trusted_page(label: &str, url: &Url, port: u16) -> bool {
+pub(crate) fn trusted_page(label: &str, url: &Url, port: u16) -> bool {
     label == "main"
         && url.scheme() == "http"
         && url.host_str() == Some("127.0.0.1")

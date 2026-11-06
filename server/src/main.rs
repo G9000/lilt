@@ -9,6 +9,7 @@ mod http;
 mod photos;
 mod practice;
 mod recordings;
+mod storage;
 mod store;
 #[cfg(test)]
 mod test_support;

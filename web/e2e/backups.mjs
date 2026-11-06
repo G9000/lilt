@@ -3,13 +3,13 @@ import { before, after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createServer } from 'vite';
+import { createIsolatedVite as createServer } from './isolated-vite.mjs';
 import { chromium } from 'playwright-core';
 
 const web = fileURLToPath(new URL('..', import.meta.url));
 let vite, browser;
 before(async () => {
-  vite = await createServer({ root: web, configFile: path.join(web, 'vite.config.ts'), server: { host: '127.0.0.1', port: 0, proxy: {} }, logLevel: 'error',
+  vite = await createServer({ root: web, logLevel: 'error',
     plugins: [{ name: 'backup-settings-fixture', configureServer(server) { server.middlewares.use(async (req, res, next) => {
       if (req.url !== '/backup-fixture.html') return next();
       const html = await server.transformIndexHtml('/backup-fixture.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Backup settings</title></head><body><div id="root" style="background:var(--page)"></div><script type="module">

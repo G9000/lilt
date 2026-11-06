@@ -393,6 +393,28 @@ it persists or keeps coming back, see a voice professional.
 Everything is plain files. There is no database, and the folder alone is enough to rebuild your
 whole history.
 
+### Storage overview
+
+Open **Settings → Storage** to see the total size of Lilt's saved files, split into:
+
+- **Recordings & analysis:** original audio, recording chunks and saved analysis files.
+- **Photos:** uploaded pictures and the Photos index.
+- **Backups & recovery files:** backup ZIPs, safety copies, prepared restores and backup settings.
+- **Other saved data:** courses, progress, notes, settings, temporary files and other local app files.
+
+Choose **Refresh** to count again. These are file lengths using 1,024-byte units, not the space
+allocated by your drive; files can change while you practise. Linked folders are not followed.
+Unreadable files or scan limits produce an **At least** total and a partial-count explanation.
+A stalled request times out and offers Refresh; leaving Settings cancels the browser request.
+
+The pane shows the actual data and backup folder paths. **Copy folder path** copies the data
+location. In the installed app, **Open data folder** asks the file manager to open it. If the app
+is using a separately started server, use the copyable path instead. Browsers also use that path
+on the computer running Lilt. Clipboard or folder-opening failures leave the path selectable.
+
+The installed app itself, room media stored only in the browser and downloaded copies elsewhere
+are outside these totals. Storage does not delete or move files.
+
 ### Backup and restore
 
 - **In Settings → Backup & restore**, choose **Create backup**, then **Download backup** and
@@ -639,6 +661,7 @@ cd server && cargo test --all-targets --all-features  # includes the real analys
 cd analysis && uv run --locked pytest      # analysis tests on fixed fixtures
 cd analysis && uv run --locked python scripts/evaluate.py   # regenerates EVALUATION.md
 cd web && node --test src/pitch.test.ts     # live pitch tracker (YIN) on synthetic tones
+cd web && node --test e2e/storage.mjs       # isolated Storage Settings, synthetic sizes and native bridge
 cd web && node --test e2e/settings-comparison.mjs  # starts its own test server: delayed saves, typing and comparison switches
 cd web && LILT_URL=http://127.0.0.1:5173 node --test e2e/recording-lock.mjs  # Vite running: real browser locks/recorder, fake mic and stubbed API
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/safari.mjs  # disposable test server on :7979; open :5175 in Safari and click each tab's audio button

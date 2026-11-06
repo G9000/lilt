@@ -7,7 +7,7 @@ import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { chromium } from 'playwright-core';
-import { createServer } from 'vite';
+import { createIsolatedVite as createServer } from './isolated-vite.mjs';
 
 const web = fileURLToPath(new URL('../', import.meta.url));
 const ui = fileURLToPath(new URL('../../desktop/ui/', import.meta.url));
@@ -25,7 +25,7 @@ before(async () => {
   });
   await new Promise(resolve => files.listen(0, '127.0.0.1', resolve));
   uiUrl = `http://127.0.0.1:${files.address().port}/updates.html`;
-  vite = await createServer({ root: web, configFile: path.join(web, 'vite.config.ts'), server: { host: '127.0.0.1', port: 0, proxy: {} }, logLevel: 'error',
+  vite = await createServer({ root: web, logLevel: 'error',
     plugins: [{ name: 'update-settings-fixture', configureServer(server) { server.middlewares.use(async (req, res, next) => {
     if (req.url !== '/update-settings-fixture.html') return next();
     const html = await server.transformIndexHtml('/update-settings-fixture.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Settings updates test</title></head><body><div id="root"></div><script type="module">

@@ -16,6 +16,7 @@ use tauri::webview::{
 };
 use tauri::{Manager, RunEvent, Url, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
+mod storage;
 mod update_lifecycle;
 mod update_notice;
 mod update_policy;
@@ -347,6 +348,10 @@ fn window(app: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
             }
         })
         .on_navigation(move |url| {
+            if url.as_str() == "lilt://data-folder" || url.as_str() == "lilt://data-folder/" {
+                storage::open(&handle);
+                return false;
+            }
             if url.as_str() == "lilt://updates" || url.as_str() == "lilt://updates/" {
                 let _ = updates::open(&handle);
                 return false;

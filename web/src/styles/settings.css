@@ -68,6 +68,17 @@
 }
 
 /* AI connections: choose your app first, then its steps */
+.sx-storage { display: grid; gap: 16px; min-width: 0; }
+.sx-storage p { margin: 0; }
+.sx-storage-total { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.sx-storage-total strong { display: block; font-size: 28px; font-weight: 600; letter-spacing: -0.04em; }
+.sx-storage-total span { color: var(--ink-2); }
+.sx-storage-size { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sx-storage .sx-row-c { min-width: 0; }
+.sx-storage-path { display: block; max-width: 100%; white-space: normal; overflow-wrap: anywhere; user-select: text; font-size: 12px; }
+.sx-storage-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.sx-storage [role="alert"] { border-left: 2px solid var(--accent); padding-left: 12px; }
+
 .sx-backups { display: grid; gap: 16px; min-width: 0; }
 .sx-backups p { margin: 0; }
 .sx-backups .sx-row-c { gap: 12px; }

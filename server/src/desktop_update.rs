@@ -8,7 +8,7 @@ use axum::{
     extract::State,
     http::{HeaderMap, StatusCode, header},
     response::{IntoResponse, Response},
-    routing::post,
+    routing::{get, post},
 };
 use serde_json::json;
 use std::fs;
@@ -21,6 +21,7 @@ pub fn router() -> Router<Shared> {
     Router::new()
         .route("/api/desktop/update/prepare", post(prepare))
         .route("/api/desktop/update/cancel", post(cancel))
+        .route("/api/desktop/data-folder", get(data_folder))
 }
 
 fn authorized(app: &App, headers: &HeaderMap) -> bool {
@@ -41,6 +42,24 @@ fn authorized(app: &App, headers: &HeaderMap) -> bool {
 
 fn refused(status: StatusCode, message: &str) -> Response {
     (status, Json(json!({ "error": message }))).into_response()
+}
+
+async fn data_folder(State(app): State<Shared>, headers: HeaderMap) -> Response {
+    if !authorized(&app, &headers) {
+        return refused(
+            StatusCode::FORBIDDEN,
+            "Only the installed desktop app can open the data folder.",
+        );
+    }
+    match app.paths.root.canonicalize() {
+        Ok(path) if path.is_absolute() && path.is_dir() => {
+            Json(json!({"path": path})).into_response()
+        }
+        _ => refused(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "Lilt couldn't find your data folder. Copy its path from Settings and try again.",
+        ),
+    }
 }
 
 async fn prepare(State(app): State<Shared>, headers: HeaderMap) -> Response {
@@ -164,6 +183,106 @@ mod tests {
             .oneshot(req)
             .await
             .unwrap()
+    }
+
+    #[tokio::test]
+    async fn desktop_data_folder_requires_its_own_token_and_returns_only_the_configured_root() {
+        for token in [
+            None,
+            Some(""),
+            Some("wrong"),
+            Some("mcp-token"),
+            Some("desktop-secret"),
+        ] {
+            let (_dir, app) = fixture(Some("desktop-secret"));
+            let mut req = Request::builder()
+                .uri("/api/desktop/data-folder?path=C:/untrusted")
+                .header("host", "127.0.0.1:7979");
+            if let Some(token) = token {
+                req = req.header("authorization", format!("Bearer {token}"));
+            }
+            let response = crate::build_router(app.clone(), &app.config)
+                .oneshot(req.body(Body::empty()).unwrap())
+                .await
+                .unwrap();
+            if token == Some("desktop-secret") {
+                assert_eq!(response.status(), StatusCode::OK);
+                let body: serde_json::Value =
+                    serde_json::from_slice(&to_bytes(response.into_body(), 4096).await.unwrap())
+                        .unwrap();
+                assert_eq!(
+                    body,
+                    json!({"path": app.paths.root.canonicalize().unwrap()})
+                );
+            } else {
+                assert_eq!(response.status(), StatusCode::FORBIDDEN);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn desktop_data_folder_refuses_unconfigured_tokens_and_untrusted_requests() {
+        for configured in [None, Some("")] {
+            let (_dir, app) = fixture(configured);
+            let response = crate::build_router(app.clone(), &app.config)
+                .oneshot(
+                    Request::builder()
+                        .uri("/api/desktop/data-folder")
+                        .header("host", "localhost:7979")
+                        .header("authorization", "Bearer desktop-secret")
+                        .body(Body::empty())
+                        .unwrap(),
+                )
+                .await
+                .unwrap();
+            assert_eq!(response.status(), StatusCode::FORBIDDEN);
+        }
+        let (_dir, app) = fixture(Some("desktop-secret"));
+        crate::ai::oauth::set_public_url(&app, "https://lilt.example.com").unwrap();
+        for (host, extra, expected) in [
+            ("untrusted.example", None, StatusCode::FORBIDDEN),
+            (
+                "localhost:7979",
+                Some(("origin", "https://untrusted.example")),
+                StatusCode::FORBIDDEN,
+            ),
+            ("lilt.example.com", None, StatusCode::NOT_FOUND),
+            (
+                "localhost:7979",
+                Some(("cf-connecting-ip", "1.2.3.4")),
+                StatusCode::NOT_FOUND,
+            ),
+        ] {
+            let mut request = Request::builder()
+                .uri("/api/desktop/data-folder")
+                .header("host", host)
+                .header("authorization", "Bearer desktop-secret");
+            if let Some((key, value)) = extra {
+                request = request.header(key, value);
+            }
+            assert_eq!(
+                crate::build_router(app.clone(), &app.config)
+                    .oneshot(request.body(Body::empty()).unwrap())
+                    .await
+                    .unwrap()
+                    .status(),
+                expected
+            );
+        }
+        std::fs::rename(&app.paths.root, app.paths.root.with_extension("moved")).unwrap();
+        let response = crate::build_router(app.clone(), &app.config)
+            .oneshot(
+                Request::builder()
+                    .uri("/api/desktop/data-folder")
+                    .header("host", "localhost:7979")
+                    .header("authorization", "Bearer desktop-secret")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::SERVICE_UNAVAILABLE);
+        std::fs::rename(app.paths.root.with_extension("moved"), &app.paths.root).unwrap();
     }
 
     #[tokio::test]

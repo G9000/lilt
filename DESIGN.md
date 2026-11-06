@@ -5,6 +5,13 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+**Storage** is a Settings pane with one total and four rows: recordings and analysis, Photos,
+backups and recovery files, and other saved data. Plain numbers describe file sizes, not drive
+capacity. Refresh updates the count; partial or failed scans say so without showing a false zero.
+The folder paths can be selected and the data path copied. The installed app offers Open data
+folder through its native host, with a copy-path fallback. Folder-opening status describes the
+request, not an observed Finder window. Both colour themes and narrow layouts retain these controls.
+
 **Backup & restore** is a Settings pane with Create backup and a separate Download backup link.
 Choosing a ZIP opens a plain preview with date, recording count and size. A checkbox and explicit
 Restore backup action confirm replacement; Cancel leaves practice untouched. A successful restore

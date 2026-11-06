@@ -335,7 +335,8 @@ fn busy(error: impl ToString) -> Response {
 async fn dispatch(State(controller): State<Arc<Controller>>, req: Request) -> Response {
     let is_backup =
         req.uri().path() == "/api/backups" || req.uri().path().starts_with("/api/backups/");
-    let permit = if is_backup {
+    let is_control = is_backup || req.uri().path() == "/api/storage";
+    let permit = if is_control {
         None
     } else {
         match controller.app().enter() {
@@ -370,7 +371,7 @@ async fn dispatch(State(controller): State<Arc<Controller>>, req: Request) -> Re
             &generation.id,
         );
     }
-    let result = if is_backup {
+    let result = if is_control {
         let app = controller.app();
         Router::new()
             .fallback(control_request)
@@ -422,6 +423,26 @@ fn hold_body(response: Response, permit: admission::Permit) -> Response {
 
 async fn control_request(State(controller): State<Arc<Controller>>, req: Request) -> Response {
     let path = req.uri().path();
+    if path == "/api/storage" {
+        if req.method() != axum::http::Method::GET {
+            return StatusCode::METHOD_NOT_ALLOWED.into_response();
+        }
+        let app = controller.app();
+        let permit = match app.enter() {
+            Ok(permit) => permit,
+            Err(error) => return busy(error),
+        };
+        // The blocking task owns both App and admission even if the HTTP caller disconnects.
+        return match tokio::task::spawn_blocking(move || {
+            let _permit = permit;
+            crate::storage::scan(&app.paths.root, &controller.control)
+        })
+        .await
+        {
+            Ok(overview) => Json(overview).into_response(),
+            Err(error) => refused(StatusCode::INTERNAL_SERVER_ERROR, "storage_failed", error),
+        };
+    }
     if req.method() == axum::http::Method::GET {
         if path == "/api/backups" {
             let last: Option<Backup> =
@@ -662,5 +683,168 @@ async fn preview(
         Ok(Ok(value)) => Json(value).into_response(),
         Ok(Err(error)) => refused(StatusCode::UNPROCESSABLE_ENTITY, "invalid_backup", format!("This backup could not be validated: {error:#}")),
         Err(error) => refused(StatusCode::INTERNAL_SERVER_ERROR, "upload_failed", error),
+    }
+}
+
+#[cfg(test)]
+mod storage_tests {
+    use super::*;
+    use axum::body::to_bytes;
+    use axum::http::Request;
+
+    #[tokio::test]
+    async fn storage_preserves_local_origin_remote_and_maintenance_guards() {
+        let dir = tempfile::tempdir().unwrap();
+        let controller =
+            Controller::open(crate::test_support::config(&dir.path().join("data"))).unwrap();
+        crate::ai::oauth::set_public_url(&controller.app(), "https://lilt.example.com").unwrap();
+        for (host, extra, expected) in [
+            ("untrusted.example:7979", None, StatusCode::FORBIDDEN),
+            (
+                "localhost:7979",
+                Some(("origin", "https://untrusted.example")),
+                StatusCode::FORBIDDEN,
+            ),
+            ("lilt.example.com", None, StatusCode::NOT_FOUND),
+            (
+                "localhost:7979",
+                Some(("cf-connecting-ip", "1.2.3.4")),
+                StatusCode::NOT_FOUND,
+            ),
+        ] {
+            let mut request = Request::builder().uri("/api/storage").header("host", host);
+            if let Some((key, value)) = extra {
+                request = request.header(key, value);
+            }
+            assert_eq!(
+                controller
+                    .router()
+                    .oneshot(request.body(Body::empty()).unwrap())
+                    .await
+                    .unwrap()
+                    .status(),
+                expected
+            );
+        }
+        let _exclusive = controller.activity.exclusive().unwrap();
+        let response = controller
+            .router()
+            .oneshot(
+                Request::builder()
+                    .uri("/api/storage")
+                    .header("host", "localhost:7979")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::CONFLICT);
+    }
+
+    #[test]
+    fn cancelled_storage_request_keeps_admission_until_blocking_scan_finishes() {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .max_blocking_threads(1)
+            .build()
+            .unwrap();
+        runtime.block_on(async {
+            let dir = tempfile::tempdir().unwrap();
+            let controller =
+                Controller::open(crate::test_support::config(&dir.path().join("data"))).unwrap();
+            let (release, wait) = std::sync::mpsc::channel();
+            let (started, ready) = tokio::sync::oneshot::channel();
+            let blocker = tokio::task::spawn_blocking(move || {
+                started.send(()).unwrap();
+                wait.recv().unwrap();
+            });
+            ready.await.unwrap();
+            let router = controller.router();
+            let task = tokio::spawn(async move {
+                router
+                    .oneshot(
+                        Request::builder()
+                            .uri("/api/storage")
+                            .header("host", "localhost:7979")
+                            .body(Body::empty())
+                            .unwrap(),
+                    )
+                    .await
+                    .unwrap()
+            });
+            tokio::time::timeout(Duration::from_secs(2), async {
+                while controller.activity.exclusive().is_ok() {
+                    tokio::task::yield_now().await;
+                }
+            })
+            .await
+            .unwrap();
+            task.abort();
+            assert!(task.await.unwrap_err().is_cancelled());
+            assert!(
+                controller.activity.exclusive().is_err(),
+                "queued scan retains admission after its caller disconnects"
+            );
+            release.send(()).unwrap();
+            blocker.await.unwrap();
+            tokio::time::timeout(Duration::from_secs(2), async {
+                while controller.activity.exclusive().is_err() {
+                    tokio::task::yield_now().await;
+                }
+            })
+            .await
+            .unwrap();
+        });
+    }
+
+    #[tokio::test]
+    async fn storage_reports_the_controllers_actual_roots_and_all_control_files() {
+        let dir = tempfile::tempdir().unwrap();
+        let controller =
+            Controller::open(crate::test_support::config(&dir.path().join("practice"))).unwrap();
+        fs::create_dir_all(controller.control.join("previous-recovery/private")).unwrap();
+        fs::write(
+            controller.control.join("previous-recovery/private/unknown"),
+            b"12345",
+        )
+        .unwrap();
+        let response = controller
+            .router()
+            .oneshot(
+                Request::builder()
+                    .uri("/api/storage")
+                    .header("host", "localhost:7979")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        let bytes = to_bytes(response.into_body(), 16384).await.unwrap();
+        let value: Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(value["complete"], true);
+        assert_eq!(
+            value["data_path"],
+            controller.app().paths.root.to_string_lossy().as_ref()
+        );
+        assert_eq!(
+            value["backup_path"],
+            controller.control.to_string_lossy().as_ref()
+        );
+        assert!(value["categories"][2]["bytes"].as_u64().unwrap() >= 5);
+        assert_eq!(
+            value["total_bytes"].as_u64().unwrap(),
+            value["categories"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|c| c["bytes"].as_u64().unwrap())
+                .sum::<u64>()
+        );
+        assert!(
+            !String::from_utf8(bytes.to_vec())
+                .unwrap()
+                .contains("unknown")
+        );
     }
 }
