@@ -12,6 +12,7 @@ import { flashcardsPath, practicePath, validCourseId } from "../courseNavigation
 import { chapterCards, EMPTY, Flashcard, loadRuns, pile, progress, Run, saveRun, swipe } from "../flashcards";
 import { Art, Illustration, wash } from "../components/Illustrations";
 import { ChapterVideo, Dock, FoldedMeasures, ListenBack } from "./Voice";
+import { OptionalCourseRecorder } from "./CourseRecording";
 
 /**
  * Flashcards: a chapter dealt out as the room's cards, one at a time, full screen. Swipe right when
@@ -102,7 +103,7 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
   return (
     <>
       <header className={cx("fc-top", practice["fc-top"])}>
-        <button className={cx("fc-close", practice["fc-close"])} onClick={() => go("/desk")} aria-label="Close Flashcards" title="Close (Esc)">
+        <button className={cx("fc-close", practice["fc-close"])} disabled={recording} onClick={() => go("/desk")} aria-label="Close Flashcards" title="Close (Esc)">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
         </button>
         <ChapterMenu course={course} texts={texts} level={level} locked={recording} />
@@ -110,7 +111,7 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
           <span className={cx("fc-segs", practice["fc-segs"])} aria-hidden="true">{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : c.id === top?.id ? "now" : undefined} />)}</span>
           <span className={cx("fc-count", practice["fc-count"])}><b>{got}</b> of {total}</span>
         </div>
-        <a className={cx("fc-full", practice["fc-full"])} href={full}>
+        <a className={cx("fc-full", practice["fc-full"])} href={full} aria-disabled={recording} onClick={event => { if (recording) event.preventDefault(); }}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5h4a2 2 0 012 2v8a1.5 1.5 0 00-1.5-1.5H2zM14 3.5h-4a2 2 0 00-2 2v8a1.5 1.5 0 011.5-1.5H14z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>
           <span>Full chapter</span>
         </a>
@@ -153,7 +154,7 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
         {undo && (
           <div className={cx("fc-undo", practice["fc-undo"])} role="status">
             {undo.label}
-            <button onClick={() => { setRun(undo.run); setUndo(null); }}>Undo</button>
+            <button disabled={recording} onClick={() => { setRun(undo.run); setUndo(null); }}>Undo</button>
           </div>
         )}
         {voice && !hurt && top?.kind === "text" ? (
@@ -167,6 +168,9 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
               </span>
             </Dock>
           </div>
+        ) : !voice && top?.kind === "text" ? (
+          <div className="mx-auto max-w-[640px] px-5"><OptionalCourseRecorder key={top.id} course={course} promptId={textId(course, level.id, top.item.id)} promptText={top.item.text} showPlayback={false}
+            onBusy={setRecording} onSaved={take => setTakes(previous => ({ ...previous, [top.id]: take }))} /></div>
         ) : !hurt && top ? (
           <p className={cx("fc-keys", practice["fc-keys"])}><kbd>←</kbd> Again later <span aria-hidden="true">·</span> swipe the card or use the arrows <span aria-hidden="true">·</span> Got it <kbd>→</kbd></p>
         ) : null}
@@ -311,7 +315,7 @@ function CardFace({ card, level, tips, take, band, onHurt, course, chapters }: {
           {take && (
             <section className={cx("fc-take", practice["fc-take"])} aria-label="Your take">
               <div className={cx("prc", practice["prc"])}><ListenBack src={take.audio_url} /></div>
-              <FoldedMeasures key={take.id} take={take} band={band} />
+              {course === DEFAULT_COURSE && <FoldedMeasures key={take.id} take={take} band={band} />}
             </section>
           )}
           {tips.length > 0 && (

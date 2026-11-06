@@ -58,6 +58,7 @@ export interface QualityFlag { code: string; message: string; blocks_voice_feedb
 
 export interface Take {
   id: string;
+  course: string;
   session_id: string;
   role: TakeRole;
   phase: "pre" | "post" | "none";
@@ -99,7 +100,10 @@ export interface Take {
 
 export interface Session {
   id: string;
-  kind: "full" | "check_in" | "studio" | "deck";
+  course: string;
+  kind: "full" | "check_in" | "studio" | "deck" | "course_guided";
+  task: { prompt_id: string; title: string; text: string; hint: string } | null;
+  notes: string | null;
   state: "in_progress" | "completed";
   plan_version: number | null;
   exercise_id: string | null;
@@ -360,7 +364,7 @@ export const api = {
   today: () => call<Today>("GET", "/api/today"),
   /** A course's texts (the Practice course when none is named). */
   texts: (course?: string) => call<Texts>("GET", `/api/texts${course ? `?course=${encodeURIComponent(course)}` : ""}`),
-  studioSession: () => call<Session>("POST", "/api/studio/session"),
+  studioSession: (course?: string) => call<Session>("POST", `/api/studio/session${cq(course)}`),
   photos: () => call<PhotoIndex>("GET", "/api/photos"),
   /** Add a photo: the image itself is the request body. */
   addPhoto: async (image: Blob, name: string) => {
@@ -384,7 +388,8 @@ export const api = {
   choosePlan: (exercise_id: string) => call<Plan>("POST", "/api/plan/choose", { exercise_id }),
   planHistory: () => call<Plan[]>("GET", "/api/plan/history"),
   createSession: (kind: "full" | "check_in") => call<Session>("POST", "/api/sessions", { kind }),
-  sessions: (cursor = 0) => call<{ sessions: (Session & { take_count: number })[]; next_cursor: number | null; total: number }>("GET", `/api/sessions?cursor=${cursor}&limit=20`),
+  courseSession: (course: string, prompt_id: string) => call<Session>("POST", "/api/sessions", { kind: "course_guided", course, prompt_id }),
+  sessions: (cursor = 0, course?: string) => call<{ sessions: (Session & { take_count: number })[]; next_cursor: number | null; total: number }>("GET", `/api/sessions?cursor=${cursor}&limit=20${course === undefined ? "" : `&course=${encodeURIComponent(course)}`}`),
   session: (id: string) => call<{ session: Session; takes: Take[]; reviews: Review[]; exercise: Exercise | null }>("GET", `/api/sessions/${id}`),
   patchSession: (id: string, body: unknown) => call<Session>("PATCH", `/api/sessions/${id}`, body),
   deleteSession: (id: string, deleteReviews: boolean) => call<unknown>("DELETE", `/api/sessions/${id}?reviews=${deleteReviews ? "delete" : "mark"}`),
@@ -411,10 +416,11 @@ export const api = {
   setPublicAddress: (url: string) => call<{ public_url: string | null }>("PUT", "/api/connect/address", { url }),
   pairingCode: () => call<{ code: string; expires_in: number }>("POST", "/api/connect/code"),
   disconnectApp: (id: string) => call<{ removed: string }>("DELETE", `/api/connect/${id}`),
-  history: (params: { prompt_id?: string; days?: number } = {}) => {
+  history: (params: { prompt_id?: string; days?: number; course?: string } = {}) => {
     const q = new URLSearchParams();
     if (params.prompt_id) q.set("prompt_id", params.prompt_id);
     if (params.days) q.set("days", String(params.days));
+    if (params.course !== undefined) q.set("course", params.course);
     return call<{ from: string; to: string; window_days: number; takes: Take[]; aggregation: string }>("GET", `/api/history?${q}`);
   },
   compare: (a: string, b: string) => call<Comparison>("GET", `/api/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`),

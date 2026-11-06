@@ -51,6 +51,8 @@ pub fn session(app: &App) -> Session {
         app,
         NewSession {
             kind: SessionKind::Full,
+            course: None,
+            prompt_id: None,
         },
     )
     .unwrap()

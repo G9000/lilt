@@ -13,6 +13,8 @@ pub enum SessionKind {
     Studio,
     /// Today's voice deck (spaced-repetition cards).
     Deck,
+    /// A saved task from a non-voice course.
+    CourseGuided,
 }
 
 impl SessionKind {
@@ -31,6 +33,10 @@ pub enum SessionState {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Session {
+    #[serde(default = "default_course")]
+    pub course: String,
+    #[serde(default)]
+    pub task: Option<CourseTask>,
     pub schema: String,
     pub id: String,
     pub kind: SessionKind,
@@ -132,6 +138,8 @@ pub struct TakeSelfReport {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Take {
+    #[serde(default = "default_course")]
+    pub course: String,
     pub schema: String,
     pub id: String,
     pub session_id: String,
@@ -170,4 +178,16 @@ pub struct Take {
     /// Card this take was recorded for, and the learner's rating of it.
     #[serde(default)]
     pub card: Option<Value>,
+}
+
+pub fn default_course() -> String {
+    crate::courses::DEFAULT.into()
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CourseTask {
+    pub prompt_id: String,
+    pub title: String,
+    pub text: String,
+    pub hint: String,
 }

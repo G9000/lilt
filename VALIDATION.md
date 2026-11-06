@@ -1,5 +1,14 @@
 # Lilt: validation report
 
+## 7 November 2026: Recording and guided practice for every course
+
+Every course supports optional audio, course-scoped recordings, and guided tasks with saved
+prompts, hints and reflections. Real Chrome tests covered saving/playback, silent practice,
+retry/recovery, card evidence, course isolation and backup creation. Server tests passed 129/129,
+web tests 161/161, existing generic browser tests 8/8, voice Practice 24/24 and Flashcards 22/22.
+Types, production build, server/desktop formatting and strict Clippy passed; Python passed 47
+with one skip. See [course recording validation](docs/validation/2026-11-07-course-recording.md).
+
 ## 7 November 2026: Practice any course
 
 All installed courses have reading screens, chapter flashcards and isolated daily schedules. The

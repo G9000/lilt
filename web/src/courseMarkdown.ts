@@ -1,5 +1,5 @@
 import { DEFAULT_COURSE } from "./courseIds.ts";
-import { flashcardsPath, textsPath } from "./courseNavigation.ts";
+import { flashcardsPath, guidedPath, recordingsPath, textsPath } from "./courseNavigation.ts";
 
 export function coursePicture(src: string, course = DEFAULT_COURSE): string | undefined {
   if (/^https?:\/\//i.test(src)) return src;
@@ -14,6 +14,8 @@ export function courseLink(href: string, course = DEFAULT_COURSE, chapters: read
   if (href === "#/studio" || href === "index.md" || href === "./index.md") return base;
   if (href === "#/deck") return `${base}/today`;
   if (href === "#/texts") return `#${textsPath(course)}`;
+  if (href === "#/history") return `#${recordingsPath(course)}`;
+  if (href === "#/guided") return `#${guidedPath(course)}`;
   if (href === "#/flashcards") return `#${flashcardsPath(course)}`;
   const cards = href.match(/^#\/flashcards\/([^/?#]+)$/);
   if (cards) {

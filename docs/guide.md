@@ -233,7 +233,17 @@ Monitor uploads and playback have an isolated check with locally generated media
    that course in this browser. Other courses use their texts and hints, with Again/Hard/Good/Easy
    ratings to set the next review; no microphone is required. Each course keeps its own history.
    You can read any chapter even before it enters the daily queue. Empty courses and days with no
-   cards say so. The following recording tools and extra daily tasks belong to the built-in voice course.
+   cards say so.
+
+   **Recording and guided practice work with every course.** Open **Recordings** for that course's
+   audio and a free recorder, or record optionally from a chapter text, daily card or chapter card.
+   **Guided practice** uses a course text and its hint, with optional recording and a reflection
+   you can save. Resume sessions from Recordings. Completed sessions retain their prompt, hint,
+   audio and reflection even if you later edit the course. Recording asks for microphone access
+   only when you choose to use it. Other courses save playable audio without voice measurements
+   or automated coaching. In **Recordings**, open a recording session to find unfinished takes
+   and remove one after recording has stopped. Saved audio can be deleted there too.
+   The following extra daily tasks and measurements belong to voice.
 
    **Voice Today** is your **voice deck**: Anki-style spaced repetition, but for your voice. The deck
    holds the daily reference phrase, any cards due for review, and a couple of new cards (2 a day
@@ -340,7 +350,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      recorder, docked below with the live pitch line: then your take is on the card to play, with
      its pitch details, and it swipes. **Tips** on a text's card opens the chapter's steps right
      there. Takes are saved like any chapter take, so they show in Recordings and the chapter's
-     progress. Other courses use the same chapter cards without recording; their progress stays
+     progress. Other courses use the same chapter cards with optional recording; their progress stays
      separate in this browser. **Full chapter** opens the selected course at that text;
      <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
      is rated or scheduled, and where you are in each chapter is kept in this browser.
@@ -536,8 +546,9 @@ filesystem or shell access.
 **Courses, and your own copy.** Lilt holds courses: each a folder in `content/courses/<id>`
 with its Markdown (home page, chapters, pictures, audio) and a `course.md` that names it, its kind
 of practice, its version, where updates come from, and the sections an AI may never change
-(`locked:`). Every installed course opens from Courses; voice (`content/courses/voice`) also has
-recording and guided feedback. Ask your
+(`locked:`). Every installed course opens from Courses and supports optional recording and
+guided practice with saved reflections. Voice (`content/courses/voice`) also has voice analysis
+and guided coaching feedback. Ask your
 agent to rewrite a chapter, add one, or overhaul a course ("make the warm-ups shorter", "add a
 chapter of phone-call phrases"); `courses_list` shows the courses, and every syllabus tool takes the
 course's id (voice when left out). Changes go to your own copy in `<data>/courses/<id>`; the

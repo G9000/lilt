@@ -3,6 +3,7 @@ import { shared } from "../ui/shared";
 import { practice } from "../ui/practice";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api, Exercise, Prompts, Review, Session, Take } from "../api";
+import { DEFAULT_COURSE } from "../courseIds";
 import { go } from "../App";
 import { AudioPlayer } from "../components/AudioPlayer";
 import { Callout, Choices, StatusBadge, Steps, TakeFlags, useTakeStatus } from "../components/bits";
@@ -46,6 +47,10 @@ export function PracticePage({ sessionId }: { sessionId: string }) {
     void (async () => {
       try {
         const d = await reload();
+        if (d.session.course && d.session.course !== DEFAULT_COURSE) {
+          window.location.replace(`#/learn/${encodeURIComponent(d.session.course)}/practice/${encodeURIComponent(sessionId)}`);
+          return;
+        }
         const today = await api.today();
         setPrompts(today.prompts);
         setCueId(today.plan.exercise_id === d.session.exercise_id ? today.plan.cue_id : null);

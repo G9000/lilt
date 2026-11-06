@@ -43,7 +43,11 @@ async fn today(State(app): State<Shared>) -> R<Json<Value>> {
             .cloned()
     });
     let ladder_step = plan.ladder_step.and_then(|i| ex["ladder"].get(i).cloned());
-    let sessions = app.sessions();
+    let sessions: Vec<_> = app
+        .sessions()
+        .into_iter()
+        .filter(|s| s.course == crate::courses::DEFAULT)
+        .collect();
     let unfinished = sessions
         .iter()
         .rev()

@@ -5,7 +5,7 @@ import { roomStyles } from "./roomStyles";
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { api, Deck } from "../api";
 import { DEFAULT_COURSE } from "../courseIds";
-import { dailyPath, flashcardsPath, practicePath } from "../courseNavigation";
+import { dailyPath, flashcardsPath, guidedPath, practicePath, recordingsPath } from "../courseNavigation";
 import { go } from "../App";
 import { Icon } from "../components/bits";
 import { currentLight, type Light, roomUrl } from "../room/scene";
@@ -117,7 +117,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         {dockApp(practicePath(course), "Practice", <StudioIcon />, section === "studio" || section === "learn" || section === "texts" || section === "library")}
         {dockApp(flashcardsPath(course), "Flashcards", <FlashcardsIcon />, section === "flashcards")}
         {dockApp("/yarn", "Yarn", <YarnIcon />, section === "yarn")}
-        {dockApp("/history", course === DEFAULT_COURSE ? "Recordings" : "Voice recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
+        {dockApp(recordingsPath(course), "Recordings", <RecordingsIcon />, section === "history" || section === "compare" || section === "progress")}
         {dockApp("/courses", "Courses", <CoursesIcon />, section === "courses")}
         {dockApp("/photos", "Photos", <PhotosIcon />, section === "photos")}
         <button className={[`ds-app${section === "music" ? " on" : ""}`, roomStyles["ds-app"]].join(" ")} onClick={openMusic} aria-label="Music" aria-current={section === "music" ? "page" : undefined}>
@@ -163,7 +163,7 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
             </ul>
           </>
         )}
-        {course === DEFAULT_COURSE && <a className={["ds-t-link", roomStyles["ds-t-link"]].join(" ")} href="#/guided">Guided session with feedback</a>}
+        <a className={["ds-t-link", roomStyles["ds-t-link"]].join(" ")} href={`#${guidedPath(course)}`}>{course === DEFAULT_COURSE ? "Guided session with feedback" : "Guided practice"}</a>
         <div className={["ds-t-foot", roomStyles["ds-t-foot"]].join(" ")}>
           {deck?.paused ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
             : done ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(practicePath(course))}>Free practice</button>

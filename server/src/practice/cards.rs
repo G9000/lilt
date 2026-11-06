@@ -380,7 +380,11 @@ fn before_after(app: &App, today: &str) -> Vec<(Card, bool)> {
         return vec![];
     };
     let tz = app.profile().timezone;
-    let takes = app.all_takes();
+    let takes: Vec<_> = app
+        .all_takes()
+        .into_iter()
+        .filter(|t| t.course == courses::DEFAULT)
+        .collect();
     let td = date(today);
     let mut out = vec![];
     for iid in BEFORE_AFTER {
@@ -706,10 +710,6 @@ pub fn rate_for_course(app: &App, course: &Course, req: RateReq) -> Result<Value
         voice || ["again", "hard", "good", "easy"].contains(&req.rating.as_str()),
         "this course uses Again, Hard, Good or Easy"
     );
-    ensure!(
-        voice || req.take_id.is_none(),
-        "this course does not use voice recordings"
-    );
     let cards = all_cards_for_course(app, course)?;
     // A before-and-after isn't a spaced card: it can only be put off ("later") or reported as hurting.
     let card = match cards.iter().find(|c| c.id == req.card_id) {
@@ -728,8 +728,14 @@ pub fn rate_for_course(app: &App, course: &Course, req: RateReq) -> Result<Value
     if let Some(t) = &req.take_id {
         let take = app.take(t).map_err(|_| anyhow!("take does not exist"))?;
         ensure!(
-            take.prompt_id == card.prompt_id,
+            take.course == course.id && take.prompt_id == card.prompt_id,
             "take does not belong to this card"
+        );
+        ensure!(
+            voice
+                || (take.original.is_some()
+                    && take.status == crate::recordings::model::TakeStatus::Saved),
+            "save the course recording before attaching it to a card"
         );
     }
     let _g = app.write_lock.lock().unwrap();

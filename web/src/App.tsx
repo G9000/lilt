@@ -6,7 +6,7 @@ import { lazy, ReactNode, useEffect, useRef, useState } from "react";
 import { Deferred } from "./components/Deferred";
 import { api, Course, Deck } from "./api";
 import { DEFAULT_COURSE } from "./courseIds";
-import { dailyPath, practicePath, rememberCourse, routeCourse, routeSegments, savedCourse } from "./courseNavigation";
+import { dailyPath, guidedPath, practicePath, recordingsPath, rememberCourse, routeCourse, routeSegments, savedCourse } from "./courseNavigation";
 import { CardStack } from "./desk/CardStack";
 import { RoomFloaters } from "./desk/Floaters";
 import { Desktop, RoomTop } from "./desk/Desk";
@@ -17,6 +17,8 @@ import { micInUse } from "./micuse";
 import { Room } from "./room/Room";
 const CoursesPage = lazy(() => import("./pages/Courses").then(m => ({ default: m.CoursesPage })));
 const CoursePracticePage = lazy(() => import("./pages/CoursePractice").then(m => ({ default: m.CoursePracticePage })));
+const CourseGuidedPage = lazy(() => import("./pages/CourseRecording").then(m => ({ default: m.CourseGuidedPage })));
+const CourseRecordingsPage = lazy(() => import("./pages/CourseRecording").then(m => ({ default: m.CourseRecordingsPage })));
 const TodayPage = lazy(() => import("./pages/Today").then(m => ({ default: m.TodayPage })));
 const PracticePage = lazy(() => import("./pages/Practice").then(m => ({ default: m.PracticePage })));
 const FeedbackPage = lazy(() => import("./pages/Feedback").then(m => ({ default: m.FeedbackPage })));
@@ -97,7 +99,11 @@ export function App() {
   const [deckRevision, refreshDeck] = useState(0);
   useEffect(() => {
     if (seg[0] !== "learn" || seg[1] !== DEFAULT_COURSE) return;
-    const to = seg[2] === "today" ? dailyPath(DEFAULT_COURSE, params.get("card")) : practicePath(DEFAULT_COURSE, seg[2] === "chapter" ? seg[3] : undefined, seg[4]);
+    const to = seg[2] === "today" ? dailyPath(DEFAULT_COURSE, params.get("card"))
+      : seg[2] === "recordings" ? recordingsPath(DEFAULT_COURSE)
+      : seg[2] === "guided" ? guidedPath(DEFAULT_COURSE)
+      : seg[2] === "practice" && seg[3] ? `/practice/${encodeURIComponent(seg[3])}`
+      : practicePath(DEFAULT_COURSE, seg[2] === "chapter" ? seg[3] : undefined, seg[4]);
     window.location.replace(`#${to}`);
   }, [path]); // The built-in voice course always uses its recording and comfort flow.
   useEffect(() => {
@@ -173,7 +179,10 @@ export function App() {
 
   let page: ReactNode = null;
   switch (seg[0]) {
-    case "learn": page = seg[1] === DEFAULT_COURSE ? <p role="status">Opening voice practice…</p> : <CoursePracticePage key={seg[1]} course={seg[1] ?? ""} view={seg[2]} chapter={seg[3]} item={seg[4]} first={params.get("card")} />; break;
+    case "learn": page = seg[1] === DEFAULT_COURSE ? <p role="status">Opening voice practice…</p>
+      : seg[2] === "recordings" ? <CourseRecordingsPage key={seg[1]} course={seg[1] ?? ""} />
+      : seg[2] === "guided" || seg[2] === "practice" ? <CourseGuidedPage key={`${seg[1]}/${seg[3] ?? "new"}`} course={seg[1] ?? ""} sessionId={seg[2] === "practice" ? seg[3] : undefined} promptId={params.get("prompt") ?? undefined} />
+      : <CoursePracticePage key={seg[1]} course={seg[1] ?? ""} view={seg[2]} chapter={seg[3]} item={seg[4]} first={params.get("card")} />; break;
     case "deck": page = <VoicePage doc="today" first={params.get("card")} />; break;
     case "guided": page = <TodayPage recovered={0} />; break;
     case "practice": page = <PracticePage sessionId={seg[1]} />; break;
@@ -191,7 +200,10 @@ export function App() {
     case "settings": page = null; break;
     default: page = null;
   }
-  const section = seg[0] && SECTIONS.has(seg[0]) ? seg[0] : "desk";
+  const section = seg[0] === "learn" && seg[2] === "recordings" ? "history"
+    : seg[0] === "learn" && seg[2] === "guided" ? "guided"
+    : seg[0] === "learn" && seg[2] === "practice" ? "practice"
+    : seg[0] && SECTIONS.has(seg[0]) ? seg[0] : "desk";
   const left = deck ? deck.items.filter((i) => !i.done_today).length : null;
   const done = !!deck && !deck.paused && !!deck.all_done;
   const inbox = useInbox(deck, recovered, course);

@@ -23,7 +23,7 @@ const INSTRUCTIONS: &str = "Lilt is a local learning and practice app. Courses c
 
 Start with courses_list to discover courses and their kinds. Use the course the learner requested; ask if the intended course is unclear. Pass its id explicitly to syllabus_* tools: omitting course defaults to voice, not to a selected course. Read syllabus_list for that course before editing, then read the relevant files. Follow its chapter format and locked sections, write one file at a time with a short note, and keep text ids when rewording. Changes go to the learner's own copy, called their mixtape; the original is never changed. Follow the course's subject and the learner's request without imposing a voice goal on other courses.
 
-The voice_* tools are specific to the built-in voice practice, not general course tools. For voice coaching, first read voice_get_today_plan for the learner's saved goal and current plan, then read relevant practice evidence. A blank goal means none has been set; ask what the learner wants when it matters instead of inferring a goal from an exercise or the course. Do not treat that voice goal as a goal for other courses. Every course has reading, chapter cards and daily cards rated by the learner, with separate progress. Recording, voice analysis, guided sessions and voice_* tools remain specific to the built-in voice course; do not promise those capabilities for other courses.
+The voice_* tools are specific to the built-in voice practice, not general course tools. For voice coaching, first read voice_get_today_plan for the learner's saved goal and current plan, then read relevant practice evidence. A blank goal means none has been set; ask what the learner wants when it matters instead of inferring a goal from an exercise or the course. Do not treat that voice goal as a goal for other courses. Every course has reading, chapter cards and daily cards rated by the learner, with separate progress. Every course also offers optional saved audio, recordings history and guided tasks with reflections in the app. Other courses use their own saved task text and hints; their recordings are not voice-analyzed or coached. Voice analysis, voice coaching and the voice_* tools remain specific to the built-in voice course.
 
 Rules for voice reviews and practice plans:
 - Every observation needs evidence: session/take IDs, analysis run IDs for any quoted measure, and the learner's recorded self-report answers. Quoted numbers must match stored analyses.
@@ -99,7 +99,7 @@ pub fn tools() -> Vec<Tool> {
         ),
         tool(
             "voice_get_session",
-            "One session: task details, takes (status, tags, self-reports, analysis summaries), comfort report, reviews and learner responses (including disagreement).",
+            "One voice session: task details, takes (status, tags, self-reports, analysis summaries), comfort report, reviews and learner responses (including disagreement).",
             json!({"type": "object", "required": ["session_id"], "properties": {"session_id": {"type": "string"}}}),
             true,
         ),
@@ -117,7 +117,7 @@ pub fn tools() -> Vec<Tool> {
         ),
         tool(
             "voice_get_progress",
-            "Per-skill assessment states with reasons, capability limits, participation, takes in a date range (optionally filtered by prompt), and missing evaluation assets.",
+            "Voice-only per-skill assessment states with reasons, capability limits, participation, takes in a date range (optionally filtered by prompt), and missing evaluation assets.",
             json!({"type": "object", "properties": {"from": {"type": "string"}, "to": {"type": "string"}, "prompt_id": {"type": "string"}}}),
             true,
         ),
@@ -325,13 +325,21 @@ pub fn call(
         "voice_list_sessions" => ok(views::list_sessions_page(
             app,
             &ListQuery {
+                course: None,
                 from: arg_str(a, "from"),
                 to: arg_str(a, "to"),
                 cursor: a.get("cursor").and_then(|v| v.as_u64()).map(|v| v as usize),
                 limit: a.get("limit").and_then(|v| v.as_u64()).map(|v| v as usize),
             },
         )),
-        "voice_get_session" => ok(views::session_view(app, &req_str(a, "session_id")?)?),
+        "voice_get_session" => {
+            let id = req_str(a, "session_id")?;
+            anyhow::ensure!(
+                app.session(&id)?.course == crate::courses::DEFAULT,
+                "this tool reads voice sessions only"
+            );
+            ok(views::session_view(app, &id)?)
+        }
         "voice_get_analysis" => {
             let (_, mut an) = app.analysis_by_run(&req_str(a, "run_id")?)?;
             if !a
@@ -371,7 +379,7 @@ pub fn call(
             let takes: Vec<Value> = app
                 .all_takes()
                 .iter()
-                .filter(|t| t.original.is_some())
+                .filter(|t| t.course == crate::courses::DEFAULT && t.original.is_some())
                 .filter(|t| prompt.as_ref().map(|p| &t.prompt_id == p).unwrap_or(true))
                 .filter(|t| {
                     let d = app
@@ -391,6 +399,10 @@ pub fn call(
         }
         "voice_get_audio_clip" => {
             let t = app.take(&req_str(a, "take_id")?)?;
+            anyhow::ensure!(
+                t.course == crate::courses::DEFAULT,
+                "this tool reads voice recordings only"
+            );
             let wav = app
                 .paths
                 .take_dir(&t.session_id, &t.id)

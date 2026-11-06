@@ -140,6 +140,12 @@ fn check_pointer(app: &App, p: &Pointer, received_audio: bool, errors: &mut Vec<
         errors.push(format!("{ctx}: every substantive pointer needs evidence"));
     }
     for e in &p.evidence {
+        if app
+            .session(&e.session_id)
+            .is_ok_and(|s| s.course != crate::courses::DEFAULT)
+        {
+            errors.push(format!("{ctx}: evidence belongs to another course"));
+        }
         if app.session(&e.session_id).is_err() {
             errors.push(format!("{ctx}: unknown session {}", e.session_id));
             continue;
@@ -168,6 +174,10 @@ fn check_pointer(app: &App, p: &Pointer, received_audio: bool, errors: &mut Vec<
                 errors.push(format!("{ctx}: take {tid} does not exist"));
                 continue;
             };
+            if t.course != crate::courses::DEFAULT {
+                errors.push(format!("{ctx}: take {tid} belongs to another course"));
+                continue;
+            }
             if let Some([a, b]) = seg {
                 let dur = app
                     .take_analysis(&t)
@@ -294,7 +304,10 @@ pub fn save_agent_review(app: &App, input: AgentReviewInput) -> Result<(Review, 
         bail!("idempotency_key is required (max 120 chars)");
     }
     let key = format!("agent-{}", input.idempotency_key);
-    app.session(&input.session_id)?;
+    anyhow::ensure!(
+        app.session(&input.session_id)?.course == crate::courses::DEFAULT,
+        "voice reviews are only available for voice sessions"
+    );
     let _g = app.write_lock.lock().unwrap();
     if let Some(r) = app
         .all_reviews()

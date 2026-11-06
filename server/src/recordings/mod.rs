@@ -1,6 +1,8 @@
 //! Sessions, takes and the chunked upload protocol. Original bytes are written once
 //! and never modified; take.json carries mutable status and annotations.
 
+#[cfg(test)]
+mod course_tests;
 pub mod model;
 pub mod routes;
 #[cfg(test)]
@@ -9,9 +11,9 @@ mod tests;
 use crate::app::App;
 use crate::coach::model::Review;
 use crate::recordings::model::*;
-use crate::store;
 use crate::util;
-use anyhow::{Result, anyhow, bail};
+use crate::{courses, store};
+use anyhow::{Result, anyhow, bail, ensure};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::fs;
@@ -38,16 +40,24 @@ pub enum UploadError {
 #[derive(Debug, Deserialize)]
 pub struct NewSession {
     pub kind: SessionKind,
+    pub course: Option<String>,
+    pub prompt_id: Option<String>,
 }
 
 /// Today's Studio session, created on first use.
 pub fn studio_session(app: &App) -> Result<Session> {
+    studio_session_for_course(app, courses::DEFAULT)
+}
+
+/// Today's Studio session in the selected course.
+pub fn studio_session_for_course(app: &App, course: &str) -> Result<Session> {
+    courses::get(app, course)?;
     let (today, _) = util::local_now(&app.profile().timezone);
     if let Some(s) = app
         .sessions()
         .into_iter()
         .rev()
-        .find(|s| s.kind == SessionKind::Studio && s.local_date == today)
+        .find(|s| s.kind == SessionKind::Studio && s.course == course && s.local_date == today)
     {
         return Ok(s);
     }
@@ -55,6 +65,8 @@ pub fn studio_session(app: &App) -> Result<Session> {
         app,
         NewSession {
             kind: SessionKind::Studio,
+            course: Some(course.into()),
+            prompt_id: None,
         },
     )
 }
@@ -74,25 +86,97 @@ pub fn deck_session(app: &App) -> Result<Session> {
         app,
         NewSession {
             kind: SessionKind::Deck,
+            course: None,
+            prompt_id: None,
         },
     )
 }
 
+/// Resolve a namespaced prompt from the learner's current course copy.
+pub fn course_task(app: &App, course: &str, prompt: &str) -> Result<CourseTask> {
+    let (owner, chapter, text) =
+        courses::parse_text_id(prompt).ok_or_else(|| anyhow!("prompt must name a course text"))?;
+    ensure!(
+        owner == course && courses::text_id(owner, chapter, text) == prompt,
+        "prompt belongs to another course"
+    );
+    let course = courses::get(app, course)?;
+    let texts = courses::syllabus::course_texts(app, &course)?;
+    let level = texts["levels"]
+        .as_array()
+        .and_then(|levels| levels.iter().find(|l| l["id"] == chapter))
+        .ok_or_else(|| anyhow!("course chapter not found"))?;
+    let item = level["items"]
+        .as_array()
+        .and_then(|items| items.iter().find(|i| i["id"] == text))
+        .ok_or_else(|| anyhow!("course text not found"))?;
+    Ok(CourseTask {
+        prompt_id: prompt.into(),
+        title: level["title"].as_str().unwrap_or(chapter).into(),
+        text: item["text"].as_str().unwrap_or_default().into(),
+        hint: item["hint"].as_str().unwrap_or_default().into(),
+    })
+}
+
 pub fn create_session(app: &App, req: NewSession) -> Result<Session> {
+    let course = req.course.as_deref().unwrap_or(courses::DEFAULT);
+    courses::get(app, course)?;
+    let voice = course == courses::DEFAULT;
+    ensure!(
+        voice || matches!(req.kind, SessionKind::Studio | SessionKind::CourseGuided),
+        "this session kind is only for voice"
+    );
+    ensure!(
+        !voice || req.kind != SessionKind::CourseGuided,
+        "voice uses its guided voice sessions"
+    );
+    let task = if req.kind == SessionKind::CourseGuided {
+        Some(course_task(
+            app,
+            course,
+            req.prompt_id
+                .as_deref()
+                .ok_or_else(|| anyhow!("guided practice needs a prompt_id"))?,
+        )?)
+    } else {
+        ensure!(
+            req.prompt_id.is_none(),
+            "prompt_id is only for course guided sessions"
+        );
+        None
+    };
     let profile = app.profile();
-    let plan = app.ensure_plan()?;
+    let plan = if voice {
+        Some(app.ensure_plan()?)
+    } else {
+        None
+    };
     let (local_date, local_ts) = util::local_now(&profile.timezone);
     let studio = !req.kind.is_guided();
     let s = Session {
+        course: course.into(),
+        task,
         schema: "lilt.session/1".into(),
         id: util::new_id("s"),
         kind: req.kind,
         state: SessionState::InProgress,
-        plan_version: Some(plan.version),
-        exercise_id: (!studio).then(|| plan.exercise_id.clone()),
-        exercise_version: (!studio).then_some(plan.exercise_version),
-        focus_area: (!studio).then(|| plan.focus_area.clone()),
-        ladder_step: if studio { None } else { plan.ladder_step },
+        plan_version: plan.as_ref().map(|p| p.version),
+        exercise_id: plan
+            .as_ref()
+            .filter(|_| !studio)
+            .map(|p| p.exercise_id.clone()),
+        exercise_version: plan
+            .as_ref()
+            .filter(|_| !studio)
+            .map(|p| p.exercise_version),
+        focus_area: plan
+            .as_ref()
+            .filter(|_| !studio)
+            .map(|p| p.focus_area.clone()),
+        ladder_step: plan
+            .as_ref()
+            .filter(|_| !studio)
+            .and_then(|p| p.ladder_step),
         local_date,
         timezone: profile.timezone.clone(),
         started_utc: util::now_utc(),
@@ -149,7 +233,7 @@ pub fn ext_for_mime(mime: &str) -> &'static str {
 }
 
 /// Idempotent: the same take_id returns the existing record.
-pub fn create_take(app: &App, req: NewTake) -> Result<Take> {
+pub fn create_take(app: &App, mut req: NewTake) -> Result<Take> {
     store::check_id(&req.take_id)?;
     let _g = app.write_lock.lock().unwrap();
     if _g.desktop_update_pending {
@@ -163,13 +247,47 @@ pub fn create_take(app: &App, req: NewTake) -> Result<Take> {
     }
     let session = app.session(&req.session_id)?;
     if let Some(r) = &req.retry_of {
-        app.take(r)
+        let previous = app
+            .take(r)
             .map_err(|_| anyhow!("retry_of refers to an unknown take"))?;
+        ensure!(
+            previous.course == session.course,
+            "retry belongs to another course"
+        );
+    }
+    if session.course != courses::DEFAULT {
+        ensure!(
+            req.role == TakeRole::Free && req.phase == Phase::None,
+            "course recordings use the free role without a voice phase"
+        );
+        ensure!(
+            req.exercise_id.is_none()
+                && req.exercise_version.is_none()
+                && req.cue_id.is_none()
+                && req.triggered_by_review.is_none()
+                && req.triggered_by_pointer.is_none(),
+            "course recordings do not use voice exercises or reviews"
+        );
+        if let Some(task) = &session.task {
+            ensure!(
+                req.prompt_id == task.prompt_id,
+                "recording must use the saved guided task"
+            );
+            req.prompt_text = task.text.clone();
+        } else if req.prompt_id != "free" {
+            req.prompt_text = course_task(app, &session.course, &req.prompt_id)?.text;
+        }
+    } else if let Some((course, _, _)) = courses::parse_text_id(&req.prompt_id) {
+        ensure!(
+            course == courses::DEFAULT,
+            "prompt belongs to another course"
+        );
     }
     if let (Some(id), Some(v)) = (&req.exercise_id, req.exercise_version) {
         app.registry.read().unwrap().eligible(id, v)?;
     }
     let t = Take {
+        course: session.course.clone(),
         schema: "lilt.take/1".into(),
         id: req.take_id.clone(),
         session_id: session.id.clone(),
@@ -265,7 +383,7 @@ pub fn finalize(app: &App, tid: &str, req: FinalizeReq) -> Result<Take> {
     let mut t = app.take(tid)?;
     if t.original.is_some() {
         // Saved but never queued for analysis (queuing failed last time): queue it now.
-        if matches!(t.status, TakeStatus::Saved) {
+        if t.course == courses::DEFAULT && matches!(t.status, TakeStatus::Saved) {
             drop(_g);
             crate::analysis::enqueue_analysis(app, &t)?;
             return app.take(tid);
@@ -325,7 +443,9 @@ pub fn finalize(app: &App, tid: &str, req: FinalizeReq) -> Result<Take> {
     // Chunks are redundant once the original is durable.
     let _ = fs::remove_dir_all(dir.join("chunks"));
     drop(_g);
-    crate::analysis::enqueue_analysis(app, &t)?;
+    if t.course == courses::DEFAULT {
+        crate::analysis::enqueue_analysis(app, &t)?;
+    }
     app.take(tid)
 }
 

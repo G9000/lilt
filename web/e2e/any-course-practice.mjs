@@ -251,7 +251,7 @@ test('room cards and notes do not impose speaking or voice goals on other course
   await open('/desk');
   const widget = page.getByRole('article', { name: "Today's practice", exact: true });
   await widget.getByText('at your own pace', { exact: true }).waitFor();
-  await page.getByRole('button', { name: 'Voice recordings', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Recordings', exact: true }).waitFor();
   assert.deepEqual(state.voiceWrites, []);
 });
 

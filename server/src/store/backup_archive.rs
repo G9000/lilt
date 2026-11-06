@@ -579,7 +579,7 @@ fn validate_log(path: &Path) -> Result<()> {
 ///
 /// Fails on unsafe paths, malformed records, mismatched identities and missing original media.
 pub fn validate(root: &Path) -> Result<()> {
-    use crate::recordings::model::{Session, Take, TakeStatus};
+    use crate::recordings::model::{Session, SessionKind, Take, TakeStatus};
     let files = collect(root)?;
     let mut takes = BTreeSet::new();
     for name in &files {
@@ -610,6 +610,29 @@ pub fn validate(root: &Path) -> Result<()> {
                         session.schema == "lilt.session/1" && session.id == *sid,
                         "session identity mismatch"
                     );
+                    ensure!(
+                        crate::courses::valid_id(&session.course),
+                        "invalid session course"
+                    );
+                    if session.kind == SessionKind::CourseGuided {
+                        ensure!(
+                            session.course != crate::courses::DEFAULT,
+                            "course guided session belongs to voice"
+                        );
+                        let task = session
+                            .task
+                            .context("course guided session has no saved task")?;
+                        let (course, chapter, text) =
+                            crate::courses::parse_text_id(&task.prompt_id)
+                                .context("saved task does not name a course text")?;
+                        ensure!(
+                            course == session.course
+                                && !chapter.is_empty()
+                                && !text.is_empty()
+                                && crate::courses::text_id(course, chapter, text) == task.prompt_id,
+                            "saved task belongs to another course"
+                        );
+                    }
                 }
                 ["sessions", sid, "recordings", tid, "take.json"] => {
                     let take: Take = serde_json::from_value(value)?;
@@ -624,6 +647,21 @@ pub fn validate(root: &Path) -> Result<()> {
                         root.join(format!("sessions/{sid}/session.json")).is_file(),
                         "take session missing"
                     );
+                    let session: Session =
+                        json(&root.join(format!("sessions/{sid}/session.json")))?;
+                    ensure!(
+                        take.course == session.course,
+                        "take course does not match its session"
+                    );
+                    if session.kind == SessionKind::CourseGuided {
+                        ensure!(
+                            session
+                                .task
+                                .as_ref()
+                                .is_some_and(|task| task.prompt_id == take.prompt_id),
+                            "take does not match its saved guided task"
+                        );
+                    }
                     ensure!(
                         take.ext == crate::recordings::ext_for_mime(&take.mime),
                         "invalid audio extension"

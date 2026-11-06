@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { api, type Course, type Deck, type Rating, type TextLevel, type Texts } from "../api";
+import { api, type Course, type Deck, type Rating, type Take, type TextLevel, type Texts } from "../api";
 import { byPart, idLabel } from "../chapters";
 import { Markdown, picture } from "../components/Markdown";
-import { dailyPath, flashcardsPath, practicePath, textsPath, validCourseId } from "../courseNavigation";
-import { parseTextId } from "../courseIds";
+import { dailyPath, flashcardsPath, guidedPath, practicePath, recordingsPath, textsPath, validCourseId } from "../courseNavigation";
+import { parseTextId, textId } from "../courseIds";
 import { shared } from "../ui/shared";
 import { ChapterVideo } from "./Voice";
+import { CourseRecorder, OptionalCourseRecorder } from "./CourseRecording";
 
 const primary = `btn ${shared.btn} ${shared["btn-primary"]}`;
 const secondary = `btn ${shared.btn} ${shared["btn-secondary"]}`;
@@ -23,6 +24,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
   const [data, setData] = useState<{ texts: Texts; course: Course } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const [locked, setLocked] = useState(false);
   useEffect(() => {
     let ignore = false;
     setError(null);
@@ -37,7 +39,9 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
 
   const level = data?.texts.levels.find(l => l.id === chapter);
   return (
-    <main className="h-full min-h-0 w-full flex-1 overflow-auto bg-page text-ink" aria-label="Course practice">
+    <main className="h-full min-h-0 w-full flex-1 overflow-auto bg-page text-ink" aria-label="Course practice" onClickCapture={event => {
+      if (locked && (event.target as HTMLElement).closest("a")) { event.preventDefault(); event.stopPropagation(); }
+    }}>
       <div className="mx-auto w-full max-w-[792px] px-[18px] py-6 sm:px-10 sm:py-8">
         <nav className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-hair pb-3 text-sm [&_a]:inline-flex [&_a]:min-h-9 [&_a]:items-center [&_a[aria-current=page]]:text-ink [&_a[aria-current=page]]:font-semibold" aria-label="Course navigation">
           <a className={quiet} href="#/desk" aria-label="Back to the desk">Desk</a>
@@ -45,11 +49,13 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
           <a className={quiet} href={`#${practicePath(course)}`} aria-current={!view && !chapter ? "page" : undefined}>{data?.course.title ?? "Course home"}</a>
           <a className={quiet} href={`#${dailyPath(course)}`} aria-current={view === "today" ? "page" : undefined}>Today's cards</a>
           <a className={quiet} href={`#${textsPath(course)}`}>Practice texts</a>
+          <a className={quiet} href={`#${guidedPath(course)}`}>Guided practice</a>
+          <a className={quiet} href={`#${recordingsPath(course)}`}>Recordings</a>
         </nav>
         {error ? <><p role="alert">{error}</p><button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button></>
           : !data ? <p role="status">Opening your course…</p>
-          : view === "today" ? <DailyCards key={first ?? "today"} course={course} first={first} texts={data.texts} />
-          : chapter ? level ? <CourseChapter key={level.id} course={course} level={level} texts={data.texts} item={item} />
+          : view === "today" ? <DailyCards key={first ?? "today"} course={course} first={first} texts={data.texts} onBusy={setLocked} />
+          : chapter ? level ? <CourseChapter key={level.id} course={course} level={level} texts={data.texts} item={item} onBusy={setLocked} />
             : <><h1 className={heading}>Chapter not found</h1><p>This chapter isn't in the course. Choose one from the course home.</p></>
           : <CourseHome course={data.course} texts={data.texts} />}
       </div>
@@ -65,6 +71,8 @@ function CourseHome({ course, texts }: { course: Course; texts: Texts }) {
     <div className="mb-6 flex flex-wrap gap-3">
       <a className={primary} href={`#${dailyPath(course.id)}`}>Start today's cards</a>
       {texts.levels[0] && <a className={secondary} href={`#${practicePath(course.id, texts.levels[0].id)}`}>First chapter</a>}
+      <a className={secondary} href={`#${guidedPath(course.id)}`}>Guided practice</a>
+      <a className={secondary} href={`#${recordingsPath(course.id)}`}>Recordings</a>
     </div>
     {texts.home && <details className="mb-6 border-y border-hair py-3 [&[open]>summary]:mb-4"><summary className="cursor-pointer font-medium">Course guide</summary><Markdown src={texts.home} course={course.id} chapters={texts.levels.map(l => l.id)} headingOffset={1} /></details>}
     <section aria-label="Course chapters">
@@ -85,8 +93,11 @@ function CourseHome({ course, texts }: { course: Course; texts: Texts }) {
   </>;
 }
 
-function CourseChapter({ course, texts, level, item }: { course: string; texts: Texts; level: TextLevel; item?: string }) {
+function CourseChapter({ course, texts, level, item, onBusy }: { course: string; texts: Texts; level: TextLevel; item?: string; onBusy: (busy: boolean) => void }) {
   const selected = useRef<HTMLElement>(null);
+  const [recordingItem, setRecordingItem] = useState<string | null>(null);
+  const [recording, setRecording] = useState(false);
+  useEffect(() => { onBusy(recording); return () => onBusy(false); }, [recording, onBusy]);
   useEffect(() => { if (item) selected.current?.scrollIntoView({ block: "start" }); }, [item]);
   const chapters = texts.levels.map(l => l.id);
   const index = texts.levels.indexOf(level);
@@ -101,6 +112,11 @@ function CourseChapter({ course, texts, level, item }: { course: string; texts: 
       <h2 className="mb-3 text-lg font-medium">{idLabel(text.id)}</h2>
       <div className="[--md-body-size:18px]"><Markdown src={text.text} course={course} chapters={chapters} headingOffset={2} /></div>
       {text.hint && <div className="mt-3 border-l border-hair pl-4 text-ink-2 [--md-body-size:14px]"><Markdown src={text.hint} course={course} chapters={chapters} headingOffset={2} /></div>}
+      <div className="mt-5 flex flex-wrap gap-3">
+        <a className={secondary} href={`#${guidedPath(course, textId(course, level.id, text.id))}`} onClick={event => { if (recording) event.preventDefault(); }} aria-disabled={recording}>Guided practice</a>
+        <button className={secondary} disabled={recording} aria-expanded={recordingItem === text.id} onClick={() => setRecordingItem(current => current === text.id ? null : text.id)}>{recordingItem === text.id ? "Hide recorder" : "Record this practice"}</button>
+      </div>
+      {recordingItem === text.id && <CourseRecorder course={course} promptId={textId(course, level.id, text.id)} promptText={text.text} onBusy={setRecording} />}
     </section>)}
     {!level.items.length && <p className="text-ink-2">This chapter has no practice texts yet.</p>}
     {level.source_url && /^https?:\/\//i.test(level.source_url) && <p className="text-sm text-ink-2"><a href={level.source_url} target="_blank" rel="noreferrer">Course source</a></p>}
@@ -118,7 +134,7 @@ const ratings: { rating: Rating; label: string; help: string }[] = [
   { rating: "easy", label: "Easy", help: "It felt familiar" },
 ];
 
-function DailyCards({ course, texts, first }: { course: string; texts: Texts; first?: string | null }) {
+function DailyCards({ course, texts, first, onBusy }: { course: string; texts: Texts; first?: string | null; onBusy: (busy: boolean) => void }) {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [selected, setSelected] = useState<string | null>(first ?? null);
   const [revealed, setRevealed] = useState(false);
@@ -126,9 +142,13 @@ function DailyCards({ course, texts, first }: { course: string; texts: Texts; fi
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [failedRating, setFailedRating] = useState<Rating | null>(null);
+  const [takes, setTakes] = useState<Record<string, Take>>({});
+  const [recording, setRecording] = useState(false);
+  const recordingBusy = useRef(false);
+  useEffect(() => { onBusy(busy || recording); return () => onBusy(false); }, [busy, recording, onBusy]);
   const active = useRef(false);
   const saving = useRef(false);
-  const operation = useRef<{ card: string; rating: Rating; id: string } | null>(null);
+  const operation = useRef<{ card: string; rating: Rating; id: string; take: string | null } | null>(null);
   useEffect(() => {
     active.current = true;
     return () => { active.current = false; };
@@ -144,19 +164,22 @@ function DailyCards({ course, texts, first }: { course: string; texts: Texts; fi
   const remaining = deck?.items.filter(item => !item.done_today) ?? [];
   const current = remaining.find(item => item.card.id === selected) ?? remaining[0];
   const rate = async (rating: Rating) => {
-    if (!current || saving.current) return;
+    if (!current || saving.current || recordingBusy.current) return;
     saving.current = true;
     setBusy(true);
     setError(null);
     setFailedRating(null);
     try {
       if (operation.current?.card !== current.card.id || operation.current.rating !== rating) {
-        operation.current = { card: current.card.id, rating, id: crypto.randomUUID() };
+        const take = takes[current.card.id];
+        operation.current = { card: current.card.id, rating, id: crypto.randomUUID(), take: take?.course === course && take.prompt_id === current.card.prompt_id && take.original ? take.id : null };
       }
-      const result = await api.rateCard(current.card.id, null, rating, course, operation.current.id);
+      const result = await api.rateCard(current.card.id, operation.current.take, rating, course, operation.current.id);
       operation.current = null;
       window.dispatchEvent(new CustomEvent("lilt:deck-changed", { detail: course }));
       if (!active.current) return;
+      // A saved take is evidence for this rating only; the next visit can be silent.
+      setTakes(previous => { const next = { ...previous }; delete next[current.card.id]; return next; });
       setDeck(result.deck);
       setSelected(rating === "again" ? result.deck.items.find(item => !item.done_today && item.card.id !== current.card.id)?.card.id ?? null : null);
       setRevealed(false);
@@ -174,20 +197,24 @@ function DailyCards({ course, texts, first }: { course: string; texts: Texts; fi
   const chapters = texts.levels.map(l => l.id);
   return <section aria-label="Today's course cards" aria-busy={busy}>
     <header className="mb-8"><h1 className={heading}>Today's cards</h1><p className="text-ink-2">Read, try it in your own time, then choose how it felt.</p></header>
-    {error && <div className="mb-6"><p role="alert">{error}</p><button className={secondary} disabled={busy} onClick={() => failedRating ? void rate(failedRating) : setAttempt(n => n + 1)}>Try again</button></div>}
+    {error && <div className="mb-6"><p role="alert">{error}</p><button className={secondary} disabled={busy || recording} onClick={() => failedRating ? void rate(failedRating) : setAttempt(n => n + 1)}>Try again</button></div>}
     {!deck ? !error && <p role="status">Finding your cards…</p>
       : !current ? <div role="status"><h2 className="text-lg font-semibold">{deck.all_done || deck.items.some(item => item.done_today) ? "That's today's cards" : "No cards for today"}</h2><p className="text-ink-2">{deck.message || (deck.next_due ? `Your next cards are due ${deck.next_due}.` : "You can explore a chapter any time.")}</p><a className={secondary} href={`#${practicePath(course)}`}>Back to the course</a></div>
       : <article>
         <p className="text-sm text-ink-2">{current.card.deck_title} · {remaining.length} {remaining.length === 1 ? "card" : "cards"} to go</p>
         <div className="my-6 text-xl leading-relaxed"><Markdown src={current.card.front} course={course} chapters={chapters} headingOffset={1} /></div>
-        {!revealed ? <button className={primary} onClick={() => setRevealed(true)}>{current.card.hint ? "Show hint" : "I've tried it"}</button> : <>
+        <fieldset disabled={busy} className="m-0 border-0 p-0"><OptionalCourseRecorder key={current.card.id} course={course} promptId={current.card.prompt_id} promptText={current.card.front}
+          onBusy={value => { recordingBusy.current = value; setRecording(value); }}
+          onSaved={take => { if (take.course === course && take.prompt_id === current.card.prompt_id) setTakes(previous => ({ ...previous, [current.card.id]: take })); }} /></fieldset>
+        {!revealed ? <button className={primary} disabled={recording || busy} onClick={() => setRevealed(true)}>{current.card.hint ? "Show hint" : "I've tried it"}</button> : <>
           {current.card.hint && <div className="mb-6 border-y border-hair py-4 text-ink-2"><Markdown src={current.card.hint} course={course} chapters={chapters} headingOffset={2} /></div>}
-          <fieldset disabled={busy} className="m-0 border-0 p-0"><legend className="mb-3 text-lg font-medium">How did it feel?</legend><p className="mb-4 text-sm text-ink-2">Your choice helps Lilt decide when to show this card again.</p>
+          <fieldset disabled={busy || recording} className="m-0 border-0 p-0"><legend className="mb-3 text-lg font-medium">How did it feel?</legend><p className="mb-4 text-sm text-ink-2">Your choice helps Lilt decide when to show this card again.</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{ratings.map(({ rating, label, help }) => <button key={rating} className={`${secondary} flex-col items-start text-left`} onClick={() => void rate(rating)} title={current.preview[rating]}><span className="font-medium">{label}</span><span className="text-sm font-normal text-ink-2">{help}</span></button>)}</div>
           </fieldset>
         </>}
         {busy && <p role="status" className="mt-4 text-ink-2">Saving your choice…</p>}
-        {prompt && prompt.course === course && <p className="mt-8"><a className={quiet} href={`#${practicePath(course, prompt.chapter, prompt.text)}`}>Read the chapter</a></p>}
+        {recording && <p role="status" className="mt-4 text-ink-2">Let your recording save before choosing the next card.</p>}
+        {prompt && prompt.course === course && <p className="mt-8"><a className={quiet} href={`#${practicePath(course, prompt.chapter, prompt.text)}`} aria-disabled={busy || recording} onClick={event => { if (busy || recording) event.preventDefault(); }}>Read the chapter</a></p>}
       </article>}
   </section>;
 }

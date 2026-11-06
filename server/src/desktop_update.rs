@@ -118,12 +118,11 @@ pub(crate) fn unfinished_take(app: &App) -> anyhow::Result<bool> {
                 "unexpected recording entry"
             );
             let take: Take = store::read_json(&recording.path().join("take.json"))?;
-            // Saved is the gap between finalization and durable analysis-job creation.
+            // Voice Saved is the gap before durable analysis-job creation; other courses are done.
             // AnalysisPending is only written after the job exists and can resume on restart.
-            if matches!(
-                take.status,
-                TakeStatus::Recording | TakeStatus::Saving | TakeStatus::Saved
-            ) {
+            if matches!(take.status, TakeStatus::Recording | TakeStatus::Saving)
+                || (take.status == TakeStatus::Saved && take.course == crate::courses::DEFAULT)
+            {
                 return Ok(true);
             }
         }

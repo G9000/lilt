@@ -6,7 +6,7 @@ use crate::http::{ApiError, R};
 use crate::practice::exercises;
 use crate::practice::model::Plan;
 use crate::recordings::model::*;
-use crate::{recordings, util};
+use crate::{courses, recordings, util};
 use axum::{
     Json, Router,
     body::{Body, Bytes},
@@ -38,12 +38,16 @@ pub fn router() -> Router<Shared> {
         .route("/api/history", get(history))
 }
 
-async fn studio_session(State(app): State<Shared>) -> R<Json<Session>> {
-    Ok(Json(recordings::studio_session(&app)?))
+async fn studio_session(State(app): State<Shared>, Query(q): Query<ListQuery>) -> R<Json<Session>> {
+    Ok(Json(match q.course.as_deref() {
+        Some(course) => recordings::studio_session_for_course(&app, course)?,
+        None => recordings::studio_session(&app)?,
+    }))
 }
 
 #[derive(Deserialize)]
 pub struct ListQuery {
+    pub course: Option<String>,
     pub from: Option<String>,
     pub to: Option<String>,
     pub cursor: Option<usize>,
@@ -54,6 +58,7 @@ pub fn list_sessions_page(app: &Shared, q: &ListQuery) -> Value {
     let mut all: Vec<Session> = app
         .sessions()
         .into_iter()
+        .filter(|s| s.course == q.course.as_deref().unwrap_or(courses::DEFAULT))
         .filter(|s| q.from.as_ref().map(|f| s.local_date >= *f).unwrap_or(true))
         .filter(|s| q.to.as_ref().map(|t| s.local_date <= *t).unwrap_or(true))
         .collect();
@@ -67,7 +72,7 @@ pub fn list_sessions_page(app: &Shared, q: &ListQuery) -> Value {
         .map(|s| {
             let takes = app.takes_in(&s.id);
             json!({
-                "id": s.id, "kind": s.kind, "state": s.state, "local_date": s.local_date,
+                "id": s.id, "course": s.course, "task": s.task, "kind": s.kind, "state": s.state, "local_date": s.local_date,
                 "started_utc": s.started_utc, "exercise_id": s.exercise_id, "focus_area": s.focus_area,
                 "take_count": takes.len(),
                 "statuses": takes.iter().map(|t| t.status).collect::<Vec<_>>(),
@@ -83,8 +88,9 @@ pub fn list_sessions_page(app: &Shared, q: &ListQuery) -> Value {
     json!({"sessions": page, "next_cursor": next, "total": all.len()})
 }
 
-async fn list_sessions(State(app): State<Shared>, Query(q): Query<ListQuery>) -> Json<Value> {
-    Json(list_sessions_page(&app, &q))
+async fn list_sessions(State(app): State<Shared>, Query(q): Query<ListQuery>) -> R<Json<Value>> {
+    courses::get(&app, q.course.as_deref().unwrap_or(courses::DEFAULT))?;
+    Ok(Json(list_sessions_page(&app, &q)))
 }
 
 async fn create_session(
@@ -95,7 +101,9 @@ async fn create_session(
 }
 
 pub fn take_view(app: &Shared, t: &Take) -> Value {
-    let an = app.take_analysis(t);
+    let an = (t.course == courses::DEFAULT)
+        .then(|| app.take_analysis(t))
+        .flatten();
     let summary = an.as_ref().map(|a| {
         json!({
             "run_id": a["run_id"], "status": a["status"], "use_status": a["use_status"],
@@ -284,12 +292,14 @@ async fn take_audio(
 
 #[derive(Deserialize)]
 struct HistoryQuery {
+    course: Option<String>,
     prompt_id: Option<String>,
     role: Option<String>,
     days: Option<i64>,
 }
 
-async fn history(State(app): State<Shared>, Query(q): Query<HistoryQuery>) -> Json<Value> {
+async fn history(State(app): State<Shared>, Query(q): Query<HistoryQuery>) -> R<Json<Value>> {
+    let course = courses::get(&app, q.course.as_deref().unwrap_or(courses::DEFAULT))?;
     let profile = app.profile();
     // Up to a century back, so the date arithmetic below can't overflow.
     let days = q
@@ -303,7 +313,7 @@ async fn history(State(app): State<Shared>, Query(q): Query<HistoryQuery>) -> Js
     let takes: Vec<Value> = app
         .all_takes()
         .iter()
-        .filter(|t| t.original.is_some())
+        .filter(|t| t.course == course.id && t.original.is_some())
         .filter(|t| {
             q.prompt_id
                 .as_ref()
@@ -331,8 +341,8 @@ async fn history(State(app): State<Shared>, Query(q): Query<HistoryQuery>) -> Js
             v
         })
         .collect();
-    Json(
+    Ok(Json(
         json!({"from": from, "to": today, "window_days": days, "takes": takes,
         "aggregation": "One point per take. No averaging across different tasks; filter by prompt to compare like with like."}),
-    )
+    ))
 }

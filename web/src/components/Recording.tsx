@@ -134,11 +134,13 @@ const sentence = (s: string) => s.replace(/^\s*(cue:\s*)?/i, (_m, c) => (c ? "Cu
 
 /** The record surface: what to say, a live pitch line, and one record button.
  *  "Saved" appears only after the server confirms. */
-export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true, band, steadiness, onStateChange, title, cue, screen, keys, knob }: {
+export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true, band, steadiness, onStateChange, onBusyChange, title, cue, screen, keys, knob }: {
   meta: TakeMeta; onSaved: (t: Take) => void; hint?: string; maxSeconds?: number;
   /** Show the live pitch line while recording (display only). */
   live?: boolean; band?: [number, number] | null; steadiness?: boolean;
   onStateChange?: (s: RecState) => void;
+  /** Includes microphone permission and failed uploads awaiting a retry. */
+  onBusyChange?: (busy: boolean) => void;
   /** Kept for callers; the window toolbar and page heading already say where you are. */
   label?: string;
   /** The line to say, when there is no `screen`. */
@@ -154,6 +156,9 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
   const [elapsed, setElapsed] = useState(0);
   const rec = useRef<TakeRecorder | null>(null);
   const starting = useRef(false);
+  const [requesting, setRequesting] = useState(false);
+  const busyCallback = useRef(onBusyChange);
+  busyCallback.current = onBusyChange;
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -186,8 +191,10 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const start = async () => {
-    if (starting.current) return;
+    if (root.current?.closest("fieldset:disabled") || starting.current || rec.current?.state === "saving" || (rec.current?.state === "error" && rec.current.onServer)) return;
     starting.current = true;
+    setRequesting(true);
+    busyCallback.current?.(true);
     try {
       setErr(null);
       const stream = mic.stream ?? (await mic.request());
@@ -198,16 +205,25 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
       if (!mounted.current) { if (r.state === "recording") await r.stop(); return; }
       setElapsed(0);
     } catch (e: any) {
-      // A refused start has no take to save. Keep Record available after the other tab stops.
+      // Capture never began; keep Record available after a refused or failed start.
+      rec.current = null;
       setState("idle");
       setErr(e.message);
-    } finally { starting.current = false; }
+    } finally {
+      starting.current = false;
+      if (mounted.current) {
+        setRequesting(false);
+        const current = rec.current;
+        busyCallback.current?.(!!current && (current.state === "recording" || current.state === "saving" || (current.state === "error" && current.onServer)));
+      }
+    }
   };
 
   const stop = async () => {
     try {
       const take = await rec.current!.stop();
       onSaved(take);
+      busyCallback.current?.(false);
     } catch (e: any) {
       setErr(e.message);
     }
@@ -248,7 +264,7 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
         {recording ? (
           <button className={cx("rec-btn stop", shared["rec-btn"])} onClick={() => void stop()} aria-label="Stop recording"><span className={cx("dot", shared["dot"])} aria-hidden="true" /></button>
         ) : (
-          <button className={cx("rec-btn", shared["rec-btn"])} onClick={() => void start()} disabled={state === "saving"} aria-label="Start recording"><span className={cx("dot", shared["dot"])} aria-hidden="true" /></button>
+          <button className={cx("rec-btn", shared["rec-btn"])} onClick={() => void start()} disabled={requesting || state === "saving" || (state === "error" && rec.current?.onServer)} aria-label="Start recording"><span className={cx("dot", shared["dot"])} aria-hidden="true" /></button>
         )}
         <div className={cx("vrec-t", practice["vrec-t"])}>
           <b aria-hidden="true">{recording ? "Stop" : state === "saving" ? "Saving" : "Record"}</b>
@@ -264,7 +280,7 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
         )}
       </div>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      {state === "error" && rec.current?.onServer && <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void rec.current!.retrySave().then(onSaved, (e) => setErr(e.message))}>Retry saving</button>}
+      {state === "error" && rec.current?.onServer && <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => void rec.current!.retrySave().then(take => { onSaved(take); busyCallback.current?.(false); }, (e) => setErr(e.message))}>Retry saving</button>}
     </div>
   );
 }

@@ -59,12 +59,25 @@ analysis for other course subjects.
   guessed duration. A saved voice goal is only used as the default room note for voice; notes you
   write yourself remain shared room notes.
 
-## Voice-specific tools
+## Recording and guided practice
 
-The built-in voice course retains its recorder, listening and comparison screens, guided sessions,
-comfort reports, pitch measurements and `voice_*` MCP tools. Other courses use self-directed tasks
-and text review. They do not create voice sessions or request a microphone. Additional kinds of
-recording or analysis would need their own implementation and validation.
+Every course supports optional audio recording from its chapters, daily cards and chapter cards.
+**Recordings** opens the selected course's saved audio and a free recorder. **Guided practice**
+lets you choose a course text, practise with its hint, optionally record, and save a reflection.
+The session keeps a copy of that prompt and hint, so later course edits do not change older sessions.
+You can finish guided practice without granting microphone access.
+
+Sessions and takes store their course. Existing recordings without this field belong to voice.
+`POST /api/studio/session?course=<id>` starts or reuses a course's session for the day.
+`POST /api/sessions` with `kind: "course_guided"`, `course` and a namespaced `prompt_id`
+starts guided practice. `GET /api/sessions?course=<id>` and `GET /api/history?course=<id>`
+return that course's practice; omission means voice. Daily ratings may attach a saved recording
+only from the same course and text.
+
+Other courses save original audio for playback without running voice analysis or coaching.
+Voice retains its dedicated exercises, comfort reports, pitch measurements, comparison screens,
+guided coaching and `voice_*` MCP tools. Subject-specific automated assessment for other courses
+is not provided by the generic guided flow.
 
 ## Adding a course
 

@@ -134,7 +134,11 @@ fn self_evidence(t: &Take, q: &str, a: &str, desc: String) -> Evidence {
 fn exercise_history(app: &App, ex_id: &str, ladder_step: Option<usize>) -> Vec<(Session, String)> {
     let reg = app.registry.read().unwrap();
     let mut out = vec![];
-    for s in app.sessions() {
+    for s in app
+        .sessions()
+        .into_iter()
+        .filter(|s| s.course == crate::courses::DEFAULT)
+    {
         if s.exercise_id.as_deref() != Some(ex_id) || s.ladder_step != ladder_step {
             continue;
         }
@@ -188,6 +192,10 @@ fn idempotency_key(s: &Session, takes: &[Take]) -> String {
 /// Build (or return the existing) rules-based review for a session.
 pub fn review_session(app: &App, sid: &str) -> Result<Review> {
     let s = app.session(sid)?;
+    anyhow::ensure!(
+        s.course == crate::courses::DEFAULT,
+        "voice coaching is only available for voice sessions"
+    );
     let takes = app.takes_in(sid);
     let key = idempotency_key(&s, &takes);
     if let Some(r) = app
@@ -552,10 +560,11 @@ pub fn review_session(app: &App, sid: &str) -> Result<Review> {
     }
 
     // Carryover limit: reading-only history cannot establish conversational use.
-    let any_spontaneous = app
-        .all_takes()
-        .iter()
-        .any(|t| t.role == TakeRole::Spontaneous && t.original.is_some());
+    let any_spontaneous = app.all_takes().iter().any(|t| {
+        t.course == crate::courses::DEFAULT
+            && t.role == TakeRole::Spontaneous
+            && t.original.is_some()
+    });
     if !any_spontaneous {
         review.other_observations.push(Pointer {
             id: next_id(),

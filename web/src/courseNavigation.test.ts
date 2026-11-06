@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { dailyPath, flashcardsPath, practicePath, rememberCourse, routeCourse, routeSegments, savedCourse, textsPath } from "./courseNavigation.ts";
+import { dailyPath, flashcardsPath, guidedPath, practicePath, recordingsPath, rememberCourse, routeCourse, routeSegments, savedCourse, textsPath } from "./courseNavigation.ts";
 
 test("voice keeps its links while any other course gets scoped practice links", () => {
   assert.equal(practicePath("voice", "warmup", "hum"), "/studio/warmup/hum");
@@ -9,6 +9,10 @@ test("voice keeps its links while any other course gets scoped practice links", 
   assert.equal(practicePath("drawing", "warmup", "lines"), "/learn/drawing/chapter/warmup/lines");
   assert.equal(dailyPath("drawing", "drawing/text.warmup.lines"), "/learn/drawing/today?card=drawing%2Ftext.warmup.lines");
   assert.equal(flashcardsPath("drawing", "warmup"), "/flashcards/warmup?course=drawing");
+  assert.equal(recordingsPath("drawing"), "/learn/drawing/recordings");
+  assert.equal(guidedPath("drawing", "drawing/text.warmup.lines"), "/learn/drawing/guided?prompt=drawing%2Ftext.warmup.lines");
+  assert.equal(recordingsPath("voice"), "/history");
+  assert.equal(guidedPath("voice"), "/guided");
 });
 
 test("explicit routes select their course, and unrelated routes keep the saved choice", () => {
@@ -17,6 +21,9 @@ test("explicit routes select their course, and unrelated routes keep the saved c
   assert.equal(routeCourse("/flashcards/warmup", new URLSearchParams("course=drawing")), "drawing");
   assert.equal(routeCourse("/flashcards", empty), "voice");
   assert.equal(routeCourse("/studio/warmup", empty), "voice");
+  assert.equal(routeCourse("/history", empty), "voice");
+  assert.equal(routeCourse("/learn/drawing/recordings", empty), "drawing");
+  assert.equal(routeCourse("/learn/drawing/practice/session-1", empty), "drawing");
   assert.equal(routeCourse("/", empty), null);
   assert.equal(routeCourse("/courses/drawing", empty), null);
   assert.equal(routeCourse("/texts", empty), null);

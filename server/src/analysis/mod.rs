@@ -44,7 +44,35 @@ fn job_path(app: &App, tid: &str) -> std::path::PathBuf {
     app.paths.jobs().join(format!("analyze-{tid}.json"))
 }
 
+fn ensure_voice(app: &App, t: &Take) -> Result<()> {
+    anyhow::ensure!(
+        t.course == crate::courses::DEFAULT
+            && app.session(&t.session_id)?.course == crate::courses::DEFAULT,
+        "voice analysis is only available for voice recordings"
+    );
+    Ok(())
+}
+
+fn retire_course_job(app: &App, take: &Take) -> Result<()> {
+    let _guard = app.write_lock.lock().unwrap();
+    let mut take = app.take(&take.id)?;
+    take.status = if take.original.is_some() {
+        TakeStatus::Saved
+    } else {
+        TakeStatus::Recording
+    };
+    take.analysis_run = None;
+    take.analysis_error = None;
+    app.save_take(&take)?;
+    let path = job_path(app, &take.id);
+    if path.exists() {
+        std::fs::remove_file(path)?;
+    }
+    Ok(())
+}
+
 pub fn enqueue_analysis(app: &App, t: &Take) -> Result<()> {
+    ensure_voice(app, t)?;
     let path = job_path(app, &t.id);
     if !path.exists() {
         let now = util::now_utc();
@@ -96,6 +124,12 @@ pub fn jobs(app: &App) -> Vec<Job> {
 pub fn reconcile(app: &App) -> Result<usize> {
     let mut n = 0;
     for mut j in jobs(app) {
+        if let Ok(t) = app.take(&j.take_id)
+            && ensure_voice(app, &t).is_err()
+        {
+            retire_course_job(app, &t)?;
+            continue;
+        }
         if j.status == "running" {
             j.status = "pending".into();
             j.updated_utc = util::now_utc();
@@ -107,6 +141,7 @@ pub fn reconcile(app: &App) -> Result<usize> {
 }
 
 pub fn retry_failed(app: &App, tid: &str) -> Result<()> {
+    ensure_voice(app, &app.take(tid)?)?;
     let path = job_path(app, tid);
     let mut j: Job = store::read_json(&path).map_err(|_| anyhow!("no analysis job for take"))?;
     j.status = "pending".into();
@@ -123,6 +158,7 @@ pub fn retry_failed(app: &App, tid: &str) -> Result<()> {
 /// once it succeeds, and keeps its old measurement if it fails. Returns the new run id.
 pub fn remeasure(app: &App, tid: &str) -> Result<String> {
     let t = app.take(tid)?;
+    ensure_voice(app, &t)?;
     if t.original.is_none() {
         return Err(anyhow!("take has no recording to measure"));
     }
@@ -167,7 +203,11 @@ pub fn remeasure_stale(app: &App) -> Result<usize> {
     let stale: Vec<String> = app
         .all_takes()
         .into_iter()
-        .filter(|t| t.original.is_some() && matches!(t.status, TakeStatus::ReviewReady))
+        .filter(|t| {
+            t.course == crate::courses::DEFAULT
+                && t.original.is_some()
+                && matches!(t.status, TakeStatus::ReviewReady)
+        })
         .filter(|t| {
             let run = t.analysis_run.as_deref().unwrap_or_default();
             app.analysis(&t.session_id, run)
@@ -218,6 +258,9 @@ fn run_job(app: &App, mut job: Job) -> Result<()> {
         let _ = std::fs::remove_file(job_path(app, &job.take_id));
         return Ok(());
     };
+    if ensure_voice(app, &t).is_err() {
+        return retire_course_job(app, &t);
+    }
     let out_path = app
         .paths
         .analyses_dir(&t.session_id)

@@ -81,6 +81,90 @@ fn source_records_cannot_redirect_restored_audio() {
     assert!(validate(&app.paths.root).is_err());
 }
 
+#[test]
+fn course_audio_and_task_round_trip_and_cross_course_restores_are_rejected() {
+    use crate::recordings::{self, model::*};
+    let (_data, app) = test_support::app();
+    let mut session = test_support::session(&app);
+    session.course = "reading".into();
+    session.kind = SessionKind::CourseGuided;
+    session.task = Some(CourseTask {
+        prompt_id: "reading/text.chapter.first".into(),
+        title: "Read aloud".into(),
+        text: "A saved passage.".into(),
+        hint: "Take your time.".into(),
+    });
+    session.exercise_id = None;
+    session.exercise_version = None;
+    app.save_session(&session).unwrap();
+    let take = recordings::create_take(&app, serde_json::from_value(serde_json::json!({
+        "take_id": "course-take", "session_id": session.id, "role": "free",
+        "prompt_id": "reading/text.chapter.first", "prompt_text": "A saved passage.", "mime": "audio/webm"
+    })).unwrap()).unwrap();
+    let audio = b"untouched course audio";
+    recordings::put_chunk(&app, &take.id, 0, audio, None).unwrap();
+    recordings::finalize(
+        &app,
+        &take.id,
+        recordings::FinalizeReq {
+            chunk_count: 1,
+            interrupted: false,
+        },
+    )
+    .unwrap();
+    let scratch = tempfile::tempdir().unwrap();
+    let archive = scratch.path().join("course.zip");
+    create(&app.paths.root, &archive).unwrap();
+    let stage = scratch.path().join("stage");
+    unpack(&archive, &stage).unwrap();
+    let session_name = format!("sessions/{}/session.json", session.id);
+    let take_name = format!("sessions/{}/recordings/{}/take.json", session.id, take.id);
+    let audio_name = format!(
+        "sessions/{}/recordings/{}/original.webm",
+        session.id, take.id
+    );
+    let restored: Session = json(&stage.join(&session_name)).unwrap();
+    assert_eq!(restored.course, "reading");
+    assert_eq!(restored.task.unwrap().text, "A saved passage.");
+    let restored: Take = json(&stage.join(&take_name)).unwrap();
+    assert_eq!(restored.status, TakeStatus::Saved);
+    assert_eq!(restored.course, "reading");
+    assert_eq!(fs::read(stage.join(&audio_name)).unwrap(), audio);
+    assert!(crate::analysis::jobs(&app).is_empty());
+
+    let saved_session: Value = json(&stage.join(&session_name)).unwrap();
+    let saved_take: Value = json(&stage.join(&take_name)).unwrap();
+    for case in 0..5 {
+        let mut session = saved_session.clone();
+        let mut take = saved_take.clone();
+        match case {
+            0 => take["course"] = serde_json::json!("voice"),
+            1 => session["course"] = serde_json::json!("../reading"),
+            2 => session["task"]["prompt_id"] = serde_json::json!("language/text.chapter.first"),
+            3 => session["task"] = Value::Null,
+            _ => take["prompt_id"] = serde_json::json!("reading/text.chapter.second"),
+        }
+        let session_bytes = serde_json::to_vec(&session).unwrap();
+        let take_bytes = serde_json::to_vec(&take).unwrap();
+        let archive = scratch.path().join(format!("bad-{case}.zip"));
+        crafted(
+            &archive,
+            &[
+                (&session_name, &session_bytes),
+                (&take_name, &take_bytes),
+                (&audio_name, audio),
+            ],
+            |manifest| manifest.summary.recordings = 1,
+        );
+        let rejected_stage = scratch.path().join(format!("bad-stage-{case}"));
+        assert!(
+            unpack(&archive, &rejected_stage).is_err(),
+            "accepted course mismatch {case}"
+        );
+        assert!(!rejected_stage.exists());
+    }
+}
+
 fn crafted(path: &Path, entries: &[(&str, &[u8])], edit: impl FnOnce(&mut Manifest)) {
     let mut manifest = Manifest {
         schema: "lilt.backup/1".into(),

@@ -74,7 +74,11 @@ pub fn capability(area: &str) -> Value {
 }
 
 pub fn skill_cards(app: &App) -> Vec<SkillCard> {
-    let takes = app.all_takes();
+    let takes: Vec<_> = app
+        .all_takes()
+        .into_iter()
+        .filter(|t| t.course == crate::courses::DEFAULT)
+        .collect();
     let reviews = app.all_reviews();
     let reg = app.registry.read().unwrap().clone();
     let mut out = vec![];
@@ -245,7 +249,11 @@ pub fn skill_cards(app: &App) -> Vec<SkillCard> {
 /// Days practised in the current local week (Mon-Sun), and the last practice date.
 pub fn participation(app: &App, today: &str) -> Value {
     use chrono::{Datelike, NaiveDate};
-    let sessions = app.sessions();
+    let sessions: Vec<_> = app
+        .sessions()
+        .into_iter()
+        .filter(|s| s.course == crate::courses::DEFAULT)
+        .collect();
     let Ok(d) = NaiveDate::parse_from_str(today, "%Y-%m-%d") else {
         return json!({});
     };

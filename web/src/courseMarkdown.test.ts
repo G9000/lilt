@@ -17,6 +17,8 @@ test("course links resolve only known chapters and preserve document fragments",
   assert.equal(link("#/studio/missing"), undefined);
   assert.equal(link("#/deck"), "#/learn/reading/today");
   assert.equal(link("#/texts"), "#/texts?course=reading");
+  assert.equal(link("#/history"), "#/learn/reading/recordings");
+  assert.equal(link("#/guided"), "#/learn/reading/guided");
   assert.equal(link("#/flashcards"), "#/flashcards?course=reading");
   assert.equal(link("#/flashcards/basics"), "#/flashcards/basics?course=reading");
   assert.equal(link("#/flashcards/missing"), undefined);

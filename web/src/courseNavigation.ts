@@ -27,13 +27,22 @@ export function textsPath(course: string): string {
   return `/texts?course=${encodeURIComponent(course)}`;
 }
 
+export function recordingsPath(course: string): string {
+  return course === DEFAULT_COURSE ? "/history" : `/learn/${encodeURIComponent(course)}/recordings`;
+}
+
+export function guidedPath(course: string, prompt?: string): string {
+  const base = course === DEFAULT_COURSE ? "/guided" : `/learn/${encodeURIComponent(course)}/guided`;
+  return `${base}${prompt ? `?prompt=${encodeURIComponent(prompt)}` : ""}`;
+}
+
 /** An explicit practice link wins over the remembered course, including old voice links. */
 export function routeCourse(path: string, params: URLSearchParams): string | null {
   const [section, course] = routeSegments(path);
   if (section === "learn") return course ?? "";
   if (section === "flashcards") return params.get("course") ?? DEFAULT_COURSE;
   if (section === "texts") return params.get("course");
-  if (["studio", "deck", "guided", "practice"].includes(section)) return DEFAULT_COURSE;
+  if (["studio", "deck", "guided", "practice", "history", "compare", "progress"].includes(section)) return DEFAULT_COURSE;
   return null;
 }
 

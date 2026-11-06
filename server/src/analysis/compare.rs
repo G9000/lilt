@@ -103,6 +103,10 @@ fn capture_key(t: &Take) -> Vec<(String, String)> {
 pub fn compare(app: &App, a_id: &str, b_id: &str) -> Result<Comparison> {
     let a = app.take(a_id)?;
     let b = app.take(b_id)?;
+    anyhow::ensure!(
+        a.course == crate::courses::DEFAULT && b.course == crate::courses::DEFAULT,
+        "voice comparisons are only available for voice recordings"
+    );
     let mut reasons = vec![];
     let mut limitations = vec![];
     let comparable_task = a.prompt_id == b.prompt_id && role_group(a.role) == role_group(b.role);
