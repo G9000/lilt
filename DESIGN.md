@@ -356,6 +356,10 @@ inside it. Course lists use rows between hairlines; course detail pages lead wit
 before copy management. Markdown uses a 1.65 line height and one-em paragraph gaps, with quiet
 bordered quotes and a separate footnote area. Tables and code scroll within the reading column.
 
+Voice chapters use a wider 1040px desktop column. A quiet panel identifies the active exercise;
+other exercises use compact rows with hairline dividers and readable secondary ink. This wider
+layout is specific to the voice chapter, leaving Home and the daily deck at their own widths.
+
 ## Components
 
 UI components use Tailwind 4 utilities and explicit shared recipes. Runtime theme values are

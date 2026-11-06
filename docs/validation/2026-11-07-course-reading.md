@@ -23,3 +23,25 @@ Verified on Windows:
 Browser checks used isolated Vite fixtures with stubbed APIs. Production output went into
 `.tmp/course-ui-build`; the owner's server, data and `web/dist` were not changed.
 No Rust, Python or desktop implementation changed in this UI pass; their suites were not run.
+
+## Visible chapter layout and served build follow-up
+
+The first pass had only been built under `.tmp`: port 7878 still served
+`index-DBL2aw0E.js`. The follow-up gives voice chapters a 1040px desktop column,
+a selected-exercise panel, readable inactive text and compact divided rows.
+
+- Type checking passed.
+- Course reading checks passed against source and the exact production bundle, including
+  the real voice chapter component at 390, 1440 and 1920px in both themes, exercise selection,
+  desktop width, selected-row background and inactive-text contrast.
+- Shared Markdown checks passed again across the existing width/theme/text-size matrix.
+- Visually inspected desktop dark and phone light voice chapter screenshots.
+- Built `ac07d9d`'s web tree with only the updated `Voice.tsx` and `ui/practice.ts`, in
+  `.tmp/course-visual-release`, to avoid publishing simultaneous course-recording work.
+  The isolated build and type check passed; the existing chunk-size warning remains.
+- Copied the checked assets into `web/dist`, retaining old hashed assets, then replaced
+  `index.html`. Verified port 7878 serves that exact index and returns HTTP 200 for
+  `index-CLOHNX5s.js` and `index-C0DwaMUe.css`.
+
+This last step intentionally updated the served web UI after notifying the owner. No server
+restart or practice-data access was needed. Browser tests still used only stubbed APIs.

@@ -573,6 +573,18 @@ export const practice = {
     `[@media_(max-width:_860px)]:[.ve_&_button[aria-current="page"]]:[background-image:none] ` +
     `[@media_(max-width:_860px)]:[.ve_&_button[aria-current="page"]]:[color:var(--ve-paper)]`,
   // Retain this small guard: removing it changes the reading column's centering in the cascade.
+  "ve-chapter": `[--content-width:1040px] [&_>_.ve-head]:border-b [&_>_.ve-head]:border-hair [&_>_.ve-head]:pb-5 ` +
+    `[&_.ve-items]:grid [&_.ve-items]:gap-0 [&_.ve-items_>_.ve-item]:m-0 ` +
+    `[&_.ve-items_>_.ve-item]:rounded-none [&_.ve-items_>_.ve-item]:border-b [&_.ve-items_>_.ve-item]:border-hair ` +
+    `[&_.ve-items_>_.ve-item:last-child:not(.on)]:border-b-0 ` +
+    `[&_.ve-items_>_.ve-item]:py-5 [&_.ve-items_>_.ve-item]:pr-5 [&_.ve-items_>_.ve-item]:pl-14 ` +
+    `[&_.ve-items_>_.ve-item.on]:my-3 [&_.ve-items_>_.ve-item.on]:rounded-control ` +
+    `[&_.ve-items_>_.ve-item.on]:border [&_.ve-items_>_.ve-item.on]:border-line-strong [&_.ve-items_>_.ve-item.on]:bg-panel ` +
+    `[&_.ve-item:not(.on):not(.done)_.readtext]:text-ink-2 [&_.ve-item:not(.on)_.ve-hint]:text-ink-2 ` +
+    `[&_.ve-item_.ve-hint]:max-w-none [&_.ve-item_.ve-hint]:block [&_.ve-item_.ve-hint]:text-[14px] ` +
+    `[&_.ve-item_.ve-mk.num]:top-8 [&_.ve-item:has(>_.ve-checkin)_.ve-mk.num]:top-7 ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item]:px-4 ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item]:py-4`,
   "ve-col": `[&:where(.ve-col)]:w-full [&:where(.ve-col)]:min-w-0 [&:where(.ve-col)]:[max-width:var(--content-width)] ` +
     `[&:where(.ve-col)]:mt-[0] [&:where(.ve-col)]:[margin-right:auto] [&:where(.ve-col)]:mb-[0] ` +
     `[&:where(.ve-col)]:[margin-left:auto] [&:where(.ve-col)]:[padding-top:var(--space-8)] ` +

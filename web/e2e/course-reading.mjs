@@ -2,22 +2,30 @@
 import { chromium } from 'playwright-core';
 import { createIsolatedVite } from './isolated-vite.mjs';
 import assert from 'node:assert/strict';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const shots = fileURLToPath(new URL('../../.tmp/course-ui-shots/', import.meta.url));
+const voiceSource = await readFile(new URL('../../content/courses/voice/01-start-here.md', import.meta.url), 'utf8');
+const voiceItems = voiceSource.split(/^## /m).slice(1).map(section => {
+  const [id, ...lines] = section.trim().split(/\r?\n/);
+  const [text, hint] = lines.join('\n').trim().split(/\n\n> /);
+  return { id, text, hint };
+});
+const voiceNote = (await readFile(new URL('../../content/courses/voice/_about.md', import.meta.url), 'utf8')).split('---').at(-1).trim();
 const courses = [
   { id: 'drawing', title: 'Drawing gently', kind: 'drawing', summary: 'Explore lines, shapes and everyday objects, one small sketch at a time.' },
   { id: 'voice', title: 'Your voice', kind: 'voice', summary: 'A few comfortable minutes to explore your voice.' },
 ].map(c => ({ ...c, version: '1', source: null, locked_sections: [], using: 'original', changes: 0, updates_waiting: 0, shown_in_app: true }));
-const server = await createIsolatedVite({ root: fileURLToPath(new URL('../', import.meta.url)), logLevel: 'error' });
+const server = await createIsolatedVite({ root: process.env.LILT_UI_BUILD || fileURLToPath(new URL('../', import.meta.url)), logLevel: 'error' });
 let browser;
 try {
   await mkdir(shots, { recursive: true });
   await server.listen();
   browser = await chromium.launch({ channel: 'chrome', headless: true });
   const page = await browser.newPage({ reducedMotion: 'reduce' });
+  page.setDefaultTimeout(10000);
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.route('**/healthz', route => route.fulfill({ json: { ok: true } }));
@@ -30,6 +38,10 @@ try {
       { file: '02-notice.md', chapter_id: 'notice', title: 'Notice the details in something familiar', texts: 3, status: 'added' },
     ] });
     if (p === '/api/syllabus/history') return send({ course, using: 'original', changes: [] });
+    if (p === '/api/deck/today') return send({ items: [], counts: { new: 0, review: 0, again: 0 }, open_stage: 1, all_done: true, paused: false });
+    if (p === '/api/studio/session') return send({ id: 'fixture-session' });
+    if (p === '/api/sessions/fixture-session') return send({ takes: [] });
+    if (p === '/api/texts' && course === 'voice') return send({ note: voiceNote, levels: [{ id: 'start-here', level: 1, title: 'Start here', subtitle: 'Your mic, your space, and your voice today', kind: 'phrases', basis: '', check_in: 'today', items: voiceItems }] });
     if (p === '/api/texts') return send({ note: '', home: 'Make a little room to explore.', levels: [{ id: 'start', level: 1, title: 'A small beginning', subtitle: 'Try a little, then pause.', kind: 'phrase',
       basis: '## Find your starting point\n\nChoose something close to hand.\n\n> Take your time. There is no single pace for learning.',
       items: [{ id: 'first-lines', text: 'Draw three loose circles.\n\n- Try a light touch.\n- Let each one be different.', hint: 'Notice how the movement feels in your hand.' }],
@@ -63,6 +75,32 @@ try {
   }
   await page.goto(`${base}#/courses/voice`);
   assert.equal(await page.getByRole('link', { name: /A small beginning/ }).getAttribute('href'), '#/studio/start');
+  for (const theme of ['light', 'dark']) for (const width of [390, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 1080 });
+    await page.goto(`${base}#/studio/start-here/today`);
+    await page.evaluate(theme => window.dispatchEvent(new CustomEvent('lilt:theme', { detail: theme })), theme);
+    await page.locator('.ve-chapter .ve-item.on').waitFor().catch(async error => {
+      console.error({ errors, text: await page.locator('body').innerText() });
+      throw error;
+    });
+    const sidebar = page.getByRole('button', { name: 'Hide sidebar', exact: true });
+    if (await sidebar.isVisible()) await sidebar.click();
+    const layout = await page.locator('.ve-chapter').evaluate(el => {
+      const row = el.querySelector('.ve-item.on'), other = el.querySelector('.ve-item:not(.on)');
+      return { width: el.getBoundingClientRect().width, overflow: el.scrollWidth > el.clientWidth + 1,
+        selectedBackground: getComputedStyle(row).backgroundColor, background: getComputedStyle(el.closest('.ve-page')).backgroundColor,
+        ink: getComputedStyle(other.querySelector('.readtext')).color, hint: getComputedStyle(other.querySelector('.ve-hint')).color,
+        activeInk: getComputedStyle(row.querySelector('.readtext')).color };
+    });
+    assert.ok(!layout.overflow, 'voice chapter fits its column');
+    if (width >= 1440) assert.ok(layout.width >= 1000, 'desktop chapter uses the wider reading layout');
+    assert.notEqual(layout.selectedBackground, layout.background, 'selected exercise is visibly distinct');
+    assert.ok([layout.hint, layout.activeInk].includes(layout.ink), 'inactive exercise stays readable, including on hover');
+    await page.locator('.ve-page').evaluate(el => { el.scrollTop = 0; });
+    await page.screenshot({ path: path.join(shots, `voice-chapter-${width}-${theme}.png`) });
+    await page.locator('.ve-item').nth(1).click();
+    assert.equal(await page.locator('.ve-item.on .readtext').textContent(), voiceItems[1].text);
+  }
   assert.deepEqual(errors, []);
   console.log('PASS: Course list, chapter ordering, keyboard chapter links for voice and other courses, and responsive light/dark reading pages.');
 } finally {

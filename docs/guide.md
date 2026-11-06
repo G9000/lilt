@@ -574,6 +574,10 @@ Markdown uses compact paragraph and heading spacing, quiet bordered quotes, scro
 and code blocks, and a separate footnote area. The voice chapter's comfort note spans the reading
 column, with a smaller gap above it and less space at the bottom of the page.
 
+Voice chapters use more of a wide screen, with a 1040px maximum column. The selected exercise
+has a quiet panel around its text and recorder. Other exercises stay readable in compact rows,
+separated by thin rules; selecting one moves the recorder with it.
+
 **In-app Remix is coming soon.** The chapter, course and mixtape screens show a disabled
 **Remix · Coming soon** button. The **New chapter** shortcut is also disabled because it relies on
 Remix. **Configure your AI settings** opens AI connections, where you can choose ChatGPT, Claude

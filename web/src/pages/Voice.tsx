@@ -1321,7 +1321,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   return (
     <>
       <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
-        <article className={cx("ve-col", practice["ve-col"])}>
+        <article className={cx("ve-col ve-chapter", practice["ve-col"], practice["ve-chapter"])}>
           <header className={cx(pages.veHeadRemix, cx("ve-head ve-head-remix", practice["ve-head"]))}>
             <h1>{level.title}</h1>
             <p className={cx("ve-subtitle", practice["ve-subtitle"])}>{level.subtitle}</p>
