@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Lilt on your Windows desktop", body: "Lilt now has a Windows desktop build with its own installer, server and voice analysis tools. Open it from Start and practise in its own window." },
       { title: "A calmer, more consistent Lilt", body: "Settings, Course Home and Today share clearer headings, comfortable controls and quieter surfaces. Practice cards give more space to the exercise, and the desktop Today widget puts your next step first.", to: "/studio" },
       { title: "Choose your AI", body: "Configure your AI settings opens the choices for ChatGPT, Claude and other apps. Remix and its new-chapter shortcut are marked Coming soon while in-app remixing is unavailable.", to: "/studio" },
       { title: "Practice cards with a purpose", body: "Today's practice cards now show the exercise and its hint on a simple paper stack, with a clear Start action. Unrelated photo covers are gone." },

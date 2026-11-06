@@ -6,6 +6,27 @@ use crate::recordings::model::*;
 use crate::store;
 use crate::test_support::*;
 
+#[cfg(windows)]
+#[test]
+fn analysis_helper_runs_without_a_console_window() {
+    use std::os::windows::process::CommandExt;
+    let dir = tempfile::tempdir().unwrap();
+    let result = dir.path().join("console.txt");
+    let mut command = std::process::Command::new(root().join(crate::app::DEFAULT_PYTHON));
+    // Make a console observable even when the test runner itself has no console.
+    command.creation_flags(0x0000_0010); // CREATE_NEW_CONSOLE
+    command.args(["-c", "import ctypes, pathlib, sys; pathlib.Path(sys.argv[1]).write_text(str(bool(ctypes.windll.kernel32.GetConsoleWindow())))"]);
+    command.arg(&result);
+    let (status, stderr) = analysis::run_with_timeout(
+        command,
+        &dir.path().join("helper.log"),
+        std::time::Duration::from_secs(10),
+    )
+    .unwrap();
+    assert!(status.success(), "{stderr}");
+    assert_eq!(std::fs::read_to_string(result).unwrap(), "False");
+}
+
 #[test]
 fn analysis_crash_keeps_audio_and_restart_resumes() {
     let dir = tempfile::tempdir().unwrap();

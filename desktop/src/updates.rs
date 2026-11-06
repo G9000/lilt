@@ -11,7 +11,12 @@ use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder}
 use tauri_plugin_updater::{Update, UpdaterExt};
 
 const ENDPOINT: &str = "https://github.com/G9000/lilt/releases/latest/download/latest.json";
-pub const PUBLIC_KEY: Option<&str> = option_env!("LILT_UPDATER_PUBLIC_KEY");
+// Only the Mac release feed currently publishes signed whole-app updates.
+pub const PUBLIC_KEY: Option<&str> = if cfg!(target_os = "macos") {
+    option_env!("LILT_UPDATER_PUBLIC_KEY")
+} else {
+    None
+};
 
 struct Pending {
     update: Update,
@@ -108,7 +113,12 @@ pub fn open(app: &AppHandle) -> tauri::Result<()> {
         window.show()?;
         return window.set_focus();
     }
-    let window = WebviewWindowBuilder::new(app, "updates", WebviewUrl::App("updates.html".into()))
+    let mut builder =
+        WebviewWindowBuilder::new(app, "updates", WebviewUrl::App("updates.html".into()));
+    if let Some(data) = crate::webview_data() {
+        builder = builder.data_directory(data);
+    }
+    let window = builder
         .title("Lilt updates")
         .inner_size(500.0, 550.0)
         .min_inner_size(360.0, 400.0)
@@ -349,6 +359,14 @@ pub async fn update_install(window: WebviewWindow, app: AppHandle) -> Result<Sna
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    #[cfg(windows)]
+    fn windows_updates_remain_unconfigured() {
+        let updates = Updates::new("0.2.1");
+        assert_eq!(updates.snapshot().phase, Phase::Unconfigured);
+        assert!(updates.begin(Action::Check).is_err());
+    }
 
     #[test]
     fn operation_guard_blocks_all_actions_even_after_the_phase_becomes_ready() {

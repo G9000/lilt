@@ -22,7 +22,7 @@ says how to stop. Keep that in every feature and every line of copy.
 | `web/` | React 18 + TypeScript + Vite. Pages in `src/pages`, the desk and room in `src/desk` and `src/room`, styles in `src/styles` |
 | `analysis/` | Python 3.12 helper (`lilt_analysis`), run as a subprocess with a versioned JSON contract |
 | `content/` | Courses as Markdown (`content/courses/voice`), exercises (`content/exercises`) and coaching prompts (`content/prompts`) |
-| `desktop/` | The Mac app (Tauri): `build.sh` makes `Lilt.app` and a `.dmg` with the server and Python inside |
+| `desktop/` | Tauri desktop apps: `build.sh` makes the Mac app/DMG; `build.ps1` makes the Windows installer, with the server and Python inside |
 | `docs/` | `guide.md` (every feature), `tech-stack.md`, `courses.md`; design plans and specs in `docs/superpowers`, saved check results in `docs/validation` |
 | `.claude/` | `launch.json` (the `web` dev server for preview tools) and the shared agent skills |
 | `DESIGN.md` | The look: tokens, type, components, motion, and a **Never** list |
@@ -46,6 +46,11 @@ scripts; use `bun dev`, or run `server/target/debug/lilt.exe serve` from the rep
 `lilt.exe`, Python is `analysis/.venv/Scripts/python.exe` (picked automatically), and the data folder
 is `~/Lilt/data`, falling back to `%USERPROFILE%\Lilt\data` when `HOME` isn't set. A plain `bash` may
 be WSL's, which can't run `lilt.exe`: use Git Bash or PowerShell. Use forward or quoted paths, not `/tmp`.
+
+For the Windows desktop installer, run `powershell -NoProfile -ExecutionPolicy Bypass -File desktop/build.ps1`.
+It stages its own server/web/Python builds under `desktop/target` and `desktop/runtime`, then writes
+`desktop/dist/Lilt-<version>-x64-setup.exe`. Windows updates are manual; the Mac updater stays Mac-only.
+Native desktop tests must set `LILT_DATA_DIR` to a scratch folder, isolating data, logs and WebView storage.
 
 ## Never touch the owner's Lilt while testing
 

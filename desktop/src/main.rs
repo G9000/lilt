@@ -1,4 +1,4 @@
-//! Lilt as a Mac app: a window around the Lilt server. On launch it starts the bundled server
+//! Lilt as a desktop app: a window around the Lilt server. On launch it starts the bundled server
 //! (with its own Python for measuring takes) on this computer, shows "Opening Lilt…" until it
 //! answers, then loads it. Quitting stops the server. Your data lives where `./lilt.sh` keeps it,
 //! `~/Lilt/data` (or `LILT_DATA_DIR`), so the app and a Lilt started from the repo share one desk;
@@ -6,7 +6,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::io::{Read, Write};
-use std::net::{TcpListener, TcpStream};
+use std::net::TcpStream;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::Mutex;
@@ -16,14 +16,17 @@ use tauri::webview::{
 };
 use tauri::{Manager, RunEvent, Url, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 
+mod platform;
 mod storage;
 mod update_lifecycle;
 mod update_notice;
 mod update_policy;
 mod update_state;
 mod updates;
+#[cfg(windows)]
+mod windows_process;
 
-const PORT: u16 = 7878;
+use platform::PORT;
 
 /// The server this app started (none when it opened one that was already running).
 struct Server {
@@ -34,6 +37,8 @@ struct Server {
 #[derive(Default)]
 struct Connection {
     child: Option<Child>,
+    #[cfg(windows)]
+    job: Option<windows_process::Job>,
     port: Option<u16>,
     stopping: bool,
 }
@@ -52,11 +57,21 @@ impl Connection {
         if self.child.is_some() {
             return Err("Lilt's background work is already running.".into());
         }
-        self.child = Some(
-            command
-                .spawn()
-                .map_err(|e| format!("The Lilt server wouldn't start ({e})."))?,
-        );
+        #[cfg(windows)]
+        {
+            let (child, job) = windows_process::Job::spawn(command)
+                .map_err(|e| format!("The Lilt server wouldn't start ({e})."))?;
+            self.child = Some(child);
+            self.job = Some(job);
+        }
+        #[cfg(not(windows))]
+        {
+            self.child = Some(
+                command
+                    .spawn()
+                    .map_err(|e| format!("The Lilt server wouldn't start ({e})."))?,
+            );
+        }
         self.port = None;
         Ok(())
     }
@@ -67,6 +82,9 @@ impl Connection {
             .as_mut()
             .ok_or("Lilt's background work is not running.")?;
         if let Some(status) = child.try_wait().map_err(|e| e.to_string())? {
+            // Closing the job also cleans up Python when its parent has already exited.
+            #[cfg(windows)]
+            self.job.take();
             self.child = None;
             self.port = None;
             return Err(format!(
@@ -77,11 +95,17 @@ impl Connection {
     }
 
     fn stop(&mut self) -> Result<StopOutcome, String> {
+        #[cfg(windows)]
+        if let Some(job) = &self.job {
+            job.terminate().map_err(|e| e.to_string())?;
+        }
         let outcome = match self.child.as_mut() {
             Some(child) => stop_child(child)?,
             None => StopOutcome::AlreadyExited,
         };
         self.child = None;
+        #[cfg(windows)]
+        self.job.take();
         self.port = None;
         Ok(outcome)
     }
@@ -101,9 +125,22 @@ enum StartMode {
 }
 
 fn home() -> PathBuf {
-    std::env::var_os("HOME")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| ".".into())
+    platform::home_from(std::env::var_os("HOME"), std::env::var_os("USERPROFILE"))
+}
+
+fn isolated_data() -> Option<PathBuf> {
+    std::env::var_os("LILT_DATA_DIR").map(PathBuf::from)
+}
+
+fn log_path() -> PathBuf {
+    isolated_data()
+        .map(|data| data.join("logs"))
+        .unwrap_or_else(|| home().join("Lilt/logs"))
+        .join("lilt-app.log")
+}
+
+fn webview_data() -> Option<PathBuf> {
+    isolated_data().map(|data| data.join("desktop-webview"))
 }
 
 /// Whether a Lilt answers on this port.
@@ -127,14 +164,6 @@ fn lilt_at(port: u16) -> bool {
         && body.contains("\"version\"")
 }
 
-/// 7878 when it's free (so links, MCP and other devices work as the guide says), else any free port.
-fn free_port() -> std::io::Result<u16> {
-    if TcpListener::bind(("127.0.0.1", PORT)).is_ok() {
-        return Ok(PORT);
-    }
-    Ok(TcpListener::bind(("127.0.0.1", 0))?.local_addr()?.port())
-}
-
 /// Start the bundled server; `Ok` once it answers.
 fn start(runtime: &Path, log: &Path, server: &Server, mode: StartMode) -> Result<u16, String> {
     // Another Lilt on your desk (say, ./lilt.sh): open that one rather than run two on one folder.
@@ -153,18 +182,22 @@ fn start(runtime: &Path, log: &Path, server: &Server, mode: StartMode) -> Result
         connection.port = Some(PORT);
         return Ok(PORT);
     }
-    let port = free_port().map_err(|e| format!("No free port to run on ({e})."))?;
+    let port = platform::free_port(
+        isolated_data().is_some(),
+        std::env::var("LILT_BIND").ok().as_deref(),
+    )
+    .map_err(|e| format!("No free port to run on ({e})."))?;
     let _ = std::fs::create_dir_all(log.parent().unwrap());
     let out = std::fs::File::create(log).map_err(|e| format!("Couldn't write the log ({e})."))?;
     let err = out.try_clone().map_err(|e| e.to_string())?;
-    let mut command = Command::new(runtime.join("lilt"));
+    let mut command = Command::new(platform::server_path(runtime));
     command
         .arg("serve")
         .current_dir(runtime)
         .env("LILT_BIND", format!("127.0.0.1:{port}"))
         .env("LILT_WEB_DIR", runtime.join("web"))
         .env("LILT_CONTENT_DIR", runtime.join("content"))
-        .env("LILT_PYTHON", runtime.join("python/bin/python3"))
+        .env("LILT_PYTHON", platform::python_path(runtime))
         .env("LILT_ANALYSIS_DIR", runtime.join("analysis"))
         .env("LILT_DESKTOP_TOKEN", &server.token)
         .env("PYTHONDONTWRITEBYTECODE", "1")
@@ -262,7 +295,7 @@ fn recover_server(app: &tauri::AppHandle) -> Result<(), String> {
         .resource_dir()
         .map_err(|e| e.to_string())?
         .join("runtime");
-    let log = home().join("Lilt/logs/lilt-app.log");
+    let log = log_path();
     let port = start(&runtime, &log, &server, StartMode::OwnedOnly)?;
     let win = match app.get_webview_window("main") {
         Some(win) => win,
@@ -334,7 +367,11 @@ fn unused(dir: &Path, name: &str) -> PathBuf {
 
 fn window(app: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
     let handle = app.clone();
-    WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
+    let mut builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()));
+    if let Some(data) = webview_data() {
+        builder = builder.data_directory(data);
+    }
+    builder
         .title("Lilt")
         .inner_size(1280.0, 820.0)
         .min_inner_size(820.0, 560.0)
@@ -366,8 +403,8 @@ fn window(app: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
             open_outside(&url);
             NewWindowResponse::Deny
         })
-        // Export all (and any other download) lands in Downloads and is shown in Finder.
-        .on_download(|_, event| {
+        // Respect redirected Downloads folders, including Windows known folders.
+        .on_download(|webview, event| {
             if let DownloadEvent::Requested { url, destination } = event {
                 let name = destination
                     .file_name()
@@ -380,7 +417,12 @@ fn window(app: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
                             .map(str::to_string)
                     })
                     .unwrap_or_else(|| "Lilt download".into());
-                *destination = unused(&home().join("Downloads"), &name);
+                let downloads = webview
+                    .app_handle()
+                    .path()
+                    .download_dir()
+                    .unwrap_or_else(|_| home().join("Downloads"));
+                *destination = unused(&downloads, &name);
                 let shown = destination.clone();
                 std::thread::spawn(move || {
                     // macOS doesn't say when it's done; reveal it once it appears.
@@ -446,7 +488,7 @@ fn main() {
             app.set_menu(menu)?;
             let win = window(app.handle())?;
             let runtime = app.path().resource_dir()?.join("runtime");
-            let log = home().join("Lilt/logs/lilt-app.log");
+            let log = log_path();
             let handle = app.handle().clone();
             std::thread::spawn(move || {
                 let result = start(
@@ -482,6 +524,18 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("Lilt couldn't open its window");
     app.run(|app, event| {
+        // A hidden Updates window must not keep the Windows app and its server alive.
+        #[cfg(windows)]
+        if let RunEvent::WindowEvent {
+            label,
+            event: tauri::WindowEvent::CloseRequested { api, .. },
+            ..
+        } = &event
+            && label == "main"
+        {
+            api.prevent_close();
+            app.exit(0);
+        }
         if let RunEvent::ExitRequested { api, code, .. } = &event
             && *code != Some(tauri::RESTART_EXIT_CODE)
             && app.state::<updates::Updates>().installing()
@@ -561,5 +615,16 @@ mod server_lifecycle_tests {
         );
         assert!(connection.child.is_none());
         assert!(connection.port.is_none());
+    }
+
+    #[test]
+    fn stopping_an_attached_connection_leaves_the_external_process_alone() {
+        let mut external = test_process().spawn().unwrap();
+        let mut connection = Connection {
+            port: Some(12345),
+            ..Connection::default()
+        };
+        assert_eq!(connection.stop().unwrap(), StopOutcome::AlreadyExited);
+        assert!(external.wait().unwrap().success());
     }
 }

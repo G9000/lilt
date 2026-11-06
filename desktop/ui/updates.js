@@ -105,6 +105,6 @@
   else {
     snapshot.phase = 'unconfigured';
     render();
-    el('current').textContent = 'Open this window from the installed Mac app.';
+    el('current').textContent = 'Open this window from the installed Lilt app.';
   }
 })();

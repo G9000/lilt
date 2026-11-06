@@ -1,5 +1,17 @@
 # Lilt: validation report
 
+## 7 November 2026: Windows desktop app
+
+Built the unsigned Windows x64 NSIS installer with bundled server, Python, analysis dependencies,
+web UI and content. Native WebView2 synthetic recording, upload, bundled analysis, playback and
+saving passed in an isolated relocated app; the final release window and health endpoint also
+passed. Closing the main window after hiding Updates stopped its app and owned server.
+Web 153 tests, server 117, desktop 31 and Python 47 passed (one Python skip and two desktop
+subprocess fixtures); formatting, strict Clippy and the scratch web build passed.
+Installer integrity passed for all 4,669 archived files. Physical microphone/speaker checks,
+clean-machine installation and signed Windows distribution remain unverified.
+See [Windows desktop validation](docs/validation/2026-11-07-windows-desktop.md).
+
 ## 7 November 2026: Storage overview in Settings
 
 Settings → Storage shows file-size totals for recordings/analysis, Photos, backups/recovery and

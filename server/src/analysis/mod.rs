@@ -378,6 +378,12 @@ fn run_with_timeout(
     limit: Duration,
 ) -> Result<(std::process::ExitStatus, String)> {
     use std::process::Stdio;
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        // Python is a console executable even when Lilt is a desktop app.
+        cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
+    }
     let log = std::fs::File::create(log_path)?;
     let spawned = cmd
         .stdin(Stdio::null())

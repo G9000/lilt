@@ -22,6 +22,11 @@ comes back on a schedule you set, and every recording stays on your computer.
 
 ## Quick start
 
+**Windows app:** run `powershell -NoProfile -ExecutionPolicy Bypass -File desktop/build.ps1`,
+then open the installer in `desktop/dist` and launch **Lilt** from Start.
+The installed app includes the server and Python helper. See [the desktop app](docs/guide.md#the-desktop-app)
+for build requirements and Windows setup.
+
 **Mac app:** build `Lilt.dmg` with `desktop/build.sh`, open it and drag Lilt to Applications. It
 needs nothing else installed. See [the Mac app](docs/guide.md#the-mac-app) for the first open.
 

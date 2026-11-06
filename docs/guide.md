@@ -3,7 +3,39 @@
 Everything the [README](../README.md) leaves out: how each part works, your data, connecting an
 agent, other devices, settings, development and troubleshooting.
 
-## The Mac app
+## The desktop app
+
+Lilt uses Tauri for its Mac and Windows desktop windows. Both carry the server, web app,
+courses and Python measuring helper, so using the installed app needs no developer tools.
+
+### Windows
+
+From the repository root, build with PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File desktop/build.ps1
+```
+
+The build needs Rust's MSVC toolchain, Visual Studio C++ Build Tools, Bun, Node and uv.
+It produces `desktop/dist/Lilt-<version>-x64-setup.exe` on an x64 Windows computer.
+Run the installer, then open **Lilt** from Start. It installs for your Windows account;
+the installer can install Microsoft's WebView2 runtime if it is missing (internet required).
+Local installers are unsigned. Windows may show an unknown-publisher warning.
+
+Your recordings stay in `%USERPROFILE%\Lilt\data` (or `HOME\Lilt\data` when HOME is set),
+separate from the installation. `LILT_DATA_DIR` overrides that location. A normal launch can
+open an already-running Lilt on port 7878; closing that window leaves the separate server running.
+When the app starts its own server, closing Lilt also stops its analysis processes.
+Scratch launches with `LILT_DATA_DIR` use another free port.
+
+Allow microphone access for desktop apps in Windows Settings if recording is blocked.
+Exports go to your Windows Downloads folder and can be revealed in File Explorer.
+Windows automatic updates are not configured yet: close Lilt and install a newer Windows
+installer to update. Your practice data stays separate from the app files.
+
+### Mac
+
+<a id="the-mac-app"></a>
 
 `desktop/` wraps Lilt in a Mac app (Tauri), so nobody needs Rust, Node, uv or a terminal to use it.
 Lilt.app carries the server, the web app, the courses, and its own Python with the measuring
