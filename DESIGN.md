@@ -299,7 +299,7 @@ the chat on it ("What should this chapter be about?"). The Mixtape page explains
 chapter, a new chapter, the whole course) and has "Remix the whole course". Without ChatGPT
 connected, the chat offers Connect ChatGPT.
 
-**Courses** (`#/courses`, a dock app: three books on violet) opens in an 860px window. The list: a
+**Courses** (`#/courses`, a dock app: three books on violet) opens in a 1280px window. The list: a
 34px "Courses" title and one line on what a course is, then one card per course (a kind tile, coral
 for voice and blue for language, the title, the kind and "in Practice" for the app's course, two lines
 of summary, then pills: "Original" or "Your copy · N changes" in accent, "N updates" in green), and a
@@ -353,7 +353,7 @@ section headings 18px, body 15px, controls 14px and captions 13px. Help text use
 Weights are 400, 500, 600 and 700 (200 and 300 for big live numbers). The reading serif keeps its
 own sizes. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
 
-Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Reading pages use a centered 792px column with
+Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Reading pages use a centered 1280px column with
 18–40px responsive side padding; the daily recording deck retains its 920px column. Reading
 surfaces are opaque `--page` so room artwork does not compete with the text. Course Home's
 shortcuts are quiet links, and its guide is a disclosure between hairlines.
@@ -363,9 +363,11 @@ inside it. Course lists use rows between hairlines; course detail pages lead wit
 before copy management. Markdown uses a 1.65 line height and one-em paragraph gaps, with quiet
 bordered quotes and a separate footnote area. Tables and code scroll within the reading column.
 
-Voice chapters use a wider 1280px desktop column. The active exercise keeps the plain reading
-surface with its recorder below; all exercises use compact rows with hairline dividers. This wider
-layout is specific to the voice chapter, leaving Home and the daily deck at their own widths.
+Course homes, chapters, guides, practice texts and course details share this width, including
+other courses and their guided practice and recordings pages. Course browser windows use the
+same 1280px outer width and 40px desktop side padding. The daily voice deck keeps its paper layout.
+The active voice exercise keeps the plain reading surface with its recorder below; all exercises
+use compact rows with hairline dividers.
 The chapter stays centered with its original side padding, number gutter and introduction
 spacing. Only the column is wider. Selection and hover keep the reading surface plain.
 

@@ -428,7 +428,7 @@ export const practice = {
     `[&::after]:[opacity:0] [&::after]:[transition:opacity_0.15s_ease] [&:hover::after]:[opacity:0.7] ` +
     `[&:focus-visible::after]:[opacity:0.7] [.ve-dragging_&::after]:[opacity:0.7] ` +
     `[&.side]:[left:calc(var(--ve-side-w,_272px)_-_4px)] [&.split]:hidden! [@media_(max-width:_860px)]:hidden!`,
-  "ve-embed": `[.ve-col&]:max-w-[860px]`,
+  "ve-embed": `[.ve-col&]:max-w-[var(--content-width)]`,
   "rl-head": `grid [grid-template-columns:1fr_auto] [align-items:end] [row-gap:6px] [column-gap:16px] mt-[0] mr-[0] ` +
     `mb-[32px] ml-[0] [&_h1]:mt-[0] [&_h1]:mr-[0] [&_h1]:mb-[0] [&_h1]:ml-[0] [&_h1]:not-italic [&_h1]:font-bold ` +
     `[&_h1]:text-[44px] [&_h1]:[line-height:1.05] [&_h1]:font-sans [&_h1]:[letter-spacing:-0.045em] [&_h1]:text-ink ` +

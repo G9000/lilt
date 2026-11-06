@@ -14,7 +14,7 @@ export const RELEASES: Release[] = [
     date: "2026-11-07",
     items: [
       { title: "A little tea break", body: "Choose a cream, sage, striped or sleepy cat mug and take 3, 5 or 10 quiet minutes. The steam settles when you're done, with an optional soft clink. Your mug and timer stay in this browser." },
-      { title: "More room for your voice", body: "Voice chapters now use a wider reading layout and keep the texts readable in compact rows. The selected exercise keeps its plain appearance, with the recorder below it.", to: "/studio/start-here" },
+      { title: "More room for your courses", body: "Course homes, chapters, guides and practice texts share a wider, centered reading layout. Introductions and Markdown fill the same column, and selected voice exercises keep their plain appearance.", to: "/courses" },
       { title: "A tidier place to read and practise", body: "Course pages put linked chapters first, Markdown has tighter spacing and clearer notes, and the comfort footer fills the reading column with less empty space.", to: "/courses" },
       { title: "Record and practise with any course", body: "Other courses now have optional audio recording, their own recordings list, and guided practice using their prompts and hints. Save a reflection with or without audio, and reopen the session later.", to: "/courses" },
       { title: "Course details that stay with your course", body: "Practice texts and chapter-card links keep your chosen course. Other courses use their own skill names and no longer inherit read-aloud prompts, voice goals or guessed card durations.", to: "/courses" },

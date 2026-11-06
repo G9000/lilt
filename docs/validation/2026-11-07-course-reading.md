@@ -94,3 +94,26 @@ checks verify full-column width across five viewports, both themes and both text
 Both browser suites passed on source; course-reading also passed against the exact isolated
 production bundle. The isolated type check and production build passed. Published that UI-only
 bundle and verified the exact served index and HTTP 200 for its JavaScript and stylesheet.
+
+## Consistent width across course pages
+
+Expanded the shared reading width to 1280px. Course homes, chapter introductions, guides,
+practice texts, course details and other-course practice frames now share it. Course browser
+windows allow the same width, with matching desktop side padding. Existing centered margins,
+chapter spacing and plain exercise surfaces remain; the daily voice card deck retains its
+paper layout.
+
+Course-reading browser checks passed on source and the isolated release bundle at 390, 1440
+and 1920px in both themes. They measure the same 1200px inner reading width on desktop,
+centering and no viewport overflow. Source checks additionally cover other-course guided
+practice and recordings. Markdown's five-width, two-theme, two-text-size matrix passed, as did
+all eight any-course-practice browser tests. Visually inspected course Home and detail pages.
+
+Type checking and both source and isolated production builds passed (existing bundle-size
+warning remains). All 164 tracked web unit tests passed. The initial broad unit command also
+picked up another chat's unfinished, untracked plant test and failed on its missing module;
+that work was left alone.
+
+Published only the width changes over the existing UI release, retaining its backend-compatible
+baseline. Confirmed the served index matches and returns HTTP 200 for `index-CiAzURrA.js` and
+`index-Dvx79Hrp.css`. No server restart or practice-data access was needed.

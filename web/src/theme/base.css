@@ -46,7 +46,7 @@
   --type-caption: 13px;
   --type-control: 14px;
   --control-height: 44px;
-  --content-width: 792px;
+  --content-width: 1280px;
   --page-padding: clamp(18px, 4vw, 40px);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --font: "Geist Variable", -apple-system, "SF Pro Text", system-ui, sans-serif;

@@ -42,7 +42,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
     <main className="h-full min-h-0 w-full flex-1 overflow-auto bg-page text-ink" aria-label="Course practice" onClickCapture={event => {
       if (locked && (event.target as HTMLElement).closest("a")) { event.preventDefault(); event.stopPropagation(); }
     }}>
-      <div className="mx-auto w-full max-w-[792px] px-[18px] py-6 sm:px-10 sm:py-8">
+      <div className="mx-auto w-full max-w-[var(--content-width)] px-[18px] py-6 sm:px-10 sm:py-8">
         <nav className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-hair pb-3 text-sm [&_a]:inline-flex [&_a]:min-h-9 [&_a]:items-center [&_a[aria-current=page]]:text-ink [&_a[aria-current=page]]:font-semibold" aria-label="Course navigation">
           <a className={quiet} href="#/desk" aria-label="Back to the desk">Desk</a>
           <a className={quiet} href="#/courses">All courses</a>

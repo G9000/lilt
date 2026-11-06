@@ -585,8 +585,11 @@ Markdown uses compact paragraph and heading spacing, quiet bordered quotes, scro
 and code blocks, and a separate footnote area. The voice chapter's comfort note spans the reading
 column, with a smaller gap above it and less space at the bottom of the page.
 
-Voice chapters use more of a wide screen, with a 1280px maximum column. Exercises stay on the
-plain reading surface in compact rows, separated by thin rules. Selecting one moves the recorder
+Course homes, chapters, guides, practice texts and course details share a centered 1280px maximum
+column, including other courses and their guided practice and recordings pages. Introductions
+and Markdown fill the same reading width. The daily voice deck keeps its paper layout.
+Voice exercises stay on the plain reading surface in compact rows, separated by thin rules.
+Selecting one moves the recorder
 below its text, without adding a panel around it.
 Chapters stay centered with their original padding and introduction spacing. Hovering an
 exercise also keeps the plain page background.

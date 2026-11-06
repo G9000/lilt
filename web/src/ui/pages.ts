@@ -1,11 +1,11 @@
 /** Static page recipes. Marker classes remain for accessibility, interaction and browser checks. */
 export const pages = {
-  tx: `[container-type:inline-size]`,
+  tx: `w-full max-w-[var(--content-width)] mx-auto [container-type:inline-size]`,
   txLoading: `mt-0 mr-0 mb-0 ml-0 pt-[48px] pr-0 pb-[48px] pl-0 text-center text-[13px] text-ink-3`,
   txHead: `mt-[10px] mr-0 mb-[22px] ml-0 [&_h1]:text-[28px] [&_h1]:leading-[1.15] [&_h1]:tracking-[-0.035em] [&_h1]:mt-0 ` +
-    `[&_h1]:mr-0 [&_h1]:mb-[8px] [&_h1]:ml-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[62ch] ` +
+    `[&_h1]:mr-0 [&_h1]:mb-[8px] [&_h1]:ml-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
     `[&_p]:text-ink-2`,
-  txFoot: `mt-[32px] mr-0 mb-0 ml-0 max-w-[64ch] text-pretty text-[13px] text-ink-3 [&_a]:text-ink-2 [&_a]:no-underline ` +
+  txFoot: `mt-[32px] mr-0 mb-0 ml-0 text-pretty text-[13px] text-ink-3 [&_a]:text-ink-2 [&_a]:no-underline ` +
     `[&_a:hover]:text-ink [&_a:hover]:underline [&_a:hover]:decoration-[currentColor]`,
   txCredit: `[&_a]:text-ink-2 [&_a]:no-underline [&_a:hover]:text-ink [&_a:hover]:underline ` +
     `[&_a:hover]:decoration-[currentColor] mt-[8px] mr-0 mb-0 ml-0 text-[12px] text-ink-3`,
@@ -245,7 +245,7 @@ export const pages = {
     `[border-top:1px_solid_var(--hair)] [&_>_summary]:min-h-0 [&_>_summary]:pt-[12px] [&_>_summary]:pr-0 ` +
     `[&_>_summary]:pb-[12px] [&_>_summary]:pl-0 [&_>_summary]:text-[13px] [&_>_summary]:font-medium ` +
     `[&_>_summary]:text-ink-2 [&_>_summary:hover]:text-ink [&[open]_>_summary]:pb-[4px]`,
-  co: `grid grid-cols-[minmax(0,_1fr)] gap-6 max-w-[var(--content-width)] mx-auto pt-2 px-1 pb-8 text-ink text-body ` +
+  co: `grid grid-cols-[minmax(0,_1fr)] gap-6 w-full max-w-[var(--content-width)] mx-auto pt-2 pb-8 text-ink text-body ` +
     `[&_.co-list_button]:w-full [&_.co-list_button]:flex [&_.co-list_button]:items-start ` +
     `[&_.co-list_button]:gap-4 [&_.co-list_button]:p-4 [&_.co-list_button]:rounded-control ` +
     `[&_.co-list_button]:text-left [&_.co-list_button]:font-normal [&_.co-list_button]:bg-transparent ` +
@@ -253,7 +253,7 @@ export const pages = {
     `[&_.co-list_button:focus-visible]:outline-2 [&_.co-list_button:focus-visible]:outline-accent ` +
     `[&_code]:font-normal [&_code]:text-[12px] [&_code]:leading-normal [&_code]:font-mono`,
   coHead: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] ` +
-    `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] [&_p]:mt-[8px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[60ch] ` +
+    `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] [&_p]:mt-[8px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
     `[&_p]:text-ink-2 [&_p]:leading-[1.5] [&_p]:text-[15px] [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
   coHero: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] ` +
     `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] flex items-start gap-y-[18px] gap-x-[18px] flex-wrap ` +

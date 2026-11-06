@@ -32,7 +32,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   review: { title: "Feedback", width: 760 },
   compare: { title: "Compare", width: 820 },
   studio: { title: "Practice", width: 1120, full: true },
-  texts: { title: "Practice texts", width: 760 },
+  texts: { title: "Practice texts", width: 1280 },
   flashcards: { title: "Flashcards", width: 1120, full: true },
   photos: { title: "Photos", width: 960 },
   yarn: { title: "Yarn", width: 1120, full: true },
@@ -40,7 +40,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   progress: { title: "Progress", width: 840, full: true },
   history: { title: "Recordings", width: 780, full: true },
   settings: { title: "Settings", width: 640 },
-  courses: { title: "Courses", width: 860 },
+  courses: { title: "Courses", width: 1280 },
 };
 
 const LIGHT_NAME: Record<Light, string> = { morning: "Morning", day: "Afternoon", sunset: "Sunset", night: "Night" };
@@ -61,7 +61,9 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
   const now = useNow();
   const light = currentLight();
 
-  const win = page ? WINDOWS[section] ?? { title: "Lilt", width: 760 } : null;
+  const windowSpec = page ? WINDOWS[section] ?? { title: "Lilt", width: 760 } : null;
+  const win = windowSpec && course !== DEFAULT_COURSE && (section === "guided" || section === "practice")
+    ? { ...windowSpec, width: 1280 } : windowSpec;
   const appName = section === "music" ? "Music" : win ? win.title : "Lilt";
   const dockApp = (to: string, label: string, icon: ReactNode, on: boolean) => (
     <button className={[`ds-app${on ? " on" : ""}`, roomStyles["ds-app"]].join(" ")} onClick={() => go(to)} aria-label={label} aria-current={on ? "page" : undefined}>

@@ -16,7 +16,9 @@ export const desktop = {
     `[@media_(max-width:_860px)]:[.ds-win.full_&]:pb-[0] [@media_(max-width:_860px)]:[.ds-win.full_&]:pl-[16px]`,
   "ds-title": `[.ds-win.full_&]:hidden`,
   "ds-body": `[.ds-win.full_&]:flex [.ds-win.full_&]:pt-[0] [.ds-win.full_&]:pr-[0] [.ds-win.full_&]:pb-[0] ` +
-    `[.ds-win.full_&]:pl-[0] [.ds-win.full_&]:overflow-visible`,
+    `[.ds-win.full_&]:pl-[0] [.ds-win.full_&]:overflow-visible ` +
+    `[&:has(>_.co,>_.tx)]:px-10 max-[860px]:[&:has(>_.co,>_.tx)]:px-[18px] ` +
+    `[&:has(>_.course-frame)]:px-0`,
   "ds-dock": `[.ds.app-full_&]:hidden`,
   "ds-widgets": `[.ds.app-full_&]:[visibility:hidden]`,
   "ds-w": `[.ds.app-full_&]:[visibility:hidden]`,

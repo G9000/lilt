@@ -42,23 +42,35 @@ try {
     if (p === '/api/deck/today') return send({ items: [], counts: { new: 0, review: 0, again: 0 }, open_stage: 1, all_done: true, paused: false });
     if (p === '/api/studio/session') return send({ id: 'fixture-session' });
     if (p === '/api/sessions/fixture-session') return send({ takes: [] });
-    if (p === '/api/texts' && course === 'voice') return send({ note: voiceNote, levels: [{ id: 'start-here', level: 1, title: 'Start here', subtitle: 'Your mic, your space, and your voice today', kind: 'phrases', basis: voiceIntro, check_in: 'today', items: voiceItems }] });
+    if (p === '/api/texts' && course === 'voice') return send({ note: voiceNote, home: voiceIntro, levels: [{ id: 'start-here', level: 1, title: 'Start here', subtitle: 'Your mic, your space, and your voice today', kind: 'phrases', basis: voiceIntro, check_in: 'today', items: voiceItems }] });
     if (p === '/api/texts') return send({ note: '', home: 'Make a little room to explore.', levels: [{ id: 'start', level: 1, title: 'A small beginning', subtitle: 'Try a little, then pause.', kind: 'phrase',
       basis: '## Find your starting point\n\nChoose something close to hand.\n\n> Take your time. There is no single pace for learning.',
       items: [{ id: 'first-lines', text: 'Draw three loose circles.\n\n- Try a light touch.\n- Let each one be different.', hint: 'Notice how the movement feels in your hand.' }],
     }] });
     if (p === '/api/profile') return send({ goal: { summary: '', descriptors: [] }, comfort_range_hz: [100, 260], session_minutes: 5 });
     if (p === '/api/history') return send({ takes: [] });
+    if (p === '/api/sessions') return send({ sessions: [], next_cursor: null });
     if (p === '/api/photos') return send({ uploaded: [], hidden: [] });
     return route.fulfill({ status: 503, json: { error: 'No live API in this fixture.' } });
   });
   const base = server.resolvedUrls.local[0];
-  for (const theme of ['light', 'dark']) for (const width of [390, 1440]) {
+  const checkColumn = async (column, width, label) => {
+    await column.waitFor();
+    const box = await column.evaluate(el => {
+      const rect = el.getBoundingClientRect(), style = getComputedStyle(el), viewport = el.closest('.ds-body');
+      return { center: (rect.left + rect.right) / 2, content: rect.width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight), overflow: viewport.scrollWidth > viewport.clientWidth + 1 };
+    });
+    assert.ok(Math.abs(box.center - width / 2) <= 1, `${label} stays centered`);
+    assert.ok(!box.overflow, `${label} fits its column`);
+    if (width >= 1440) assert.ok(Math.abs(box.content - 1200) <= 1, `${label} shares the chapter's reading width (${box.content}px)`);
+  };
+  for (const theme of ['light', 'dark']) for (const width of [390, 1440, 1920]) {
     await page.setViewportSize({ width, height: 950 });
     await page.goto(`${base}#/courses`);
     await page.evaluate(theme => window.dispatchEvent(new CustomEvent('lilt:theme', { detail: theme })), theme);
     const course = page.locator('.co-list').getByRole('button', { name: /Drawing gently/ });
     await course.waitFor();
+    await checkColumn(page.locator('.co'), width, 'Course list');
     await page.screenshot({ path: path.join(shots, `courses-${width}-${theme}.png`) });
     await course.click();
     const chapter = page.getByRole('link', { name: /A small beginning/ });
@@ -66,13 +78,30 @@ try {
     assert.equal(await chapter.getAttribute('href'), '#/learn/drawing/chapter/start');
     assert.ok(await page.getByRole('heading', { name: 'Chapters', exact: true }).evaluate(el => el.getBoundingClientRect().top) < await page.getByRole('heading', { name: 'Now playing', exact: true }).evaluate(el => el.getBoundingClientRect().top));
     assert.ok(await page.locator('.co').evaluate(el => el.scrollWidth <= el.clientWidth + 1), 'course details fit the column');
+    await checkColumn(page.locator('.co'), width, 'Course details');
     await page.screenshot({ path: path.join(shots, `course-detail-${width}-${theme}.png`) });
     await chapter.focus();
     await page.keyboard.press('Enter');
     await page.getByRole('heading', { name: 'A small beginning', exact: true }).waitFor();
     const practice = page.getByRole('main', { name: 'Course practice' });
     assert.ok(await practice.evaluate(el => el.scrollWidth <= el.clientWidth + 1), 'chapter fits the viewport');
+    await checkColumn(practice.locator(':scope > div'), width, 'Other-course chapter');
     await page.screenshot({ path: path.join(shots, `course-chapter-${width}-${theme}.png`) });
+    await page.goto(`${base}#/learn/drawing`);
+    await page.getByRole('heading', { name: 'Drawing gently', exact: true }).waitFor();
+    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course home');
+    await page.getByText('Course guide', { exact: true }).click();
+    await checkColumn(page.locator('details .md'), width, 'Other-course guide');
+    await page.goto(`${base}#/learn/drawing/today`);
+    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course daily practice');
+    await page.goto(`${base}#/texts?course=drawing`);
+    await checkColumn(page.locator('.tx'), width, 'Practice texts');
+    if (!process.env.LILT_UI_BUILD) {
+      for (const route of ['guided', 'recordings']) {
+        await page.goto(`${base}#/learn/drawing/${route}`);
+        await checkColumn(page.locator('.course-frame > div'), width, `Other-course ${route}`);
+      }
+    }
   }
   await page.goto(`${base}#/courses/voice`);
   assert.equal(await page.getByRole('link', { name: /A small beginning/ }).getAttribute('href'), '#/studio/start');
@@ -119,9 +148,14 @@ try {
     await page.screenshot({ path: path.join(shots, `voice-chapter-${width}-${theme}.png`) });
     await page.locator('.ve-item').nth(1).click();
     assert.equal(await page.locator('.ve-item.on .readtext').textContent(), voiceItems[1].text);
+    await page.goto(`${base}#/studio`);
+    await checkColumn(page.locator('.ve-home-col'), width, 'Voice course home');
+    await page.locator('.ve-course-guide > summary').click();
+    await checkColumn(page.locator('.ve-course-guide .md'), width, 'Voice course guide');
+    await page.screenshot({ path: path.join(shots, `voice-home-${width}-${theme}.png`) });
   }
   assert.deepEqual(errors, []);
-  console.log('PASS: Course list, chapter ordering, keyboard chapter links for voice and other courses, and responsive light/dark reading pages.');
+  console.log('PASS: Centered, consistent course widths, chapter ordering, keyboard chapter links, and responsive light/dark reading pages.');
 } finally {
   await browser?.close();
   await server.close();

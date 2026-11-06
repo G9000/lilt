@@ -27,8 +27,8 @@ async function deleteCourseTake(course: string, take: Take): Promise<boolean> {
 }
 
 function CourseFrame({ course, children }: { course: string; children: ReactNode }) {
-  return <main className="h-full min-h-0 w-full flex-1 overflow-auto bg-page text-ink">
-    <div className="mx-auto w-full max-w-[792px] px-[18px] py-6 sm:px-10 sm:py-8">
+  return <main className="course-frame h-full min-h-0 w-full flex-1 overflow-auto bg-page text-ink">
+    <div className="mx-auto w-full max-w-[var(--content-width)] px-[18px] py-6 sm:px-10 sm:py-8">
       <nav className="mb-8 flex flex-wrap gap-x-5 gap-y-2 border-b border-hair pb-4" aria-label="Course navigation">
         <a href={`#${practicePath(course)}`}>Course home</a>
         <a href={`#${guidedPath(course)}`}>Guided practice</a>
