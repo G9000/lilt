@@ -53,6 +53,7 @@ try {
         return {
           overflow: scroll.scrollWidth > scroll.clientWidth + 1,
           footerWidth: rect(".ve-end").width,
+          markdownWidth: rect(".ve-md").width,
           columnWidth: q(".ve-col").clientWidth - parseFloat(getComputedStyle(q(".ve-col")).paddingLeft) - parseFloat(getComputedStyle(q(".ve-col")).paddingRight),
           footerMargin: parseFloat(getComputedStyle(q(".ve-end")).marginTop),
           titleOverlap: title.left < actions.right && title.right > actions.left && title.top < actions.bottom && title.bottom > actions.top,
@@ -73,6 +74,7 @@ try {
       check(`no horizontal page overflow at ${at}`, !layout.overflow);
       const zoom = textSize === "largest" ? 1.25 : 1;
       check(`footer uses the full reading width at ${at}`, Math.abs(layout.footerWidth / zoom - layout.columnWidth) < 2);
+      check(`Markdown uses the full reading width at ${at}`, Math.abs(layout.markdownWidth / zoom - layout.columnWidth) < 2);
       check(`footer stays close to the last exercise at ${at}`, layout.footerMargin <= 24);
       check(`title and actions do not overlap at ${at}`, !layout.titleOverlap);
       check(`nested tip lists retain list layout at ${at}`, layout.nestedItemDisplay === "list-item");

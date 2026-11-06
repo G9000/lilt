@@ -632,7 +632,7 @@ export const practice = {
     `[.ve_&.warn]:[max-width:none] [.ve_&.warn_b]:block [.ve_&.warn_b]:mt-[0] [.ve_&.warn_b]:mr-[0] ` +
     `[.ve_&.warn_b]:mb-[3px] [.ve_&.warn_b]:ml-[0]`,
   "ci": `mt-[0] mr-[0] mb-[32px] ml-[0]`,
-  "ci-lede": `[--md-body-size:19px] [max-width:34em] text-ink`,
+  "ci-lede": `[--md-body-size:19px] w-full text-ink`,
   "ci-tips": `list-none mt-[16px] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [&_>_li]:grid ` +
     `[&_>_li]:[grid-template-columns:28px_minmax(0,_1fr)] [&_>_li]:[row-gap:12px] [&_>_li]:[column-gap:12px] ` +
     `[&_>_li]:[align-items:start] [&_>_li]:pt-[16px] [&_>_li]:pr-[0] [&_>_li]:pb-[16px] [&_>_li]:pl-[0] ` +
@@ -990,7 +990,7 @@ export const practice = {
   "ve-cover": `[height:clamp(128px,_19vh,_190px)] [background-size:cover] [background-position:center_40%] ` +
     `[@media_(max-width:_860px)]:h-[110px]`,
   "ve-home-col": `[.ve-col&]:[padding-top:var(--space-8)]`,
-  "ve-md": `[max-width:68ch] [&:not(.md)]:text-ink-2 [&:not(.md)]:text-[16px] [&:not(.md)]:[line-height:1.7] ` +
+  "ve-md": `w-full [&:not(.md)]:text-ink-2 [&:not(.md)]:text-[16px] [&:not(.md)]:[line-height:1.7] ` +
     `[&:not(.md)_>_h2]:[margin-top:var(--space-8)] [&:not(.md)_>_h2]:mr-[0] ` +
     `[&:not(.md)_>_h2]:[margin-bottom:var(--space-4)] [&:not(.md)_>_h2]:ml-[0] ` +
     `[&:not(.md)_>_h2]:[font-size:var(--type-section)] [&:not(.md)_>_h2]:text-ink [.ve-md_+_&]:mt-[8px] ` +

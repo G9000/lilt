@@ -95,6 +95,8 @@ try {
       return { width: el.getBoundingClientRect().width, overflow: el.scrollWidth > el.clientWidth + 1,
         centerOffset: (el.getBoundingClientRect().left + el.getBoundingClientRect().right) / 2 - (el.closest('.ve-page').getBoundingClientRect().left + el.closest('.ve-page').getBoundingClientRect().right) / 2,
         introGap: text.getBoundingClientRect().top - intro.getBoundingClientRect().bottom,
+        introWidth: intro.querySelector('.md').getBoundingClientRect().width,
+        exercisesWidth: el.querySelector('.ve-items').getBoundingClientRect().width,
         markerGap: text.getBoundingClientRect().left - marker.getBoundingClientRect().right,
         selectedBackground: getComputedStyle(row).backgroundColor,
         selectedBorder: ['borderTopWidth', 'borderLeftWidth', 'borderRightWidth'].map(property => getComputedStyle(row)[property]),
@@ -103,6 +105,7 @@ try {
     });
     assert.ok(!layout.overflow, 'voice chapter fits its column');
     assert.ok(Math.abs(layout.centerOffset) <= 1, 'chapter stays centered');
+    assert.ok(Math.abs(layout.introWidth - layout.exercisesWidth) <= 1, 'intro fills the same column as the exercises');
     assert.ok(layout.introGap >= 47 && layout.introGap <= 55, `original intro spacing is restored (${width}px: ${layout.introGap}px)`);
     if (width > 860) assert.ok(layout.markerGap >= 8, 'exercise number stays clear of the text');
     if (width >= 1440) assert.ok(Math.abs(layout.width - 1280) <= 1, 'desktop chapter uses the wider reading layout');

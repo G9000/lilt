@@ -83,3 +83,14 @@ The isolated type check, production build and course-reading browser checks pass
 verify centering, 1280px desktop width, restored intro spacing and no selection/hover panels.
 Visually inspected the desktop result. Published the checked UI-only bundle to port 7878 and
 verified its exact index plus HTTP 200 for the referenced JavaScript and stylesheet.
+
+## Intro and Markdown fill the reading column
+
+Removed the intro's 34em cap and the shared course Markdown's 68ch cap. Both now fill their
+parent column; the centered chapter layout, exercise spacing and plain surfaces are unchanged.
+Course-reading checks verify that the intro is as wide as the exercise list. Shared Markdown
+checks verify full-column width across five viewports, both themes and both text sizes.
+
+Both browser suites passed on source; course-reading also passed against the exact isolated
+production bundle. The isolated type check and production build passed. Published that UI-only
+bundle and verified the exact served index and HTTP 200 for its JavaScript and stylesheet.
