@@ -351,6 +351,11 @@ Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Reading pages use a centered 792p
 surfaces are opaque `--page` so room artwork does not compete with the text. Course Home's
 shortcuts are quiet links, and its guide is a disclosure between hairlines.
 
+The chapter comfort footer uses the full reading width, with 24px above its divider and 16px
+inside it. Course lists use rows between hairlines; course detail pages lead with linked chapters
+before copy management. Markdown uses a 1.65 line height and one-em paragraph gaps, with quiet
+bordered quotes and a separate footnote area. Tables and code scroll within the reading column.
+
 ## Components
 
 UI components use Tailwind 4 utilities and explicit shared recipes. Runtime theme values are

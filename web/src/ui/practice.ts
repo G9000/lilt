@@ -576,11 +576,11 @@ export const practice = {
   "ve-col": `[&:where(.ve-col)]:w-full [&:where(.ve-col)]:min-w-0 [&:where(.ve-col)]:[max-width:var(--content-width)] ` +
     `[&:where(.ve-col)]:mt-[0] [&:where(.ve-col)]:[margin-right:auto] [&:where(.ve-col)]:mb-[0] ` +
     `[&:where(.ve-col)]:[margin-left:auto] [&:where(.ve-col)]:[padding-top:var(--space-8)] ` +
-    `[&:where(.ve-col)]:[padding-right:var(--page-padding)] [&:where(.ve-col)]:pb-[64px] ` +
+    `[&:where(.ve-col)]:[padding-right:var(--page-padding)] [&:where(.ve-col)]:pb-[32px] ` +
     `[&:where(.ve-col)]:[padding-left:var(--page-padding)] [&:where(.ve-col)]:[overflow-wrap:anywhere] ` +
     `[@media_(max-width:_860px)]:[&:where(.ve-col)]:pt-[24px] ` +
     `[@media_(max-width:_860px)]:[&:where(.ve-col)]:pr-[18px] ` +
-    `[@media_(max-width:_860px)]:[&:where(.ve-col)]:pb-[40px] ` +
+    `[@media_(max-width:_860px)]:[&:where(.ve-col)]:pb-[24px] ` +
     `[@media_(max-width:_860px)]:[&:where(.ve-col)]:pl-[18px]`,
   "ve-mk": `absolute [left:-40px] w-[24px] text-right not-italic font-medium text-[13px] [line-height:1] font-sans ` +
     `tabular-nums [color:var(--ve-mk)] [user-select:none] [&_svg]:w-[16px] [&_svg]:h-[16px] [&_svg]:inline-block ` +
@@ -764,8 +764,8 @@ export const practice = {
     `[&.next]:[background-image:none] [&.next]:text-accent-ink [&.start]:bg-ink [&.start]:[background-image:none] ` +
     `[&.start]:[color:var(--ve-paper)] [.ve-chapters_&]:text-[11.5px] [.ve-chapters_&]:tracking-[0] ` +
     `[.sd-completed_&]:text-ink-2 [.sd-completed_&]:bg-fill [.sd-completed_&]:[background-image:none]`,
-  "ve-end": `mt-[48px] pt-[18px] [border-top-width:1px] [border-top-style:solid] [border-top-color:var(--hair)] text-[13px] ` +
-    `[line-height:1.55] text-ink-3 [max-width:60ch]`,
+  "ve-end": `mt-[24px] mb-0 w-full pt-[16px] [border-top-width:1px] [border-top-style:solid] [border-top-color:var(--hair)] text-[13px] ` +
+    `[line-height:1.55] text-ink-2`,
   "ve-small": `text-[13px] text-ink-3 mt-[8px] mr-[0] mb-[0] ml-[0] [&_a]:text-ink-2`,
   "ve-err": `text-rec text-[13px] mt-[8px] mr-[0] mb-[0] ml-[0] [.ve-dock_>_&]:[grid-column:1_/_-1] ` +
     `[.ve-dock_>_&]:[justify-self:start]`,

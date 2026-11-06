@@ -7,6 +7,9 @@ import { go } from "../App";
 import { UpdatesDoc } from "./Voice";
 import { KindTile, kindOf } from "../courses";
 import { RemixBox } from "../components/RemixBox";
+import { practicePath } from "../courseNavigation";
+
+const ChapterArrow = () => <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 4 4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 
 /** "3 min ago", "yesterday", or the date. */
 function ago(iso: string) {
@@ -49,7 +52,7 @@ function CourseList() {
     <div className={cx(pages.co, "co")}>
       <header className={cx(pages.coHead, "co-head")}>
         <h1>Courses</h1>
-        <p>Each course is a set of chapters to practise. Your AI can remix any of them into your own mixtape, and you can always go back to the original.</p>
+        <p>Find something you'd like to practise. Start small, and make it your own.</p>
       </header>
       {err && <p className={cx(pages.coError, "co-error")} role="alert">{err}</p>}
       {list && (
@@ -64,6 +67,7 @@ function CourseList() {
                   <span className={cx(pages.coSum, "co-sum")}>{c.summary}</span>
                   <Status c={c} />
                 </span>
+                <span className="self-center text-ink-3"><ChapterArrow /></span>
               </button>
             </li>
           ))}
@@ -161,6 +165,23 @@ export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixta
       )}
 
       <section className={cx(pages.coSec, "co-sec")}>
+        <h2>Chapters</h2>
+        <ol className={cx(pages.coChapters, "co-chapters")}>
+          {chapters.map((f, i) => (
+            <li key={f.file} className={cx(pages.coRow, "co-row")}>
+              <a className={pages.coChapterLink} href={`#${practicePath(c.id, f.chapter_id!)}`}>
+                <span className={cx(pages.coN, "co-n")}>{i + 1}</span>
+                <span className="min-w-0"><b>{f.title}</b><span className="mt-1 block text-caption text-ink-2">{f.texts} {f.texts === 1 ? "text" : "texts"}</span></span>
+                <ChapterArrow />
+              </a>
+              {f.status !== "same" && <span className={cx(pages.coPill, `co-pill ${f.status === "added" ? "new" : "mine"}`)}>{f.status === "added" ? "Added" : "Remixed"}</span>}
+            </li>
+          ))}
+        </ol>
+        {files.removed_from_original.length > 0 && <p className={cx(pages.coNote, "co-note")}>Left out of your mixtape: {files.removed_from_original.join(", ")}.</p>}
+      </section>
+
+      <section className={cx(pages.coSec, "co-sec")}>
         <h2>Now playing</h2>
         <div className={cx(pages.coBox, "co-box")}>
           <div className={cx(pages.coRow, "co-row")}>
@@ -201,20 +222,6 @@ export function MixtapeSections({ m, updatesHref, remix: remixSlot }: { m: Mixta
             ))}
           </ol>
         )}
-      </section>
-
-      <section className={cx(pages.coSec, "co-sec")}>
-        <h2>Chapters</h2>
-        <ol className={cx(pages.coBox, pages.coChapters, "co-box co-chapters")}>
-          {chapters.map((f, i) => (
-            <li key={f.file} className={cx(pages.coRow, "co-row")}>
-              <span className={cx(pages.coN, "co-n")}>{i + 1}</span>
-              <div><b>{f.title}</b><p>{f.texts} {f.texts === 1 ? "text" : "texts"}</p></div>
-              {f.status !== "same" && <span className={cx(pages.coPill, `co-pill ${f.status === "added" ? "new" : "mine"}`)}>{f.status === "added" ? "Added" : "Remixed"}</span>}
-            </li>
-          ))}
-        </ol>
-        {files.removed_from_original.length > 0 && <p className={cx(pages.coNote, "co-note")}>Left out of your mixtape: {files.removed_from_original.join(", ")}.</p>}
       </section>
 
       {mine && remix}

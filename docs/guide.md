@@ -557,6 +557,12 @@ updates** when the original has changed, its chapters (yours marked), the sectio
 change, and what to ask your AI. The changes themselves come from your AI; the app is where you see
 and manage them.
 
+Chapters come first on a course's detail page; each row opens that chapter directly. Course lists
+use simple rows, and chapter reading pages keep headings, practice text and hints distinct.
+Markdown uses compact paragraph and heading spacing, quiet bordered quotes, scrollable tables
+and code blocks, and a separate footnote area. The voice chapter's comfort note spans the reading
+column, with a smaller gap above it and less space at the bottom of the page.
+
 **In-app Remix is coming soon.** The chapter, course and mixtape screens show a disabled
 **Remix · Coming soon** button. The **New chapter** shortcut is also disabled because it relies on
 Remix. **Configure your AI settings** opens AI connections, where you can choose ChatGPT, Claude

@@ -245,19 +245,13 @@ export const pages = {
     `[border-top:1px_solid_var(--hair)] [&_>_summary]:min-h-0 [&_>_summary]:pt-[12px] [&_>_summary]:pr-0 ` +
     `[&_>_summary]:pb-[12px] [&_>_summary]:pl-0 [&_>_summary]:text-[13px] [&_>_summary]:font-medium ` +
     `[&_>_summary]:text-ink-2 [&_>_summary:hover]:text-ink [&[open]_>_summary]:pb-[4px]`,
-  co: `grid grid-cols-[minmax(0,_1fr)] gap-y-[var(--space-6)] gap-x-[var(--space-6)] max-w-[var(--content-width)] ` +
-    `mt-0 mr-auto mb-0 ml-auto pt-[8px] pr-[4px] pb-[32px] pl-[4px] text-ink text-body [&_.co-list_button]:w-full ` +
-    `[&_.co-list_button]:min-h-0 [&_.co-list_button]:flex [&_.co-list_button]:items-start ` +
-    `[&_.co-list_button]:justify-start [&_.co-list_button]:gap-y-[16px] [&_.co-list_button]:gap-x-[16px] ` +
-    `[&_.co-list_button]:pt-[16px] [&_.co-list_button]:pr-[16px] [&_.co-list_button]:pb-[16px] ` +
-    `[&_.co-list_button]:pl-[16px] [&_.co-list_button]:rounded-tl-[14px] [&_.co-list_button]:rounded-tr-[14px] ` +
-    `[&_.co-list_button]:rounded-br-[14px] [&_.co-list_button]:rounded-bl-[14px] [&_.co-list_button]:text-left ` +
-    `[&_.co-list_button]:font-normal [&_.co-list_button]:bg-panel ` +
-    `[&_.co-list_button]:shadow-[0_0_0_1px_var(--hair)] [&_.co-list_button]:text-ink ` +
-    `[&_.co-list_button]:[transition:box-shadow_0.15s_ease,_translate_0.15s_ease] ` +
-    `[&_.co-list_button:hover]:shadow-[0_0_0_1px_var(--line-strong),_0_8px_20px_-12px_rgba(0,_0,_0,_0.25)] ` +
-    `[&_.co-list_button:hover]:[translate:0_-1px] [&_code]:font-normal [&_code]:text-[12px] ` +
-    `[&_code]:leading-[normal] [&_code]:font-mono`,
+  co: `grid grid-cols-[minmax(0,_1fr)] gap-6 max-w-[var(--content-width)] mx-auto pt-2 px-1 pb-8 text-ink text-body ` +
+    `[&_.co-list_button]:w-full [&_.co-list_button]:flex [&_.co-list_button]:items-start ` +
+    `[&_.co-list_button]:gap-4 [&_.co-list_button]:p-4 [&_.co-list_button]:rounded-control ` +
+    `[&_.co-list_button]:text-left [&_.co-list_button]:font-normal [&_.co-list_button]:bg-transparent ` +
+    `[&_.co-list_button]:text-ink [&_.co-list_button:hover]:bg-fill ` +
+    `[&_.co-list_button:focus-visible]:outline-2 [&_.co-list_button:focus-visible]:outline-accent ` +
+    `[&_code]:font-normal [&_code]:text-[12px] [&_code]:leading-normal [&_code]:font-mono`,
   coHead: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] ` +
     `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] [&_p]:mt-[8px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[60ch] ` +
     `[&_p]:text-ink-2 [&_p]:leading-[1.5] [&_p]:text-[15px] [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
@@ -268,8 +262,8 @@ export const pages = {
   coTile: `flex-none grid place-items-center rounded-tl-[24%] rounded-tr-[24%] rounded-br-[24%] rounded-bl-[24%] ` +
     `text-[color:#fff] shadow-[inset_0_0.5px_0_rgba(255,_255,_255,_0.4),_0_1px_2px_rgba(0,_0,_0,_0.15)] ` +
     `[&_svg]:w-[58%] [&_svg]:h-[58%]`,
-  coList: `list-none mt-0 mr-0 mb-0 ml-0 pt-0 pr-0 pb-0 pl-0 grid gap-y-[10px] gap-x-[10px]`,
-  coCard: `grid gap-y-[3px] gap-x-[3px] min-w-0 [&_b]:text-[16px] [&_b]:font-semibold [&_b]:tracking-[-0.01em] ` +
+  coList: `list-none m-0 p-0 grid divide-y divide-hair border-y border-hair`,
+  coCard: `grid flex-1 gap-y-[3px] gap-x-[3px] min-w-0 [&_b]:text-[18px] [&_b]:font-semibold [&_b]:tracking-[-0.01em] ` +
     `[&_small]:text-[12.5px] [&_small]:text-ink-3`,
   coSum: `mt-[4px] text-ink-2 leading-[1.45] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical] ` +
     `overflow-hidden`,
@@ -300,7 +294,8 @@ export const pages = {
     `[&_p_.co-k]:inline [&_p_.co-k]:font-semibold [&_p_.co-k]:text-ink-2`,
   coConfirm: `[background:none] [&_>_p]:[flex:1_1_260px]`,
   coActions: `flex flex-wrap gap-y-[var(--space-2)] gap-x-[var(--space-2)]`,
-  coChapters: `[&_.co-row]:flex-nowrap`,
+  coChapters: `list-none m-0 p-0 border-y border-hair divide-y divide-hair [&_.co-row]:flex-nowrap [&_.co-row]:gap-3`,
+  coChapterLink: `flex min-w-0 flex-1 items-center gap-3 self-stretch rounded-small py-1 text-ink no-underline hover:text-accent-ink focus-visible:outline-2 focus-visible:outline-accent [&_svg]:ml-auto [&_svg]:shrink-0`,
   coN: `flex-none w-[24px] h-[24px] rounded-tl-[50%] rounded-tr-[50%] rounded-br-[50%] rounded-bl-[50%] grid ` +
     `place-items-center bg-fill text-[12px] font-semibold text-ink-2 tabular-nums`,
   coSaid: `mt-0 mr-0 mb-0 ml-0 pt-[10px] pr-[14px] pb-[10px] pl-[14px] rounded-tl-[10px] rounded-tr-[10px] ` +

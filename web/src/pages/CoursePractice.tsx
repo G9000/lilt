@@ -10,7 +10,7 @@ import { ChapterVideo } from "./Voice";
 const primary = `btn ${shared.btn} ${shared["btn-primary"]}`;
 const secondary = `btn ${shared.btn} ${shared["btn-secondary"]}`;
 const quiet = `textlink ${shared.textlink}`;
-const heading = "text-title font-semibold leading-tight";
+const heading = "mb-2 text-title font-semibold leading-tight tracking-tight text-pretty";
 type Props = { course: string; view?: string; chapter?: string; item?: string; first?: string | null };
 
 export function CoursePracticePage(props: Props) {
@@ -39,7 +39,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
   return (
     <main className="h-full min-h-0 w-full flex-1 overflow-auto bg-page text-ink" aria-label="Course practice">
       <div className="mx-auto w-full max-w-[792px] px-[18px] py-6 sm:px-10 sm:py-8">
-        <nav className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-hair pb-4" aria-label="Course navigation">
+        <nav className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-hair pb-3 text-sm [&_a]:inline-flex [&_a]:min-h-9 [&_a]:items-center [&_a[aria-current=page]]:text-ink [&_a[aria-current=page]]:font-semibold" aria-label="Course navigation">
           <a className={quiet} href="#/desk" aria-label="Back to the desk">Desk</a>
           <a className={quiet} href="#/courses">All courses</a>
           <a className={quiet} href={`#${practicePath(course)}`} aria-current={!view && !chapter ? "page" : undefined}>{data?.course.title ?? "Course home"}</a>
@@ -62,11 +62,11 @@ function CourseHome({ course, texts }: { course: Course; texts: Texts }) {
   return <>
     {cover && <img className="mb-6 max-h-64 w-full rounded-control object-cover" src={cover} alt="Course cover" />}
     <header className="mb-6"><h1 className={heading}>{course.title}</h1><p className="text-ink-2">{course.summary}</p></header>
-    <div className="mb-8 flex flex-wrap gap-3">
+    <div className="mb-6 flex flex-wrap gap-3">
       <a className={primary} href={`#${dailyPath(course.id)}`}>Start today's cards</a>
       {texts.levels[0] && <a className={secondary} href={`#${practicePath(course.id, texts.levels[0].id)}`}>First chapter</a>}
     </div>
-    {texts.home && <details className="mb-8 border-y border-hair py-4"><summary className="cursor-pointer font-medium">Course guide</summary><Markdown src={texts.home} course={course.id} chapters={texts.levels.map(l => l.id)} headingOffset={1} /></details>}
+    {texts.home && <details className="mb-6 border-y border-hair py-3 [&[open]>summary]:mb-4"><summary className="cursor-pointer font-medium">Course guide</summary><Markdown src={texts.home} course={course.id} chapters={texts.levels.map(l => l.id)} headingOffset={1} /></details>}
     <section aria-label="Course chapters">
       <h2 className="text-lg font-semibold">The chapters</h2>
       {!texts.levels.length && <p className="text-ink-2">This course has no chapters yet.</p>}
@@ -74,8 +74,8 @@ function CourseHome({ course, texts }: { course: Course; texts: Texts }) {
         {group.part && <h3 className="mb-2 mt-6 text-base font-medium text-ink-2">{group.part}</h3>}
         <ol className="m-0 list-none p-0">
           {group.levels.map(level => <li key={level.id} className="border-b border-hair">
-            <a className="flex gap-4 py-4 text-ink no-underline hover:text-accent-ink" href={`#${practicePath(course.id, level.id)}`}>
-              <span className="text-ink-3">{level.level}</span><span className="min-w-0"><b className="font-medium">{level.title}</b>{level.subtitle && <span className="mt-1 block text-sm text-ink-2">{level.subtitle}</span>}</span>
+            <a className="group flex items-baseline gap-4 rounded-small py-4 text-ink no-underline hover:text-accent-ink focus-visible:outline-2 focus-visible:outline-accent" href={`#${practicePath(course.id, level.id)}`}>
+              <span className="w-6 shrink-0 text-sm tabular-nums text-ink-3">{level.level}</span><span className="min-w-0"><b className="text-lg font-medium">{level.title}</b>{level.subtitle && <span className="mt-1 block text-sm text-ink-2">{level.subtitle}</span>}</span>
             </a>
           </li>)}
         </ol>
@@ -94,13 +94,13 @@ function CourseChapter({ course, texts, level, item }: { course: string; texts: 
   return <article>
     <header className="mb-6"><h1 className={heading}>{level.title}</h1>{level.subtitle && <p className="text-ink-2">{level.subtitle}</p>}</header>
     <a className={secondary} href={`#${flashcardsPath(course, level.id)}`}>Chapter cards</a>
-    {level.basis && <div className="my-8"><Markdown src={level.basis} course={course} chapters={chapters} headingOffset={1} /></div>}
-    {level.video && <div className="my-8"><ChapterVideo video={level.video} course={course} /></div>}
+    {level.basis && <div className="my-6"><Markdown src={level.basis} course={course} chapters={chapters} headingOffset={1} /></div>}
+    {level.video && <div className="my-6"><ChapterVideo video={level.video} course={course} /></div>}
     {item && !level.items.some(text => text.id === item) && <p role="status">That text isn't in this chapter. You can read the other texts below.</p>}
     {level.items.map(text => <section key={text.id} ref={item === text.id ? selected : undefined} className="scroll-mt-6 border-t border-hair py-6" aria-label={idLabel(text.id)}>
       <h2 className="mb-3 text-lg font-medium">{idLabel(text.id)}</h2>
-      <div className="text-lg leading-relaxed"><Markdown src={text.text} course={course} chapters={chapters} headingOffset={2} /></div>
-      {text.hint && <div className="mt-4 text-ink-2"><Markdown src={text.hint} course={course} chapters={chapters} headingOffset={2} /></div>}
+      <div className="[--md-body-size:18px]"><Markdown src={text.text} course={course} chapters={chapters} headingOffset={2} /></div>
+      {text.hint && <div className="mt-3 border-l border-hair pl-4 text-ink-2 [--md-body-size:14px]"><Markdown src={text.hint} course={course} chapters={chapters} headingOffset={2} /></div>}
     </section>)}
     {!level.items.length && <p className="text-ink-2">This chapter has no practice texts yet.</p>}
     {level.source_url && /^https?:\/\//i.test(level.source_url) && <p className="text-sm text-ink-2"><a href={level.source_url} target="_blank" rel="noreferrer">Course source</a></p>}

@@ -52,6 +52,9 @@ try {
         const scroll = q(".ve-page");
         return {
           overflow: scroll.scrollWidth > scroll.clientWidth + 1,
+          footerWidth: rect(".ve-end").width,
+          columnWidth: q(".ve-col").clientWidth - parseFloat(getComputedStyle(q(".ve-col")).paddingLeft) - parseFloat(getComputedStyle(q(".ve-col")).paddingRight),
+          footerMargin: parseFloat(getComputedStyle(q(".ve-end")).marginTop),
           titleOverlap: title.left < actions.right && title.right > actions.left && title.top < actions.bottom && title.bottom > actions.top,
           nestedItemDisplay: q(".ci-tips li li") ? getComputedStyle(q(".ci-tips li li")).display : null,
           shortcutHeight: q(".ve-course-jumps button").offsetHeight,
@@ -68,6 +71,9 @@ try {
       });
       const at = `${width}px/${theme}/${textSize}`;
       check(`no horizontal page overflow at ${at}`, !layout.overflow);
+      const zoom = textSize === "largest" ? 1.25 : 1;
+      check(`footer uses the full reading width at ${at}`, Math.abs(layout.footerWidth / zoom - layout.columnWidth) < 2);
+      check(`footer stays close to the last exercise at ${at}`, layout.footerMargin <= 24);
       check(`title and actions do not overlap at ${at}`, !layout.titleOverlap);
       check(`nested tip lists retain list layout at ${at}`, layout.nestedItemDisplay === "list-item");
       check(`shortcut button remains touch-sized at ${at}`, layout.shortcutHeight >= 44);
@@ -79,6 +85,8 @@ try {
         await page.screenshot({ path: path.join(shots, `markdown-${width}-${theme}.png`) });
         await page.locator(".ve-md table").scrollIntoViewIfNeeded().catch(() => {});
         await page.screenshot({ path: path.join(shots, `markdown-blocks-${width}-${theme}.png`) });
+        await page.locator(".ve-end").scrollIntoViewIfNeeded();
+        await page.screenshot({ path: path.join(shots, `course-footer-${width}-${theme}.png`) });
         if (width === 1440 && theme === "dark") {
           const exercise = page.locator(".ve-item").first();
           await exercise.hover();

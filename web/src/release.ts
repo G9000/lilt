@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "A tidier place to read and practise", body: "Course pages put linked chapters first, Markdown has tighter spacing and clearer notes, and the comfort footer fills the reading column with less empty space.", to: "/courses" },
       { title: "Course details that stay with your course", body: "Practice texts and chapter-card links keep your chosen course. Other courses use their own skill names and no longer inherit read-aloud prompts, voice goals or guessed card durations.", to: "/courses" },
       { title: "Practise any course", body: "Open any course to read its chapters, use chapter flashcards and practise daily cards. Each course keeps its own progress, and the room remembers the course you opened. Voice keeps its familiar recording tools.", to: "/courses" },
       { title: "Choose your time zone", body: "Date & time now offers the time zones supported by your browser, including regions missing from the old short list. Your saved choice stays selected.", to: "/settings" },

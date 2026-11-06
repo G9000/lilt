@@ -90,6 +90,7 @@ createRoot(document.getElementById("root")!).render(
           <li className={cx(pages.veItem, ["ve-item on", practice["ve-item"]].filter(Boolean).join(' '))}><span className={["ve-mk num", practice["ve-mk"]].filter(Boolean).join(' ')} aria-hidden="true">12.</span><p className={["readtext", practice["readtext"]].filter(Boolean).join(' ')}>One, two, three, four, five.</p><p className={["ve-hint", practice["ve-hint"]].filter(Boolean).join(' ')}>Leave room between each word.</p></li>
           <li className={cx(pages.veItem, ["ve-item done", practice["ve-item"]].filter(Boolean).join(' '))}><span className={["ve-mk num", practice["ve-mk"]].filter(Boolean).join(' ')} aria-hidden="true">✓</span><p className={["readtext", practice["readtext"]].filter(Boolean).join(' ')}>A completed exercise.</p><p className={["ve-hint", practice["ve-hint"]].filter(Boolean).join(' ')}>Saved for next time.</p></li>
         </ol>
+        <p className={cx("ve-end", practice["ve-end"])}>One cue at a time, then a real phrase. Listen back and keep what feels easy and sounds like you. If your voice feels strained, scratchy or hoarse, stop and rest.</p>
       </article>
     </div></div>
   </main>,
