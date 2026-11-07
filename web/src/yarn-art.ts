@@ -121,47 +121,154 @@ export function paintYarnRoom(c: Pen, W: number, H: number, floor: number, dark:
   c.restore();
 }
 
-export function paintYarnBall(c: Pen, x: number, y: number, r: number, spin: number) {
-  c.save(); c.translate(x, y);
-  const fill = c.createRadialGradient(-r * .4, -r * .45, 0, 0, 0, r * 1.1);
-  fill.addColorStop(0, '#ffc49f'); fill.addColorStop(.6, '#e78d69'); fill.addColorStop(1, '#b7644b');
-  c.fillStyle = fill; c.beginPath(); c.arc(0, 0, r, 0, Math.PI * 2); c.fill(); c.clip();
-  c.rotate(spin * .22);
-  c.lineCap = 'round';
-  // Broad bands overlap in separate directions, like wool wound around a real ball.
-  for (let group = 0; group < 3; group++) {
-    c.save(); c.rotate([-.55, .9, -.15][group]);
-    if (group > 0) {
-      c.beginPath(); c.moveTo(-r, group === 1 ? -.2 * r : .32 * r);
-      c.quadraticCurveTo(0, -r * .55, r, group === 1 ? -.2 * r : .32 * r);
-      c.lineTo(r, r); c.lineTo(-r, r); c.closePath(); c.clip();
-    }
-    for (let j = -6; j <= 6; j++) {
-      const yy = j * r * .19;
-      c.beginPath(); c.moveTo(-r * 1.15, yy); c.bezierCurveTo(-r * .4, yy - r * .48, r * .4, yy - r * .48, r * 1.15, yy);
-      c.strokeStyle = '#b96950'; c.lineWidth = r * .19; c.stroke();
-      c.strokeStyle = ['#efa07b', '#e98f6c', '#f3ab85'][group]; c.lineWidth = r * .135; c.stroke();
-      c.strokeStyle = 'rgba(255,222,180,.65)'; c.lineWidth = Math.max(.6, r * .025); c.stroke();
-      // Short diagonal fibers follow each wrap, like softly twisted plies of wool.
-      c.strokeStyle = 'rgba(255,235,205,.45)'; c.lineWidth = Math.max(.35, r * .012);
-      for (let k = -9; k <= 9; k++) {
-        const xx = k * r * .12, curve = yy - r * .36 * (1 - (xx / (r * 1.15)) ** 2);
-        c.beginPath(); c.moveTo(xx - r * .025, curve + r * .025); c.lineTo(xx + r * .025, curve - r * .025); c.stroke();
+/** Wool colours, light then shadow: the ball's terracotta, then the loops' honey, sage, rose and blue. */
+export type Wool = readonly [string, string];
+export const BALL_WOOL: Wool[] = [['#e59672', '#a65a43'], ['#d98161', '#9c5240'], ['#eda07d', '#ad6249'], ['#df8a68', '#a1563f']];
+export const LOOP_WOOL: Wool[] = [['#d8a456', '#9c7232'], ['#86ad91', '#58806a'], ['#d9928d', '#a26260'], ['#87a6bd', '#5a7990']];
+
+/** A strand of plied wool along the current path: a shadowed edge, the colour, then the twist of its plies (or, at 0, a smooth sheen). */
+function stroke(c: Pen, [hi, lo]: Wool, w: number, twist = .4) {
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  c.strokeStyle = lo; c.lineWidth = w * 1.35; c.stroke();
+  c.strokeStyle = hi; c.lineWidth = w; c.stroke();
+  if (twist) { c.lineCap = 'butt'; c.setLineDash([w * 1.1, w * .7]); }
+  c.strokeStyle = `rgba(255,240,220,${twist || .26})`; c.lineWidth = w * .3; c.stroke();
+  c.setLineDash([]); c.lineCap = 'round';
+}
+
+type V3 = [number, number, number];
+const unit = (v: V3): V3 => { const l = Math.hypot(...v); return [v[0] / l, v[1] / l, v[2] / l]; };
+const cross = (a: V3, b: V3): V3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+// The axes the wool is wound around, crossing like a hand-wound ball; later ones lie on top.
+const WRAPS = ([[.2, 1, .3], [1, .15, .25], [.55, -.5, .65], [-.6, -.45, .6], [.1, .4, -1], [-.9, .5, .2]] as V3[]).map((a) => {
+  const axis = unit(a), u = unit(cross(axis, [0, 0, 1]));
+  return { axis, u, w: cross(axis, u) };
+});
+const STRANDS = [-3, -2, -1, 0, 1, 2, 3].map((j) => j * .11);
+const STEPS = 44;
+
+/**
+ * The ball of yarn: bundles of strands wound round a sphere, each drawn where it faces you, so the
+ * wraps cross and turn like real wool as it rolls (`spin`) and tumbles (`tumble`). `bands` are the
+ * colours of threaded loops, wound on top; `squash` flattens it a touch as it lands.
+ */
+export function paintYarnBall(c: Pen, x: number, y: number, r: number, spin: number, tumble = 0, bands: Wool[] = [], squash = 0) {
+  c.save(); c.translate(x, y + r); c.scale(1 + squash, 1 - squash); c.translate(0, -r);
+  const fill = c.createRadialGradient(-r * .35, -r * .4, 0, 0, 0, r);
+  fill.addColorStop(0, '#f2a985'); fill.addColorStop(.7, '#cf7656'); fill.addColorStop(1, '#9d5440');
+  c.fillStyle = fill; c.beginPath(); c.arc(0, 0, r, 0, Math.PI * 2); c.fill();
+  c.save(); c.clip();
+  const ct = Math.cos(tumble), st = Math.sin(tumble), cs = Math.cos(spin), ss = Math.sin(spin);
+  const first = WRAPS.length - bands.length;
+  WRAPS.forEach(({ axis, u, w }, k) => {
+    const wool = k >= first ? bands[k - first] : BALL_WOOL[k % BALL_WOOL.length];
+    for (const lat of STRANDS) {
+      // each strand on its own, so the grooves between them show
+      c.beginPath();
+      const cl = Math.cos(lat), sl = Math.sin(lat);
+      let drawing = false;
+      for (let i = 0; i <= STEPS; i++) {
+        const a = i / STEPS * Math.PI * 2, ca = Math.cos(a) * cl, sa = Math.sin(a) * cl;
+        const px = ca * u[0] + sa * w[0] + sl * axis[0], py = ca * u[1] + sa * w[1] + sl * axis[1], pz = ca * u[2] + sa * w[2] + sl * axis[2];
+        // tumble about the vertical, then roll about the line of sight
+        const tx = px * ct + pz * st, tz = pz * ct - px * st;
+        if (tz < -.05) { drawing = false; continue; }
+        const sx = (tx * cs - py * ss) * r, sy = (tx * ss + py * cs) * r;
+        if (drawing) c.lineTo(sx, sy); else { c.moveTo(sx, sy); drawing = true; }
       }
+      stroke(c, wool, r * .085, 0);
     }
-    c.restore();
-  }
-  const shade = c.createRadialGradient(-r * .35, -r * .4, r * .3, 0, 0, r * 1.1);
-  shade.addColorStop(0, 'rgba(255,232,191,.17)'); shade.addColorStop(.65, 'rgba(139,65,49,0)'); shade.addColorStop(1, 'rgba(113,54,41,.32)');
+  });
+  // light from the upper left, the far side in shadow
+  const shade = c.createRadialGradient(-r * .4, -r * .45, r * .05, 0, 0, r * 1.02);
+  shade.addColorStop(0, 'rgba(255,236,214,.34)'); shade.addColorStop(.45, 'rgba(255,236,214,0)');
+  shade.addColorStop(.78, 'rgba(98,44,30,.12)'); shade.addColorStop(1, 'rgba(78,34,24,.5)');
   c.fillStyle = shade; c.fillRect(-r, -r, r * 2, r * 2);
   c.restore();
-  c.strokeStyle = '#b66c51'; c.lineWidth = 1; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.stroke();
-  c.strokeStyle = 'rgba(240,181,143,.65)'; c.lineWidth = .6;
-  for (let i = 0; i < 48; i++) {
-    const a = i * 2.39996 + spin * .22, reach = r + 1 + (i % 3) * .5;
-    c.beginPath(); c.moveTo(x + Math.cos(a) * (r - .7), y + Math.sin(a) * (r - .7));
-    c.quadraticCurveTo(x + Math.cos(a + .015) * reach, y + Math.sin(a + .015) * reach, x + Math.cos(a + .03) * reach, y + Math.sin(a + .03) * reach); c.stroke();
+  // a soft halo of loose fibres
+  c.strokeStyle = 'rgba(232,160,124,.38)'; c.lineWidth = Math.max(.5, r * .016);
+  for (let i = 0; i < 40; i++) {
+    const a = i * 2.39996 + spin, reach = r * (1.015 + (i % 3) * .012);
+    c.beginPath(); c.moveTo(Math.cos(a) * r * .97, Math.sin(a) * r * .97);
+    c.quadraticCurveTo(Math.cos(a + .03) * reach, Math.sin(a + .03) * reach, Math.cos(a + .07) * reach, Math.sin(a + .07) * reach); c.stroke();
   }
+  c.restore();
+}
+
+/** The loose end of the yarn: a strand of the same wool along any path. */
+export function paintThread(c: Pen, trace: () => void, w: number) {
+  c.beginPath(); trace(); stroke(c, BALL_WOOL[0], w, .5);
+}
+
+/**
+ * A loop of wool hanging on a thread from the lights, tied with a little bow. Drawn in parts: the
+ * hanger and back half before the yarn, the front half after, so the yarn passes through it. `glow`
+ * (0..1) is how lined up the yarn is; `faded` once it has drifted by.
+ */
+export function paintLoop(c: Pen, o: { x: number; y: number; ry: number; hang: number; sway: number; open: number; wool: Wool; w: number; glow: number; faded: boolean; dark: boolean }, part: 'hanger' | 'back' | 'front') {
+  const { x, y, ry, hang, sway, open, wool, w, glow, faded, dark } = o;
+  const rx = ry * (.42 + open), top = y - ry * (1 + open);
+  c.save();
+  // swing gently from where it hangs
+  c.translate(x, hang); c.rotate(sway); c.translate(-x, -hang);
+  c.globalAlpha = faded ? .5 : 1;
+  const half = (back: boolean) => { c.beginPath(); c.ellipse(x, y, rx, ry * (1 + open), 0, back ? Math.PI / 2 : -Math.PI / 2, back ? Math.PI * 1.5 : Math.PI / 2); };
+  if (part === 'hanger') {
+    c.strokeStyle = dark ? 'rgba(255,232,210,.32)' : 'rgba(92,66,44,.34)'; c.lineWidth = 1;
+    c.beginPath(); c.moveTo(x, hang); c.lineTo(x, top); c.stroke();
+    // its soft shadow on the wall behind
+    c.save(); c.translate(w * .7, w); c.beginPath(); c.ellipse(x, y, rx, ry * (1 + open), 0, 0, Math.PI * 2);
+    c.strokeStyle = dark ? 'rgba(0,0,0,.22)' : 'rgba(80,52,30,.13)'; c.lineWidth = w * 1.2; c.stroke(); c.restore();
+  } else if (part === 'back') {
+    half(true); stroke(c, [wool[1], wool[1]], w, .16);
+  } else {
+    if (glow > .01) {
+      c.save(); c.beginPath(); c.ellipse(x, y, rx, ry * (1 + open), 0, 0, Math.PI * 2);
+      c.shadowColor = dark ? 'rgba(255,210,140,.95)' : 'rgba(255,214,150,1)'; c.shadowBlur = 22 * glow;
+      c.strokeStyle = `rgba(255,236,196,${.6 * glow})`; c.lineWidth = w * (1.4 + glow); c.stroke(); c.restore();
+    }
+    half(false); stroke(c, wool, w * (1 + glow * .15), .42);
+    // the knot and its bow at the top
+    for (const side of [-1, 1]) { c.beginPath(); c.ellipse(x + side * w * .95, top - w * .5, w * 1.05, w * .5, side * .55, 0, Math.PI * 2); stroke(c, wool, w * .4, .2); }
+    c.fillStyle = wool[1]; c.beginPath(); c.arc(x, top, w * .7, 0, Math.PI * 2); c.fill();
+  }
+  c.restore();
+}
+
+/** A string of warm lights along the top of the wall: a fabric cord that sags between hooks, small glass bulbs. */
+export function paintLights(c: Pen, W: number, wireY: (x: number) => number, gap: number, glowAt: (x: number) => number, dark: boolean) {
+  c.lineCap = 'round';
+  const cord = (dy: number) => { c.beginPath(); for (let x = 0; x <= W; x += 6) (x ? c.lineTo(x, wireY(x) + dy) : c.moveTo(x, wireY(x) + dy)); c.stroke(); };
+  c.strokeStyle = dark ? 'rgba(0,0,0,.25)' : 'rgba(84,58,36,.12)'; c.lineWidth = 2; cord(4);
+  c.strokeStyle = dark ? '#5e5243' : '#6f5b46'; c.lineWidth = 1.5; cord(0);
+  for (let x = gap / 2; x < W + gap; x += gap) {
+    const y = wireY(x), k = glowAt(x), by = y + 8, reach = dark ? 26 : 16;
+    const halo = c.createRadialGradient(x, by, 0, x, by, reach);
+    halo.addColorStop(0, `rgba(255,198,112,${(dark ? .5 : .3) * k})`); halo.addColorStop(1, 'rgba(255,198,112,0)');
+    c.fillStyle = halo; c.beginPath(); c.arc(x, by, reach, 0, Math.PI * 2); c.fill();
+    box(c, x - 2, y, 4, 4, 1, dark ? '#4f463a' : '#5f4c39');
+    const glass = c.createRadialGradient(x - 1, by - 1.5, .3, x, by, 5);
+    glass.addColorStop(0, '#fffbe8'); glass.addColorStop(.5, '#ffe0a0'); glass.addColorStop(1, `rgba(236,166,84,${.7 + .3 * k})`);
+    c.fillStyle = glass; c.beginPath(); c.ellipse(x, by, 3.4, 4.8, 0, 0, Math.PI * 2); c.fill();
+  }
+}
+
+/** One end of your range: a running stitch across the wall with its note on a small paper tag. */
+export function paintRangeMark(c: Pen, W: number, y: number, label: string, above: boolean, dark: boolean, narrow: boolean) {
+  c.save();
+  c.setLineDash([8, 7]); c.lineCap = 'round';
+  c.strokeStyle = dark ? 'rgba(255,232,206,.3)' : 'rgba(118,78,48,.3)'; c.lineWidth = 1.6;
+  c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
+  c.setLineDash([]);
+  c.font = `550 ${narrow ? 11 : 12}px "Geist Variable", system-ui, sans-serif`;
+  const h = narrow ? 20 : 22, pw = c.measureText(label).width + 20;
+  const px = narrow ? W - pw - 10 : 12, py = above ? y - h - 5 : y + 5;
+  c.shadowColor = dark ? 'rgba(0,0,0,.35)' : 'rgba(84,58,36,.16)'; c.shadowBlur = 6; c.shadowOffsetY = 1;
+  box(c, px, py, pw, h, h / 2, dark ? 'rgba(34,40,40,.86)' : 'rgba(255,249,238,.9)');
+  c.shadowColor = 'transparent';
+  c.fillStyle = dark ? '#e3d6c0' : '#6a5b48'; c.textBaseline = 'middle';
+  c.fillText(label, px + 10, py + h / 2 + .5);
+  c.restore();
 }
 
 export function paintYarnCat(c: Pen, x: number, floor: number, s: number, phase: number, look: number, dark: boolean, moving: boolean, dozing: boolean, pose = { hop: 0, reach: 0, blink: false }, art?: YarnArt) {

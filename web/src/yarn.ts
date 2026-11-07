@@ -51,11 +51,17 @@ export const pitchToY = (hz: number, range: [number, number]) => uToY(pitchToU(h
 export const LEAP_ST = 7;
 const AGREE = 4;
 
+/** How firmly the yarn is drawn to your pitch, per second of `tau`: a critically damped spring that settles in about the time a plain lag would. */
+const SPRING = 1.6;
+/** Falling when you're quiet: a soft pull down, against plenty of air (field fractions per second). */
+const FALL = { pull: 1.5, drag: 2.5 };
+
 /**
  * Follows the voice: readings in, a smooth height out. A median of the last few readings steadies
  * it, a sudden octave leap waits for agreement, and through a brief unvoiced gap (a consonant, a
- * breath between words) the yarn holds where it was. After a longer quiet it drifts gently down to
- * rest on the floor. Times are seconds on any one clock.
+ * breath between words) the yarn holds where it was. The yarn has a little weight: it eases into
+ * a rise rather than jumping, and after a longer quiet it floats gently down to rest on the floor.
+ * Times are seconds on any one clock.
  */
 export function follower(range: [number, number], mode: Mode) {
   const feel = FEEL[mode];
@@ -63,8 +69,9 @@ export function follower(range: [number, number], mode: Mode) {
   let pending: number[] = [];
   let target: number | null = null; // semitones
   let lastVoiced = -Infinity, mutedUntil = -Infinity;
-  let y = REST_Y;
+  let y = REST_Y, v = 0;
   const lo = hzToMidi(range[0]), span = hzToMidi(range[1]) - lo;
+  const w = SPRING / feel.tau;
   return {
     /** One reading from the tracker (hz null when it heard no voice). */
     push(t: number, hz: number | null) {
@@ -92,16 +99,22 @@ export function follower(range: [number, number], mode: Mode) {
     step(t: number, dt: number): { y: number; afloat: boolean } {
       const afloat = target !== null && t - lastVoiced <= feel.hold;
       if (afloat) {
-        const goal = uToY((target! - lo) / span);
-        y += (1 - Math.exp(-dt / feel.tau)) * (goal - y);
+        // the exact step of a critically damped spring: smooth from any speed, steady at any frame rate
+        const x = y - uToY((target! - lo) / span), k = v + w * x, e = Math.exp(-w * dt);
+        y = y - x + (x + k * dt) * e;
+        v = (v - w * k * dt) * e;
       } else {
-        // settle slowly, like yarn drifting down; it lifts off again the moment you make a sound
-        y += (1 - Math.exp(-dt / 1.1)) * (REST_Y - y);
-        if (t - lastVoiced > 1.5) target = null;
+        // float down, like yarn through air; it lifts off again the moment you make a sound
+        v += (FALL.pull - FALL.drag * v) * dt;
+        y += v * dt;
+        if (t - lastVoiced > 1.5) { target = null; recent.length = 0; pending = []; }
       }
+      if (y >= REST_Y) { y = REST_Y; v = Math.min(v, 0); }
       return { y, afloat };
     },
     get y() { return y; },
+    /** How fast the yarn is moving (field fractions per second, positive is down). */
+    get v() { return v; },
     /** Seconds since the last voiced reading. */
     quietFor: (t: number) => t - lastVoiced,
   };
@@ -152,8 +165,25 @@ export function loopMaker(mode: Mode, seed = 1) {
   };
 }
 
-/** Does the yarn (at height `y`, radius `ball`, both field fractions) pass through this loop's opening? */
-export const threads = (y: number, loop: Loop, ball = 0) => Math.abs(y - uToY(loop.u)) <= Math.max(0.01, loop.r - ball * 0.5);
+/** How far from a loop's middle the yarn (at height `y`, radius `ball`, both field fractions) can be and still go through. */
+const opening = (loop: Loop, ball: number) => Math.max(0.01, loop.r - ball * 0.5);
+/** Does the yarn pass through this loop's opening? */
+export const threads = (y: number, loop: Loop, ball = 0) => Math.abs(y - uToY(loop.u)) <= opening(loop, ball);
+
+/** The loop the yarn is heading for: the first one still ahead of it. */
+export const nextLoop = (loops: Loop[], now: number) => loops.find((l) => l.state === "ahead" && l.at >= now) ?? null;
+
+/**
+ * How lined up the yarn is with a loop: 1 near its middle, easing to 0 a little beyond its edge.
+ * Only for a soft glow on the loop, so you can feel the height before you get there; never counted.
+ */
+export function lineUp(y: number, loop: Loop, ball = 0) {
+  const room = opening(loop, ball), off = Math.abs(y - uToY(loop.u));
+  return Math.min(1, Math.max(0, 1 - (off - room * 0.4) / (room * 1.1)));
+}
+
+/** The colours wound onto the ball: each threaded loop adds its own, the newest outermost, a few at a time. */
+export const wind = (wound: number[], hue: number, keep = 4) => [...wound, hue].slice(-keep);
 
 /**
  * Moves time on for the loops: each one reaching the yarn is threaded or drifts by; ones well past

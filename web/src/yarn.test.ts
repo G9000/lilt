@@ -3,8 +3,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { hzToMidi, midiToHz } from "./pitch.ts";
 import {
-  breakDue, catReaction, cueDue, describePlay, duration, follower, loopMaker, MARGIN, MIN_SPAN_ST, noisyRoom, passLoops, pitchToU, pitchToY,
-  playRange, rangeFromHums, REST_Y, saidIt, sentencesFrom, SENTENCES, threads, uToHz, uToY, type Loop,
+  breakDue, catReaction, cueDue, describePlay, duration, follower, lineUp, loopMaker, MARGIN, MIN_SPAN_ST, nextLoop, noisyRoom, passLoops, pitchToU,
+  pitchToY, playRange, rangeFromHums, REST_Y, saidIt, sentencesFrom, SENTENCES, threads, uToHz, uToY, wind, type Loop,
 } from "./yarn.ts";
 
 const RANGE: [number, number] = [150, 300]; // an octave
@@ -83,6 +83,38 @@ test("a one-off octave slip doesn't move the yarn; a real leap does, after a mom
   close(up.y, pitchToY(300, RANGE), 0.01);
 });
 
+test("the yarn eases into a rise rather than jumping", () => {
+  const f = follower(RANGE, "hum");
+  const s = run(f, 0, 0.04, () => 300);
+  const moved = (REST_Y - s.y) / (REST_Y - pitchToY(300, RANGE));
+  assert.ok(moved > 0 && moved < 0.25, `moved ${moved}`);
+  assert.ok(f.v < 0, "still rising");
+  // and it doesn't overshoot on the way
+  let top = 1;
+  for (let t = 0.04; t < 1.5; t += 0.01) { f.push(t, 300); top = Math.min(top, f.step(t, 0.01).y); }
+  assert.ok(top >= pitchToY(300, RANGE) - 1e-3);
+});
+
+test("after a long quiet, a new note starts fresh instead of from the old one", () => {
+  const f = follower(RANGE, "hum");
+  run(f, 0, 1, () => 300);
+  run(f, 1, 5, () => null);
+  close(f.y, REST_Y, 1e-9);
+  let top = 1;
+  for (let t = 5; t < 5.4; t += 0.01) { f.push(t, 160); top = Math.min(top, f.step(t, 0.01).y); }
+  assert.ok(top >= pitchToY(160, RANGE) - 0.01, `rose to ${top}, past the new note at ${pitchToY(160, RANGE)}`);
+});
+
+test("the yarn floats down gently and comes to rest on the floor", () => {
+  const f = follower(RANGE, "hum");
+  run(f, 0, 1, () => 300);
+  let fastest = 0;
+  for (let t = 1; t < 5; t += 0.02) { f.push(t, null); f.step(t, 0.02); fastest = Math.max(fastest, f.v); }
+  assert.ok(fastest < 0.65, `fell at ${fastest} of the field a second`);
+  close(f.y, REST_Y, 1e-9);
+  assert.equal(f.v, 0);
+});
+
 test("short gaps hold the yarn; a long quiet lets it drift down to rest", () => {
   const f = follower(RANGE, "speak");
   run(f, 0, 1.5, () => 250);
@@ -154,6 +186,30 @@ test("a loop is threaded when the yarn is in its opening as it arrives, else it 
   // decided once: passing again doesn't change it, and old loops are let go
   assert.equal(passLoops(hit.loops, 6, uToY(0.9)).loops[0].state, "through");
   assert.equal(passLoops(hit.loops, 20, uToY(0.5)).loops.length, 0);
+});
+
+test("the next loop glows as the yarn lines up with it, without changing what threads", () => {
+  const loops: Loop[] = [
+    { id: 1, at: 2, u: 0.2, r: 0.085, hue: 0, state: "by" },
+    { id: 2, at: 5, u: 0.5, r: 0.085, hue: 1, state: "ahead" },
+    { id: 3, at: 9, u: 0.8, r: 0.085, hue: 2, state: "ahead" },
+  ];
+  assert.equal(nextLoop(loops, 4)?.id, 2);
+  assert.equal(nextLoop(loops, 6)?.id, 3);
+  assert.equal(nextLoop([], 0), null);
+  const l = loops[1], mid = uToY(l.u);
+  assert.equal(lineUp(mid, l), 1);
+  assert.ok(lineUp(mid + 0.06, l) > 0 && lineUp(mid + 0.06, l) < 1, "eases off towards the edge");
+  assert.equal(lineUp(mid + 0.3, l), 0);
+  assert.ok(lineUp(mid + 0.05, l) > lineUp(mid + 0.08, l), "closer glows more");
+  // anything that threads glows at least a little
+  for (let d = 0; d <= 0.085; d += 0.005) if (threads(mid + d, l)) assert.ok(lineUp(mid + d, l) > 0.3);
+});
+
+test("threaded loops wind their colours onto the ball, the newest outermost", () => {
+  assert.deepEqual(wind([], 2), [2]);
+  assert.deepEqual(wind([0, 1, 2, 3], 1), [1, 2, 3, 1]);
+  assert.deepEqual(wind([0, 1], 3, 2), [1, 3]);
 });
 
 test("a loop's note plays once as it comes into view, only while you're quiet", () => {

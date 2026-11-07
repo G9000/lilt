@@ -6,12 +6,12 @@ import { go } from "../App";
 import { useMic } from "../components/Recording";
 import { Art, Illustration, wash } from "../components/Illustrations";
 import { claimMic } from "../micuse";
-import { paintYarnBall, paintYarnCat, paintYarnRoom } from "../yarn-art";
+import { LOOP_WOOL, paintLights, paintLoop, paintRangeMark, paintThread, paintYarnBall, paintYarnCat, paintYarnRoom } from "../yarn-art";
 import { artReady, loadYarnArt, type YarnArt } from "../yarn-assets";
 import { ContourPoint, noteName, trackLiveFine } from "../pitch";
 import {
-  breakDue, catReaction, cueDue, describePlay, follower, HUM_READINGS, Loop, loopMaker, Mode, noisyRoom, passLoops, playRange, rangeFromHums,
-  rangeWords, REST_Y, saidIt, sentencesFrom, SENTENCES, uToHz, uToY,
+  breakDue, catReaction, cueDue, describePlay, follower, HUM_READINGS, lineUp, Loop, loopMaker, Mode, nextLoop, noisyRoom, passLoops, playRange,
+  rangeFromHums, rangeWords, REST_Y, saidIt, sentencesFrom, SENTENCES, uToHz, uToY, wind,
 } from "../yarn";
 
 /**
@@ -329,12 +329,17 @@ interface Game {
   f: ReturnType<typeof follower> | null; maker: ReturnType<typeof loopMaker>;
   loops: Loop[]; now: number; played: number; lastBreak: number; afloatS: number;
   trail: { t: number; y: number }[]; sparks: Spark[]; frames: ContourPoint[]; cued: Set<number>;
-  voicedSince: number; spin: number; walk: number; catX: number | null; y: number; afloat: boolean;
+  voicedSince: number; spin: number; spinV: number; tumble: number; walk: number; catX: number | null; y: number; afloat: boolean;
+  /** colours of threaded loops wound onto the ball */
+  wound: number[];
+  /** the yarn's last landing on the floor (game time) and how firmly, 0..1, for its little bounce */
+  landAt: number; landV: number; lastBy: number | null; fallV: number;
 }
 const newGame = (range: [number, number] | null, mode: Mode, free = false): Game => ({
   range, mode, free, threadedAt: -Infinity, f: range ? follower(range, mode) : null, maker: loopMaker(mode, Math.floor(Math.random() * 1e9)),
   loops: [], now: 0, played: 0, lastBreak: 0, afloatS: 0, trail: [], sparks: [], frames: [], cued: new Set(),
-  voicedSince: 0, spin: 0, walk: 0, catX: null, y: REST_Y, afloat: false,
+  voicedSince: 0, spin: 0, spinV: 0, tumble: 0, walk: 0, catX: null, y: REST_Y, afloat: false,
+  wound: [], landAt: -Infinity, landV: 0, lastBy: null, fallV: 0,
 });
 const MAX_FRAMES = 20 * 60 * 100; // twenty minutes of readings for the words at the end, then the oldest go
 
@@ -428,12 +433,6 @@ function Play({ range, mode, free, cue, sentences, stream, reduced, tone, onHurt
 
 /* ------------------------------------------------------------------ drawing */
 
-const PAL = {
-  light: { guide: "rgba(90,75,55,0.2)", label: "#6d6251", wire: "rgba(90,60,60,0.38)", hang: "rgba(90,75,55,0.28)", thread: "#c76840" },
-  dark: { guide: "rgba(255,236,224,0.16)", label: "#d8cbb4", wire: "rgba(255,230,210,0.26)", hang: "rgba(255,230,210,0.22)", thread: "#eaa679" },
-};
-const LOOP_COLORS = ["#c99c4d", "#699b87", "#cd898e", "#7d9fb4"];
-
 /**
  * The canvas: string lights along the top, the floor, the loops, the thread the yarn has drawn (your
  * pitch line, really), the yarn, and the cat. Without a game it's the room at rest: the yarn on the
@@ -457,6 +456,8 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
     if (!ctx) return;
     const backdrop = document.createElement("canvas");
     const back = backdrop.getContext("2d")!;
+    const threadCanvas = document.createElement("canvas");
+    const thread = { canvas: threadCanvas, ctx: threadCanvas.getContext("2d")! };
     let backdropKey = "";
     const art = loadYarnArt(() => { backdropKey = ""; });
     let W = 0, H = 0, dpr = 1;
@@ -464,7 +465,7 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
       const r = el.getBoundingClientRect();
       dpr = Math.min(2, window.devicePixelRatio || 1);
       W = Math.max(1, r.width); H = Math.max(1, r.height);
-      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      canvas.width = threadCanvas.width = Math.round(W * dpr); canvas.height = threadCanvas.height = Math.round(H * dpr);
       (game?.current ?? idle.current).catX = null;
     };
     size();
@@ -503,12 +504,20 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
         G.loops = passed.loops;
         for (const l of passed.threaded) {
           G.threadedAt = G.now;
-          const n = reduced ? 0 : 7;
+          G.wound = wind(G.wound, l.hue);
+          const n = reduced ? 0 : 8;
           for (let k = 0; k < n; k++) {
-            const a = (k / n) * Math.PI * 2 + Math.random() * 0.5;
-            G.sparks.push({ x: bx, y: G.y * F, vx: Math.cos(a) * 46, vy: Math.sin(a) * 46 - 18, t0: G.now, hue: l.hue });
+            const a = (k / n) * Math.PI * 2 + Math.random() * 0.5, v = 34 + Math.random() * 22;
+            G.sparks.push({ x: bx, y: uToY(l.u) * F, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 14, t0: G.now, hue: l.hue });
           }
         }
+        // a firm landing on the floor gives a small bounce
+        const by = Math.min(G.y * F, floorY - R);
+        if (G.lastBy !== null && dt > 0) {
+          if (!reduced && by >= floorY - R - 0.5 && G.lastBy < floorY - R - 0.5 && G.fallV > 50) { G.landAt = G.now; G.landV = Math.min(1, G.fallV / 360); }
+          G.fallV = (by - G.lastBy) / dt;
+        }
+        G.lastBy = by;
         G.sparks = G.sparks.filter((p) => G.now - p.t0 < 0.9);
         if (cue && G.range) {
           const lead = Math.min(3.4, (W - bx) / speed - 0.2);
@@ -528,9 +537,16 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
           if (quiet < 0.12) G.voicedSince += dt;
           if (saidIt(G.voicedSince, quiet)) { G.voicedSince = 0; events?.current.said(); }
         }
-        if (!reduced) { G.spin += dt * (speed / R) * 0.6; G.walk += dt * 7; }
-      }
-      draw(ctx, G, { W, H, dpr, F, floorY, bx, R, speed }, dark ? PAL.dark : PAL.light, reduced, running, wall, dt, backdrop, dark, preview, art.images);
+        if (!reduced) {
+          // it rolls along the floor; up in the air it turns slowly and tumbles as it rises and falls
+          const grounded = G.y >= REST_Y - 0.005;
+          G.spinV += ((grounded ? speed / R : speed / R * 0.2) - G.spinV) * (1 - Math.exp(-dt * 3));
+          G.spin += G.spinV * dt;
+          G.tumble += dt * (grounded ? 0.08 : 0.35 + Math.min(1.5, Math.abs(G.f.v) * 2));
+          G.walk += dt * 7;
+        }
+      } else if (!game && !reduced) G.tumble = wall * 0.25;
+      draw(ctx, G, { W, H, dpr, F, floorY, bx, R, speed }, reduced, running, wall, dt, backdrop, thread, dark, preview, art.images);
       el.dataset.art = Object.values(art.images).every(artReady) ? 'ready' : 'fallback';
       // where the yarn is (0 top, 1 floor), a few times a second, for the browser tests
       if (wall - told > 0.2) {
@@ -552,106 +568,86 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
 }
 
 type Dims = { W: number; H: number; dpr: number; F: number; floorY: number; bx: number; R: number; speed: number };
-type Pal = typeof PAL.light;
+type Layer = { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D };
 
-function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: boolean, running: boolean, wall: number, dt: number, backdrop: HTMLCanvasElement, dark: boolean, preview: boolean, art: YarnArt) {
+function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, reduced: boolean, running: boolean, wall: number, dt: number, backdrop: HTMLCanvasElement, thread: Layer, dark: boolean, preview: boolean, art: YarnArt) {
   const { W, H, dpr, F, floorY, bx, R, speed } = d;
+  const narrow = W < 640, clock = preview ? wall : G.now;
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   c.drawImage(backdrop, 0, 0, W, H);
 
-  // The room stays still; only the yarn, cat, and loops move.
+  // The room stays still; the lights glow softly, and the yarn, cat and loops move.
   const span = 240, sag = Math.min(26, H * 0.04), y0 = 6;
   const wireY = (x: number) => { const s = ((x % span) + span) % span / span; return y0 + sag * 4 * s * (1 - s); };
-  c.strokeStyle = P.wire; c.lineWidth = 1.4;
-  c.beginPath();
-  for (let x = 0; x <= W; x += 6) (x ? c.lineTo(x, wireY(x)) : c.moveTo(x, wireY(x)));
-  c.stroke();
-  for (let x = 0; x < W + 40; x += 40) {
-    const y = wireY(x) + 5, tw = reduced ? 1 : 0.85 + 0.15 * Math.sin((preview ? wall : G.now) * 1.3 + x * 0.05);
-    const g = c.createRadialGradient(x, y, 0, x, y, 16);
-    g.addColorStop(0, `rgba(255,200,120,${0.5 * tw})`); g.addColorStop(1, "rgba(255,200,120,0)");
-    c.fillStyle = g; c.beginPath(); c.arc(x, y, 16, 0, Math.PI * 2); c.fill();
-    c.fillStyle = "#ffd890"; c.beginPath(); c.ellipse(x, y, 3.2, 4.4, 0, 0, Math.PI * 2); c.fill();
-  }
+  paintLights(c, W, wireY, 44, (x) => (reduced ? 1 : 0.8 + 0.2 * Math.sin(clock * 1.3 + x * 0.05)), dark);
 
-  // the two ends of your range, faintly, with their notes
+  // the two ends of your range, stitched faintly across the wall, with their notes
   if (G.range && !preview) {
-    c.font = `500 ${W < 640 ? 11 : 12}px "Geist Variable", system-ui, sans-serif`;
-    c.setLineDash([4, 6]); c.strokeStyle = P.guide; c.lineWidth = 1;
     for (const [u, word] of [[1, "High"], [0, "Low"]] as const) {
-      const y = uToY(u) * F;
-      c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
-      const label = `${word} · ${noteName(u ? G.range[1] : G.range[0])}`, labelY = u ? y - 7 : y + 16;
-      const labelWidth = c.measureText(label).width;
-      const labelX = W < 640 ? W - labelWidth - 14 : 14;
-      c.fillStyle = dark ? "#303b3a" : "#ede4d2";
-      c.fillRect(labelX - 6, labelY - 14, labelWidth + 12, 20);
-      c.fillStyle = P.label;
-      c.fillText(label, labelX, labelY);
+      paintRangeMark(c, W, uToY(u) * F, `${word} · ${noteName(u ? G.range[1] : G.range[0])}`, u === 1, dark, narrow);
     }
-    c.setLineDash([]);
   }
 
-  // loops: the back of each, then the yarn and its thread, then their fronts over it
-  const loopsOnScreen = G.loops.map((l) => ({ l, x: bx + (l.at - G.now) * speed, y: uToY(l.u) * F, ry: l.r * F })).filter((o) => o.x > -40 && o.x < W + 40);
-  const half = (o: (typeof loopsOnScreen)[number], front: boolean) => {
-    const col = LOOP_COLORS[o.l.hue % LOOP_COLORS.length];
-    const age = G.now - o.l.at;
-    const unfurl = !reduced && o.l.state === "through" && age < .8 ? Math.sin(age / .8 * Math.PI) * .13 : 0;
-    c.globalAlpha = o.l.state === "by" ? 0.45 : 1;
-    const thickness = W < 640 ? 4 : 6;
-    c.lineCap = "round";
-    c.beginPath(); c.ellipse(o.x, o.y, o.ry * (.42 + unfurl), o.ry * (1 + unfurl), 0, front ? -Math.PI / 2 : Math.PI / 2, front ? Math.PI / 2 : Math.PI * 1.5);
-    c.strokeStyle = 'rgba(255,244,219,.8)'; c.lineWidth = thickness + 2; c.stroke();
-    c.strokeStyle = col; c.lineWidth = thickness;
-    if (o.l.state === "through") { c.shadowColor = col; c.shadowBlur = reduced ? 0 : 10; }
-    c.stroke();
-    c.shadowBlur = 0;
-    // a twist in the wool
-    c.strokeStyle = "rgba(255,255,255,0.35)"; c.lineWidth = 1.4; c.setLineDash([3, 5]); c.stroke(); c.setLineDash([]);
-    c.globalAlpha = 1;
-  };
-  for (const o of loopsOnScreen) {
-    c.strokeStyle = P.hang; c.lineWidth = 1;
-    c.beginPath(); c.moveTo(o.x, wireY(o.x) + 2); c.lineTo(o.x, o.y - o.ry); c.stroke();
-    c.strokeStyle = LOOP_COLORS[o.l.hue % LOOP_COLORS.length]; c.lineWidth = 2;
-    c.beginPath(); c.ellipse(o.x - 4, o.y - o.ry - 4, 5, 3, .5, 0, Math.PI * 2); c.stroke();
-    c.beginPath(); c.ellipse(o.x + 4, o.y - o.ry - 4, 5, 3, -.5, 0, Math.PI * 2); c.stroke();
-    half(o, false);
-  }
+  // loops: the hanger and back of each, then the yarn and its thread, then their fronts over it
+  const next = nextLoop(G.loops, G.now);
+  const loops = G.loops.map((l) => ({ l, x: bx + (l.at - G.now) * speed })).filter((o) => o.x > -40 && o.x < W + 40).map(({ l, x }) => {
+    const age = G.now - l.at, y = uToY(l.u) * F;
+    const just = l.state === "through" && age < 0.8 ? 1 - age / 0.8 : 0;
+    // the loop you're heading for glows softly as your voice lines up with it
+    const near = l === next ? Math.min(1, Math.max(0, 1 - (l.at - G.now) / 2.6)) : 0;
+    return {
+      l, age, x, y, ry: l.r * F, hang: wireY(x) + 2, sway: reduced ? 0 : Math.sin(clock * 1.1 + l.id * 1.7) * 0.014,
+      open: reduced ? 0 : Math.sin((1 - just) * Math.PI) * 0.13 * (just > 0 ? 1 : 0), wool: LOOP_WOOL[l.hue % LOOP_WOOL.length],
+      w: narrow ? 4 : 5.5, glow: Math.max(just, near * lineUp(G.y, l, R / F)), faded: l.state === "by", dark,
+    };
+  });
+  for (const o of loops) { paintLoop(c, o, "hanger"); paintLoop(c, o, "back"); }
 
-  // the thread the yarn has drawn: your pitch line, trailing behind
+  // the thread the yarn has drawn: your pitch line, trailing behind as a strand of wool
   if (G.trail.length > 1) {
-    const g = c.createLinearGradient(0, 0, bx, 0);
-    g.addColorStop(0, "rgba(224,100,60,0)"); g.addColorStop(1, P.thread);
-    c.strokeStyle = g; c.lineWidth = 2.2; c.lineJoin = "round"; c.lineCap = "round";
-    c.beginPath();
-    G.trail.forEach((p, i) => { const x = bx - (G.now - p.t) * speed, y = Math.min(p.y * F, floorY - 1.5); i ? c.lineTo(x, y) : c.moveTo(x, y); });
-    c.stroke();
+    const t = thread.ctx;
+    t.setTransform(1, 0, 0, 1, 0, 0); t.clearRect(0, 0, thread.canvas.width, thread.canvas.height);
+    t.setTransform(dpr, 0, 0, dpr, 0, 0);
+    paintThread(t, () => G.trail.forEach((p, i) => { const x = bx - (G.now - p.t) * speed, y = Math.min(p.y * F, floorY - 2); i ? t.lineTo(x, y) : t.moveTo(x, y); }), narrow ? 2.4 : 3);
+    // it fades away towards the left
+    t.globalCompositeOperation = "destination-in";
+    const fade = t.createLinearGradient(0, 0, bx, 0);
+    fade.addColorStop(0, "rgba(0,0,0,0)"); fade.addColorStop(0.6, "rgba(0,0,0,1)");
+    t.fillStyle = fade; t.fillRect(0, 0, W, H);
+    t.globalCompositeOperation = "source-over";
+    c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(thread.canvas, 0, 0); c.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  // the yarn
-  const by = Math.min(G.y * F, floorY - R);
+  // the yarn, with a little bounce when it lands
+  const landed = G.now - G.landAt;
+  const bounce = landed < 1.2 ? G.landV * R * 0.9 * Math.abs(Math.sin(landed * 8)) * Math.exp(-landed * 5) : 0;
+  const squash = landed < 0.4 ? G.landV * 0.13 * Math.exp(-landed * 16) : 0;
+  const by = Math.min(G.y * F, floorY - R) - bounce;
   const lift = Math.min(1, Math.max(0, (floorY - by - R) / (F * .65)));
-  c.fillStyle = dark ? `rgba(10,20,20,${.25 - lift * .14})` : `rgba(111,75,51,${.18 - lift * .1})`;
+  c.fillStyle = dark ? `rgba(10,20,20,${.25 - lift * .14})` : `rgba(111,75,51,${.2 - lift * .11})`;
   c.beginPath(); c.ellipse(bx, floorY + 3, R * (1.05 - lift * .35), R * .18, 0, 0, Math.PI * 2); c.fill();
   if (preview) {
-    c.strokeStyle = P.thread; c.lineWidth = 2; c.lineCap = "round";
-    c.beginPath(); c.moveTo(bx - R, by + R * .4);
-    c.bezierCurveTo(bx - 80, by + 20, bx - 20, floorY - 12, bx - 100, floorY - 5); c.stroke();
+    paintThread(c, () => { c.moveTo(bx - R * .6, by + R * .75); c.bezierCurveTo(bx - 70, by + 40, bx - 20, floorY - 14, bx - 110, floorY - 5); }, 2.6);
   }
-  paintYarnBall(c, bx, by, R, G.spin);
+  paintYarnBall(c, bx, by, R, G.spin, G.tumble, G.wound.map((h) => LOOP_WOOL[h % LOOP_WOOL.length]), squash);
 
-  for (const o of loopsOnScreen) half(o, true);
+  for (const o of loops) paintLoop(c, o, "front");
 
-  // a little sparkle when it goes through
+  // a soft ring and a few wisps of wool when it goes through
+  for (const o of loops) {
+    if (reduced || o.l.state !== "through" || o.age > 0.7) continue;
+    const k = o.age / 0.7;
+    c.globalAlpha = (1 - k) * 0.7; c.strokeStyle = o.wool[0]; c.lineWidth = 2;
+    c.beginPath(); c.ellipse(o.x, o.y, o.ry * (0.5 + k * 0.7), o.ry * (1 + k * 0.45), 0, 0, Math.PI * 2); c.stroke();
+  }
   for (const p of G.sparks) {
     const age = G.now - p.t0, k = 1 - age / 0.9;
-    const x = p.x + p.vx * age - (G.now - p.t0) * speed, y = p.y + p.vy * age + 30 * age * age;
-    c.fillStyle = LOOP_COLORS[p.hue % LOOP_COLORS.length]; c.globalAlpha = Math.max(0, k);
-    const r = 3.5 * k + 1;
-    c.beginPath(); c.moveTo(x, y - r * 1.6); c.lineTo(x + r * 0.5, y - r * 0.5); c.lineTo(x + r * 1.6, y); c.lineTo(x + r * 0.5, y + r * 0.5);
-    c.lineTo(x, y + r * 1.6); c.lineTo(x - r * 0.5, y + r * 0.5); c.lineTo(x - r * 1.6, y); c.lineTo(x - r * 0.5, y - r * 0.5); c.closePath(); c.fill();
+    const x = p.x + p.vx * age - age * speed, y = p.y + p.vy * age + 26 * age * age;
+    const [hi, lo] = LOOP_WOOL[p.hue % LOOP_WOOL.length];
+    c.globalAlpha = Math.max(0, k);
+    c.lineCap = "round"; c.lineWidth = 2.2;
+    c.strokeStyle = lo; c.beginPath(); c.arc(x, y, 2.6 + k * 1.6, age * 4, age * 4 + 3.6); c.stroke();
+    c.strokeStyle = hi; c.lineWidth = 1.4; c.stroke();
   }
   c.globalAlpha = 1;
 
@@ -664,6 +660,6 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, P: Pal, reduced: bo
   else if (running || preview) G.catX += (goal - G.catX) * (1 - Math.exp(-dt * 4));
   const hx = G.catX + s * 0.44, hy = floorY - s * 0.56;
   const look = Math.max(-0.6, Math.min(0.28, Math.atan2(by - hy, bx - hx) * 0.6));
-  const pose = catReaction(preview ? wall : G.now, G.threadedAt, G.y, reduced);
+  const pose = catReaction(clock, G.threadedAt, G.y, reduced);
   paintYarnCat(c, G.catX, floorY, s, G.walk, look, dark, moving, !G.range && !preview, pose, art);
 }
