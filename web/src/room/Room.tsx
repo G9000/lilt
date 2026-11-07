@@ -1,9 +1,9 @@
 import { loadRoomImage, RoomReadinessProvider, useRoomArtReady, useRoomReveal } from './roomReadiness';
 import { CHAIR_MASK } from './chair';
 import { roomStyles } from "../desk/roomStyles";
-import { ReactNode, useEffect, useId, useRef, useState } from "react";
+import { ReactNode, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import {
-  CAT_BOX, CAT_SPOT, CAT_URL, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
+  CAT_BOX, CAT_SPOT, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
   quadMatrix, roomUrl, W,
 } from "./scene";
 import { useRoomAppearance } from './appearance';
@@ -21,6 +21,8 @@ import { useRoomProp } from './useRoomProp';
 import { RoomHardware } from './RoomHardware';
 import { type Finish } from './hardware';
 import { isMonitorModel, MODEL_CONTOURS } from './monitorModels';
+import { CatPicker } from './CatPicker';
+import { useRoomCat } from './useRoomCat';
 
 /**
  * The illustrated room. Outside, it is the whole screen; the middle monitor is a way in. Inside,
@@ -81,9 +83,9 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   const { ready, paintRef } = useRoomReveal();
   const [baseReady, setBaseReady] = useState(false);
   const [baseSources, setBaseSources] = useState<Record<string, string | undefined> | null>(null);
-  const [catReady, setCatReady] = useState(false);
+  const cat = useRoomCat();
   useRoomArtReady('painting', baseReady);
-  useRoomArtReady('cat', catReady);
+  useRoomArtReady('cat', cat.ready);
   useEffect(() => {
     let ignore = false;
     void Promise.allSettled([...LIGHTS.map(roomUrl), CHAIR_MASK].map(loadRoomImage)).then(results => {
@@ -118,13 +120,10 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   // With reduced motion there is no loop: this redraws the room once, on demand.
   const redraw = useRef(() => {});
   useEffect(() => { redraw.current(); }, [appearance]);
-  useEffect(() => {
-    let ignore = false;
-    void loadRoomImage(CAT_URL).then(image => {
-      if (!ignore) { frame.current.catImage = image; redraw.current(); setCatReady(true); }
-    }, () => { if (!ignore) setCatReady(true); });
-    return () => { ignore = true; frame.current.catImage = undefined; };
-  }, []);
+  useLayoutEffect(() => {
+    frame.current.catImage = cat.image; redraw.current();
+    return () => { frame.current.catImage = undefined; };
+  }, [cat.image]);
 
   // Fly the camera whenever we go in or out.
   useEffect(() => {
@@ -299,7 +298,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
         <RoomPlayer inside={inside} />
         <ChairForeground />
         <ChairPicker inside={inside} />
-        <canvas ref={canvas} className={["room-fx", roomStyles["room-fx"]].join(" ")} width={W} height={H} />
+        <canvas ref={canvas} className={["room-fx", roomStyles["room-fx"]].join(" ")} data-cat={cat.shown ?? 'none'} width={W} height={H} />
         <div className={["room-color-wash", roomStyles["room-color-wash"]].join(" ")} style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
         </div>
         <svg className={["room-screen-light", roomStyles["room-screen-light"]].join(" ")} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
@@ -318,6 +317,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
           <span>{cards === null ? "Your desk is ready" : cards === 0 ? "All done · your desk is still open" : `${cards} card${cards === 1 ? "" : "s"} today`}</span>
         </div>
         <RoomObjects inside={inside} onEnter={onEnter} />
+        <CatPicker inside={inside} state={cat} />
         {children}
       </div>
       <div className={["room-shade", roomStyles["room-shade"]].join(" ")} />

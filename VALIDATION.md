@@ -1,5 +1,12 @@
 # Lilt: validation report
 
+## 7 November 2026: Choose your room cat
+
+Five companions, including the requested dilute tuxedo, passed isolated Chrome checks for
+petting, anchored breathing, lighting, phone/keyboard controls, persistence and refresh/failure
+handling. Web 169/169, server 129/129 and Python 47 with one skip passed, plus types, scratch
+build, formatting and strict Clippy. See [cat-choice validation](docs/validation/2026-11-07-cat-choices.md).
+
 ## 7 November 2026: Distinct monitor models
 
 Cream retro, Sage rounded and Silver studio passed isolated Chrome checks on both monitors,

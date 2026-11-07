@@ -5,6 +5,7 @@ import type { MonitorMedia as Media } from './appearance-settings';
 import { MonitorMedia, allowMonitorMotion, useMonitorIssue, useMonitorPaused } from './MonitorMedia';
 import { AccentPicker } from '../components/AccentPicker';
 import { HARDWARE, hardwareTitle, openHardware } from './hardware';
+import { openCatPicker } from './catChoices';
 
 const LIGHTS: { value: RoomAppearancePrefs["light"]; label: string }[] = [
   { value: "auto", label: "Follow the day" }, { value: "morning", label: "Morning" },
@@ -129,6 +130,9 @@ export function RoomAppearance() {
         </div>
         <p id={`${id}-intro`} className={["room-appearance-intro", roomStyles["room-appearance-intro"]].join(" ")}>A little more you. Saved in this browser.</p>
         <AccentPicker />
+        <fieldset><legend>Your companion</legend><button type="button" aria-haspopup="dialog"
+          className="min-h-11 rounded-lg border border-[var(--hair)] bg-[var(--fill)] px-3 py-2 text-xs"
+          onClick={() => { setOpen(false); openCatPicker(); }}>Choose your cat</button></fieldset>
         <fieldset>
           <legend>Desk finishes</legend>
           <div className="flex flex-wrap gap-2">{HARDWARE.map(kind => <button key={kind} type="button" aria-haspopup="dialog"

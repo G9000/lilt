@@ -98,6 +98,14 @@ in this browser. **Reset room** returns the original colors, artwork and automat
 The panel closes with Escape or a click outside. Your bed, computer, microphone and animated
 cat stay in the original illustration. The experimental 3D views have been removed.
 
+**Choose your cat.** In **Make it yours → Your companion → Choose your cat**, choose the original
+sleepy black-and-white cat, a soft grey-and-white **Dilute tuxedo**, **Ginger tabby**, **Siamese** or
+**Fluffy white** companion. Each keeps the curled sleeping pose, gentle breathing and room light.
+Click the cat in the room to pet it as before; choosing a coat does not pet it or open another page.
+Your choice stays in this browser and survives Reset layout. A failed image keeps the previous
+cat, or uses the original on a fresh visit, with Try again in the picker. The same picker works
+on phones even when the cat is outside the cropped room view.
+
 **Choose your accent color.** In **Make it yours → Accent color**, choose a preset or open
 **Custom color** for a picker. You can also type a three- or six-digit hex color and press Enter
 or leave the field to apply it. The same controls are in **Settings → Appearance**. Controls,
