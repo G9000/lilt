@@ -33,6 +33,8 @@ try {
     const chosen = id => page.waitForFunction(id => document.querySelector('.room-mug-art')?.dataset.mug === id, id);
     const shot = async name => { if (shots) await page.screenshot({ path: path.join(shots, `${name}-${colorScheme}.png`) }); };
     await chosen('cream');
+    assert.equal(await art.locator('.tea-steam').getAttribute('data-steam'), 'warm');
+    assert.equal(await art.locator('.tea-steam').evaluate(el => getComputedStyle(el).opacity), '0.45');
     assert.equal(await mug.evaluate(el => !!el.closest('.fl')), false);
     await mug.click();
     const dialog = page.getByRole('dialog', { name: 'Tea break', exact: true });
@@ -50,6 +52,7 @@ try {
     await dialog.getByRole('button', { name: 'Start break', exact: true }).click();
     await dialog.waitFor({ state: 'detached' });
     assert.match(await mug.innerText(), /Tea break · 3:00/);
+    assert.equal(await art.locator('.tea-steam').getAttribute('data-steam'), 'brewing');
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('lilt.room.tea')));
     assert.equal(saved.mug, 'cat');
     assert.equal(saved.minutes, 3);
@@ -64,6 +67,7 @@ try {
     await page.waitForTimeout(1200);
     assert.match(await mug.innerText(), /Whenever you're ready/);
     assert.equal(await art.locator('.tea-steam').evaluate(el => getComputedStyle(el).opacity), '0');
+    assert.equal(await art.locator('.tea-steam').getAttribute('data-steam'), 'settled');
     await mug.click();
     await dialog.getByRole('button', { name: '10 min', exact: true }).click();
     await dialog.getByRole('button', { name: 'Start break', exact: true }).click();
@@ -157,6 +161,11 @@ try {
     assert.equal(await art.locator('.tea-steam path').first().evaluate(el => getComputedStyle(el).animationName), 'none');
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     assert.equal(await art.locator('.tea-steam path').first().evaluate(el => getComputedStyle(el).animationName), 'tea-steam');
+    const wisp = art.locator('.tea-steam path').first();
+    const firstTransform = await wisp.evaluate(el => getComputedStyle(el).transform);
+    await page.waitForTimeout(450);
+    assert.notEqual(await wisp.evaluate(el => getComputedStyle(el).transform), firstTransform, 'steam drifts over time');
+    await shot('tea-animated');
     const transitions = await page.evaluate(() => ['img.room-art', '.room-mug-clear img', '.room-mug-art'].map(selector => {
       const s = getComputedStyle(document.querySelector(selector)); return [s.transitionDuration, s.transitionTimingFunction];
     }));

@@ -29,3 +29,12 @@ No owner data or port 7878 was used. The running app was not restarted, `web/dis
 replaced, and no native installer was built or tested. Clink checks observe synthesis and
 suppression; speaker playback was not manually auditioned. This supersedes the draggable-mug
 placement described in `2026-11-07-tea-break.md`.
+
+Follow-up: added faint idle steam and fuller drifting curls during a break. Three staggered
+wisps rise, spread and fade, starting near each mug's rim; completion settles the steam.
+Reduced motion retains still wisps. The light/dark tea suite now verifies idle/running/finished
+states and observes changing transforms over time with normal motion. Screenshots inspected
+under `.tmp/tea-steam`. Web types, all 167 unit tests, scratch production build, server format/
+Clippy and 129 Rust tests, Python (47 passed, 1 skipped), desktop format/release Clippy passed.
+Chrome local-network access and Rust temporary data-file access were initially blocked by the
+sandbox; both checks passed when rerun with the required access. Owner data remained untouched.

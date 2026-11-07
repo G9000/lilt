@@ -183,8 +183,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      everything back and stays available after resetting (a reset-arrow icon on phones).
      **Tea break** opens from the painted mug on the desk, left of the keyboard. Click it to choose
      shaded cream stoneware, sage, blue stripes or sleepy cat, then start a **3, 5 or 10 minute**
-     break. The cup stays in its painted spot and follows the room's light. Steam rises while
-     the timer runs; when it ends, the controls and hover/focus cue quietly say
+     break. The cup stays in its painted spot and follows the room's light. Faint curls of steam
+     drift from the idle cup; they grow fuller while the timer runs, rising and fading gently.
+     When it ends, the steam settles and the controls and hover/focus cue quietly say
      “Whenever you're ready.” **End break** clears the timer whenever you like. An optional soft
      clink is off by default and only plays if this room is focused when the break finishes,
      never during recording. Returning later or reloading an expired timer stays quiet.

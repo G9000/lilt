@@ -1,7 +1,9 @@
 @keyframes music-spin { to { transform: rotate(360deg); } }
 @keyframes tea-steam {
-  0%, 100% { transform: translateY(2px); opacity: .35; }
-  50% { transform: translateY(-5px); opacity: .8; }
+  0% { transform: translate(0, 3px) scale(.8, .75); opacity: 0; }
+  22% { opacity: .65; }
+  65% { transform: translate(3px, -7px) scale(1.1, 1.05); opacity: .45; }
+  100% { transform: translate(-2px, -17px) scale(1.2, 1.2); opacity: 0; }
 }
 
 @keyframes room-appearance-enter { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }

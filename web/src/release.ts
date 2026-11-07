@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "A warm cup on your desk", body: "Gentle curls of steam drift from your cup, growing fuller during a tea break and settling when it ends. Reduced motion keeps the wisps still." },
       { title: "A plant inside your room", body: "Click the painted floor plant beside the drawers to choose a ficus, monstera, fern or jade plant. Shaded artwork follows the room's light and grows gently with your week. On smaller screens, use Plants. Your choice stays in this browser." },
       { title: "Tea from your desk cup", body: "Click the painted cup beside the keyboard to choose a shaded cream, sage, striped or sleepy cat mug and take 3, 5 or 10 quiet minutes. It follows the room's light, with steam and an optional soft clink. On smaller screens, use Tea. Your mug and timer stay in this browser." },
       { title: "More room for your courses", body: "Course homes, chapters, guides, practice texts and Today's practice share a wider, centered reading layout. Introductions and Markdown fill the same column, and selected voice exercises keep their plain appearance.", to: "/courses" },

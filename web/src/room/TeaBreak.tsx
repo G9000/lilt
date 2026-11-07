@@ -73,7 +73,7 @@ export function TeaBreak({ inside }: { inside: boolean }) {
   const close = () => { dialog.current?.close(); setOpen(false); returnFocus.current?.focus(); };
 
   return <>
-    {shown && <PaintedMug mug={shown} steaming={running} />}
+    {shown && <PaintedMug mug={shown} steaming={running} warm={!finished} />}
     <button type="button" className={['room-mug-target pointer-events-auto', roomStyles['room-object']].join(' ')}
       style={{ left: 848, top: 509, width: 66, height: 60 }}
       aria-label="Tea break" aria-haspopup="dialog" aria-expanded={open} disabled={inside}

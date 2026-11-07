@@ -16,8 +16,9 @@ keyboard dismissal restores focus, and reduced motion removes the growth transit
 sage, blue stripes and sleepy cat designs follow the room's light. The cup stays anchored;
 Tea in the room shortcuts opens its controls on smaller screens. Its compact modal offers
 3, 5 or 10 minutes and an optional soft clink
-(off by default, suppressed during recording). Steam moves only during a break and respects
-reduced motion. At the end it settles and says “Whenever you're ready.” No automatic navigation,
+(off by default, suppressed during recording). Faint steam curls drift from the idle cup;
+a running break makes them fuller. Wisps rise, spread and fade at staggered intervals, and
+remain still with reduced motion. At the end they settle and it says “Whenever you're ready.” No automatic navigation,
 scoring or missed-break state. The deadline and mug stay in this browser; resetting the layout
 leaves both alone. Timer text appears in its controls and on hover/focus, with no floating tile.
 

@@ -24,16 +24,22 @@ export function useMugArtwork(mug: Mug) {
   return { shown, failed, retry: () => setAttempt(n => n + 1) };
 }
 
-export function TeaMug({ mug, steaming = false }: { mug: Mug; steaming?: boolean }) {
+export function TeaMug({ mug, steaming = false, warm = false }: { mug: Mug; steaming?: boolean; warm?: boolean }) {
+  const active = steaming || warm;
+  const rim = { cream: 26, sage: 32, blue: 29, cat: 32 }[mug];
   return <div className="relative aspect-square w-full" aria-hidden="true">
     <img src={mugImage(mug)} data-mug={mug} alt="" draggable={false} className="block h-full w-full select-none" />
-    <svg viewBox="0 0 100 100" className={`tea-steam pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-1000 motion-reduce:transition-none ${steaming ? 'opacity-60' : 'opacity-0'}`} fill="none" stroke="#eee4d7" strokeWidth="1.5" strokeLinecap="round">
-      {[34, 44, 54].map((x, i) => <path key={x} d={`M${x} 22c-6-6 6-10 0-16`} className={steaming ? 'motion-safe:animate-[tea-steam_3s_ease-in-out_infinite]' : ''} style={{ animationDelay: `${i * -.8}s` }} />)}
+    <svg viewBox="0 0 100 100" data-steam={steaming ? 'brewing' : warm ? 'warm' : 'settled'}
+      className={`tea-steam pointer-events-none absolute inset-0 h-full w-full overflow-visible transition-opacity duration-[1800ms] motion-reduce:transition-none ${steaming ? 'opacity-75' : warm ? 'opacity-45' : 'opacity-0'}`}
+      fill="none" stroke="#fff4e6" strokeWidth="2" strokeLinecap="round" style={{ filter: 'blur(.4px)' }}>
+      {[35, 44, 53].map((x, i) => <path key={x} d={`M${x} ${rim}c-7-8 8-13 1-21s-4-10 0-14`}
+        className={active ? 'motion-safe:animate-[tea-steam_5s_ease-in-out_infinite]' : ''}
+        style={{ opacity: .65, transformBox: 'fill-box', transformOrigin: 'center bottom', animationDuration: `${(steaming ? 4.4 : 6) + i * .6}s`, animationDelay: `${-i * 1.8 - .8}s` }} />)}
     </svg>
   </div>;
 }
 
-export function PaintedMug({ mug, steaming }: { mug: Mug; steaming: boolean }) {
+export function PaintedMug({ mug, steaming, warm }: { mug: Mug; steaming: boolean; warm: boolean }) {
   return <>
     <div className="room-mug-clear absolute pointer-events-none" style={{ left: 810, top: 476, width: 80, height: 70,
       maskImage: 'linear-gradient(to right, transparent, black 6px, black calc(100% - 6px), transparent), linear-gradient(to bottom, transparent, black 6px, black calc(100% - 6px), transparent)', maskComposite: 'intersect' }}>
@@ -44,7 +50,7 @@ export function PaintedMug({ mug, steaming }: { mug: Mug; steaming: boolean }) {
     <div className="room-mug-art absolute pointer-events-none transition-[filter] duration-[2000ms] ease-[ease] motion-reduce:transition-none" data-mug={mug}
       style={{ left: 810, top: 466, width: 80, height: 80,
         filter: 'brightness(var(--plant-brightness, 1)) saturate(var(--plant-saturation, 1)) sepia(var(--plant-sepia, 0))' }}>
-      <TeaMug mug={mug} steaming={steaming} />
+      <TeaMug mug={mug} steaming={steaming} warm={warm} />
     </div>
   </>;
 }
