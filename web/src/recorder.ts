@@ -98,7 +98,7 @@ function db(): Promise<IDBDatabase> {
       d.createObjectStore("chunks", { keyPath: ["take_id", "seq"] });
       d.createObjectStore("takes", { keyPath: "take_id" });
     };
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => { req.result.onversionchange = () => req.result.close(); resolve(req.result); };
     req.onerror = () => reject(req.error);
   });
 }

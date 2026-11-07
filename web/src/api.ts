@@ -336,12 +336,16 @@ export interface BackupSummary { id: string; created_utc: string; files: number;
 export interface BackupStatus { generation: string; last_backup: BackupSummary | null; max_upload_bytes: number }
 export type BackupPreview = Omit<BackupSummary, "download_url">;
 export interface RestoreResult { restored: boolean; generation: string; safety_backup: BackupSummary }
+export interface ResetStatus { generation: string; reset_id: string | null; pending_cleanup?: boolean }
+export interface ResetResult { reset: true; generation: string; reset_id: string }
 export interface StorageOverview {
   data_path: string; backup_path: string; scanned_utc: string; complete: boolean; skipped_entries: number; total_bytes: number;
   categories: { id: "recordings" | "photos" | "backups" | "other"; bytes: number; files: number }[];
 }
 
 export const api = {
+  resetStatus: () => call<ResetStatus>("GET", "/api/reset"),
+  resetAllData: (generation: string, confirmation: string) => call<ResetResult>("POST", "/api/reset", { generation, confirmation }),
   storage: (signal?: AbortSignal) => call<StorageOverview>("GET", "/api/storage", undefined, undefined, signal),
   backups: () => call<BackupStatus>("GET", "/api/backups"),
   createBackup: () => call<BackupSummary>("POST", "/api/backups", {}),

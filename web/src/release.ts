@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "A fresh start when you choose", body: "Settings → Storage now offers Reset all data, with a clear warning and typed confirmation. It deletes your saved data, connections, managed backups and browser choices while keeping Lilt and its bundled courses. Copies exported elsewhere remain.", to: "/settings" },
       { title: "Little sleepy ear flicks", body: "Your cat's ear tips now twitch now and then, and the tail tip gives a gentle swish while it sleeps. Its face and paws stay settled, and the outline follows the moving fur. Reduced motion keeps everything still." },
       { title: "A little movement in their sleep", body: "Your cat breathes softly, stretches now and then and gives a tiny settling twitch, all while curled up on the blanket. Its outline follows along. Reduced motion keeps it still." },
       { title: "Pet your sleepy companion", body: "Your cat shares the mug's gentle outline on hover or keyboard focus. Click for a little pet, or press and hold to choose a companion. Make it yours still opens the choices too." },

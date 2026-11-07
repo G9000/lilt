@@ -1,6 +1,9 @@
 //! Portable backups and a stable dispatcher for recoverable whole-App replacement.
 
 pub mod admission;
+mod reset;
+#[cfg(test)]
+mod reset_tests;
 #[cfg(test)]
 mod tests;
 mod transaction;
@@ -96,6 +99,7 @@ pub struct Controller {
     lease: Arc<ProcessLease>,
     operation: Arc<tokio::sync::Mutex<()>>,
     preview: Mutex<Option<Preview>>,
+    reset_id: Mutex<Option<String>>,
     #[cfg(test)]
     fail_at: Mutex<Option<&'static str>>,
 }
@@ -127,6 +131,9 @@ impl Controller {
         }
         let _transition = transaction::transition(&control)?;
         let lease = Arc::new(ProcessLease::open(&control)?);
+        if control.join(reset::JOURNAL).exists() {
+            lease.exclusive(|| reset::recover(&config.data_dir, &control))?;
+        }
         if control.join("transaction.json").exists() {
             lease.exclusive(|| transaction::recover(&config.data_dir, &control))?;
         }
@@ -135,6 +142,7 @@ impl Controller {
         }
         let generation =
             transaction::generation(&control).context("opening the data generation")?;
+        let reset_id = reset::marker(&control)?;
         let activity = Arc::new(admission::Admission::default());
         let app = App::open_with_activity(config.clone(), activity.clone(), Some(lease.clone()))
             .context("opening practice data")?;
@@ -151,6 +159,7 @@ impl Controller {
             lease,
             operation: Arc::new(tokio::sync::Mutex::new(())),
             preview: Mutex::new(None),
+            reset_id: Mutex::new(reset_id),
             #[cfg(test)]
             fail_at: Mutex::new(None),
         }))
@@ -172,6 +181,21 @@ impl Controller {
     }
     pub fn router(self: &Arc<Self>) -> Router {
         Router::new().fallback(dispatch).with_state(self.clone())
+    }
+
+    fn response(&self, response: Response) -> Response {
+        let mut response = with_generation(response, &self.generation().id);
+        if let Some(id) = self
+            .reset_id
+            .lock()
+            .expect("reset marker lock poisoned")
+            .as_ref()
+        {
+            response
+                .headers_mut()
+                .insert("x-lilt-reset", id.parse().expect("reset ID is a UUID"));
+        }
+        response
     }
 
     fn archive_path(&self, id: &str) -> Result<PathBuf> {
@@ -333,15 +357,39 @@ fn busy(error: impl ToString) -> Response {
 }
 
 async fn dispatch(State(controller): State<Arc<Controller>>, req: Request) -> Response {
+    // An unfinished reset retires the App, but its browser cleanup screen must still load.
+    // Serve only the installed shell and bundles here, never data routes from the old App.
+    let shell =
+        matches!(req.uri().path(), "/" | "/index.html") || req.uri().path().starts_with("/assets/");
+    if shell
+        && matches!(
+            *req.method(),
+            axum::http::Method::GET | axum::http::Method::HEAD
+        )
+        && controller.app().retired.load(Ordering::Acquire)
+    {
+        let response = Router::new()
+            .fallback_service(tower_http::services::ServeDir::new(
+                &controller.config.web_dir,
+            ))
+            .layer(middleware::from_fn_with_state(
+                controller.app(),
+                crate::ai::oauth::gate,
+            ))
+            .oneshot(req)
+            .await
+            .expect("static router is infallible");
+        return controller.response(response);
+    }
     let is_backup =
         req.uri().path() == "/api/backups" || req.uri().path().starts_with("/api/backups/");
-    let is_control = is_backup || req.uri().path() == "/api/storage";
+    let is_control = is_backup || matches!(req.uri().path(), "/api/storage" | "/api/reset");
     let permit = if is_control {
         None
     } else {
         match controller.app().enter() {
             Ok(permit) => Some(permit),
-            Err(error) => return with_generation(busy(error), &controller.generation().id),
+            Err(error) => return controller.response(busy(error)),
         }
     };
     let generation = controller.generation();
@@ -362,14 +410,11 @@ async fn dispatch(State(controller): State<Arc<Controller>>, req: Request) -> Re
         && (supplied.is_some_and(|v| v != generation.id)
             || (generation.required && supplied.is_none()))
     {
-        return with_generation(
-            refused(
-                StatusCode::CONFLICT,
-                "stale_generation",
-                "Your practice data has changed. Reload Lilt before making changes.",
-            ),
-            &generation.id,
-        );
+        return controller.response(refused(
+            StatusCode::CONFLICT,
+            "stale_generation",
+            "Your practice data has changed. Reload Lilt before making changes.",
+        ));
     }
     let result = if is_control {
         let app = controller.app();
@@ -401,7 +446,7 @@ async fn dispatch(State(controller): State<Arc<Controller>>, req: Request) -> Re
             Err(error) => refused(StatusCode::INTERNAL_SERVER_ERROR, "request_failed", error),
         }
     };
-    with_generation(result, &controller.generation().id)
+    controller.response(result)
 }
 
 fn with_generation(mut response: Response, generation: &str) -> Response {
@@ -444,6 +489,16 @@ async fn control_request(State(controller): State<Arc<Controller>>, req: Request
         };
     }
     if req.method() == axum::http::Method::GET {
+        if path == "/api/reset" {
+            let _permit = match controller.activity.enter() {
+                Ok(permit) => permit,
+                Err(error) => return busy(error),
+            };
+            return Json(json!({"generation":controller.generation().id,
+                "reset_id":controller.reset_id.lock().expect("reset marker lock poisoned").clone(),
+                "pending_cleanup":controller.control.join(reset::JOURNAL).exists()}))
+            .into_response();
+        }
         if path == "/api/backups" {
             let last: Option<Backup> =
                 match store::read_json_opt(&controller.control.join("last-backup.json")) {
@@ -500,7 +555,7 @@ async fn control_request(State(controller): State<Arc<Controller>>, req: Request
     }
     let operation = match controller.operation.clone().try_lock_owned() {
         Ok(p) => p,
-        Err(_) => return busy("A backup or restore is already in progress."),
+        Err(_) => return busy("A backup, restore or reset is already in progress."),
     };
     if controller.app().retired.load(Ordering::Acquire) {
         return refused(
@@ -528,8 +583,16 @@ async fn control_request(State(controller): State<Arc<Controller>>, req: Request
         };
     }
     let restore = path == "/api/backups/restore";
-    if !restore && path != "/api/backups" {
+    let reset = path == "/api/reset";
+    if !restore && !reset && path != "/api/backups" {
         return StatusCode::NOT_FOUND.into_response();
+    }
+    if reset && supplied != Some(generation.id.as_str()) {
+        return refused(
+            StatusCode::CONFLICT,
+            "stale_generation",
+            "Reload Lilt before resetting data.",
+        );
     }
     let bytes = match axum::body::to_bytes(req.into_body(), 4096).await {
         Ok(bytes) => bytes,
@@ -555,6 +618,20 @@ async fn control_request(State(controller): State<Arc<Controller>>, req: Request
     } else {
         None
     };
+    let reset_request = if reset {
+        match serde_json::from_slice::<reset::Request>(&bytes) {
+            Ok(request) if request.confirmation == reset::CONFIRMATION => Some(request),
+            _ => {
+                return refused(
+                    StatusCode::BAD_REQUEST,
+                    "invalid_confirmation",
+                    "Type DELETE ALL DATA to confirm the reset.",
+                );
+            }
+        }
+    } else {
+        None
+    };
     let permit = match controller.activity.exclusive() {
         Ok(p) => p,
         Err(e) => return busy(e),
@@ -565,7 +642,12 @@ async fn control_request(State(controller): State<Arc<Controller>>, req: Request
     match tokio::task::spawn_blocking(move || {
         let _operation = operation;
         let _permit = permit;
-        if let Some(request) = restore_request {
+        if let Some(request) = reset_request {
+            controller.reset_all(request).map(|(value, app)| {
+                handle.spawn(crate::analysis::worker(app));
+                value
+            })
+        } else if let Some(request) = restore_request {
             controller.restore(request).map(|(value, app)| {
                 handle.spawn(crate::analysis::worker(app));
                 value
@@ -579,11 +661,17 @@ async fn control_request(State(controller): State<Arc<Controller>>, req: Request
         Ok(Ok(value)) => Json(value).into_response(),
         Ok(Err(error)) => {
             let message = format!("{error:#}");
-            if message.contains("stale_generation") {
+            if reset && failure_controller.app().retired.load(Ordering::Acquire) {
+                refused(StatusCode::SERVICE_UNAVAILABLE, "reset_incomplete", message)
+            } else if message.contains("stale_generation") {
                 refused(
                     StatusCode::CONFLICT,
                     "stale_generation",
-                    "Reload Lilt before restoring this backup.",
+                    if reset {
+                        "Reload Lilt before resetting data."
+                    } else {
+                        "Reload Lilt before restoring this backup."
+                    },
                 )
             } else if message.contains("preview_expired") {
                 refused(
@@ -596,7 +684,9 @@ async fn control_request(State(controller): State<Arc<Controller>>, req: Request
             }
         }
         Err(error) => {
-            if failure_controller.control.join("transaction.json").exists() {
+            if failure_controller.control.join("transaction.json").exists()
+                || failure_controller.control.join(reset::JOURNAL).exists()
+            {
                 failure_controller
                     .app()
                     .retired

@@ -1,5 +1,11 @@
 # Lilt: validation report
 
+## 8 November 2026: Reset all data
+
+Typed confirmation, server deletion/recovery, stale-tab protection and browser cleanup passed
+scratch-only Rust and Chrome checks, including the production UI against a real scratch server.
+The owner's data was not reset. See [reset validation](docs/validation/2026-11-08-reset-all-data.md).
+
 ## 7 November 2026: Sleeping ears and tail
 
 Localized ear flicks and tail swishes passed real-pixel checks for all five cats, stationary

@@ -54,3 +54,32 @@ test("concurrent first mutations share one discovery and preserve other headers"
   await Promise.all([1, 2].map(() => client.fetch("/api/profile", { method: "PUT", headers: { "content-type": "application/json" } })));
   assert.equal(discoveries, 1);
 });
+
+test("a new reset marker blocks old-page writes without replacing its generation", async () => {
+  let marker = "old";
+  const observed: string[] = [];
+  let writes = 0;
+  const client = createDataClient(async (_url, init) => {
+    if (init?.method === "POST") writes++;
+    return new Response("{}", { headers: { "X-Lilt-Generation": marker, "X-Lilt-Reset": marker } });
+  });
+  client.watchReset("old", id => { observed.push(id); });
+  await client.fetch("/api/profile");
+  marker = "new";
+  await client.fetch("/api/profile");
+  await assert.rejects(client.fetch("/api/sessions", { method: "POST" }), /reset/);
+  assert.equal(client.generation(), "old");
+  assert.deepEqual(observed, ["new"]);
+  assert.equal(writes, 0);
+});
+
+test("reconnecting after offline startup detects reset before sending the first mutation", async () => {
+  const urls: string[] = [];
+  const client = createDataClient(async url => {
+    urls.push(String(url));
+    return new Response("{}", { headers: { "X-Lilt-Generation": "fresh", "X-Lilt-Reset": "fresh" } });
+  });
+  client.watchReset(null, () => {});
+  await assert.rejects(client.fetch("/api/profile", { method: "PUT", body: "{}" }), /reset/);
+  assert.deepEqual(urls, ["/healthz"]);
+});

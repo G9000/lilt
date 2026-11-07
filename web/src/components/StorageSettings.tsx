@@ -6,6 +6,7 @@ import { api, type StorageOverview } from "../api";
 import { Row } from "../pages/Settings";
 import { folderResult, storageSize } from "../storage";
 import { isDesktop } from "../useDesktopUpdate";
+import { ResetDataSettings } from "./ResetDataSettings";
 
 const GROUPS = {
   recordings: ["Recordings & analysis", "Original audio, recording chunks and saved measurements."],
@@ -90,5 +91,6 @@ export function StorageSettings() {
       {!isDesktop() && <p className={cx(pages.sxNote, "sx-note")}>Copy the data folder path to find it on the computer running Lilt.</p>}
     </>}
     <p className={cx(pages.sxNote, "sx-note")}>This counts Lilt’s data and backup folders. The installed app, room media stored in your browser, and copies downloaded elsewhere aren’t included.</p>
+    <ResetDataSettings />
   </div>;
 }

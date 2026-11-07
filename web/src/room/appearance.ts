@@ -1,12 +1,15 @@
 import { useSyncExternalStore } from 'react';
 import { setAccent } from '../accent';
 import { DEFAULT_ACCENT } from '../accent-colors';
+import { RESET_MARKER_KEY, RESET_PENDING_KEY } from '../resetBrowserData';
 import { DEFAULT_APPEARANCE, readAppearance, type RoomAppearancePrefs } from './appearance-settings';
 import type { Monitor, MonitorMedia } from './appearance-settings';
 import { prepareMonitorMedia, saveMonitorFile, removeMonitorFile } from './monitor-media';
 export type { RoomAppearancePrefs } from './appearance-settings';
 
 const KEY = 'lilt.room.appearance';
+function resetEpoch() { try { return localStorage.getItem(RESET_MARKER_KEY); } catch { return null; } }
+const openingReset = resetEpoch();
 function stored() {
   const raw = localStorage.getItem(KEY);
   let stamps: { mainRevision?: string; sideRevision?: string } = {};
@@ -32,9 +35,13 @@ function subscribe(fn: () => void) {
 }
 export function useRoomAppearance() { return useSyncExternalStore(subscribe, () => current); }
 function locked<T>(action: () => T | Promise<T>, mustSave = false): Promise<T> {
-  if (navigator.locks) return navigator.locks.request(KEY, action);
+  const guarded = () => {
+    if (resetEpoch() !== openingReset) throw new Error('Lilt data was reset. Open Lilt again before changing your room.');
+    return action();
+  };
+  if (navigator.locks) return navigator.locks.request(KEY, guarded);
   if (mustSave) return Promise.reject(new Error('This browser cannot save monitor uploads. Try an up-to-date browser.'));
-  return Promise.resolve().then(action);
+  return Promise.resolve().then(guarded);
 }
 // Merge fresh preferences under the origin-wide lock before retiring any old files.
 function commit(patch: Partial<RoomAppearancePrefs>, mustSave = false) {
@@ -74,19 +81,22 @@ export function resetRoomAppearance() {
 export async function uploadMonitorMedia(monitor: Monitor, file: File) {
   if (!navigator.locks) throw new Error('This browser cannot save monitor uploads. Try an up-to-date browser.');
   const version = ++versions[monitor];
+  const resetEpoch = localStorage.getItem(RESET_MARKER_KEY);
+  const resetPending = localStorage.getItem(RESET_PENDING_KEY);
   let stamp: string | undefined;
   try { stamp = stored()[monitor]; } catch { throw new Error('Browser storage is unavailable. Try allowing storage for Lilt.'); }
   const prepared = await prepareMonitorMedia(file);
   if (versions[monitor] !== version) throw new Error('The screen changed while opening the file. Choose it again.');
-  const id = await saveMonitorFile(prepared);
-  try {
-    await locked(async () => {
+  await locked(async () => {
+    if (localStorage.getItem(RESET_MARKER_KEY) !== resetEpoch || localStorage.getItem(RESET_PENDING_KEY) !== resetPending) throw new Error('Lilt data was reset. Open Lilt again before uploading a screen.');
+    const id = await saveMonitorFile(prepared);
+    try {
       if (versions[monitor] !== version || stored()[monitor] !== stamp) throw new Error('The screen changed while opening the file. Choose it again.');
       const media: MonitorMedia = { id, name: prepared.name, kind: prepared.kind, paused: matchMedia('(prefers-reduced-motion: reduce)').matches };
       const old = commit(monitor === 'main' ? { mainDecor: 'custom', mainMedia: media } : { decor: 'custom', sideMedia: media }, true);
       await retire(old[monitor === 'main' ? 'mainMedia' : 'sideMedia']);
-    }, true);
-  } catch (error) { await removeMonitorFile(id).catch(() => {}); throw error; }
+    } catch (error) { await removeMonitorFile(id).catch(() => {}); throw error; }
+  }, true);
 }
 export function removeMonitorMedia(monitor: Monitor) {
   return locked(async () => {

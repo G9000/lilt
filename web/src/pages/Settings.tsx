@@ -76,7 +76,7 @@ const PANES: { id: PaneId; title: string; words: string; glyph: ReactNode }[] = 
     glyph: <><path d="M15.6 7A6 6 0 1 0 16 11M15.6 3.5V7H12" /><path d="M10 13V7m-2 2 2-2 2 2" /></> },
   { id: "backups", title: "Backup & restore", words: "backup restore data export import zip recovery copy recordings",
     glyph: <><path d="M4 8h12v8H4zM3 4h14v4H3zM8 11h4" /></> },
-  { id: "storage", title: "Storage", words: "storage space size disk files folder recordings photos backups",
+  { id: "storage", title: "Storage", words: "storage space size disk files folder recordings photos backups reset delete erase fresh",
     glyph: <><path d="M5 4h10l2 8v4H3v-4zM3 12h14M6 14h.01M9 14h.01" /></> },
 ];
 

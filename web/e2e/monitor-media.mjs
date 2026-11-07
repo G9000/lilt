@@ -177,6 +177,9 @@ try {
   await main.getByLabel('Upload main monitor picture', { exact: true }).setInputFiles({ name: 'Leaves.png', mimeType: 'image/png', buffer: picture });
   await page.locator('img.room-monitor-art[data-monitor="main"][data-media-kind="picture"]').waitFor();
   await page.getByRole('button', { name: 'Reset room', exact: true }).click();
+  // Open the second tab before the upload holds the shared appearance/cleanup lock.
+  const resetTab = await context.newPage(); await resetTab.goto(server.resolvedUrls.local[0]);
+  await resetTab.getByRole('button', { name: 'Make it yours', exact: true }).click();
   await page.evaluate(() => {
     window.oldPut = Cache.prototype.put;
     const gate = new Promise(resolve => { window.releaseUpload = resolve; });
@@ -184,14 +187,12 @@ try {
   });
   await main.getByLabel('Upload main monitor video', { exact: true }).setInputFiles({ name: 'Pending.webm', mimeType: 'video/webm', buffer: video });
   await page.waitForFunction(() => window.cacheWaiting);
-  // Reset an already-default room in a second tab while the first tab's upload is pending.
-  const resetTab = await context.newPage(); await resetTab.goto(server.resolvedUrls.local[0]);
-  await resetTab.getByRole('button', { name: 'Make it yours', exact: true }).click();
+  // The queued reset runs after the in-flight cache write and removes its result.
   await resetTab.getByRole('button', { name: 'Reset room', exact: true }).click();
   await page.waitForTimeout(100);
   await page.evaluate(() => { Cache.prototype.put = window.oldPut; window.releaseUpload(); });
-  await page.waitForFunction(() => document.querySelector('.room-media-error')?.textContent.includes('screen changed'));
   await page.waitForFunction(async () => (await (await caches.open('lilt-monitor-media-v1')).keys()).length === 0);
+  await page.waitForFunction(() => document.querySelectorAll('.room-monitor-art').length === 0);
   assert.equal(await page.locator('.room-monitor-art').count(), 0, 'a pending upload cannot resurrect after cross-tab reset');
   await resetTab.close();
   await main.getByLabel('Upload main monitor video', { exact: true }).setInputFiles({ name: 'Rain.webm', mimeType: 'video/webm', buffer: video });

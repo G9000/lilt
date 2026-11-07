@@ -554,7 +554,30 @@ is using a separately started server, use the copyable path instead. Browsers al
 on the computer running Lilt. Clipboard or folder-opening failures leave the path selectable.
 
 The installed app itself, room media stored only in the browser and downloaded copies elsewhere
-are outside these totals. Storage does not delete or move files.
+are outside these totals. Refreshing the count does not delete or move files.
+
+### Reset all data
+
+In **Settings → Storage**, choose **Reset all data…**, read the warning, then type
+**DELETE ALL DATA** and choose **Delete all data**. Cancel leaves everything in place.
+This permanently deletes recordings, photos, progress, custom courses, notes, settings,
+sign-ins and AI connections, together with Lilt-managed backups and recovery files.
+No safety backup is kept. The installed app and bundled courses remain; downloaded or
+exported copies elsewhere are not removed.
+
+The reset also clears this browser address's Lilt preferences, room choices and layout,
+sticky notes, flashcard progress, saved recording chunks and uploaded monitor media.
+Other browser addresses clear their local Lilt data when they next connect. Unrelated
+browser data is left alone. A small reset marker and deletion audit remain so old tabs
+cannot write their previous data back.
+
+Finish recording, saving, analysis or an update first, and close other Lilt servers or
+MCP processes using the same data folder. Reset is available locally, not through remote
+AI connections. Keep the window open until Lilt confirms completion. If browser cleanup
+is blocked, close other Lilt windows and choose **Retry browser cleanup**; this does not
+repeat the server reset. If server cleanup was interrupted, restart Lilt to finish deleting
+the old files. Before the reset commits, a failure puts the previous data back; after it
+commits, recovery finishes deletion and does not restore the old data.
 
 ### Backup and restore
 
