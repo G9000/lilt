@@ -45,6 +45,16 @@ try {
       await visibility('.room-player-art, .room-player-shadow, .room-player-clear, .room-chair-foreground', false);
       assert.ok(difference(composed, original) < 4, `${light}/${player}: original chair pixels cover the player (${difference(composed, original).toFixed(2)})`);
       assert.ok(difference(withoutChair, original) > 8, `${light}/${player}: sampled chair region actually overlaps the device (${difference(withoutChair, original).toFixed(2)})`);
+      // Read the rendered desk immediately beneath the exposed right foot.
+      const foot = await page.locator('.room-player-shadow ellipse').last().evaluate(el => {
+        const point = new DOMPoint(Number(el.getAttribute('cx')), Number(el.getAttribute('cy')) + 12).matrixTransform(el.getScreenCTM());
+        return { x: point.x - 2, y: point.y, width: 4, height: 2 };
+      });
+      const contactPixels = await page.screenshot({ clip: foot });
+      await visibility('.room-player-shadow', true);
+      const unshadowedPixels = await page.screenshot({ clip: foot });
+      await visibility('.room-player-shadow', false);
+      assert.notDeepEqual(contactPixels, unshadowedPixels, `${light}/${player}: shadow touches the desk at the right foot`);
       if (shots) await page.screenshot({ path: path.join(shots, `${light}-${player}.png`), clip: clip(600, 385, 285, 210) });
     }
   }
@@ -70,5 +80,5 @@ try {
     await page.evaluate(async () => { const { radio } = await import('/src/desk/lofi.ts'); radio.pause(); });
   }
   assert.deepEqual(errors, []);
-  console.log('PASS: rendered chair occlusion for all four players in all four lights; player bodies stay fixed during playback.');
+  console.log('PASS: rendered chair occlusion and foot contact shadows for all four players in all four lights; player bodies stay fixed during playback.');
 } finally { await browser?.close(); await server.close(); }

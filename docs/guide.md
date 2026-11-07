@@ -238,8 +238,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    - **Your room player:** open Music from the painted radio or the **Music** room shortcut,
      then expand **Change player**. Choose **Cream cassette, Sage boombox, Walnut radio or
      Record player**. The shaded artwork stays in the desk's radio spot and follows the room's
-     light. Each design sits at its own size and angle, with the chair and pink throw naturally
-     overlapping it in front. Tape reels and the record label turn while music plays; the walnut radio's tuning
+     light. Each design sits at its own size and angle, with shadows attached to its feet and
+     the chair and pink throw overlapping it in front. Tape reels and the record label turn while music plays; the walnut radio's tuning
      light gently pulses. They stop for paused music, microphone use, hidden tabs and when you
      enter the desk. Reduced motion keeps the details still. The same artwork follows lo-fi or
      Spotify playback; choosing a design doesn't start music or change your source.
