@@ -991,7 +991,7 @@ export const practice = {
     `[.ve_&_button]:font-semibold`,
   "ve-cover": `[height:clamp(128px,_19vh,_190px)] [background-size:cover] [background-position:center_40%] ` +
     `[@media_(max-width:_860px)]:h-[110px]`,
-  "ve-home-col": `[.ve-col&]:[padding-top:var(--space-8)]`,
+  "ve-home-col": `[--content-width:960px] [.ve-col&]:[padding-top:var(--space-8)]`,
   "ve-md": `w-full [&:not(.md)]:text-ink-2 [&:not(.md)]:text-[16px] [&:not(.md)]:[line-height:1.7] ` +
     `[&:not(.md)_>_h2]:[margin-top:var(--space-8)] [&:not(.md)_>_h2]:mr-[0] ` +
     `[&:not(.md)_>_h2]:[margin-bottom:var(--space-4)] [&:not(.md)_>_h2]:ml-[0] ` +

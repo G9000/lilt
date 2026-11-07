@@ -463,8 +463,13 @@ shortcuts are quiet links, and its guide is a disclosure between hairlines.
 
 The chapter comfort footer uses the full reading width, with 24px above its divider and 16px
 inside it. Course lists use rows between hairlines; course detail pages lead with linked chapters
-before copy management. Markdown uses a 1.65 line height and one-em paragraph gaps, with quiet
-bordered quotes and a separate footnote area. Tables and code scroll within the reading column.
+before copy management. Markdown reads like a quiet modern page (`web/src/ui/markdown.ts`):
+16px body at a 1.7 line height, prose stopping at about 68 characters, headings in semibold with
+more room above (2.2em before an h2) than below, and links in ink with a soft accent underline that
+turns accent on hover. Quotes are a 1px hairline on the left, tables are plain rows with a stronger
+rule under the header (no zebra), and pictures are framed with a hairline and soft shadow at the
+reading width. Footnotes sit in their own area. Tables and code scroll within the reading column.
+Practice Home, like a chapter, is a centered 960px column under its full-width cover.
 
 Course homes, chapters, guides, practice texts and course details share this width, including
 other courses and their guided practice and recordings pages. Course browser windows use the

@@ -48,7 +48,8 @@ try {
       const layout = await page.evaluate(() => {
         const q = s => document.querySelector(s);
         const rect = s => q(s).getBoundingClientRect();
-        const title = rect(".ve-head h1"), actions = rect(".ve-head-actions");
+        // Remix stays hidden until it works, so the header may have no actions to overlap.
+        const title = rect(".ve-head h1"), actions = q(".ve-head-actions") ? rect(".ve-head-actions") : { left: 0, right: 0, top: 0, bottom: 0 };
         const scroll = q(".ve-page");
         return {
           overflow: scroll.scrollWidth > scroll.clientWidth + 1,
