@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><base href="/"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Room readiness fixture</title></head>
+<body><div id="root"></div><script type="module">
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Room } from '/src/room/Room.tsx';
+import { RoomAppearance } from '/src/room/RoomAppearance.tsx';
+import '/src/styles.css';
+function Fixture() {
+  const [mount, setMount] = useState(0);
+  window.remountRoom = () => setMount(value => value + 1);
+  return React.createElement(React.Fragment, null,
+    React.createElement(Room, {key: mount, inside: false, onEnter: () => {}, cards: 0, done: false}),
+    React.createElement('header', {style: {position: 'fixed', zIndex: 100}}, React.createElement(RoomAppearance)));
+}
+createRoot(document.getElementById('root')).render(React.createElement(React.StrictMode, null, React.createElement(Fixture)));
+</script></body></html>

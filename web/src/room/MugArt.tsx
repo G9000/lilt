@@ -1,25 +1,25 @@
+import { loadRoomImage, useRoomArtReady } from './roomReadiness';
 import { useEffect, useState } from 'react';
 import { LIGHTS, W, H } from './scene';
 import { type Mug } from './tea';
 import { ObjectOutline } from './ObjectOutline';
 
 const mugImage = (mug: Mug) => `room/mugs/${mug}.png`;
-function loadImage(src: string) {
-  return new Promise<void>((resolve, reject) => {
-    const image = new Image(); image.onload = () => resolve(); image.onerror = () => reject(new Error('Mug artwork unavailable')); image.src = src;
-  });
-}
+
 
 export function useMugArtwork(mug: Mug) {
   const [shown, setShown] = useState<Mug | null>(null);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [settled, setSettled] = useState<typeof mug | null>(null);
+  useRoomArtReady('mug', settled === mug);
   useEffect(() => {
     let ignore = false;
     setFailed(false);
+    setSettled(null);
     // Keep the painted cup until the full replacement is ready; stale choices cannot replace it.
-    void Promise.all([mugImage(mug), ...LIGHTS.map(light => `room/mugs/clear-${light}.png`)].map(loadImage))
-      .then(() => { if (!ignore) setShown(mug); }, () => { if (!ignore) setFailed(true); });
+    void Promise.all([mugImage(mug), ...LIGHTS.map(light => `room/mugs/clear-${light}.png`)].map(loadRoomImage))
+      .then(() => { if (!ignore) { setShown(mug); setSettled(mug); } }, () => { if (!ignore) { setFailed(true); setSettled(mug); } });
     return () => { ignore = true; };
   }, [mug, attempt]);
   return { shown, failed, retry: () => setAttempt(n => n + 1) };

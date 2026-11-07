@@ -1,3 +1,4 @@
+import { loadRoomImage, useRoomArtReady } from './roomReadiness';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { roomStyles } from '../desk/roomStyles';
@@ -15,11 +16,7 @@ function PlantShape({ plant, count, outline = false }: { plant: Plant; count: nu
 }
 
 function storedPlant() { try { return readPlant(localStorage.getItem(PLANT_KEY)); } catch { return readPlant(null); } }
-function loadImage(src: string) {
-  return new Promise<void>((resolve, reject) => {
-    const image = new Image(); image.onload = () => resolve(); image.onerror = () => reject(new Error('Plant artwork unavailable')); image.src = src;
-  });
-}
+
 export const openRoomPlant = () => window.dispatchEvent(new Event('lilt:plant'));
 
 /** The room's floor plant: a local background repair and a shaded cutout, both in painting pixels. */
@@ -30,6 +27,8 @@ export function RoomPlant({ days, inside }: { days: number; inside: boolean }) {
   const [unsaved, setUnsaved] = useState(false);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [settled, setSettled] = useState<typeof plant | null>(null);
+  useRoomArtReady('plant', settled === plant);
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const count = plantDays(days);
@@ -43,9 +42,10 @@ export function RoomPlant({ days, inside }: { days: number; inside: boolean }) {
   useEffect(() => {
     let ignore = false;
     setFailed(false);
+    setSettled(null);
     // Keep the original painting (or the last loaded plant) until the entire replacement is ready.
-    void Promise.all([plantImage(plant), ...LIGHTS.map(light => `room/plants/clear-${light}.png`)].map(loadImage))
-      .then(() => { if (!ignore) setShown(plant); }, () => { if (!ignore) setFailed(true); });
+    void Promise.all([plantImage(plant), ...LIGHTS.map(light => `room/plants/clear-${light}.png`)].map(loadRoomImage))
+      .then(() => { if (!ignore) { setShown(plant); setSettled(plant); } }, () => { if (!ignore) { setFailed(true); setSettled(plant); } });
     return () => { ignore = true; };
   }, [plant, attempt]);
   useEffect(() => {

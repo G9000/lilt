@@ -1,0 +1,13 @@
+.room-hardware-finish {
+  filter: brightness(var(--plant-brightness, 1)) saturate(var(--plant-saturation, 1)) sepia(var(--plant-sepia, 0));
+  transition: filter 2000ms ease;
+}
+.room:not(.inside) .room-stage.settled:has(.room-microphone-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-microphone-outline,
+.room:not(.inside) .room-stage.settled:has(.room-main-frame-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-main-frame-outline,
+.room:not(.inside) .room-stage.settled:has(.room-side-frame-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-side-frame-outline,
+.room.hovering:not(.inside) .room-stage.settled:has(.room-main-frame-target[aria-expanded="false"]) .room-main-frame-outline { opacity: 1; }
+.room:has(.room-main-frame-art) .room-screen-light { display: none; }
+.room .room-hardware-target[data-outlined="true"]::before { display: none; }
+.room .room-hardware-target[data-outlined="true"]:focus-visible { outline: none; }
+@media (prefers-reduced-motion: reduce) { .room-hardware-finish { transition: none; } }
+@media (max-width: 767px), (max-aspect-ratio: 4/3) { .room .room-hardware-target { display: none; } }

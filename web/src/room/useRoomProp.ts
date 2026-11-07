@@ -1,3 +1,4 @@
+import { loadRoomImage, useRoomArtReady } from './roomReadiness';
 import { useEffect, useState } from 'react';
 import { LIGHTS } from './scene';
 import { propImage, propKey, readProp, type PropKind, type PropDesign } from './roomPropOptions';
@@ -5,22 +6,21 @@ import { propImage, propKey, readProp, type PropKind, type PropDesign } from './
 function stored(kind: PropKind) {
   try { return readProp(kind, localStorage.getItem(propKey(kind))); } catch { return readProp(kind, null); }
 }
-function loadImage(src: string) {
-  return new Promise<void>((resolve, reject) => {
-    const image = new Image(); image.onload = () => resolve(); image.onerror = () => reject(new Error('Artwork unavailable')); image.src = src;
-  });
-}
+
 
 export function useRoomProp(kind: PropKind) {
   const [selected, setSelected] = useState(() => stored(kind));
   const [shown, setShown] = useState<PropDesign | null>(null);
   const [failed, setFailed] = useState(false), [unsaved, setUnsaved] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [settled, setSettled] = useState<typeof selected | null>(null);
+  useRoomArtReady(kind, settled === selected);
   useEffect(() => {
     let ignore = false;
     setFailed(false);
-    void Promise.all([propImage(selected), ...LIGHTS.map(light => `room/props/clear-${light}.png`)].map(loadImage))
-      .then(() => { if (!ignore) setShown(selected); }, () => { if (!ignore) setFailed(true); });
+    setSettled(null);
+    void Promise.all([propImage(selected), ...LIGHTS.map(light => `room/props/clear-${light}.png`)].map(loadRoomImage))
+      .then(() => { if (!ignore) { setShown(selected); setSettled(selected); } }, () => { if (!ignore) { setFailed(true); setSettled(selected); } });
     return () => { ignore = true; };
   }, [selected, attempt]);
   useEffect(() => {

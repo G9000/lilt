@@ -12,10 +12,6 @@ export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () 
   const music = useMusic();
   const { shown } = usePlayer();
   return <>
-    <button type="button" className={["room-object room-microphone", roomStyles["room-object"], roomStyles["room-microphone"]].join(" ")} aria-label="Open Practice" tabIndex={inside ? -1 : 0}
-      disabled={inside} onClick={onEnter} onPointerDown={event => event.stopPropagation()} onPointerMove={event => event.stopPropagation()}>
-      <span aria-hidden="true">Open Practice</span>
-    </button>
     <button type="button" className={["room-object room-music", roomStyles["room-object"], roomStyles["room-music"]].join(" ")} aria-label="Open music player" tabIndex={inside ? -1 : 0}
       disabled={inside} onClick={openMusic} aria-haspopup="dialog" aria-expanded={music.open} data-outlined={!!shown}
       onPointerDown={event => event.stopPropagation()} onPointerMove={event => event.stopPropagation()}>

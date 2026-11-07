@@ -1,5 +1,12 @@
 # Lilt: validation report
 
+## 7 November 2026: Microphone, monitor frames and first room reveal
+
+Independent hardware finishes, whole-object outlines, compact controls and saved-artwork refresh
+loading passed isolated Chrome checks. Web tests passed 169/169, server tests 129/129, and Python
+47 with one skip; types, scratch build, server/desktop formatting and strict Clippy passed.
+See [hardware and refresh validation](docs/validation/2026-11-07-microphone-monitors.md).
+
 ## 7 November 2026: Recording and guided practice for every course
 
 Every course supports optional audio, course-scoped recordings, and guided tasks with saved

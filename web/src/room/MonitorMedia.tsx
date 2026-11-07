@@ -3,6 +3,7 @@ import { CSSProperties, useEffect, useRef, useState, useSyncExternalStore } from
 import { MonitorMedia as Media, Monitor, ROOM_DECOR, RoomAppearancePrefs } from './appearance-settings';
 import { loadMonitorFile } from './monitor-media';
 import { MAIN_SCREEN, SIDE_SCREEN, quadMatrix } from './scene';
+import { loadRoomImage, useRoomArtReady } from './roomReadiness';
 
 const allowed = new Set<string>();
 const issues = new Map<string, string>();
@@ -28,23 +29,33 @@ export function useMonitorPaused(media?: Media) {
 
 function useFile(media: Media) {
   const [file, setFile] = useState<{ id: string; url: string; poster: string }>();
+  const [settled, setSettled] = useState<string>();
   useEffect(() => {
     let disposed = false;
     let urls: string[] = [];
-    void loadMonitorFile(media.id).then(data => {
+    void loadMonitorFile(media.id).then(async data => {
       if (disposed) return;
       urls = [URL.createObjectURL(data.file), URL.createObjectURL(data.poster)];
+      await Promise.all((media.kind === 'gif' ? urls : [urls[1]]).map(loadRoomImage));
+      if (disposed) return;
       setFile({ id: media.id, url: urls[0], poster: urls[1] });
-    }, error => { if (!disposed) report(media.id, error instanceof Error ? error.message : 'This upload could not be opened. Choose the file again.', true); });
+      setSettled(media.id);
+    }).catch(error => {
+      if (!disposed) {
+        report(media.id, error instanceof Error ? error.message : 'This upload could not be opened. Choose the file again.', true);
+        setSettled(media.id);
+      }
+    });
     return () => { disposed = true; urls.forEach(url => URL.revokeObjectURL(url)); };
   }, [media.id]);
-  return file?.id === media.id ? file : undefined;
+  return { file: file?.id === media.id ? file : undefined, ready: settled === media.id };
 }
 
 export function MonitorMedia({ media, active, className, monitor, style }: {
   media: Media; active: boolean; className: string; monitor: Monitor; style?: CSSProperties;
 }) {
-  const file = useFile(media);
+  const { file, ready } = useFile(media);
+  useRoomArtReady(`monitor-${monitor}`, ready);
   const paused = useMonitorPaused(media);
   const [visible, setVisible] = useState(!document.hidden);
   const video = useRef<HTMLVideoElement>(null);
@@ -75,11 +86,23 @@ export function MonitorMedia({ media, active, className, monitor, style }: {
 export function MonitorScreen({ monitor, appearance, inside }: { monitor: Monitor; appearance: RoomAppearancePrefs; inside: boolean }) {
   const decor = monitor === 'main' ? appearance.mainDecor : appearance.decor;
   const media = monitor === 'main' ? appearance.mainMedia : appearance.sideMedia;
+  const preset = decor !== 'custom' && decor !== 'original' ? ROOM_DECOR[decor] : null;
+  const [settled, setSettled] = useState<string | null>(null);
+  const [failed, setFailed] = useState<string | null>(null);
+  useRoomArtReady(`monitor-preset-${monitor}`, !preset || settled === preset);
+  useEffect(() => {
+    if (!preset) return;
+    let ignore = false;
+    void loadRoomImage(preset).then(() => {
+      if (!ignore) { setFailed(null); setSettled(preset); }
+    }, () => { if (!ignore) { setFailed(preset); setSettled(preset); } });
+    return () => { ignore = true; };
+  }, [preset]);
   const style = { transform: quadMatrix(520, 300, monitor === 'main' ? MAIN_SCREEN : SIDE_SCREEN) };
   if (decor === 'original' || (decor === 'custom' && !media)) return null;
   return <div className={["room-monitor-screen", roomStyles["room-monitor-screen"]].join(" ")} style={style}>
     {decor === 'custom'
       ? media && <MonitorMedia key={media.id} media={media} monitor={monitor} active={!inside} className={["room-monitor-art", roomStyles["room-monitor-art"]].join(" ")} />
-      : <img className={["room-monitor-art", roomStyles["room-monitor-art"]].join(" ")} data-monitor={monitor} data-decor={decor} src={ROOM_DECOR[decor]} alt="" draggable={false} />}
+      : failed !== preset && <img className={["room-monitor-art", roomStyles["room-monitor-art"]].join(" ")} data-monitor={monitor} data-decor={decor} src={ROOM_DECOR[decor]} alt="" draggable={false} />}
   </div>;
 }

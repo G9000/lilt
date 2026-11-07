@@ -5,6 +5,16 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+**Desk finishes** gives the microphone and each physical monitor frame its own compact picker:
+original black, warm cream, soft sage and brushed silver. Fixed registered masks preserve the
+boom attachment, frame perspective and stands. Screen media is above the frame art; the mug
+repair is below it. Pale-blue contours follow the whole assembly and each frame/stand, including
+their openings, without brightening the interior. The screen itself remains the entry target.
+Make it yours exposes all three pickers on phones; the microphone picker retains Open Practice.
+Saved choices, retry, storage feedback and dismissal focus follow the existing prop controls.
+First reveal waits for decoded saved artwork and monitor content, or explicit failure fallback;
+later swaps never hide the room. No timer stands in for readiness.
+
 **Your chair** opens a compact 360px picker when clicked, with Mesh & pink throw,
 Cream upholstered, Sage padded and Walnut & cane choices. A Chair shortcut serves narrow
 screens. The original painting remains the default; replacements use stationary cutouts,

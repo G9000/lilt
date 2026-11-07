@@ -1,3 +1,4 @@
+import { useRoomArtReady } from './roomReadiness';
 import { useEffect, useId, useState } from 'react';
 import { useMusic } from '../desk/musicState';
 import { useRadio } from '../desk/lofi';
@@ -21,7 +22,8 @@ export function PlayerBackdrop() {
 
 export function RoomPlayer({ inside }: { inside: boolean }) {
   const shadowId = useId();
-  const { shown } = usePlayer();
+  const { shown, ready } = usePlayer();
+  useRoomArtReady('player', ready);
   const music = useMusic(), radio = useRadio();
   const [hidden, setHidden] = useState(document.hidden);
   useEffect(() => {

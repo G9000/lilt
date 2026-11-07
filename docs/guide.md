@@ -141,7 +141,15 @@ boombox, radio or record-player artwork; the CD controls stay the same.
 The compact player in the top bar shows your selection and play/pause; click
 the artwork or title to reopen Music, including when paused. Click the camera to choose Classic black,
 Silver film, Cream instant or Sage compact, or use **Open Photos** inside its compact picker.
-The microphone opens Practice using the same next-card/Start here entry as the computer. On phones,
+Click the microphone to choose Original black, Warm cream, Soft sage or Brushed silver; **Open Practice**
+inside its picker uses the same next-card/Start here entry as the computer. Both monitor frames have
+independent finish choices: click a frame or stand, or open **Make it yours → Desk finishes**.
+Your screen pictures stay in place, and clicking the main screen still enters the computer.
+Hover or focus outlines the whole microphone assembly or monitor frame and stand. Choices stay in
+this browser, survive Reset layout, and keep the previous artwork if a new finish cannot load.
+The room waits for your saved artwork before first appearing, so refresh no longer flashes the
+original objects before replacing them. Later design changes keep the current room visible.
+On phones, use **Make it yours → Desk finishes** for these pickers.
 Photos/Practice/Music/Plants/Tea/Chair/Coffee/Camera shortcuts keep these actions available even when the objects are cropped;
 portrait tablets get the same shortcuts. The default card stack sits in the lower-right
 corner and becomes smaller on shorter screens. You can still drag the cards.
@@ -150,6 +158,8 @@ The isolated browser check uses the actual painting and controls, with no practi
 `cd web && node e2e/room-appearance.mjs [screenshot-folder]`.
 Music navigation and playback have a separate isolated check:
 `cd web && node e2e/music.mjs [screenshot-folder]`.
+Hardware finishes and refresh loading have isolated checks in `e2e/room-hardware.mjs` and
+`e2e/room-readiness.mjs`, using private Vite servers and temporary browser storage.
 Monitor uploads and playback have an isolated check with locally generated media:
 `cd web && node e2e/monitor-media.mjs [screenshot-folder]`.
 

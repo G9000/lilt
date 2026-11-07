@@ -1,3 +1,5 @@
+import { loadRoomImage, RoomReadinessProvider, useRoomArtReady, useRoomReveal } from './roomReadiness';
+import { CHAIR_MASK } from './chair';
 import { roomStyles } from "../desk/roomStyles";
 import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
@@ -16,6 +18,7 @@ import { ChairPicker } from './ChairPicker';
 import { plantLight } from './plant';
 import { RoomProp, RoomPropBackdrop } from './RoomProps';
 import { useRoomProp } from './useRoomProp';
+import { RoomHardware } from './RoomHardware';
 
 /**
  * The illustrated room. Outside, it is the whole screen; the middle monitor is a way in. Inside,
@@ -72,7 +75,24 @@ const FLY_MS = 1100;
 const PET_SAYS = ["purr… :3", "prrrr <3", "mrrp!", "*happy cat noises*"];
 
 /** `children` float in the painting: position them in painting pixels; `--inv` undoes the camera's scale. */
-export function Room({ inside, onEnter, cards, done, days = 0, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; days?: number; children?: ReactNode }) {
+function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; days?: number; children?: ReactNode }) {
+  const { ready, paintRef } = useRoomReveal();
+  const [baseReady, setBaseReady] = useState(false);
+  const [baseSources, setBaseSources] = useState<Record<string, string | undefined> | null>(null);
+  const [catReady, setCatReady] = useState(false);
+  useRoomArtReady('painting', baseReady);
+  useRoomArtReady('cat', catReady);
+  useEffect(() => {
+    let ignore = false;
+    void Promise.allSettled([...LIGHTS.map(roomUrl), CHAIR_MASK].map(loadRoomImage)).then(results => {
+      if (ignore) return;
+      const fallback = LIGHTS.find((_, index) => results[index].status === 'fulfilled');
+      setBaseSources(Object.fromEntries(LIGHTS.map((light, index) => [light,
+        results[index].status === 'fulfilled' ? roomUrl(light) : fallback ? roomUrl(fallback) : undefined])));
+      setBaseReady(true);
+    });
+    return () => { ignore = true; };
+  }, []);
   const appearance = useRoomAppearance();
   const coffee = useRoomProp('coffee'), camera = useRoomProp('camera');
   const appearanceRef = useRef(appearance); appearanceRef.current = appearance;
@@ -95,10 +115,11 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
   const redraw = useRef(() => {});
   useEffect(() => { redraw.current(); }, [appearance]);
   useEffect(() => {
-    const image = new Image();
-    image.onload = () => { frame.current.catImage = image; redraw.current(); };
-    image.src = CAT_URL;
-    return () => { image.onload = null; frame.current.catImage = undefined; };
+    let ignore = false;
+    void loadRoomImage(CAT_URL).then(image => {
+      if (!ignore) { frame.current.catImage = image; redraw.current(); setCatReady(true); }
+    }, () => { if (!ignore) setCatReady(true); });
+    return () => { ignore = true; frame.current.catImage = undefined; };
   }, []);
 
   // Fly the camera whenever we go in or out.
@@ -255,17 +276,18 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
   return (
     <div className={[`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`, roomStyles["room"]].join(" ")} aria-hidden={inside} onPointerDown={onPoint} onPointerMove={onHover}>
       <div className={settledAtStart ? ["room-stage settled", roomStyles["room-stage"]].join(" ") : ["room-stage", roomStyles["room-stage"]].join(" ")} ref={stage} style={{ width: W, height: H }}>
-        <div className={["room-paint", roomStyles["room-paint"]].join(" ")} data-light={appearance.light}>
+        <div className={["room-paint", roomStyles["room-paint"]].join(" ")} data-light={appearance.light} ref={paintRef} data-ready={ready} style={{ visibility: ready ? 'visible' : 'hidden' }}>
         {LIGHTS.map((l) => (
-          <img key={l} ref={(el) => { arts.current[l] = el; }} className={["room-art", roomStyles["room-art"]].join(" ")} src={roomUrl(l)} alt="" draggable={false}
+          <img key={l} ref={(el) => { arts.current[l] = el; }} className={["room-art", roomStyles["room-art"]].join(" ")} src={baseSources ? baseSources[l] : roomUrl(l)} alt="" draggable={false}
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />
         ))}
         <RoomPropBackdrop kind="coffee" shown={coffee.shown} />
         <RoomPropBackdrop kind="camera" shown={camera.shown} />
-        <MonitorScreen monitor="main" appearance={appearance} inside={inside} />
-        <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
         <RoomPlant days={days} inside={inside} />
         <TeaBreak inside={inside} />
+        <RoomHardware inside={inside} onEnter={onEnter} />
+        <MonitorScreen monitor="main" appearance={appearance} inside={inside} />
+        <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
         <RoomProp kind="coffee" state={coffee} inside={inside} onCoffee={onCoffee} />
         <RoomProp kind="camera" state={camera} inside={inside} />
         <PlayerBackdrop />
@@ -295,4 +317,8 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
       {say && <div className={["room-bubble", roomStyles["room-bubble"]].join(" ")} ref={bubble}>{say}</div>}
     </div>
   );
+}
+
+export function Room(props: Parameters<typeof RoomScene>[0]) {
+  return <RoomReadinessProvider><RoomScene {...props} /></RoomReadinessProvider>;
 }

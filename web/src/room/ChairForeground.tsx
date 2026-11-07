@@ -1,3 +1,4 @@
+import { useRoomArtReady } from './roomReadiness';
 import { H, LIGHTS, roomUrl, W } from './scene';
 import { BED_MASK, CHAIR_MASK, chairImage } from './chair';
 import { useChair } from './chairState';
@@ -25,7 +26,8 @@ export function ChairBackdrop() {
 
 /** Chair and bed silhouettes preserve the room's depth independently of music loading. */
 export function ChairForeground() {
-  const { shown } = useChair();
+  const { shown, ready } = useChair();
+  useRoomArtReady('chair', ready);
   if (shown === 'original') return <MaskedPainting mask={CHAIR_MASK} className="room-chair-foreground" />;
   return <>
     <img className="room-chair-foreground room-chair-art absolute inset-0 pointer-events-none select-none max-w-none transition-[filter] duration-[2000ms] ease-[ease] motion-reduce:transition-none"

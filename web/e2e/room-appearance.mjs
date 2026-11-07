@@ -69,6 +69,7 @@ try {
   await page.getByRole('button',{name:/Sit down at the computer/}).click();
   assert.equal(await page.evaluate(()=>window.entered),1,'computer hit target remains aligned');
   await page.setViewportSize({width:1440,height:950});
+  await page.getByRole('button',{name:'Choose microphone',exact:true}).click({position:{x:190,y:110}});
   await page.getByRole('button',{name:'Open Practice',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.entered),2,'microphone uses the existing Practice entry');
   await page.getByRole('button',{name:'Choose your camera',exact:true}).click();
@@ -128,6 +129,7 @@ try {
   await home.getByRole('link',{name:'Open Photos',exact:true}).click();
   await home.waitForFunction(()=>location.hash==='#/photos');
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
+  await home.getByRole('button',{name:'Choose microphone',exact:true}).click({position:{x:190,y:110}});
   await home.getByRole('button',{name:'Open Practice',exact:true}).click();
   await home.waitForFunction(()=>location.hash.startsWith('#/deck'));
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
