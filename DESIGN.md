@@ -98,7 +98,13 @@ pulse. Motion pauses at the desk, in hidden tabs, while the microphone ducks mus
 motion. Choosing a design never starts music or changes its source. Browser-local preferences
 survive Reset layout; failed artwork loads retain the original or previous player with a retry.
 The camera opens Photos and the microphone opens the same Practice entry as the computer.
-Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music/Plants/Tea/Chair row
+The mug, plant and player gain a pale-blue silhouette outline with a soft bloom on hover or
+keyboard focus, like the chair. Their current cutouts supply the contour: the plant's canopy
+growth stays aligned, steam and contact shadows are excluded, and the player outline remains
+behind the chair. Outlines hide while their controls are open or the desk is entered; reduced
+motion removes the fade. Existing labels and targets remain, with the old target glow retained
+only until replacement artwork is ready. Camera and microphone targets keep their glow.
+On narrow screens, a compact Photos/Practice/Music/Plants/Tea/Chair row
 keeps these actions reachable when their painted objects are cropped. Music opens without
 playing or changing the route or camera. Its metallic CD with cover artwork sits above source tabs,
 a mood select, skip/play/pause and volume controls; four artwork choices fit in one row.

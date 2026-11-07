@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LIGHTS, W, H } from './scene';
 import { type Mug } from './tea';
+import { ObjectOutline } from './ObjectOutline';
 
 const mugImage = (mug: Mug) => `room/mugs/${mug}.png`;
 function loadImage(src: string) {
@@ -51,6 +52,7 @@ export function PaintedMug({ mug, steaming, warm }: { mug: Mug; steaming: boolea
       style={{ left: 810, top: 466, width: 80, height: 80,
         filter: 'brightness(var(--plant-brightness, 1)) saturate(var(--plant-saturation, 1)) sepia(var(--plant-sepia, 0))' }}>
       <TeaMug mug={mug} steaming={steaming} warm={warm} />
+      <ObjectOutline kind="mug"><img src={mugImage(mug)} alt="" draggable={false} className="block h-full w-full" /></ObjectOutline>
     </div>
   </>;
 }

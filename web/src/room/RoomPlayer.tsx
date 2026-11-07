@@ -6,6 +6,7 @@ import { playerImage } from './player';
 import { usePlayer } from './playerState';
 import { PlayerMotion } from './PlayerMotion';
 import { PLAYER_PLACEMENT } from './playerPlacement';
+import { ObjectOutline } from './ObjectOutline';
 
 export function PlayerBackdrop() {
   const { shown } = usePlayer();
@@ -48,5 +49,6 @@ export function RoomPlayer({ inside }: { inside: boolean }) {
       </svg>
       <img src={playerImage(shown)} alt="" draggable={false} className="relative block h-full w-full max-w-none" />
       <PlayerMotion player={shown} playing={playing} moving={moving} />
+      <ObjectOutline kind="player"><img src={playerImage(shown)} alt="" draggable={false} className="block h-full w-full max-w-none" /></ObjectOutline>
     </div>;
 }

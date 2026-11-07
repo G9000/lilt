@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Follow your favourite things", body: "Your mug, plant and music player now share the chair's pale-blue outline on hover or keyboard focus. It follows each design, including your plant's growing leaves." },
       { title: "Follow the chair's outline", body: "Hover or focus your chair to see its whole shape outlined like the monitor. You can click the back, arms or visible wheels to choose a different chair." },
       { title: "A chair of your own", body: "Click your chair to choose the original mesh and pink throw, cream upholstery, sage padding or walnut and cane. Each sits in the room with the player behind it. On smaller screens, use Chair. Your choice stays in this browser." },
       { title: "A tidier menu bar", body: "The bar along the top of the room and the desk now shares one look: softer glass, your course as a small chip beside Lilt, and the same order of controls in both places. Make it yours and Reset layout are now quiet icons; hover one to see its name." },

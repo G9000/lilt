@@ -3,6 +3,16 @@ import { createPortal } from 'react-dom';
 import { roomStyles } from '../desk/roomStyles';
 import { LIGHTS, W, H } from './scene';
 import { PLANTS, PLANT_KEY, readPlant, plantDays, plantCanopyScale, plantImage, type Plant } from './plant';
+import { ObjectOutline } from './ObjectOutline';
+
+function PlantShape({ plant, count, outline = false }: { plant: Plant; count: number; outline?: boolean }) {
+  return <>
+    <img src={plantImage(plant)} alt="" draggable={false} className="absolute inset-0 h-full w-full max-w-none"
+      style={{ clipPath: 'inset(75% 0 0)' }} />
+    <img src={plantImage(plant)} alt="" draggable={false} className={`${outline ? 'room-plant-outline-canopy' : 'room-plant-canopy'} absolute inset-0 h-full w-full max-w-none transition-transform duration-1000 motion-reduce:transition-none`}
+      style={{ clipPath: 'inset(0 0 25%)', transformOrigin: '50% 75%', transform: `scale(${plantCanopyScale(count)})` }} />
+  </>;
+}
 
 function storedPlant() { try { return readPlant(localStorage.getItem(PLANT_KEY)); } catch { return readPlant(null); } }
 function loadImage(src: string) {
@@ -61,13 +71,12 @@ export function RoomPlant({ days, inside }: { days: number; inside: boolean }) {
       <div className="room-plant-art absolute pointer-events-none select-none transition-[filter] duration-[2000ms] ease-[ease] motion-reduce:transition-none" data-plant={shown} data-days={count}
         style={{ left: 286, top: 366, width: 192, height: 360, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 94% 100%, 0 84%)',
           filter: 'brightness(var(--plant-brightness, 1)) saturate(var(--plant-saturation, 1)) sepia(var(--plant-sepia, 0))' }}>
-        <img src={plantImage(shown)} alt="" draggable={false} className="absolute inset-0 h-full w-full max-w-none"
-          style={{ clipPath: 'inset(75% 0 0)' }} />
-        <img src={plantImage(shown)} alt="" draggable={false} className="room-plant-canopy absolute inset-0 h-full w-full max-w-none transition-transform duration-1000 motion-reduce:transition-none"
-          style={{ clipPath: 'inset(0 0 25%)', transformOrigin: '50% 75%', transform: `scale(${plantCanopyScale(count)})` }} />
+        <PlantShape plant={shown} count={count} />
+        <ObjectOutline kind="plant"><PlantShape plant={shown} count={count} outline /></ObjectOutline>
       </div>
     </>}
     <button type="button" disabled={inside} aria-label={`Choose your plant. ${summary}`} aria-haspopup="dialog" aria-expanded={open}
+      data-outlined={!!shown}
       className={['room-plant-target pointer-events-auto', roomStyles['room-object']].join(' ')} style={{ left: 382, top: 548, width: 132, height: 312 }}
       onPointerDown={e => e.stopPropagation()} onPointerMove={e => e.stopPropagation()} onClick={openPicker}>
       <span>Choose plant · {summary}</span>

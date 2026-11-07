@@ -198,6 +198,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      **Tea** in the room shortcuts opens the same controls. Reduced motion keeps its steam still.
      If artwork can't load, the previous cup stays visible and **Try again** retries the choice.
      No timer data is sent to the server or included in practice backups.
+     Hover or keyboard-focus the mug, plant or music player to see a pale-blue outline around
+     its current design, like the chair. The plant's outline follows its growing leaves; the
+     player stays behind the chair. The outline hides while the object's controls are open.
      Click the **painted floor plant beside the drawers** to choose **Ficus, Monstera, Fern or Jade plant**.
      Its shaded artwork is part of the room, follows the room's lighting, and subtly grows with
      each day you practise. The pot stays fixed; a fresh week says **A new week** in the picker.

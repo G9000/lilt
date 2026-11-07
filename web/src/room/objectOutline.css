@@ -1,0 +1,25 @@
+.room-object-outline {
+  opacity: 0;
+  transition: opacity 200ms;
+}
+
+.room:not(.inside) .room-stage.settled:has(.room-mug-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-mug-outline,
+.room:not(.inside) .room-stage.settled:has(.room-plant-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-plant-outline,
+.room:not(.inside) .room-stage.settled:has(.room-music[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-player-outline {
+  opacity: 1;
+}
+
+/* Keep the existing labels and accessible targets, replacing their rectangular glow. */
+.room :is(.room-mug-target, .room-plant-target, .room-music)[data-outlined="true"]::before {
+  display: none;
+}
+.room :is(.room-mug-target, .room-plant-target, .room-music)[data-outlined="true"]:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-object-outline { transition: none; }
+}
+@media (max-width: 767px), (max-aspect-ratio: 4/3) {
+  .room-object-outline { display: none; }
+}
