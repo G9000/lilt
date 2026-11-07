@@ -71,7 +71,9 @@ try {
   await page.getByRole('button', { name: 'Start playing', exact: true }).click();
   await page.locator('.yn-stage.playing').waitFor();
   await page.waitForFunction(() => Number(document.querySelector('.yn-scene').dataset.y) < .85, null, { timeout: 15000 });
-  await page.waitForFunction(() => Number.isFinite(Number(document.querySelector('.yn-scene').dataset.threadedAt)), null, { timeout: 15000 });
+  // The fake mic is looped speech that leaps around the range, so whether a given loop is threaded is
+  // chance; a dozen loops' time makes missing every one vanishingly unlikely (it usually takes one or two).
+  await page.waitForFunction(() => Number.isFinite(Number(document.querySelector('.yn-scene').dataset.threadedAt)), null, { timeout: 60000 });
   await page.waitForTimeout(250);
   if (shots) await page.screenshot({ path: path.join(shots, 'yarn-cat-reaction.png') });
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -102,6 +104,7 @@ try {
   await page.getByRole('button', { name: 'Stop', exact: true }).click();
   await page.getByRole('button', { name: 'Play again', exact: true }).waitFor();
   if (shots) await page.screenshot({ path: path.join(shots, 'yarn-summary-phone.png') });
+  assert.equal(await page.locator('.yn-spun svg path').count(), 3, 'the end card draws the thread you spun');
   assert.ok(!/score|points|leaderboard|streak/i.test(await page.locator('.yn').innerText()));
   await page.reload();
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
@@ -110,6 +113,7 @@ try {
   if (shots) await page.screenshot({ path: path.join(shots, 'yarn-setup-dark.png') });
   await page.getByRole('button', { name: 'Start playing', exact: true }).click();
   await page.locator('.yn-say p').waitFor();
+  assert.match(await page.locator('.yn-tune').innerText(), /^(Lifts a little|Settles) at the end$/, 'each line says how its tune ends, matching its pair of loops');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.waitForTimeout(700); // Let the app's theme/motion transition settle before inspecting its ink.
   if (shots) await page.screenshot({ path: path.join(shots, 'yarn-play-dark.png') });
@@ -122,6 +126,7 @@ try {
   const free = page.getByRole('checkbox', { name: /Free play/ });
   await free.check();
   assert.equal(await page.getByRole('checkbox', { name: /Play each loop/ }).count(), 0, 'free play hides irrelevant loop sounds');
+  assert.equal(await page.getByRole('checkbox', { name: /soft sound/ }).count(), 0, 'and the threading sound');
   await page.reload();
   assert.ok(await free.isChecked(), 'free play preference survives reopening');
   await page.getByRole('button', { name: 'Start playing', exact: true }).click();
@@ -139,6 +144,7 @@ try {
   await page.reload();
   await free.uncheck();
   assert.ok(await page.getByRole('checkbox', { name: /Play each loop/ }).isChecked(), 'returning to loops restores the sound preference');
+  assert.ok(!(await page.getByRole('checkbox', { name: /soft sound/ }).isChecked()), 'the threading sound starts off');
   profile = { ...profile, comfort_range_hz: null };
   await page.reload();
   await page.getByRole('button', { name: 'Find my range', exact: true }).click();

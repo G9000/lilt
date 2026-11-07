@@ -5,12 +5,23 @@ import { cleanContour, type ContourPoint, hzToMidi, midiToHz, noteName, recentMe
 
 export type Mode = "hum" | "speak";
 
-/** Decorative poses use game time, so a breathing break freezes them along with the yarn. */
-export function catReaction(now: number, threadedAt: number, y: number, reduced: boolean) {
+/** How often the cat pats yarn resting beside it (seconds), and how long a pat lasts. */
+export const PAT_EVERY = 2.6, PAT_S = 0.45;
+
+/**
+ * Decorative poses use game time, so a breathing break freezes them along with the yarn. The cat
+ * reaches for yarn hanging low near it; once the yarn rests on the floor it gives it a pat as it
+ * lands (`landedAt`) and every so often after.
+ */
+export function catReaction(now: number, threadedAt: number, y: number, reduced: boolean, landedAt = -Infinity) {
   if (reduced) return { hop: 0, reach: 0, blink: false };
   const age = now - threadedAt;
   const hop = age > 0 && age < 1.1 ? Math.sin(age / 1.1 * Math.PI) ** 2 : 0;
-  const reach = Math.min(1, Math.max(0, (y - .78) / .16));
+  let reach = Math.min(1, Math.max(0, (y - .78) / .12));
+  if (y >= REST_Y - .02) {
+    const since = now - (Number.isFinite(landedAt) && landedAt <= now ? landedAt : 0), k = since % PAT_EVERY;
+    reach = k < PAT_S ? Math.sin(k / PAT_S * Math.PI) : 0;
+  }
   return { hop, reach, blink: now % 5.7 > 5.5 };
 }
 
@@ -93,8 +104,14 @@ export function follower(range: [number, number], mode: Mode) {
       target = recentMedian(recent, Math.min(7, Math.max(1, recent.length))) ?? st;
       lastVoiced = t;
     },
-    /** Ignore what the mic hears until `t` (Lilt is playing a loop's note out loud). */
-    mute(until: number) { mutedUntil = until; },
+    /**
+     * Ignore what the mic hears until `until` (Lilt is making a sound). If your voice is holding the
+     * yarn up at `now`, it stays up through the sound rather than sagging.
+     */
+    mute(until: number, now = -Infinity) {
+      mutedUntil = until;
+      if (target !== null && now - lastVoiced <= feel.hold) lastVoiced = Math.max(lastVoiced, until - feel.hold / 2);
+    },
     /** Moves the yarn on by `dt` seconds; returns its height and whether your voice is holding it up. */
     step(t: number, dt: number): { y: number; afloat: boolean } {
       const afloat = target !== null && t - lastVoiced <= feel.hold;
@@ -132,27 +149,53 @@ export function rng(seed: number) {
   };
 }
 
-/** A loop of yarn. `at` is when (game seconds) it reaches the yarn; `u` where it hangs in your range. */
-export interface Loop { id: number; at: number; u: number; r: number; hue: number; state: "ahead" | "through" | "by" }
+/** Whether a sentence's tune tends to rise at the end or fall. */
+export type Tune = "rise" | "fall";
 
 /**
- * Deals loops ahead of time. Gentle by design: the first ones go middle, high, low (so you hear and
- * feel the difference), no loop is more than about a third of your range from the last, and now and
- * then three come close together on a slow slope, a path to glide along.
+ * A loop of yarn. `at` is when (game seconds) it reaches the yarn; `u` where it hangs in your range.
+ * Loops dealt together (a glide, or the start and end of a sentence) share a `group`; a sentence's
+ * pair also carries its `tune`.
+ */
+export interface Loop { id: number; at: number; u: number; r: number; hue: number; state: "ahead" | "through" | "by"; group?: number; tune?: Tune }
+
+/** Seconds between a sentence's two loops: about as long as an everyday line takes to say. */
+export const SAY_S = 2;
+
+/**
+ * Deals loops ahead of time. Gentle by design: no two come closer than about two seconds apart, and
+ * no loop is more than about a third of your range from the last. Humming opens middle, high, low
+ * (so you hear and feel the difference); now and then three come on a slow slope, or five on a
+ * longer, eased glide, like a siren. Speaking comes in pairs, the start and end of a sentence: a
+ * rising pair for a line whose tune lifts at the end, a falling pair for one that settles.
  */
 export function loopMaker(mode: Mode, seed = 1) {
   const feel = FEEL[mode], rand = rng(seed);
-  const opening = mode === "hum" ? [0.5, 0.8, 0.2] : [0.45, 0.65, 0.3];
-  let id = 0, at = 3.5, u = 0.5;
+  const opening = mode === "hum" ? [0.5, 0.8, 0.2] : [];
+  let id = 0, at = 3.5, u = 0.5, groups = 0;
   const clampU = (x: number) => Math.min(feel.high, Math.max(feel.low, x));
-  const loop = (a: number, uu: number): Loop => ({ id: ++id, at: a, u: uu, r: feel.ring, hue: id % 4, state: "ahead" });
+  const loop = (a: number, uu: number, extra: Partial<Loop> = {}): Loop => ({ id: ++id, at: a, u: uu, r: feel.ring, hue: id % 4, state: "ahead", ...extra });
   return {
-    /** The next few loops (one, or a slope of three). */
+    /** The next few loops (one, a sentence's pair, a slope of three or a glide of five). */
     next(): Loop[] {
       if (id < opening.length) { u = opening[id]; const l = loop(at, u); at += feel.every; return [l]; }
+      if (mode === "speak") {
+        const tune: Tune = rand() < 0.5 ? "rise" : "fall", group = ++groups, hue = group % 4;
+        const [from, to] = tune === "rise" ? [0.28 + rand() * 0.06, 0.6 + rand() * 0.08] : [0.56 + rand() * 0.08, 0.27 + rand() * 0.05];
+        const out = [loop(at, clampU(from), { group, tune, hue }), loop(at + SAY_S, clampU(to), { group, tune, hue })];
+        u = out[1].u; at += SAY_S + feel.every * (0.9 + rand() * 0.25);
+        return out;
+      }
+      if (rand() < 0.18) {
+        // a glide: five loops easing from here across about half your range
+        const dir = u > 0.5 ? -1 : 1, total = 0.4 + rand() * 0.12, gap = feel.every * 0.42, group = ++groups, hue = group % 4;
+        const out = [0, 1, 2, 3, 4].map((k) => loop(at + k * gap, clampU(u + dir * total * (1 - Math.cos(k / 4 * Math.PI)) / 2), { group, hue }));
+        u = out[4].u; at += 4 * gap + feel.every;
+        return out;
+      }
       if (rand() < 0.25) {
-        const dir = u > (feel.low + feel.high) / 2 ? -1 : 1, stepU = 0.08 + rand() * 0.05, gap = feel.every * 0.42;
-        const out = [0, 1, 2].map((k) => loop(at + k * gap, clampU(u + dir * stepU * k)));
+        const dir = u > (feel.low + feel.high) / 2 ? -1 : 1, stepU = 0.08 + rand() * 0.05, gap = feel.every * 0.42, group = ++groups, hue = group % 4;
+        const out = [0, 1, 2].map((k) => loop(at + k * gap, clampU(u + dir * stepU * k), { group, hue }));
         u = out[2].u; at += 2 * gap + feel.every;
         return out;
       }
@@ -203,6 +246,22 @@ export function passLoops(loops: Loop[], now: number, y: number, ball = 0, keepB
 
 /** When to play a loop's note out loud: once, as it comes into view, and only while you're quiet (so you can hear it). */
 export const cueDue = (loop: Loop, now: number, lead: number, quietFor: number) => loop.state === "ahead" && loop.at - now <= lead && loop.at - now > lead - 1.5 && quietFor > 0.4;
+
+/** Where a place in your range is, in words: "the top of your range", "the middle", "the bottom". */
+export const placeWords = (u: number) => (u >= 0.67 ? "the top of your range" : u <= 0.33 ? "the bottom of your range" : "the middle of your range");
+
+/**
+ * What to tell someone who can't see the field as a loop comes near: where it hangs, or where a
+ * glide goes. Only the first loop of a glide is described; null for the rest of it.
+ */
+export function loopNews(loop: Loop, loops: Loop[]): string | null {
+  if (!loop.group) return `A loop is coming, near ${placeWords(loop.u)}.`;
+  const group = loops.filter((l) => l.group === loop.group);
+  if (group[0] !== loop) return null;
+  const last = group[group.length - 1];
+  if (group.length < 3 || placeWords(loop.u) === placeWords(last.u)) return `A few loops are coming, near ${placeWords(loop.u)}.`;
+  return `A glide is coming, from ${placeWords(loop.u).replace(" of your range", "")} ${last.u > loop.u ? "up" : "down"} to ${placeWords(last.u)}.`;
+}
 
 /** Time for a breath? */
 export const breakDue = (playedS: number, lastBreakS: number) => playedS - lastBreakS >= BREAK_EVERY_S;
@@ -274,6 +333,45 @@ export function describePlay(frames: ContourPoint[], range: [number, number], af
   }
   if (mode === "speak" && sentences > 0) out.push(`You said ${sentences === 1 ? "one sentence" : `${sentences} sentences`} along the way.`);
   return out;
+}
+
+// Questions that begin like this usually lift at the end; ones with a question word, and statements, settle.
+const YES_NO = /^(is|are|am|was|were|do|does|did|can|could|will|would|shall|should|may|might|have|has|had|isn't|aren't|don't|doesn't|didn't|can't|won't)\b/i;
+
+/** The tune a line tends to have: a yes/no question rises at the end, most other lines fall. Gentle guidance, not a rule. */
+export const tuneOf = (line: string): Tune => {
+  const t = line.trim();
+  if (!t.endsWith("?")) return "fall";
+  // "Hi, could I…?" and "Sorry, is…?" count by what follows the greeting
+  return [t, t.slice(t.indexOf(",") + 1).trim()].some((s) => YES_NO.test(s)) ? "rise" : "fall";
+};
+
+/**
+ * Picks a line with the given tune, other than `not` where there's a choice; any line if none has that tune.
+ * `r` is a random number in [0, 1).
+ */
+export function lineFor(lines: string[], tune: Tune, r: number, not = -1): number {
+  const fits = lines.map((l, i) => i).filter((i) => tuneOf(lines[i]) === tune);
+  const pool = (fits.length ? fits : lines.map((_, i) => i)).filter((i) => i !== not);
+  return pool.length ? pool[Math.floor(r * pool.length)] : Math.max(0, not);
+}
+
+/**
+ * The thread you spun, for the end card: where in your range your voice was across the whole game,
+ * as `n` even steps of time (the middle reading of each), null where you were quiet. Kept a little
+ * either side of the range so a stray note stays on the card. Nothing is saved.
+ */
+export function spunThread(frames: ContourPoint[], range: [number, number], n = 120): (number | null)[] {
+  const pts = cleanContour(frames).filter((p) => (p.line ?? p.hz) !== null);
+  if (pts.length < 20) return [];
+  const t0 = frames[0].t, span = Math.max(1e-6, frames[frames.length - 1].t - t0);
+  const bins: number[][] = Array.from({ length: n }, () => []);
+  for (const p of pts) bins[Math.min(n - 1, Math.floor((p.t - t0) / span * n))].push(pitchToU((p.line ?? p.hz)!, range));
+  return bins.map((b) => {
+    if (b.length < 3) return null;
+    const s = [...b].sort((x, y) => x - y)[b.length >> 1];
+    return Math.min(1.2, Math.max(-0.2, s));
+  });
 }
 
 /** Everyday lines for speak mode when the course has none to offer. */

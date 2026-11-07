@@ -1,4 +1,6 @@
 import { roomStyles } from "../desk/roomStyles";
+import { cx } from "../ui/cx";
+import { shared } from "../ui/shared";
 import { AnimatePresence, motion } from "motion/react";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Profile } from "../api";
@@ -10,8 +12,8 @@ import { LOOP_WOOL, paintLights, paintLoop, paintRangeMark, paintThread, paintYa
 import { artReady, loadYarnArt, type YarnArt } from "../yarn-assets";
 import { ContourPoint, noteName, trackLiveFine } from "../pitch";
 import {
-  breakDue, catReaction, cueDue, describePlay, follower, HUM_READINGS, lineUp, Loop, loopMaker, Mode, nextLoop, noisyRoom, passLoops, playRange,
-  rangeFromHums, rangeWords, REST_Y, saidIt, sentencesFrom, SENTENCES, uToHz, uToY, wind,
+  breakDue, catReaction, cueDue, describePlay, follower, HUM_READINGS, lineFor, lineUp, Loop, loopMaker, loopNews, Mode, nextLoop, noisyRoom, passLoops, playRange,
+  rangeFromHums, rangeWords, REST_Y, saidIt, sentencesFrom, SENTENCES, spunThread, type Tune, uToHz, uToY, wind,
 } from "../yarn";
 
 /**
@@ -55,8 +57,9 @@ export function YarnPage() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [mode, setModeState] = useState<Mode>(() => readPref<Mode>("lilt.yarn.mode", ["hum", "speak"], "hum"));
   const [cue, setCueState] = useState(() => readPref("lilt.yarn.cue", ["on", "off"], "on") === "on");
+  const [pluck, setPluck] = useState(() => readPref("lilt.yarn.pluck", ["on", "off"], "off") === "on");
   const [free, setFree] = useState(() => readPref("lilt.yarn.free", ["on", "off"], "off") === "on");
-  const [summary, setSummary] = useState<string[]>([]);
+  const [summary, setSummary] = useState<{ lines: string[]; thread: (number | null)[] }>({ lines: [], thread: [] });
   const [starting, setStarting] = useState(false);
   const setMode = (m: Mode) => { setModeState(m); writePref("lilt.yarn.mode", m); };
   const setCue = (on: boolean) => { setCueState(on); writePref("lilt.yarn.cue", on ? "on" : "off"); };
@@ -99,8 +102,8 @@ export function YarnPage() {
       </header>
 
       {phase === "play" && range ? (
-        <Play range={range} mode={mode} free={free} cue={cue && !free} sentences={sentences} stream={mic.stream} reduced={reduced} tone={tones.play}
-          onHurt={() => setPhase("hurt")} onStop={(lines) => { setSummary(lines); setPhase("summary"); }} />
+        <Play range={range} mode={mode} free={free} cue={cue && !free} pluck={pluck && !free} sentences={sentences} stream={mic.stream} reduced={reduced} tone={tones.play} pluckTone={tones.pluck}
+          onHurt={() => setPhase("hurt")} onStop={(lines, thread) => { setSummary({ lines, thread }); setPhase("summary"); }} />
       ) : (
         <main className={[`yn-stage${phase === "setup" ? " yn-setup" : ""}`, roomStyles["yn-stage"], phase === "setup" ? roomStyles["yn-setup"] : ""].join(" ")}>
           <Scene range={phase === "setup" ? range : null} reduced={reduced} preview={phase === "setup"} />
@@ -139,6 +142,10 @@ export function YarnPage() {
                     <input type="checkbox" checked={cue} onChange={(e) => setCue(e.target.checked)} />
                     Play each loop&rsquo;s note when you pause
                   </label>}
+                  {!free && <label className={["yn-check", roomStyles["yn-check"]].join(" ")}>
+                    <input type="checkbox" checked={pluck} onChange={(e) => { setPluck(e.target.checked); writePref("lilt.yarn.pluck", e.target.checked ? "on" : "off"); }} />
+                    A soft sound when the yarn goes through a loop
+                  </label>}
                   {mic.error && <p className={["yn-err", roomStyles["yn-err"]].join(" ")} role="alert">{mic.error}</p>}
                   <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
                     <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} disabled={!loaded || starting} onClick={() => void start(range ? "play" : "calibrate")}>
@@ -169,7 +176,8 @@ export function YarnPage() {
               ) : (
                 <Card key="summary" art="yarn" chip="All wound up">
                   <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>The cat&rsquo;s curled up with the yarn</h2>
-                  <div className={["yn-p", roomStyles["yn-p"]].join(" ")}>{summary.map((l) => <p key={l}>{l}</p>)}</div>
+                  <SpunThread thread={summary.thread} />
+                  <div className={["yn-p", roomStyles["yn-p"]].join(" ")}>{summary.lines.map((l) => <p key={l}>{l}</p>)}</div>
                   <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
                     <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} onClick={() => void start("play")}>Play again</button>
                     <button className={["yn-ghost", roomStyles["yn-ghost"]].join(" ")} onClick={() => go("/desk")}>Back to the desk</button>
@@ -181,6 +189,38 @@ export function YarnPage() {
         </main>
       )}
     </div>
+  );
+}
+
+/** The end card's picture of the game: your voice across it as a strand of wool, between the two ends of your range. */
+function SpunThread({ thread }: { thread: (number | null)[] }) {
+  if (thread.filter((u) => u !== null).length < 4) return null;
+  const W = 320, H = 96, pad = 8;
+  const x = (i: number) => pad + (i / (thread.length - 1)) * (W - 2 * pad), y = (u: number) => pad + ((1.2 - u) / 1.4) * (H - 2 * pad);
+  // one smooth strand for each stretch of voice, through the midpoints between steps
+  const runs: [number, number][][] = [];
+  thread.forEach((u, i) => {
+    if (u === null) return;
+    if (i === 0 || thread[i - 1] === null) runs.push([]);
+    runs[runs.length - 1].push([x(i), y(u)]);
+  });
+  const d = runs.map((r) => r.length === 1 ? `M${r[0][0]} ${r[0][1]}h0.01` : r.map(([px, py], i) => {
+    if (!i) return `M${px} ${py}`;
+    const [qx, qy] = r[i - 1];
+    return `Q${qx} ${qy} ${(qx + px) / 2} ${(qy + py) / 2}` + (i === r.length - 1 ? `T${px} ${py}` : "");
+  }).join("")).join("");
+  return (
+    <figure className={["yn-spun", roomStyles["yn-spun"]].join(" ")}>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="The thread you spun: your voice across the game, from the start on the left to the end on the right, between the two ends of your range.">
+        {[0, 1].map((u) => <line key={u} x1={0} x2={W} y1={y(u)} y2={y(u)} stroke="var(--ink-3)" strokeOpacity={0.45} strokeWidth={1.2} strokeDasharray="6 5" strokeLinecap="round" />)}
+        <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d={d} stroke="#a65a43" strokeWidth={4.4} />
+          <path d={d} stroke="#e59672" strokeWidth={3.2} />
+          <path d={d} stroke="rgba(255,240,220,.5)" strokeWidth={1} strokeDasharray="3.5 2.2" />
+        </g>
+      </svg>
+      <figcaption>The thread you spun, from start to finish. The dashed lines are the ends of your range.</figcaption>
+    </figure>
   );
 }
 
@@ -242,7 +282,18 @@ function useTones() {
       o.connect(to); o.start(t0); o.stop(t0 + dur + 0.4);
     }
   };
-  return { wake: () => void wake(), play };
+  /** A short, soft pluck, like a tug on the wool: a triangle wave an octave up that dies away quickly. */
+  const pluck = (hz: number) => {
+    const c = wake();
+    if (!c) return;
+    const t0 = c.currentTime, g = c.createGain(), lp = c.createBiquadFilter(), o = c.createOscillator();
+    lp.type = "lowpass"; lp.frequency.value = 1400;
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(0.07, t0 + 0.012); g.gain.setTargetAtTime(0, t0 + 0.02, 0.09);
+    o.type = "triangle"; o.frequency.value = hz * 2;
+    o.connect(lp); lp.connect(g); g.connect(c.destination);
+    o.start(t0); o.stop(t0 + 0.6);
+  };
+  return { wake: () => void wake(), play, pluck };
 }
 
 /** Pitch readings while `active`: Lilt's live tracker, with the mic claimed so the radio steps aside. Nothing is kept. */
@@ -334,26 +385,34 @@ interface Game {
   wound: number[];
   /** the yarn's last landing on the floor (game time) and how firmly, 0..1, for its little bounce */
   landAt: number; landV: number; lastBy: number | null; fallV: number;
+  /** speak mode: the lines to say, the one picked for each sentence's pair of loops, and the pair coming up */
+  lines: string[]; lineOf: Map<number, number>; shownGroup: number | null;
+  /** the last loop described for screen readers */
+  toldId: number;
 }
-const newGame = (range: [number, number] | null, mode: Mode, free = false): Game => ({
+const newGame = (range: [number, number] | null, mode: Mode, free = false, lines: string[] = []): Game => ({
   range, mode, free, threadedAt: -Infinity, f: range ? follower(range, mode) : null, maker: loopMaker(mode, Math.floor(Math.random() * 1e9)),
   loops: [], now: 0, played: 0, lastBreak: 0, afloatS: 0, trail: [], sparks: [], frames: [], cued: new Set(),
   voicedSince: 0, spin: 0, spinV: 0, tumble: 0, walk: 0, catX: null, y: REST_Y, afloat: false,
-  wound: [], landAt: -Infinity, landV: 0, lastBy: null, fallV: 0,
+  wound: [], landAt: -Infinity, landV: 0, lastBy: null, fallV: 0, lines, lineOf: new Map(), shownGroup: null, toldId: 0,
 });
 const MAX_FRAMES = 20 * 60 * 100; // twenty minutes of readings for the words at the end, then the oldest go
 
-function Play({ range, mode, free, cue, sentences, stream, reduced, tone, onHurt, onStop }: {
-  range: [number, number]; mode: Mode; free: boolean; cue: boolean; sentences: string[]; stream: MediaStream | null; reduced: boolean;
-  tone: (hz: number) => void; onHurt: () => void; onStop: (lines: string[]) => void;
+function Play({ range, mode, free, cue, pluck, sentences, stream, reduced, tone, pluckTone, onHurt, onStop }: {
+  range: [number, number]; mode: Mode; free: boolean; cue: boolean; pluck: boolean; sentences: string[]; stream: MediaStream | null; reduced: boolean;
+  tone: (hz: number) => void; pluckTone: (hz: number) => void; onHurt: () => void; onStop: (lines: string[], thread: (number | null)[]) => void;
 }) {
-  const [first] = useState(() => newGame(range, mode, free));
+  const [first] = useState(() => newGame(range, mode, free, sentences));
   const game = useRef<Game>(first);
   const [breathing, setBreathing] = useState(false);
   const [afloat, setAfloat] = useState(false);
   const [voiced, setVoiced] = useState(false);
   const [noisy, setNoisy] = useState(false);
   const [line, setLine] = useState(() => Math.floor(Math.random() * sentences.length));
+  const [tune, setTune] = useState<Tune | null>(null);
+  // what a screen reader hears about the field: loops coming, and the yarn going through
+  const [news, setNews] = useState("");
+  const newsAt = useRef(0);
   const said = useRef(0);
   const running = !breathing;
 
@@ -372,20 +431,34 @@ function Play({ range, mode, free, cue, sentences, stream, reduced, tone, onHurt
 
   const events = useRef({
     cue: (hz: number) => tone(hz),
+    pluck: (hz: number) => pluckTone(hz),
     afloat: (on: boolean) => { setAfloat(on); if (on) setVoiced(true); },
     breath: () => setBreathing(true),
-    said: () => { said.current++; setLine((i) => (i + 1) % sentences.length); },
+    // with loops, each line belongs to the pair coming up; in free play it moves on once you've said it
+    said: () => { said.current++; if (free) setLine((i) => (i + 1) % sentences.length); },
+    line: (i: number, t: Tune) => { setLine(i); setTune(t); },
+    // two things close together are read as one, so neither is lost
+    say: (text: string) => { const now = performance.now(); setNews((prev) => (now - newsAt.current < 1500 ? `${prev} ${text}` : text)); newsAt.current = now; },
   });
   events.current.cue = (hz) => tone(hz);
+  events.current.pluck = (hz) => pluckTone(hz);
+
+  const another = () => {
+    const G = game.current, g = G.shownGroup, pair = g === null ? undefined : G.loops.find((l) => l.group === g);
+    G.voicedSince = 0;
+    if (g === null || !pair?.tune) { setLine((i) => (i + 1) % sentences.length); return; }
+    const i = lineFor(sentences, pair.tune, Math.random(), G.lineOf.get(g));
+    G.lineOf.set(g, i); setLine(i);
+  };
 
   const stop = () => {
     const G = game.current;
-    onStop(describePlay(G.frames, range, G.afloatS, mode, said.current));
+    onStop(describePlay(G.frames, range, G.afloatS, mode, said.current), spunThread(G.frames, range));
   };
 
   return (
     <main className={[`yn-stage playing ${mode}`, roomStyles["yn-stage"]].join(" ")}>
-      <Scene game={game} running={running} cue={cue} reduced={reduced} events={events} />
+      <Scene game={game} running={running} cue={cue} pluck={pluck} reduced={reduced} events={events} />
       {mode === "speak" && (
         <div className={["yn-say", roomStyles["yn-say"]].join(" ")} aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
@@ -393,12 +466,14 @@ function Play({ range, mode, free, cue, sentences, stream, reduced, tone, onHurt
               {sentences[line]}
             </motion.p>
           </AnimatePresence>
-          <button className={["yn-link", roomStyles["yn-link"]].join(" ")} onClick={() => { game.current.voicedSince = 0; setLine((i) => (i + 1) % sentences.length); }}>Another line</button>
+          {tune && <small className={["yn-tune", roomStyles["yn-tune"]].join(" ")}>{tune === "rise" ? "Lifts a little at the end" : "Settles at the end"}</small>}
+          <button className={["yn-link", roomStyles["yn-link"]].join(" ")} onClick={another}>Another line</button>
         </div>
       )}
       <p className={[`yn-hint${afloat || breathing ? " gone" : ""}`, roomStyles["yn-hint"]].join(" ")} aria-hidden={afloat}>
         {!voiced ? (mode === "hum" ? "Hum or lip trill to lift the yarn" : "Say the line to lift the yarn") : "Whenever you’re ready"}
       </p>
+      <p className={cx("sr-only", shared["sr-only"])} aria-live="polite">{news}</p>
       {noisy && !breathing && <p className={["yn-noise", roomStyles["yn-noise"]].join(" ")} role="status">It sounds a bit busy here. A quieter room helps the yarn follow you.</p>}
       <footer className={["yn-bar", roomStyles["yn-bar"]].join(" ")}>
         <span className={["yn-tip", roomStyles["yn-tip"]].join(" ")}>{mode === "hum" ? "A gentle hum is enough. Let the yarn rest whenever you need." : "Use your everyday voice. The yarn waits between words."}</span>
@@ -438,17 +513,17 @@ function Play({ range, mode, free, cue, sentences, stream, reduced, tone, onHurt
  * pitch line, really), the yarn, and the cat. Without a game it's the room at rest: the yarn on the
  * floor and the cat beside it. Runs at the display's frame rate; React isn't involved per frame.
  */
-function Scene({ game, range, running = false, cue = false, reduced, preview = false, events }: {
-  game?: { current: Game }; range?: [number, number] | null; running?: boolean; cue?: boolean; reduced: boolean; preview?: boolean;
-  events?: { current: { cue: (hz: number) => void; afloat: (on: boolean) => void; breath: () => void; said: () => void } };
+function Scene({ game, range, running = false, cue = false, pluck = false, reduced, preview = false, events }: {
+  game?: { current: Game }; range?: [number, number] | null; running?: boolean; cue?: boolean; pluck?: boolean; reduced: boolean; preview?: boolean;
+  events?: { current: { cue: (hz: number) => void; pluck: (hz: number) => void; afloat: (on: boolean) => void; breath: () => void; said: () => void; line: (i: number, tune: Tune) => void; say: (text: string) => void } };
 }) {
   const box = useRef<HTMLDivElement>(null);
   const cvs = useRef<HTMLCanvasElement>(null);
   const [rest] = useState(() => newGame(range ?? null, "hum"));
   const idle = useRef<Game>(rest);
   if (!game && idle.current.range !== (range ?? null)) idle.current = newGame(range ?? null, "hum");
-  const live = useRef({ running, cue, reduced, preview });
-  live.current = { running, cue, reduced, preview };
+  const live = useRef({ running, cue, pluck, reduced, preview });
+  live.current = { running, cue, pluck, reduced, preview };
 
   useEffect(() => {
     const canvas = cvs.current!, el = box.current!;
@@ -476,7 +551,7 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
       const dt = Math.min(0.05, Math.max(0, (ms - last) / 1000));
       last = ms;
       const G = game?.current ?? idle.current;
-      const { running, cue, reduced, preview } = live.current;
+      const { running, cue, pluck, reduced, preview } = live.current;
       const floorY = H - Math.max(30, Math.min(130, H * 0.14));
       const F = floorY;
       const bx = W * (W < 640 ? 0.34 : 0.3);
@@ -500,11 +575,28 @@ function Scene({ game, range, running = false, cue = false, reduced, preview = f
         if (s.afloat !== shownAfloat) { shownAfloat = s.afloat; events?.current.afloat(s.afloat); }
         const ahead = (W - bx + 80) / speed;
         if (!G.free) while (!G.loops.length || G.loops[G.loops.length - 1].at < G.now + ahead) G.loops.push(...G.maker.next());
+        // humming: say where the next loop or glide is as it comes near (speaking announces its line instead)
+        const coming = G.mode === "hum" ? nextLoop(G.loops, G.now) : null;
+        if (coming && coming.id !== G.toldId && coming.at - G.now <= 3.2) {
+          G.toldId = coming.id;
+          const words = loopNews(coming, G.loops);
+          if (words) events?.current.say(words);
+        }
+        if (G.mode === "speak" && G.lines.length) {
+          // each sentence's pair of loops gets a line with its tune, shown while that pair is coming up
+          for (const l of G.loops) {
+            if (l.group && l.tune && !G.lineOf.has(l.group)) G.lineOf.set(l.group, lineFor(G.lines, l.tune, Math.random(), G.lineOf.get(l.group - 1)));
+          }
+          const up = nextLoop(G.loops, G.now);
+          if (up?.group && up.tune && up.group !== G.shownGroup) { G.shownGroup = up.group; events?.current.line(G.lineOf.get(up.group)!, up.tune); }
+        }
         const passed = passLoops(G.loops, G.now, G.y, R / F, (bx + 80) / speed);
         G.loops = passed.loops;
         for (const l of passed.threaded) {
           G.threadedAt = G.now;
           G.wound = wind(G.wound, l.hue);
+          events?.current.say("The yarn went through.");
+          if (pluck && G.range) { events?.current.pluck(uToHz(l.u, G.range)); G.f.mute(wall + 0.35, wall); } // don't follow the pluck
           const n = reduced ? 0 : 8;
           for (let k = 0; k < n; k++) {
             const a = (k / n) * Math.PI * 2 + Math.random() * 0.5, v = 34 + Math.random() * 22;
@@ -601,21 +693,31 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, reduced: boolean, r
       w: narrow ? 4 : 5.5, glow: Math.max(just, near * lineUp(G.y, l, R / F)), faded: l.state === "by", dark,
     };
   });
+  // loops dealt together (a glide, a sentence's start and end) are joined by a faint strand to follow
+  c.save(); c.setLineDash([2, 6]); c.lineCap = "round"; c.lineWidth = 2;
+  loops.forEach((o, i) => {
+    const n = loops[i + 1];
+    if (!n || !o.l.group || n.l.group !== o.l.group) return;
+    c.globalAlpha = o.faded && n.faded ? 0.25 : 0.55; c.strokeStyle = o.wool[0];
+    c.beginPath(); c.moveTo(o.x, o.y); c.quadraticCurveTo((o.x + n.x) / 2, (o.y + n.y) / 2 + 14, n.x, n.y); c.stroke();
+  });
+  c.restore();
   for (const o of loops) { paintLoop(c, o, "hanger"); paintLoop(c, o, "back"); }
 
   // the thread the yarn has drawn: your pitch line, trailing behind as a strand of wool
   if (G.trail.length > 1) {
-    const t = thread.ctx;
-    t.setTransform(1, 0, 0, 1, 0, 0); t.clearRect(0, 0, thread.canvas.width, thread.canvas.height);
+    // the thread only ever lies behind the yarn, so only that strip of the layer is cleared and copied
+    const t = thread.ctx, sw = Math.min(thread.canvas.width, Math.ceil((bx + R) * dpr)), sh = Math.min(thread.canvas.height, Math.ceil((floorY + 6) * dpr));
+    t.setTransform(1, 0, 0, 1, 0, 0); t.clearRect(0, 0, sw, sh);
     t.setTransform(dpr, 0, 0, dpr, 0, 0);
     paintThread(t, () => G.trail.forEach((p, i) => { const x = bx - (G.now - p.t) * speed, y = Math.min(p.y * F, floorY - 2); i ? t.lineTo(x, y) : t.moveTo(x, y); }), narrow ? 2.4 : 3);
     // it fades away towards the left
     t.globalCompositeOperation = "destination-in";
     const fade = t.createLinearGradient(0, 0, bx, 0);
     fade.addColorStop(0, "rgba(0,0,0,0)"); fade.addColorStop(0.6, "rgba(0,0,0,1)");
-    t.fillStyle = fade; t.fillRect(0, 0, W, H);
+    t.fillStyle = fade; t.fillRect(0, 0, sw / dpr, sh / dpr);
     t.globalCompositeOperation = "source-over";
-    c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(thread.canvas, 0, 0); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(thread.canvas, 0, 0, sw, sh, 0, 0, sw, sh); c.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   // the yarn, with a little bounce when it lands
@@ -660,6 +762,8 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, reduced: boolean, r
   else if (running || preview) G.catX += (goal - G.catX) * (1 - Math.exp(-dt * 4));
   const hx = G.catX + s * 0.44, hy = floorY - s * 0.56;
   const look = Math.max(-0.6, Math.min(0.28, Math.atan2(by - hy, bx - hx) * 0.6));
-  const pose = catReaction(clock, G.threadedAt, G.y, reduced);
+  const pose = catReaction(clock, G.threadedAt, G.y, reduced, G.landAt);
+  // a pat sends the resting yarn rolling on a little
+  if (running && resting && pose.reach > 0) G.spin += dt * pose.reach * 3;
   paintYarnCat(c, G.catX, floorY, s, G.walk, look, dark, moving, !G.range && !preview, pose, art);
 }

@@ -3,8 +3,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { hzToMidi, midiToHz } from "./pitch.ts";
 import {
-  breakDue, catReaction, cueDue, describePlay, duration, follower, lineUp, loopMaker, MARGIN, MIN_SPAN_ST, nextLoop, noisyRoom, passLoops, pitchToU,
-  pitchToY, playRange, rangeFromHums, REST_Y, saidIt, sentencesFrom, SENTENCES, threads, uToHz, uToY, wind, type Loop,
+  breakDue, catReaction, cueDue, describePlay, duration, follower, lineUp, loopMaker, MARGIN, MIN_SPAN_ST, nextLoop, loopNews, noisyRoom, passLoops, PAT_EVERY, PAT_S, pitchToU, spunThread,
+  lineFor, pitchToY, playRange, SAY_S, tuneOf, rangeFromHums, REST_Y, saidIt, sentencesFrom, SENTENCES, threads, uToHz, uToY, wind, type Loop,
 } from "./yarn.ts";
 
 const RANGE: [number, number] = [150, 300]; // an octave
@@ -19,8 +19,16 @@ test("the cat perks up once after threading, then settles", () => {
 });
 
 test("the cat reaches for nearby yarn without asking for higher notes", () => {
-  assert.ok(catReaction(2, -Infinity, .94, false).reach > .8);
+  assert.ok(catReaction(2, -Infinity, .9, false).reach > .8, "hanging low beside it");
   assert.equal(catReaction(2, -Infinity, .4, false).reach, 0);
+});
+
+test("yarn resting on the floor gets a pat as it lands and now and then after", () => {
+  const pat = (t: number) => catReaction(t, -Infinity, REST_Y, false, 10).reach;
+  assert.ok(pat(10 + PAT_S / 2) > .9, "as it lands");
+  assert.equal(pat(10 + 1.5), 0, "then rests");
+  assert.ok(pat(10 + PAT_EVERY + PAT_S / 2) > .9, "and pats again");
+  assert.equal(catReaction(10.2, -Infinity, REST_Y, true, 10).reach, 0, "not with reduced motion");
 });
 
 test("reduced motion keeps cat decorations still across time and events", () => {
@@ -151,6 +159,22 @@ test("while Lilt plays a loop's note, what the mic hears is ignored", () => {
   assert.ok(run(f, 1, 1.5, () => 300).afloat);
 });
 
+test("a short sound while you're humming doesn't let the yarn sag", () => {
+  const f = follower(RANGE, "hum");
+  run(f, 0, 1, () => 250);
+  const up = f.y;
+  f.mute(1.35, 1);
+  let low = 0;
+  for (let t = 1; t < 1.35; t += 0.01) { f.push(t, 250); low = Math.max(low, f.step(t, 0.01).y); }
+  close(low, up, 0.005);
+  // muting while you're quiet doesn't hold anything up
+  const q = follower(RANGE, "hum");
+  run(q, 0, 1, () => 250);
+  run(q, 1, 2, () => null);
+  q.mute(3, 2);
+  assert.ok(!run(q, 2, 2.6, () => null).afloat);
+});
+
 test("loops open middle, high, low, then stay gentle and inside the range", () => {
   const m = loopMaker("hum", 7);
   const loops: Loop[] = [];
@@ -169,6 +193,52 @@ test("loops open middle, high, low, then stay gentle and inside the range", () =
   const s = loopMaker("speak", 3), sp: Loop[] = [];
   while (sp.length < 100) sp.push(...s.next());
   assert.ok(sp.every((l) => l.u >= 0.25 && l.u <= 0.7 && l.r > loops[0].r));
+});
+
+test("humming now and then brings a longer, eased glide, never crowded", () => {
+  const loops: Loop[] = [], m = loopMaker("hum", 11);
+  while (loops.length < 400) loops.push(...m.next());
+  const glides = new Map<number, Loop[]>();
+  for (const l of loops) if (l.group) glides.set(l.group, [...(glides.get(l.group) ?? []), l]);
+  const fives = [...glides.values()].filter((g) => g.length === 5);
+  assert.ok(fives.length >= 5, `${fives.length} glides`);
+  for (const g of fives) {
+    const steps = g.slice(1).map((l, i) => l.u - g[i].u);
+    assert.ok(steps.every((d) => d >= 0) || steps.every((d) => d <= 0), "one direction");
+    assert.ok(Math.abs(g[4].u - g[0].u) >= 0.25, "goes somewhere");
+    assert.ok(Math.abs(steps[0]) < Math.abs(steps[1]), "eases in");
+    assert.ok(new Set(g.map((l) => l.hue)).size === 1, "one colour");
+  }
+  for (let i = 1; i < loops.length; i++) assert.ok(loops[i].at - loops[i - 1].at >= 1.9);
+});
+
+test("speaking deals a sentence's start and end: rising or falling pairs", () => {
+  const loops: Loop[] = [], m = loopMaker("speak", 5);
+  while (loops.length < 200) loops.push(...m.next());
+  for (let i = 0; i < loops.length; i += 2) {
+    const [a, b] = [loops[i], loops[i + 1]];
+    assert.equal(a.group, b.group);
+    assert.ok(a.tune && a.tune === b.tune);
+    close(b.at - a.at, SAY_S, 1e-9);
+    assert.ok(a.tune === "rise" ? b.u - a.u >= 0.2 : a.u - b.u >= 0.2, `${a.tune} ${a.u} → ${b.u}`);
+    if (i) assert.ok(a.at - loops[i - 1].at >= 1.9, "a pause between sentences");
+  }
+  assert.ok(loops.some((l) => l.tune === "rise") && loops.some((l) => l.tune === "fall"));
+});
+
+test("a line's tune: yes/no questions rise, other lines settle, and a line to fit can be picked", () => {
+  assert.equal(tuneOf("Is this seat free?"), "rise");
+  assert.equal(tuneOf("Hi, could I get a coffee, please?"), "rise");
+  assert.equal(tuneOf("Good morning. How are you today?"), "fall");
+  assert.equal(tuneOf("Where's the station?"), "fall");
+  assert.equal(tuneOf("Have a lovely evening."), "fall");
+  const lines = ["Is this seat free?", "Have a lovely evening.", "Could you say that again, please?", "Thank you so much."];
+  for (const r of [0, 0.3, 0.6, 0.99]) {
+    assert.equal(tuneOf(lines[lineFor(lines, "rise", r)]), "rise");
+    assert.equal(tuneOf(lines[lineFor(lines, "fall", r)]), "fall");
+  }
+  assert.equal(lineFor(lines, "rise", 0, 0), 2, "another line, when there is one");
+  assert.equal(lineFor(["Thank you."], "rise", 0.5), 0, "any line when none fits");
 });
 
 test("a loop is threaded when the yarn is in its opening as it arrives, else it drifts by", () => {
@@ -210,6 +280,17 @@ test("threaded loops wind their colours onto the ball, the newest outermost", ()
   assert.deepEqual(wind([], 2), [2]);
   assert.deepEqual(wind([0, 1, 2, 3], 1), [1, 2, 3, 1]);
   assert.deepEqual(wind([0, 1], 3, 2), [1, 3]);
+});
+
+test("loops coming near are described in words for screen readers", () => {
+  const one: Loop = { id: 1, at: 5, u: 0.8, r: 0.085, hue: 0, state: "ahead" };
+  assert.equal(loopNews(one, [one]), "A loop is coming, near the top of your range.");
+  assert.equal(loopNews({ ...one, u: 0.5 }, []), "A loop is coming, near the middle of your range.");
+  const glide = [0.2, 0.25, 0.4, 0.55, 0.7].map((u, k): Loop => ({ id: 2 + k, at: 10 + 2 * k, u, r: 0.085, hue: 1, state: "ahead", group: 4 }));
+  assert.equal(loopNews(glide[0], glide), "A glide is coming, from the bottom up to the top of your range.");
+  assert.equal(loopNews(glide[2], glide), null, "the rest of a glide is already described");
+  const slope = [0.4, 0.45, 0.5].map((u, k): Loop => ({ id: 9 + k, at: 30 + 2 * k, u, r: 0.085, hue: 1, state: "ahead", group: 5 }));
+  assert.equal(loopNews(slope[0], slope), "A few loops are coming, near the middle of your range.");
 });
 
 test("a loop's note plays once as it comes into view, only while you're quiet", () => {
@@ -260,6 +341,23 @@ test("how it went is described in words, never graded", () => {
   assert.match(describePlay(low, RANGE, 30, "hum")[1], /lower half/);
   assert.match(describePlay([], RANGE, 1, "hum")[0], /rested/);
   assert.ok(!describePlay(frames, RANGE, 125, "hum").join(" ").match(/score|%|out of|great|poor|well done/i));
+});
+
+test("the thread you spun follows your voice across the game, with gaps where you were quiet", () => {
+  // a slow rise from the bottom of the range to the top, with a quiet second in the middle
+  const frames = Array.from({ length: 1000 }, (_, i) => ({ t: i * 0.01, hz: i >= 450 && i < 550 ? null : midiToHz(hzToMidi(150) + 12 * i / 1000), c: 0.97, v: 0.1 }));
+  const th = spunThread(frames, RANGE, 20);
+  assert.equal(th.length, 20);
+  close(th[1]!, 0.075, 0.03);
+  close(th[18]!, 0.925, 0.03);
+  assert.equal(th[9], null);
+  assert.equal(th[10], null);
+  const said = th.filter((u): u is number => u !== null);
+  assert.ok(said.every((u, i) => !i || u >= said[i - 1]), "rises as the voice did");
+  // a far-off note stays on the card; too little voice gives no thread
+  const high = frames.map((f) => ({ ...f, hz: 900 }));
+  assert.ok(spunThread(high, RANGE, 10).every((u) => u === 1.2));
+  assert.deepEqual(spunThread(frames.slice(0, 10), RANGE), []);
 });
 
 test("speak mode takes the course's everyday phrases, else a built-in list", () => {

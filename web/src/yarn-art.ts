@@ -272,11 +272,13 @@ export function paintRangeMark(c: Pen, W: number, y: number, label: string, abov
 }
 
 export function paintYarnCat(c: Pen, x: number, floor: number, s: number, phase: number, look: number, dark: boolean, moving: boolean, dozing: boolean, pose = { hop: 0, reach: 0, blink: false }, art?: YarnArt) {
-  const sprite = art && (dozing ? art.rest : pose.reach > .25 || pose.hop > .3 ? art.reach : art.kitten);
+  // trotting: the paw-forward pose and the standing one take turns, the body lifting with each step
+  const pawUp = moving && Math.sin(phase * 1.4) > .35;
+  const sprite = art && (dozing ? art.rest : pawUp || pose.reach > .25 || pose.hop > .3 ? art.reach : art.kitten);
   if (sprite && artReady(sprite)) {
     c.save(); c.translate(x, floor);
     oval(c, 0, s * .015, s * (.68 - pose.hop * .1), s * .075, dark ? 'rgba(12,18,20,.32)' : 'rgba(65,43,26,.24)');
-    const bob = moving ? Math.sin(phase * 2) * s * .018 : 0;
+    const bob = moving ? -Math.abs(Math.sin(phase * .7)) * s * .03 : 0;
     c.translate(0, bob - pose.hop * s * .12);
     c.scale(1 + pose.hop * .018, 1 - pose.hop * .025);
     c.drawImage(sprite, -s * .95, -s * 1.3, s * 2, s * 4 / 3);
