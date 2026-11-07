@@ -27,6 +27,7 @@ try {
     const open = async () => { await music.waitFor({ state: 'attached' }); if (!(await music.isVisible())) await target.click(); await music.waitFor({ state: 'visible' }); if (!(await picker.evaluate(el => el.open))) await picker.locator('summary').click(); };
     const close = async () => { await music.getByRole('button', { name: 'Close Music', exact: true }).click(); await music.waitFor({ state: 'hidden' }); await target.waitFor(); };
     await chosen('cassette');
+    assert.equal(await page.locator('.room-chair-foreground').count(), 1, 'the chair has a foreground layer above the players');
     assert.equal(await art.getAttribute('data-playing'), 'false');
     for (const [name, id] of [['Cream cassette','cassette'], ['Sage boombox','boombox'], ['Walnut radio','radio'], ['Record player','turntable']]) {
       await open(); await picker.getByRole('button', { name, exact: true }).click(); await chosen(id);
@@ -107,6 +108,11 @@ try {
     await page.reload(); await open(); await picker.getByText(/Couldn't load this player/).waitFor();
     assert.equal(await art.count(), 0, 'initial load failure keeps original painting');
     await page.unroute('**/room/players/clear-day.png');
+    await picker.getByRole('button', { name: 'Try again', exact: true }).click(); await chosen('turntable');
+    await page.route('**/room/chair/foreground.png', route => route.abort());
+    await page.reload(); await open(); await picker.getByText(/Couldn't load this player/).waitFor();
+    assert.equal(await art.count(), 0, 'a missing chair layer keeps the original painting');
+    await page.unroute('**/room/chair/foreground.png');
     await picker.getByRole('button', { name: 'Try again', exact: true }).click(); await chosen('turntable');
     // A late failed request must not overwrite a more recent successful choice.
     await page.evaluate(() => {

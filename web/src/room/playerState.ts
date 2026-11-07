@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { LIGHTS } from './scene';
 import { PLAYER_KEY, playerImage, readPlayer, type Player } from './player';
+import { CHAIR_MASK } from './ChairForeground';
 
 function stored() { try { return readPlayer(localStorage.getItem(PLAYER_KEY)); } catch { return readPlayer(null); } }
 let state: { selected: Player; shown: Player | null; failed: boolean; unsaved: boolean } = {
@@ -18,8 +19,8 @@ function loadImage(src: string) {
 export function retryPlayerArt() {
   const request = ++generation, selected = state.selected;
   state = { ...state, failed: false }; emit();
-  // The previous painting remains until the cutout and every background repair are ready.
-  void Promise.all([playerImage(selected), ...LIGHTS.map(light => `room/players/clear-${light}.png`)].map(loadImage))
+  // Keep the previous painting until the device, background repairs and chair silhouette are ready.
+  void Promise.all([playerImage(selected), CHAIR_MASK, ...LIGHTS.map(light => `room/players/clear-${light}.png`)].map(loadImage))
     .then(() => { if (request === generation) { state = { ...state, shown: selected }; emit(); } },
       () => { if (request === generation) { state = { ...state, failed: true }; emit(); } });
 }

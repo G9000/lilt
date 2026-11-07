@@ -76,6 +76,11 @@ is replaced with a painted music player. Clicking it opens a compact 340px dialo
 matching the mug controls, with lo-fi and Spotify. **Change player** folds open beneath the
 playback controls to choose Cream cassette, Sage boombox,
 Walnut radio or Record player. Shaded cutouts stay anchored on the desk and match all four lights.
+Each device has its own size, slight desk angle and contact shadow. The chair and pink throw
+are a foreground layer: a registered transparent cutout masks the original room pixels above
+the players, preserving the chair's texture and lighting while covering their lower left edges.
+The chair mask loads with the player before a replacement appears; missing layers retain the
+original or previous painting until retry succeeds.
 The cassette reels and record label turn during playback; the walnut radio has a soft tuning-light
 pulse. Motion pauses at the desk, in hidden tabs, while the microphone ducks music and with reduced
 motion. Choosing a design never starts music or changes its source. Browser-local preferences
