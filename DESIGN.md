@@ -8,10 +8,12 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 **Your companion** in Make it yours opens a compact cat picker: the original black-and-white
 cat, dilute grey-and-white tuxedo, ginger tabby, Siamese and fluffy white. Each is one connected
 painted cutout in the existing curled pose, with the same anchored breathing and room light.
-Clicking the cat still pets it; the picker stays separate and works by keyboard and on phones.
+Hover or keyboard focus traces the cat's alpha contour with the same pale-blue outline as the mug,
+synchronized to its breathing. Clicking opens the compact picker; Pet the cat closes it with purrs
+and hearts. Make it yours remains the keyboard and phone entry when the cat is cropped out.
 Browser-local choices survive Reset layout, synchronize across tabs and retain the prior cat
 on a failed swap. Initial failure tries the original before revealing the room; unavailable
-artwork never blocks access. Escape, Done and outside click restore focus to Make it yours.
+artwork never blocks access. Escape, Done and outside click restore focus to the opener.
 
 **Desk finishes** gives the microphone and each physical monitor frame its own compact picker:
 original black, warm cream, soft sage and brushed silver. Both monitors also offer Cream retro,

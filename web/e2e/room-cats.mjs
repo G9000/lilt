@@ -12,13 +12,21 @@ try {
   const context = await browser.newContext({ viewport: { width: 1600, height: 950 }, reducedMotion: 'reduce' });
   await context.route('https://**/*', route => route.abort());
   await context.route('**/api/**', route => route.fulfill({ status: 503, json: {} }));
+  await context.addInitScript(() => {
+    window.petHearts = 0;
+    const fill = CanvasRenderingContext2D.prototype.fill;
+    CanvasRenderingContext2D.prototype.fill = function(...args) {
+      if (this.canvas.classList.contains('room-fx') && this.fillStyle === '#ff7eb6') window.petHearts++;
+      return fill.apply(this, args);
+    };
+  });
   const page = await context.newPage(), errors = []; page.on('pageerror', error => errors.push(error.message));
   page.setDefaultTimeout(12000);
   const ready = () => page.waitForFunction(() => document.querySelector('.room-paint')?.dataset.ready === 'true');
   const shown = id => page.waitForFunction(id => document.querySelector('.room-fx')?.dataset.cat === id, id);
   const open = async () => {
     await page.getByRole('button', { name: 'Make it yours', exact: true }).click();
-    await page.getByRole('button', { name: 'Choose your cat', exact: true }).click();
+    await page.locator('.room-appearance').getByRole('button', { name: 'Choose your cat', exact: true }).click();
     await page.getByRole('dialog', { name: 'Choose your cat', exact: true }).waitFor();
   };
   const dialog = page.getByRole('dialog', { name: 'Choose your cat', exact: true });
@@ -43,11 +51,26 @@ try {
       const s = document.querySelector('.room-stage').getBoundingClientRect(), scale = s.width / 1672;
       return { x: s.x + 250 * scale, y: s.y + 770 * scale };
     });
+    await page.mouse.move(point.x, point.y);
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.room-cat-outline')).opacity === '1');
+    assert.equal(await page.locator('.room-cat-outline img').getAttribute('src').then(src => src.endsWith(id === 'original' ? '/room/cat-v2.webp' : `/room/cats/${id}.png`)), true);
+    if (shots) await page.screenshot({ path: path.join(shots, `cat-outline-${id}.png`), clip: crop });
     await page.mouse.click(point.x, point.y);
+    await dialog.waitFor();
+    assert.equal(await page.locator('.room-cat-target').getAttribute('aria-expanded'), 'true');
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.room-cat-outline')).opacity === '0');
+    await dialog.getByRole('button', { name: 'Pet the cat', exact: true }).click();
     await page.waitForFunction(() => /purr|prrrr|mrrp!|happy cat noises/.test(document.querySelector('.room-bubble')?.textContent ?? ''));
-    assert.equal(await dialog.count(), 0, 'petting does not open a picker');
+    assert.equal(await dialog.count(), 0, 'petting closes the picker to show the cat');
+    assert.equal(await page.locator('.room-cat-target').evaluate(el => el === document.activeElement), true);
+    await page.mouse.move(800, 100);
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.room-cat-outline')).opacity === '1');
+    await page.keyboard.press('Enter'); await dialog.waitFor();
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('.room-cat-target').evaluate(el => el === document.activeElement), true);
   }
   assert.equal(samples.size, 5, 'each choice paints different cat pixels');
+  assert.equal(await page.evaluate(() => window.petHearts), 0, 'reduced motion never leaves frozen pet hearts on the canvas');
   await page.reload(); await ready(); await shown('dilute-tuxedo');
   await page.getByRole('button', { name: 'Reset layout', exact: true }).click(); await shown('dilute-tuxedo');
   for (const light of ['morning','sunset','night']) {
@@ -114,7 +137,10 @@ try {
     const draw = CanvasRenderingContext2D.prototype.drawImage;
     CanvasRenderingContext2D.prototype.drawImage = function(image, ...args) {
       if (this.canvas.classList.contains('room-fx') && image instanceof HTMLImageElement && image.src.endsWith('/cats/dilute-tuxedo.png')) {
-        const m = this.getTransform(); window.catTransforms.push({ a: m.a, d: m.d, b: m.b, c: m.c, baseline: m.d * 846 + m.f, box: args });
+        const m = this.getTransform(), outline = document.querySelector('.room-cat-contour');
+        const contour = outline ? new DOMMatrix(getComputedStyle(outline).transform) : null;
+        window.catTransforms.push({ a: m.a, d: m.d, b: m.b, c: m.c, baseline: m.d * 846 + m.f, box: args,
+          outlineMatches: !!contour && Math.abs(contour.a - m.a) < .00001 && Math.abs(contour.d - m.d) < .00001 });
       }
       return draw.call(this, image, ...args);
     };
@@ -122,6 +148,7 @@ try {
   const movingPage = await moving.newPage(); await movingPage.goto(server.resolvedUrls.local[0]);
   await movingPage.waitForFunction(() => new Set(window.catTransforms.map(m => m.d)).size > 2);
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => Math.abs(m.baseline - 846) < .001 && m.b === 0 && m.c === 0 && JSON.stringify(m.box) === '[80,689,330,165]')), true, 'breathing stays anchored without rotating or separating the cat');
+  assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => m.outlineMatches)), true, 'outline tracks the same breathing scale on every painted frame');
   await moving.close();
-  console.log('Room cats passed: five rendered choices, petting, lights, keyboard/phone, persistence, cross-tab, stale/failed loads, storage errors, retry and cold reveal.');
+  console.log('Room cats passed: five rendered choices and outlines, click/keyboard picker, petting, lights, phone, persistence, cross-tab, stale/failed loads, storage errors, retry and cold reveal.');
 } finally { await browser?.close(); await server.close(); }

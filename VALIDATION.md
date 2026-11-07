@@ -1,5 +1,12 @@
 # Lilt: validation report
 
+## 7 November 2026: Click the cat to choose
+
+Whole-cat outlines, direct-click and keyboard pickers, focus return, synchronized breathing and
+reduced-motion petting passed isolated Chrome checks. Shared outlines and refresh readiness
+also passed. All web, server, Python and desktop checks passed; see
+[cat-outline validation](docs/validation/2026-11-07-cat-outline.md).
+
 ## 7 November 2026: Choose your room cat
 
 Five companions, including the requested dilute tuxedo, passed isolated Chrome checks for

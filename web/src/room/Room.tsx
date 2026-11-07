@@ -3,7 +3,7 @@ import { CHAIR_MASK } from './chair';
 import { roomStyles } from "../desk/roomStyles";
 import { ReactNode, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import {
-  CAT_BOX, CAT_SPOT, catHit, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
+  CAT_BOX, CAT_SPOT, catScale, COFFEE, COFFEE_URL, DESK_FOCUS, Frame, H, innerBox, layerOpacity, LIGHTS, MAIN_SCREEN, minuteNow, paint,
   quadMatrix, roomUrl, W,
 } from "./scene";
 import { useRoomAppearance } from './appearance';
@@ -167,6 +167,8 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
       const top = drift ? clamp(v.top - m.sy * 12, Math.min(0, vh - H * v.s), 0) : v.top;
       const st = stage.current;
       if (st) {
+        const scale = catScale(f);
+        st.style.setProperty('--cat-scale-x', String(scale.x)); st.style.setProperty('--cat-scale-y', String(scale.y));
         st.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${v.s})`; st.style.setProperty("--inv", String(1 / v.s));
         // Settled: the camera has landed in the room. The floating widgets wait for it.
         const settled = !c.inside && !c.flying;
@@ -235,25 +237,15 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   }, [inside]);
 
   // Pet the cat.
-  const toArt = (e: React.PointerEvent) => {
-    const r = stage.current!.getBoundingClientRect(), s = r.width / W;
-    return [(e.clientX - r.left) / s, (e.clientY - r.top) / s] as const;
-  };
-  const onPoint = (e: React.PointerEvent<HTMLDivElement>) => {
+  const petCat = () => {
     const c = cam.current;
     if (c.inside || c.flying) return;
-    const [x, y] = toArt(e);
-    if (!catHit(x, y)) return;
     const f = frame.current;
     f.poked = f.t;
-    for (let i = 0; i < 3; i++) f.hearts.push({ x: 230 + i * 18, y: 735, born: f.t + i * 0.18, drift: Math.random() - 0.5 });
+    if (!reduced) for (let i = 0; i < 3; i++) f.hearts.push({ x: 230 + i * 18, y: 735, born: f.t + i * 0.18, drift: Math.random() - 0.5 });
     setAside(PET_SAYS[Math.floor(Math.random() * PET_SAYS.length)]);
+    redraw.current();
     window.setTimeout(() => setAside(null), 2400);
-  };
-  const onHover = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (cam.current.inside) return;
-    const [x, y] = toArt(e);
-    e.currentTarget.style.cursor = catHit(x, y) ? "pointer" : "";
   };
 
   // Buy me a coffee: hearts float up out of the cup and the cat says thanks, then the page opens in
@@ -277,7 +269,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   // so this class name never changes and React never resets it.
   const settledAtStart = useRef(!inside).current;
   return (
-    <div className={[`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`, roomStyles["room"]].join(" ")} aria-hidden={inside} onPointerDown={onPoint} onPointerMove={onHover}>
+    <div className={[`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`, roomStyles["room"]].join(" ")} aria-hidden={inside}>
       <div className={settledAtStart ? ["room-stage settled", roomStyles["room-stage"]].join(" ") : ["room-stage", roomStyles["room-stage"]].join(" ")} ref={stage} style={{ width: W, height: H }}>
         <div className={["room-paint", roomStyles["room-paint"]].join(" ")} data-light={appearance.light} ref={paintRef} data-ready={ready} style={{ visibility: ready ? 'visible' : 'hidden' }}>
         {LIGHTS.map((l) => (
@@ -299,6 +291,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
         <ChairForeground />
         <ChairPicker inside={inside} />
         <canvas ref={canvas} className={["room-fx", roomStyles["room-fx"]].join(" ")} data-cat={cat.shown ?? 'none'} width={W} height={H} />
+        <CatPicker inside={inside} state={cat} onPet={petCat} />
         <div className={["room-color-wash", roomStyles["room-color-wash"]].join(" ")} style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
         </div>
         <svg className={["room-screen-light", roomStyles["room-screen-light"]].join(" ")} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
@@ -317,7 +310,6 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
           <span>{cards === null ? "Your desk is ready" : cards === 0 ? "All done · your desk is still open" : `${cards} card${cards === 1 ? "" : "s"} today`}</span>
         </div>
         <RoomObjects inside={inside} onEnter={onEnter} />
-        <CatPicker inside={inside} state={cat} />
         {children}
       </div>
       <div className={["room-shade", roomStyles["room-shade"]].join(" ")} />

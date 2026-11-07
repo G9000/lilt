@@ -77,8 +77,6 @@ export type CatMood = "sleep" | "listen" | "happy";
 /** One complete cutout, over empty bedding; no moving piece leaves a painted copy behind. */
 export const CAT_BOX = { x: 80, y: 689, w: 330, h: 165 };
 
-/** Hit box around the sleeping cat, in painting pixels. */
-export const catHit = (x: number, y: number) => x > 75 && x < 410 && y > 685 && y < 840;
 
 /* ---------- ambience ---------- */
 
@@ -237,16 +235,21 @@ function plants(g: CanvasRenderingContext2D, t: number, w: Weights) {
   g.restore();
 }
 
+export function catScale(f: Frame) {
+  const breathe = Math.sin(f.t * (f.cat === "sleep" ? 1.66 : 2.1));
+  return { x: 1 + 0.0015 * breathe, y: 1 + 0.007 * breathe };
+}
+
 function cat(g: CanvasRenderingContext2D, f: Frame) {
-  const { t, w, catImage } = f;
+  const { w, catImage } = f;
   if (!catImage?.complete || !catImage.naturalWidth) return;
-  const breathe = Math.sin(t * (f.cat === "sleep" ? 1.66 : 2.1));
+  const scale = catScale(f);
   const floor = CAT_BOX.y + CAT_BOX.h - 8;
   g.save();
   g.fillStyle = 'rgba(51,35,50,.18)';
   g.beginPath(); g.ellipse(CAT_BOX.x + CAT_BOX.w / 2, floor - 4, CAT_BOX.w * 0.45, 12, 0, 0, Math.PI * 2); g.fill();
   g.translate(CAT_BOX.x + CAT_BOX.w / 2, floor);
-  g.scale(1 + 0.0015 * breathe, 1 + 0.007 * breathe);
+  g.scale(scale.x, scale.y);
   g.translate(-CAT_BOX.x - CAT_BOX.w / 2, -floor);
   g.filter = `brightness(${1 - w.night * 0.22}) saturate(${1 - w.night * 0.15})`;
   g.drawImage(catImage, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);

@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Click your sleepy companion", body: "Your cat now shares the mug's gentle outline on hover or keyboard focus. Click to choose a companion, or use Pet the cat inside the picker for a purr and hearts." },
       { title: "A sleepy companion of your own", body: "Choose your cat in Make it yours: the original black-and-white companion, a dilute grey-and-white tuxedo, ginger tabby, Siamese or fluffy white cat. Each curls up in the same spot, breathes gently and still enjoys a little pet. Your choice stays in this browser." },
       { title: "Monitors with more character", body: "Choose a chunky cream retro monitor, a rounded sage design or a silver studio display for either screen. Each has its own thicker housing, stand and outline. Your pictures stay in place, and the original finishes are still there." },
       { title: "Your microphone and monitor frames", body: "Choose black, cream, sage or silver for your microphone and each monitor frame. Their whole shapes share the gentle outline; your screen pictures stay put. Find all three in Make it yours. Refresh also waits for your saved artwork, without flashing the old room first." },

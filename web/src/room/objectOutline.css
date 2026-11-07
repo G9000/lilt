@@ -7,15 +7,16 @@
 .room:not(.inside) .room-stage.settled:has(.room-plant-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-plant-outline,
 .room:not(.inside) .room-stage.settled:has(.room-coffee-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-coffee-outline,
 .room:not(.inside) .room-stage.settled:has(.room-camera-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-camera-outline,
+.room:not(.inside) .room-stage.settled:has(.room-cat-target[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-cat-outline,
 .room:not(.inside) .room-stage.settled:has(.room-music[data-outlined="true"][aria-expanded="false"]:is(:hover, :focus)) .room-player-outline {
   opacity: 1;
 }
 
 /* Keep the existing labels and accessible targets, replacing their rectangular glow. */
-.room :is(.room-mug-target, .room-plant-target, .room-music, .room-coffee-target, .room-camera-target)[data-outlined="true"]::before {
+.room :is(.room-mug-target, .room-plant-target, .room-music, .room-coffee-target, .room-camera-target, .room-cat-target)[data-outlined="true"]::before {
   display: none;
 }
-.room :is(.room-mug-target, .room-plant-target, .room-music, .room-coffee-target, .room-camera-target)[data-outlined="true"]:focus-visible {
+.room :is(.room-mug-target, .room-plant-target, .room-music, .room-coffee-target, .room-camera-target, .room-cat-target)[data-outlined="true"]:focus-visible {
   outline: none;
 }
 
