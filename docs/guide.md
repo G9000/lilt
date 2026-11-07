@@ -419,7 +419,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    - **Flashcards** (`#/flashcards`, in the dock, or the Flashcards widget beside the plant in the
      room, which shows the chapter you're on and how far through it you are) opens full screen and
      deals a chapter out as the room's illustrated cards, one at a time: its opening, each step of
-     the how-to, its video, then each text. The chapter's name at the top is a menu of every chapter
+     the how-to, its video (from YouTube, so it needs an internet connection; offline the card
+     says so), then each text. The chapter's name at the top is a menu of every chapter
      with how far through each you are. Swipe right (or <kbd>→</kbd>, or Got it beside the card) when
      you've got a card, left (<kbd>←</kbd>, Again) to see it again at the back of the pile; Undo puts
      the last one back. **A text's card won't swipe until you've recorded it** with Practice's

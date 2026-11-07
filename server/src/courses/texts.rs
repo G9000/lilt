@@ -175,7 +175,7 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
             && (!i.starts_with("images/") || i.contains(".."))
         {
             bail!(
-                "video_image must be a file in images/, like `video_image: images/video-{id}.jpg`"
+                "video_image must be a picture of your own in images/, like `video_image: images/{id}.jpg`"
             );
         }
         video = Some(

@@ -252,28 +252,40 @@ function Medal({ className }: { className?: string }) {
 const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z";
 
 /**
- * A chapter's video. Until you press play it is only a card drawn here (no request to YouTube, so
- * nothing about you leaves this computer); then YouTube's no-cookie player loads in its place.
+ * A chapter's video: a card with YouTube's thumbnail (or the course's own `video_image`), then
+ * YouTube's no-cookie player in its place when you press play. Offline, the card says so instead.
  */
 export function ChapterVideo({ video, course }: { video: NonNullable<TextLevel["video"]>; course?: string }) {
   const [on, setOn] = useState(false);
+  const [online, setOnline] = useState(() => typeof navigator === "undefined" || navigator.onLine);
+  const [broken, setBroken] = useState(false);
+  const [ownGone, setOwnGone] = useState(false);
+  useEffect(() => {
+    const up = () => { setOnline(true); setBroken(false); };
+    const down = () => setOnline(false);
+    window.addEventListener("online", up);
+    window.addEventListener("offline", down);
+    return () => { window.removeEventListener("online", up); window.removeEventListener("offline", down); };
+  }, []);
   const watch = `https://www.youtube.com/watch?v=${video.id}`;
-  if (on) return (
+  if (on && online) return (
     <div className={cx("ci-video", practice["ci-video"])}>
       <div className={cx("ci-frame", practice["ci-frame"])}><iframe src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`} title={video.title || "Video"} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen /></div>
       <p className={cx("ci-vmeta", practice["ci-vmeta"])}>{video.by && <>{video.by} · </>}<a href={watch} target="_blank" rel="noreferrer">Open on YouTube</a></p>
     </div>
   );
-  // The thumbnail is a copy saved with the course, so showing it asks nothing of YouTube.
-  const poster = video.image ? picture(video.image, course) : undefined;
+  // A copy can still name a saved thumbnail that's gone; then YouTube's own one stands in.
+  const own = video.image && !ownGone ? picture(video.image, course) : undefined;
+  const poster = own ?? `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
+  const shown = online && !broken;
   // Small until you want it: a thumbnail row; pressing it opens the full player.
   return (
-    <button type="button" className={cx("ci-vrow", practice["ci-vrow"])} onClick={() => setOn(true)} aria-label={`Play video: ${video.title}`}>
-      <span className={cx(`ci-thumb${poster ? "" : " plain"}`, practice["ci-thumb"])}>
-        {poster && <img src={poster} alt="" loading="lazy" />}
+    <button type="button" className={cx("ci-vrow", practice["ci-vrow"])} onClick={() => online && setOn(true)} aria-disabled={!online} aria-label={online ? `Play video: ${video.title}` : `${video.title}: needs an internet connection`}>
+      <span className={cx(`ci-thumb${shown ? "" : " plain"}`, practice["ci-thumb"])}>
+        {shown && <img src={poster} alt="" loading="lazy" onError={() => (own ? setOwnGone(true) : setBroken(true))} />}
         <span className={cx("ci-play", practice["ci-play"])} aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M5.5 3.5l7 4.5-7 4.5z" fill="currentColor" /></svg></span>
       </span>
-      <span className={cx("ci-vtext", practice["ci-vtext"])}><small>Video{video.by ? ` · ${video.by}` : ""}</small><b>{video.title || "Watch a video"}</b><small>Plays from YouTube when you press it</small></span>
+      <span className={cx("ci-vtext", practice["ci-vtext"])}><small>Video{video.by ? ` · ${video.by}` : ""}</small><b>{video.title || "Watch a video"}</b><small>{!online ? "Needs an internet connection to play" : broken ? "Couldn't reach YouTube. Check your internet connection." : "Plays from YouTube"}</small></span>
     </button>
   );
 }

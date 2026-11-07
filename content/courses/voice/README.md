@@ -120,9 +120,10 @@ mmmmmmm
   - `exercises`: built-in exercises (from `content/exercises/`, by id, comma-separated) that join
     this chapter in Today.
   - `today: false`: keep this chapter's texts out of Today's cards (Start here uses it).
-  - `video`, `video_title`, `video_by`, `video_image`: one YouTube video for the chapter (a link),
-    and its thumbnail saved in `images/` (so it shows without asking YouTube). Practice shows a card
-    and loads nothing from YouTube until it's played.
+  - `video`, `video_title`, `video_by`: one YouTube video for the chapter (a link). Practice shows a
+    card with YouTube's thumbnail and plays the video there; offline, the card says it needs an
+    internet connection. `video_image: images/<file>` swaps in a picture of your own, which should
+    be one you made or may share, not a copy of the creator's thumbnail.
 - **`kind`** sets how the text is shown and read along: `hum`, `words`, `automatic`, `phrases`,
   `sentences`, `passage` or `prompt` (a question you answer in your own words).
 - **Each text** starts with `## ` and a short id, unique in the chapter. The lines under it are
