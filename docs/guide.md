@@ -101,8 +101,9 @@ cat stay in the original illustration. The experimental 3D views have been remov
 **Choose your cat.** In **Make it yours → Your companion → Choose your cat**, choose the original
 sleepy black-and-white cat, a soft grey-and-white **Dilute tuxedo**, **Ginger tabby**, **Siamese** or
 **Fluffy white** companion. Each keeps the curled sleeping pose, gentle breathing and room light.
-Hover or focus the cat to outline its whole shape, then click it to open the same compact picker.
-Choose **Pet the cat** inside to close the picker and see its purr and hearts.
+Hover or focus the cat to outline its whole shape. Click to pet it; press and hold briefly to open
+the compact picker. Enter or Space pets the focused cat. Make it yours also opens the choices
+without holding. **Pet the cat** inside the picker closes it and brings back the purr and hearts.
 Your choice stays in this browser and survives Reset layout. A failed image keeps the previous
 cat, or uses the original on a fresh visit, with Try again in the picker. The same picker works
 on phones even when the cat is outside the cropped room view.

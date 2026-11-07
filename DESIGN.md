@@ -9,8 +9,10 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 cat, dilute grey-and-white tuxedo, ginger tabby, Siamese and fluffy white. Each is one connected
 painted cutout in the existing curled pose, with the same anchored breathing and room light.
 Hover or keyboard focus traces the cat's alpha contour with the same pale-blue outline as the mug,
-synchronized to its breathing. Clicking opens the compact picker; Pet the cat closes it with purrs
-and hearts. Make it yours remains the keyboard and phone entry when the cat is cropped out.
+synchronized to its breathing. Clicking pets the cat; holding for 650ms opens the compact picker
+without also petting on release. Moving more than 10 screen pixels, cancellation, Escape or losing
+focus cancels the hold. Enter and Space pet it. Make it yours remains the keyboard and phone entry
+for choices when the cat is cropped out. Pet the cat inside the picker closes it with purrs and hearts.
 Browser-local choices survive Reset layout, synchronize across tabs and retain the prior cat
 on a failed swap. Initial failure tries the original before revealing the room; unavailable
 artwork never blocks access. Escape, Done and outside click restore focus to the opener.

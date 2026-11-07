@@ -56,7 +56,11 @@ try {
     assert.equal(await page.locator('.room-cat-outline img').getAttribute('src').then(src => src.endsWith(id === 'original' ? '/room/cat-v2.webp' : `/room/cats/${id}.png`)), true);
     if (shots) await page.screenshot({ path: path.join(shots, `cat-outline-${id}.png`), clip: crop });
     await page.mouse.click(point.x, point.y);
+    await page.waitForFunction(() => /purr|prrrr|mrrp!|happy cat noises/.test(document.querySelector('.room-bubble')?.textContent ?? ''));
+    assert.equal(await dialog.count(), 0, 'a short click pets without opening choices');
+    await page.mouse.down();
     await dialog.waitFor();
+    await page.mouse.up();
     assert.equal(await page.locator('.room-cat-target').getAttribute('aria-expanded'), 'true');
     await page.waitForFunction(() => getComputedStyle(document.querySelector('.room-cat-outline')).opacity === '0');
     await dialog.getByRole('button', { name: 'Pet the cat', exact: true }).click();
@@ -65,12 +69,28 @@ try {
     assert.equal(await page.locator('.room-cat-target').evaluate(el => el === document.activeElement), true);
     await page.mouse.move(800, 100);
     await page.waitForFunction(() => getComputedStyle(document.querySelector('.room-cat-outline')).opacity === '1');
-    await page.keyboard.press('Enter'); await dialog.waitFor();
+    await page.keyboard.press('Enter');
+    assert.equal(await dialog.count(), 0, 'keyboard activation pets');
+    await page.mouse.move(point.x, point.y); await page.mouse.down(); await dialog.waitFor(); await page.mouse.up();
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('.room-cat-target').evaluate(el => el === document.activeElement), true);
   }
   assert.equal(samples.size, 5, 'each choice paints different cat pixels');
   assert.equal(await page.evaluate(() => window.petHearts), 0, 'reduced motion never leaves frozen pet hearts on the canvas');
+  await page.locator('.room-bubble').waitFor({ state: 'hidden' });
+  const catTarget = page.locator('.room-cat-target');
+  for (const cancel of ['drag', 'escape', 'pointercancel', 'blur']) {
+    await catTarget.hover(); await page.mouse.down();
+    if (cancel === 'drag') {
+      const box = await catTarget.boundingBox();
+      await page.mouse.move(box.x + box.width / 2 + 30, box.y + box.height / 2);
+    } else if (cancel === 'escape') await page.keyboard.press('Escape');
+    else if (cancel === 'pointercancel') await catTarget.dispatchEvent('pointercancel');
+    else await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    await page.waitForTimeout(800); await page.mouse.up();
+    assert.equal(await dialog.count(), 0, `${cancel} cancels the hold`);
+    assert.equal(await page.locator('.room-bubble').count(), 0, `${cancel} release does not pet`);
+  }
   await page.reload(); await ready(); await shown('dilute-tuxedo');
   await page.getByRole('button', { name: 'Reset layout', exact: true }).click(); await shown('dilute-tuxedo');
   for (const light of ['morning','sunset','night']) {
@@ -150,5 +170,28 @@ try {
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => Math.abs(m.baseline - 846) < .001 && m.b === 0 && m.c === 0 && JSON.stringify(m.box) === '[80,689,330,165]')), true, 'breathing stays anchored without rotating or separating the cat');
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => m.outlineMatches)), true, 'outline tracks the same breathing scale on every painted frame');
   await moving.close();
-  console.log('Room cats passed: five rendered choices and outlines, click/keyboard picker, petting, lights, phone, persistence, cross-tab, stale/failed loads, storage errors, retry and cold reveal.');
+  const touch = await browser.newContext({ viewport: { width: 1600, height: 950 }, hasTouch: true, reducedMotion: 'reduce' });
+  await touch.route('**/api/**', route => route.fulfill({ status: 503, json: {} }));
+  const touchPage = await touch.newPage(); touchPage.setDefaultTimeout(12000);
+  await touchPage.goto(server.resolvedUrls.local[0]);
+  await touchPage.waitForFunction(() => document.querySelector('.room-paint')?.dataset.ready === 'true');
+  const touchDialog = touchPage.getByRole('dialog', { name: 'Choose your cat', exact: true });
+  await touchPage.locator('.room-cat-target').tap();
+  await touchPage.waitForFunction(() => /purr|prrrr|mrrp!|happy cat noises/.test(document.querySelector('.room-bubble')?.textContent ?? ''));
+  assert.equal(await touchDialog.count(), 0, 'a touch tap pets');
+  await touchPage.locator('.room-bubble').waitFor({ state: 'hidden' });
+  const touchBox = await touchPage.locator('.room-cat-target').boundingBox();
+  const finger = { x: touchBox.x + touchBox.width / 2, y: touchBox.y + touchBox.height / 2 };
+  const cdp = await touch.newCDPSession(touchPage);
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [finger] });
+  await touchDialog.waitFor();
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  assert.equal(await touchDialog.isVisible(), true, 'touch release leaves the choices open');
+  assert.equal(await touchPage.locator('.room-bubble').count(), 0, 'releasing a hold does not pet');
+  await touchDialog.getByRole('button', { name: 'Siamese', exact: true }).tap();
+  await touchPage.waitForFunction(() => document.querySelector('.room-fx')?.dataset.cat === 'siamese');
+  await touchPage.touchscreen.tap(10, 300);
+  await touchDialog.waitFor({ state: 'hidden' });
+  await touch.close();
+  console.log('Room cats passed: five choices/outlines, click/keyboard petting, mouse/touch hold and cancellation, lights, phone, persistence, cross-tab, stale/failed loads, storage errors, retry and cold reveal.');
 } finally { await browser?.close(); await server.close(); }

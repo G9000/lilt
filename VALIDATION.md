@@ -1,5 +1,11 @@
 # Lilt: validation report
 
+## 7 November 2026: Click to pet, hold to choose
+
+The cat now pets on a short click or tap and opens choices on a hold. Mouse/touch release,
+cancelled gestures, keyboard petting and existing cat regressions passed, alongside the full
+required checks. See [cat-hold validation](docs/validation/2026-11-07-cat-hold.md).
+
 ## 7 November 2026: Click the cat to choose
 
 Whole-cat outlines, direct-click and keyboard pickers, focus return, synchronized breathing and
