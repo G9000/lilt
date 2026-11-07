@@ -14,6 +14,8 @@ import { PlayerBackdrop, RoomPlayer } from './RoomPlayer';
 import { ChairBackdrop, ChairForeground } from './ChairForeground';
 import { ChairPicker } from './ChairPicker';
 import { plantLight } from './plant';
+import { RoomProp, RoomPropBackdrop } from './RoomProps';
+import { useRoomProp } from './useRoomProp';
 
 /**
  * The illustrated room. Outside, it is the whole screen; the middle monitor is a way in. Inside,
@@ -72,6 +74,7 @@ const PET_SAYS = ["purr… :3", "prrrr <3", "mrrp!", "*happy cat noises*"];
 /** `children` float in the painting: position them in painting pixels; `--inv` undoes the camera's scale. */
 export function Room({ inside, onEnter, cards, done, days = 0, children }: { inside: boolean; onEnter: () => void; cards: number | null; done: boolean; days?: number; children?: ReactNode }) {
   const appearance = useRoomAppearance();
+  const coffee = useRoomProp('coffee'), camera = useRoomProp('camera');
   const appearanceRef = useRef(appearance); appearanceRef.current = appearance;
   const screenGlowId = useId();
   const stage = useRef<HTMLDivElement>(null);
@@ -231,7 +234,6 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
 
   // Buy me a coffee: hearts float up out of the cup and the cat says thanks, then the page opens in
   // a new tab, a moment later so you see it (⌘/Ctrl-click and middle-click open it straight away).
-  const [sipped, setSipped] = useState(false);
   const onCoffee = (e: React.MouseEvent) => {
     if (!(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) {
       e.preventDefault();
@@ -239,8 +241,6 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
     }
     const f = frame.current;
     if (!reduced) for (let i = 0; i < 4; i++) f.hearts.push({ x: COFFEE.x + 14 + i * 9, y: COFFEE.y + 20, born: f.t + i * 0.15, drift: Math.random() - 0.5 });
-    setSipped(true);
-    window.setTimeout(() => setSipped(false), 2400);
     setAside("mrrp… thank you!");
     window.setTimeout(() => setAside((a) => (a === "mrrp… thank you!" ? null : a)), 2400);
   };
@@ -260,10 +260,14 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
           <img key={l} ref={(el) => { arts.current[l] = el; }} className={["room-art", roomStyles["room-art"]].join(" ")} src={roomUrl(l)} alt="" draggable={false}
             style={{ opacity: String(layerOpacity(frame.current.w)[l]) }} />
         ))}
+        <RoomPropBackdrop kind="coffee" shown={coffee.shown} />
+        <RoomPropBackdrop kind="camera" shown={camera.shown} />
         <MonitorScreen monitor="main" appearance={appearance} inside={inside} />
         <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
         <RoomPlant days={days} inside={inside} />
         <TeaBreak inside={inside} />
+        <RoomProp kind="coffee" state={coffee} inside={inside} onCoffee={onCoffee} />
+        <RoomProp kind="camera" state={camera} inside={inside} />
         <PlayerBackdrop />
         <ChairBackdrop />
         <RoomPlayer inside={inside} />
@@ -284,10 +288,6 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
           <b><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5v10l3-3 2.5 4 2-1.2-2.5-4H13Z" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg><span className={["room-click", roomStyles["room-click"]].join(" ")}>Click the screen</span><span className={["room-tap", roomStyles["room-tap"]].join(" ")}>Tap the screen</span></b>
           <span>{cards === null ? "Your desk is ready" : cards === 0 ? "All done · your desk is still open" : `${cards} card${cards === 1 ? "" : "s"} today`}</span>
         </div>
-        <a className={[`room-coffee${sipped ? " sipped" : ""}`, roomStyles["room-coffee"]].join(" ")} href={COFFEE_URL} onClick={onCoffee} target="_blank" rel="noopener noreferrer" tabIndex={inside ? -1 : 0}
-          style={{ left: COFFEE.x, top: COFFEE.y, width: COFFEE.w, height: COFFEE.h }} onPointerDown={(e) => e.stopPropagation()}>
-          <span>Buy me a coffee</span>
-        </a>
         <RoomObjects inside={inside} onEnter={onEnter} />
         {children}
       </div>

@@ -5,16 +5,13 @@ import { openRoomPlant } from './RoomPlant';
 import { openTeaBreak } from './TeaBreak';
 import { openChairPicker } from './ChairPicker';
 import { usePlayer } from './playerState';
+import { openRoomProp } from './RoomProps';
 
 /** Transparent targets follow the painted objects; narrow screens keep the same shortcuts. */
 export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () => void }) {
   const music = useMusic();
   const { shown } = usePlayer();
   return <>
-    <a className={["room-object room-camera", roomStyles["room-object"], roomStyles["room-camera"]].join(" ")} href="#/photos" aria-label="Open Photos" tabIndex={inside ? -1 : 0}
-      onPointerDown={event => event.stopPropagation()} onPointerMove={event => event.stopPropagation()}>
-      <span aria-hidden="true">Open Photos</span>
-    </a>
     <button type="button" className={["room-object room-microphone", roomStyles["room-object"], roomStyles["room-microphone"]].join(" ")} aria-label="Open Practice" tabIndex={inside ? -1 : 0}
       disabled={inside} onClick={onEnter} onPointerDown={event => event.stopPropagation()} onPointerMove={event => event.stopPropagation()}>
       <span aria-hidden="true">Open Practice</span>
@@ -33,6 +30,8 @@ export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () 
         <button type="button" onClick={openRoomPlant}>Plants</button>
         <button type="button" onClick={openTeaBreak}>Tea</button>
         <button type="button" className="room-chair-shortcut" onClick={openChairPicker} aria-haspopup="dialog">Chair</button>
+        <button type="button" className="room-coffee-shortcut" onClick={() => openRoomProp('coffee')} aria-haspopup="dialog">Coffee</button>
+        <button type="button" className="room-camera-shortcut" onClick={() => openRoomProp('camera')} aria-haspopup="dialog">Camera</button>
       </div>, document.body)}
   </>;
 }

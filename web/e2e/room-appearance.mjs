@@ -27,7 +27,7 @@ try {
   await page.getByRole('button',{name:'Make it yours',exact:true}).click();
   await choose(page.getByRole('radio',{name:'Night',exact:true}));
   assert.equal(await page.locator('.room-paint').getAttribute('data-light'),'night');
-  assert.equal(await page.locator('img[src="room/room-night-v3.webp"]').evaluate(el=>el.style.opacity),'1');
+  assert.equal(await page.locator('.room-art[src="room/room-night-v3.webp"]').evaluate(el=>el.style.opacity),'1');
   await page.waitForFunction(()=>[...document.querySelectorAll('.room-art')].every(im=>im.complete&&im.naturalWidth));
   const canvas = page.locator('.room-fx');
   const unlit=await canvas.evaluate(c=>c.toDataURL());
@@ -71,7 +71,9 @@ try {
   await page.setViewportSize({width:1440,height:950});
   await page.getByRole('button',{name:'Open Practice',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.entered),2,'microphone uses the existing Practice entry');
+  await page.getByRole('button',{name:'Choose your camera',exact:true}).click();
   assert.equal(await page.getByRole('link',{name:'Open Photos',exact:true}).getAttribute('href'),'#/photos');
+  await page.keyboard.press('Escape');
   for(const name of ['Daylight','Morning','Sunset','Night']) {
     await page.getByRole('button',{name:'Make it yours',exact:true}).click();
     await choose(page.getByRole('radio',{name,exact:true}));
@@ -122,6 +124,7 @@ try {
   await home.setViewportSize({width:1440,height:844});
   await home.goto(server.resolvedUrls.local[0]);
   assert.equal(await home.locator('.fl-radio').count(),0,'painted player replaces floating radio');
+  await home.getByRole('button',{name:'Choose your camera',exact:true}).click();
   await home.getByRole('link',{name:'Open Photos',exact:true}).click();
   await home.waitForFunction(()=>location.hash==='#/photos');
   await home.goto(`${server.resolvedUrls.local[0]}#/`);

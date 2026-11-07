@@ -2,7 +2,7 @@ import { useId, type ReactNode } from 'react';
 import './objectOutline.css';
 
 /** Trace the rendered cutout, so growth and replacement artwork keep their own contour. */
-export function ObjectOutline({ kind, children }: { kind: 'mug' | 'plant' | 'player'; children: ReactNode }) {
+export function ObjectOutline({ kind, children }: { kind: 'mug' | 'plant' | 'player' | 'coffee' | 'camera'; children: ReactNode }) {
   const id = useId();
   return <div aria-hidden="true" className={`room-object-outline room-${kind}-outline pointer-events-none absolute inset-0`}>
     <svg width="0" height="0" className="absolute" aria-hidden="true"><defs>

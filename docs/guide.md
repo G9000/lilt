@@ -139,9 +139,10 @@ music continues. The CD spins during playback and rests when paused, while the m
 when closed or hidden, and with reduced motion. **Change player** changes only the room's
 boombox, radio or record-player artwork; the CD controls stay the same.
 The compact player in the top bar shows your selection and play/pause; click
-the artwork or title to reopen Music, including when paused. The camera opens your Photos gallery; the microphone
-opens Practice using the same next-card/Start here entry as the computer. On phones a small
-Photos/Practice/Music row keeps these actions available even when the objects are cropped;
+the artwork or title to reopen Music, including when paused. Click the camera to choose Classic black,
+Silver film, Cream instant or Sage compact, or use **Open Photos** inside its compact picker.
+The microphone opens Practice using the same next-card/Start here entry as the computer. On phones,
+Photos/Practice/Music/Plants/Tea/Chair/Coffee/Camera shortcuts keep these actions available even when the objects are cropped;
 portrait tablets get the same shortcuts. The default card stack sits in the lower-right
 corner and becomes smaller on shorter screens. You can still drag the cards.
 
@@ -267,14 +268,18 @@ Monitor uploads and playback have an isolated check with locally generated media
      downloaded or sent anywhere. The current mood shows in the menu
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live
      pitch), so music never reaches a take or a pitch reading, then picks up again.
-   - **The iced coffee** on the desk opens Buy Me a Coffee (`COFFEE_URL` in
-     `web/src/room/scene.ts`). Pointing at it lights the cup with a warm glow and says "Buy me a
-     coffee"; clicking flashes it, sends hearts up out of the cup and has the cat say thank you,
-     then opens the page in a new tab a moment later (⌘/Ctrl-click opens it at once).
+   - **The iced coffee** opens a compact picker for **Iced latte, Cold brew, Iced matcha or Strawberry milk**.
+     The drink and camera have the same pale-blue hover/focus outline as the other painted objects.
+     Choices save in this browser (`lilt.room.coffee` and `lilt.room.camera`) and survive Reset layout.
+     Loading failures keep the previous artwork with **Try again**; unavailable storage explains
+     that the choice could not be saved. Escape, Done or clicking outside closes each picker.
+     **Buy me a coffee** inside the drink picker sends hearts up from the glass, has the cat say
+     thank you and opens the support page in a new tab. Choosing a drink never opens the link.
+     The link retains ⌘/Ctrl-click behaviour; its destination is `COFFEE_URL` in `web/src/room/scene.ts`.
    - The artwork lives in `web/public/room/` (four `room-*-v3.webp` lights and the complete
      `cat-v2.webp` cutout). Swap them for other art of the same size, then re-measure the
-     screen/coffee targets in `web/src/room/scene.ts` and object targets in
-     `web/src/room/room-objects.css`. The look is documented in `DESIGN.md`.
+     screen targets in `web/src/room/scene.ts` and coffee/camera placement in
+     `web/src/room/roomPropOptions.ts`. The look is documented in `DESIGN.md`.
 2. **Today** follows the course you opened for practice. **Courses → a course → Practise** opens
    any installed course's home and chapters. The room, desk shortcuts and chapter flashcards remember
    that course in this browser. Other courses use their texts and hints, with Again/Hard/Good/Easy

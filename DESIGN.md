@@ -97,14 +97,23 @@ The cassette reels and record label turn during playback; the walnut radio has a
 pulse. Motion pauses at the desk, in hidden tabs, while the microphone ducks music and with reduced
 motion. Choosing a design never starts music or changes its source. Browser-local preferences
 survive Reset layout; failed artwork loads retain the original or previous player with a retry.
-The camera opens Photos and the microphone opens the same Practice entry as the computer.
-The mug, plant and player gain a pale-blue silhouette outline with a soft bloom on hover or
+The camera opens a compact picker with Classic black, Silver film, Cream instant and Sage compact
+designs, plus an explicit Open Photos action. The iced-coffee glass opens the same kind of picker
+for Iced latte, Cold brew, Iced matcha and Strawberry milk, with Buy me a coffee inside. Choosing
+art never navigates or opens the support page. Each design stays anchored on the desk and matches
+the room light. Small background repairs sit below monitor media so uploaded pictures stay intact.
+Choices save independently in this browser, survive Reset layout, and retain the previous art if
+loading fails. Retry and unsaved-storage feedback are visible. Escape, Done and backdrop clicks
+restore the opener, or its visible shortcut after resizing. The support action stays a real link.
+The microphone opens the same Practice entry as the computer.
+The mug, plant, player, iced drink and camera gain a pale-blue silhouette outline with a soft bloom on hover or
 keyboard focus, like the chair. Their current cutouts supply the contour: the plant's canopy
 growth stays aligned, steam and contact shadows are excluded, and the player outline remains
 behind the chair. Outlines hide while their controls are open or the desk is entered; reduced
 motion removes the fade. Existing labels and targets remain, with the old target glow retained
-only until replacement artwork is ready. Camera and microphone targets keep their glow.
-On narrow screens, a compact Photos/Practice/Music/Plants/Tea/Chair row
+only until replacement artwork is ready. The microphone target keeps its glow.
+On narrow screens, Photos/Practice/Music/Plants/Tea/Chair/Coffee/Camera shortcuts
+use one compact row when space allows, and two rows on phones with 44px targets. This
 keeps these actions reachable when their painted objects are cropped. Music opens without
 playing or changing the route or camera. Its metallic CD with cover artwork sits above source tabs,
 a mood select, skip/play/pause and volume controls; four artwork choices fit in one row.

@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Your drink, your camera", body: "Click the iced coffee or camera to choose a new painted design, with the same gentle outline as your chair. Pick a latte, cold brew, matcha or strawberry milk, and a classic black, silver film, cream instant or sage camera. Photos and Buy me a coffee stay inside their small pickers." },
       { title: "Follow your favourite things", body: "Your mug, plant and music player now share the chair's pale-blue outline on hover or keyboard focus. It follows each design, including your plant's growing leaves." },
       { title: "Follow the chair's outline", body: "Hover or focus your chair to see its whole shape outlined like the monitor. You can click the back, arms or visible wheels to choose a different chair." },
       { title: "A chair of your own", body: "Click your chair to choose the original mesh and pink throw, cream upholstery, sage padding or walnut and cane. Each sits in the room with the player behind it. On smaller screens, use Chair. Your choice stays in this browser." },
