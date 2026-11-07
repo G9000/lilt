@@ -12,6 +12,10 @@ matching room light and repaired desk/floor artwork. Players stay behind the cho
 and the foreground bed covers its wheels where they overlap. Changes save in this browser
 and survive Reset layout. Failed artwork retains the previous chair with Retry; Original
 works without replacement assets. Escape, Done and outside click restore focus to the opener.
+Hover or keyboard focus outlines the entire visible chair in the monitor's pale blue, with
+a soft bloom and no interior brightening. The hit area follows the same silhouette, including
+arm openings and the foreground bed boundary. The outline changes with the shown chair and
+stays hidden while its picker is open. Reduced motion removes its opacity transition.
 
 **Weekly plant** is the painted floor plant beside the drawers, with shaded ficus, monstera,
 fern and jade artwork. Clicking it opens a light/dark picker; Plants in the room shortcuts

@@ -30,3 +30,8 @@ Generated on 7 November 2026 with the built-in image-generation tool. Exact prom
 Cutouts are registered to the room's 1672 × 941 coordinates and follow its brightness,
 saturation and sepia lighting variables. The selected chair covers the music player;
 the bed stays in front. These are dimensional painted 2D assets, with no body animation.
+
+The hover outline and clickable silhouette are SVG geometry derived from existing chair alpha
+and the bed mask; the raster images are unchanged. Regenerate `chairOutlinePaths.ts` after
+changing artwork by running `node scripts/chair-outlines.mjs` from `web`. The script samples
+the registered masks, removes tiny fragments and rounds contour corners by at most 3 pixels.

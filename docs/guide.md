@@ -235,7 +235,8 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the room as a floating widget you can drag. The weekly plant is part of the painting;
      its picker describes the week's practice days, with "A new week" rather than a zero.
      Music opens from the painted player.
-   - **Your chair:** click the chair's back, or **Chair** in the room shortcuts on smaller
+   - **Your chair:** hover or focus the chair to see an outline around its visible shape,
+     just like the monitor. Click the chair, or **Chair** in the room shortcuts on smaller
      screens, to choose **Mesh & pink throw**, **Cream upholstered**, **Sage padded** or
      **Walnut & cane**. Each stays planted in the room, follows its light and sits in front of
      the music player. Your choice stays in this browser and survives Reset layout. Escape,

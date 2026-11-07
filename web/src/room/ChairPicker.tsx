@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { roomStyles } from '../desk/roomStyles';
 import { CHAIRS, chairImage } from './chair';
 import { chooseChair, retryChairArt, useChair } from './chairState';
+import { ChairOutline } from './ChairOutline';
+import { CHAIR_OUTLINES } from './chairOutlinePaths';
 
 export const openChairPicker = () => window.dispatchEvent(new Event('lilt:chair'));
 
 export function ChairPicker({ inside }: { inside: boolean }) {
   const { selected, shown, failed, unsaved } = useChair();
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false), [focused, setFocused] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null), target = useRef<HTMLButtonElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const close = () => {
@@ -28,11 +30,15 @@ export function ChairPicker({ inside }: { inside: boolean }) {
   useEffect(() => { if (open && !inside) dialog.current?.showModal(); else dialog.current?.close(); }, [open, inside]);
   useEffect(() => { if (inside) setOpen(false); }, [inside]);
   return <>
-    <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label="Choose your chair" aria-haspopup="dialog" aria-expanded={open}
-      className={['room-chair-target pointer-events-auto', roomStyles['room-object']].join(' ')} style={{ left: 595, top: 555, width: 200, height: 240 }}
-      onPointerDown={e => e.stopPropagation()} onPointerMove={e => e.stopPropagation()} onClick={openChairPicker}>
-      <span>Choose chair</span>
-    </button>
+    <div className="pointer-events-none absolute z-[2] [.room.inside_&]:invisible [.room-stage:not(.settled)_&]:invisible [@media_(max-width:_767px),_(max-aspect-ratio:_4/3)]:hidden"
+      style={{ left: 480, top: 460, width: 600, height: 481 }}>
+      <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label="Choose your chair" aria-haspopup="dialog" aria-expanded={open}
+        className="room-chair-target pointer-events-auto absolute inset-0 h-full w-full cursor-pointer border-0 bg-transparent p-0 shadow-none outline-none hover:bg-transparent focus-visible:outline-none active:transform-none!"
+        style={{ clipPath: `path(evenodd, "${CHAIR_OUTLINES[shown]}")` }}
+        onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+        onPointerDown={e => e.stopPropagation()} onPointerMove={e => e.stopPropagation()} onClick={openChairPicker} />
+      <ChairOutline chair={shown} visible={!inside && !open && (hovered || focused)} />
+    </div>
     {open && !inside && createPortal(<dialog ref={dialog} aria-labelledby="chair-picker-title" onCancel={e => { e.preventDefault(); close(); }}
       onClick={e => { if (e.target === e.currentTarget) close(); }} onPointerDown={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}
       className="m-auto max-h-[calc(100dvh-32px)] w-[360px] max-w-[calc(100vw-24px)] overflow-auto rounded-[22px] border border-[var(--hair)] bg-[var(--win)] p-0 text-[var(--ink)] shadow-2xl backdrop:bg-black/20 backdrop:backdrop-blur-sm">
