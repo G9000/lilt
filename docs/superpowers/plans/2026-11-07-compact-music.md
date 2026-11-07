@@ -20,3 +20,15 @@ Legacy music links open this same dialog over the room. All entry points share t
 - [x] Update guide, design, release and validation notes; review the checked change.
 
 Commit the finished work on main according to the repository instructions.
+
+## Follow-up: retain the CD
+
+The user clarified that compact controls must keep the original metallic spinning CD.
+Room artwork selection is an additional option, not a replacement for the playback visual.
+
+- [x] Add a failing browser assertion for the missing CD.
+- [x] Restore the existing disc treatment at 160px, with selected-source playback, mic,
+      dialog visibility, hidden-tab and reduced-motion gating.
+- [x] Rename the separate artwork disclosure to Change player and explain its desk-only effect.
+- [x] Verify rotation/pause and all four artwork choices, inspect light/dark phone screenshots,
+      review the diff and update documentation.

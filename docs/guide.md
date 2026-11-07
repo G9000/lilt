@@ -132,10 +132,13 @@ are preserved. Artwork provenance and prompts live in `web/public/room/CREDITS.m
 
 **Use the things on your desk.** The small left monitor is now a cassette music player;
 the main and right monitors keep their own picture choices. Click the player for compact Music
-controls, like opening the tea mug: a painted player preview, a mood menu, playback and volume
+controls, like opening the tea mug: the metallic CD and its cover art, a mood menu, playback and volume
 controls, and the existing Spotify option. The small dialog stays over your current view;
 opening Music doesn't enter the computer or start playback. Close it, press Escape or click outside;
-music continues. The compact player in the top bar shows your selection and play/pause; click
+music continues. The CD spins during playback and rests when paused, while the mic is on,
+when closed or hidden, and with reduced motion. **Change player** changes only the room's
+boombox, radio or record-player artwork; the CD controls stay the same.
+The compact player in the top bar shows your selection and play/pause; click
 the artwork or title to reopen Music, including when paused. The camera opens your Photos gallery; the microphone
 opens Practice using the same next-card/Start here entry as the computer. On phones a small
 Photos/Practice/Music row keeps these actions available even when the objects are cropped;
@@ -233,7 +236,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      its picker describes the week's practice days, with "A new week" rather than a zero.
      Music opens from the painted player.
    - **Your room player:** open Music from the painted radio or the **Music** room shortcut,
-     then expand **Your room player**. Choose **Cream cassette, Sage boombox, Walnut radio or
+     then expand **Change player**. Choose **Cream cassette, Sage boombox, Walnut radio or
      Record player**. The shaded artwork stays in the desk's radio spot and follows the room's
      light. Tape reels and the record label turn while music plays; the walnut radio's tuning
      light gently pulses. They stop for paused music, microphone use, hidden tabs and when you

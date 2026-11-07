@@ -73,7 +73,7 @@ connected alpha cutout over empty bedding, gently breathing; it no longer rotate
 over a baked-in duplicate. Desktop framing includes the cat where possible while keeping
 the main monitor's navigation target visible, including tall displays. The small left monitor
 is replaced with a painted music player. Clicking it opens a compact 340px dialog over the room,
-matching the mug controls, with lo-fi and Spotify. **Your room player** folds open beneath the
+matching the mug controls, with lo-fi and Spotify. **Change player** folds open beneath the
 playback controls to choose Cream cassette, Sage boombox,
 Walnut radio or Record player. Shaded cutouts stay anchored on the desk and match all four lights.
 The cassette reels and record label turn during playback; the walnut radio has a soft tuning-light
@@ -83,8 +83,11 @@ survive Reset layout; failed artwork loads retain the original or previous playe
 The camera opens Photos and the microphone opens the same Practice entry as the computer.
 Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music/Plants/Tea row
 keeps these actions reachable when their painted objects are cropped. Music opens without
-playing or changing the route or camera. Its small player preview sits above source tabs,
+playing or changing the route or camera. Its metallic CD with cover artwork sits above source tabs,
 a mood select, skip/play/pause and volume controls; four artwork choices fit in one row.
+The complete 160px CD spins during playback, pausing when music pauses, the microphone is in
+use, the dialog is closed or the tab is hidden; reduced motion keeps it still. Changing the
+room's player artwork leaves this CD and the selected music alone.
 The dialog uses the mug's rounded surface and backdrop, stays within phone bounds and scrolls
 on short screens. Closing, Escape or a backdrop click returns focus while music continues.
 Old `#/music` links open the same compact controls over the room. A compact

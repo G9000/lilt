@@ -30,6 +30,7 @@ try {
     assert.equal(await art.getAttribute('data-playing'), 'false');
     for (const [name, id] of [['Cream cassette','cassette'], ['Sage boombox','boombox'], ['Walnut radio','radio'], ['Record player','turntable']]) {
       await open(); await picker.getByRole('button', { name, exact: true }).click(); await chosen(id);
+      assert.equal(await music.locator('.music-record').isVisible(), true, 'every room design opens the CD player');
       assert.equal(await art.getAttribute('data-playing'), 'false', 'changing artwork never starts music');
       await close(); await target.evaluate(el => el.blur()); await page.mouse.move(1400,900); await shot(id);
     }

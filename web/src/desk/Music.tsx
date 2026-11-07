@@ -8,8 +8,6 @@ import { closeMusic, openMusic, restoreMusicFocus, selectMusicSource, useMusic }
 import { SpotifyRadio } from "./Spotify";
 import { Volume } from "./Volume";
 import { PlayerPicker } from '../room/PlayerPicker';
-import { usePlayer } from '../room/playerState';
-import { PLAYERS, playerImage } from '../room/player';
 
 const cover = (mood: string) => (radioMoods.find(item => item.name === mood) ?? radioMoods[0]).cover;
 export function PlayIcon({ paused }: { paused: boolean }) {
@@ -40,9 +38,14 @@ export function MusicMini() {
 /** Closing the dialog leaves the audio host mounted, including Spotify's iframe. */
 export function MusicWindow() {
   const music = useMusic(), r = useRadio();
-  const { shown } = usePlayer();
+  const [hidden, setHidden] = useState(document.hidden);
   const dialog = useRef<HTMLDialogElement>(null);
   const id = useId();
+  useEffect(() => {
+    const sync = () => setHidden(document.hidden);
+    document.addEventListener('visibilitychange', sync);
+    return () => document.removeEventListener('visibilitychange', sync);
+  }, []);
   useEffect(() => {
     if (music.open) dialog.current?.showModal();
     else if (dialog.current?.open) { dialog.current.close(); restoreMusicFocus(); }
@@ -54,6 +57,8 @@ export function MusicWindow() {
     return () => window.removeEventListener('hashchange', leave);
   }, [music.open]);
   const playback = music.source === 'spotify' ? music.spotify : r;
+  const spinning = music.open && playback.playing && !playback.ducked && !hidden;
+  const artwork = music.source === 'spotify' ? music.spotify.art ?? cover(r.mood) : cover(r.mood);
   return createPortal(<dialog ref={dialog} aria-labelledby={id + '-title'}
     onCancel={event => { event.preventDefault(); closeMusic(); }}
     onClick={event => { if (event.target === event.currentTarget) closeMusic(); }}
@@ -64,7 +69,9 @@ export function MusicWindow() {
         <h2 id={id + '-title'} className="m-0 text-xl font-semibold">Music</h2>
         <button type="button" onClick={closeMusic} aria-label="Close Music" className="grid min-h-11 min-w-11 place-items-center rounded-full bg-[var(--fill)]"><svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" /></svg></button>
       </div>
-      {shown && <img src={playerImage(shown)} alt={PLAYERS.find(player => player.id === shown)!.name} className="mx-auto block h-24 w-36 object-contain" />}
+      <div className="mx-auto my-2 h-40 w-40" aria-hidden="true">
+        <div className={['music-record', spinning ? 'playing' : '', roomStyles['music-record']].join(' ')}><img src={artwork} alt="" /><i /></div>
+      </div>
       <p className="mb-3 mt-0 text-center text-xs text-[var(--ink-2)]" aria-live="polite">{playback.ducked ? 'Paused while the mic is on' : playback.playing ? 'Now playing' : 'Ready when you are'}</p>
       <fieldset className={roomStyles['music-source'] + ' mb-3!'}>
         <legend className="sr-only">Listen to</legend>

@@ -53,8 +53,12 @@ try {
   assert.equal(await page.evaluate(()=>location.hash),roomHash,'opening Music stays in the room');
   assert.equal(await music.evaluate(el=>el.tagName),'DIALOG','Music uses the mug-style dialog');
   const title=music.getByRole('combobox',{name:'A mood for now'});
+  const disc=music.locator('.music-record');
+  assert.equal(await disc.count(),1,'the compact player keeps the metallic CD');
+  const discBounds=await disc.boundingBox();
+  assert.ok(discBounds.width>=150&&Math.abs(discBounds.width-discBounds.height)<1,'the complete CD stays circular');
   const bounds=await music.boundingBox();
-  assert.ok(bounds.width<=340&&bounds.height<600,'default Music panel stays compact');
+  assert.ok(bounds.width<=340&&bounds.height<660,'default Music panel stays compact with its CD');
   assert.equal(await page.locator('.room').evaluate(el=>el.classList.contains('inside')),false,'room camera stays outside');
   for(let i=0;i<15;i++){
     await page.keyboard.press('Tab');
@@ -77,6 +81,20 @@ try {
   await music.getByRole('slider',{name:'Radio volume'}).fill('27');
   await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).click();
   await music.getByRole('button',{name:'Pause lo-fi radio',exact:true}).waitFor();
+  assert.equal(await disc.evaluate(el=>getComputedStyle(el).animationName),'none','reduced motion keeps the CD still');
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  assert.equal(await disc.evaluate(el=>getComputedStyle(el).animationPlayState),'running');
+  const rotation=await disc.evaluate(el=>getComputedStyle(el).transform);
+  await page.waitForTimeout(400);
+  assert.notEqual(await disc.evaluate(el=>getComputedStyle(el).transform),rotation,'CD rotates during playback');
+  await music.getByRole('button',{name:'Pause lo-fi radio',exact:true}).click();
+  assert.equal(await disc.evaluate(el=>getComputedStyle(el).animationPlayState),'paused');
+  await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).click();
+  await page.evaluate(async()=>{const {claimMic}=await import('/src/micuse.ts');window.releaseDiscMic=claimMic();});
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('.music-record')).animationPlayState==='paused');
+  await page.evaluate(()=>window.releaseDiscMic());
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('.music-record')).animationPlayState==='running');
+  await page.emulateMedia({reducedMotion:'reduce'});
   assert.equal(await music.getByRole('button',{name:/Expand|Restore/}).count(),0,'music has no expand/restore controls');
   // Every mood, the newer ones with their own instruments and places too, plays: sound, no clipping, no broken samples.
   const moods=await title.locator('option').allTextContents();
