@@ -28,7 +28,7 @@ Pitch is how high or low your voice sounds. It is one important part of voice fe
 
 **Progress by ease, not a calendar.** There is no weekly pitch increase to complete. Keep a range when you like it and can repeat it comfortably in a short phrase. Change only one thing next: the sound, the phrase length, or the situation. You may spend time on resonance or weight without raising pitch further.
 
-**Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. A flat, held pitch sounds robotic.
+**Let it move.** Speech isn't singing one note. Start your sentence near your note and let it rise and fall with what you mean. Holding one note the whole way sounds more like singing than talking.
 
 **Listen back.** Does it sound like you, and could you talk like this for a few minutes? Once you know your note, save the range around it as your [comfortable range](#/studio/settings) so the recorder shows it behind your pitch line.
 

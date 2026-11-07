@@ -14,7 +14,7 @@ Laughs, sighs, "um"s and "ow!"s happen before you can think about them, which is
 
 **Try a lighter laugh.** If you want your laugh to match a lighter voice, try one that lives in your face and the front of your mouth instead of your chest. It shouldn't feel forced; think of something actually funny. A big laugh is fine too, if it's yours.
 
-**Fill the pauses.** "Um", "hmm" and "uh" sit right on top of your voice. Practise them on your note so they stop pulling you back to the old one.
+**Fill the pauses.** "Um", "hmm" and "uh" sit right on top of your voice. Practise them on your note so they lead into your practice voice instead of away from it.
 
 **Small reactions.** "Aww", "ow!", "oops" and a sigh are tiny, fast and emotional. Say them as if they're real, then listen to whether they match the rest of your speech.
 

@@ -79,7 +79,7 @@ and hear the change for yourself instead of guessing.
   a recipe, a weather report, a job interview…), [Stories](#/studio/stories) told a minute-long part
   at a time, and short [Articles](#/studio/articles) about bees, octopuses, the sky and your own
   voice. They stay out of Today's cards.
-- **Check-ins**: one text per chapter, same words every visit, so you can hear the glow-up.
+- **Check-ins**: one text per chapter, same words every visit, so you can hear how it changes over time.
 - **Free recording**: just talk. You'll get your pitch line back.
 - **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your
   pitch and a rough comparison of your vowel resonances. The numbers describe a take; they cannot
@@ -239,6 +239,9 @@ Pitch, resonance, articulation, intonation and goal-setting guidance was checked
   intonation all play a part), and Leung, Oates, Chan and Papp (2021),
   [on resonance and pitch](https://pubmed.ncbi.nlm.nih.gov/34232704/). Neither sets an order for
   training; the chapter order is Lilt's choice.
+- Spreading the lips and carrying the tongue forward for resonance: Carew, Dacakis and Oates (2007),
+  "The effectiveness of oral resonance therapy on the perception of femininity of voice in
+  male-to-female transsexuals", Journal of Voice 21(5).
 - The average speaking pitch on the scale after each take: Leung, Oates, Papp and Chan (2022),
   "Speaking fundamental frequencies of adult speakers of Australian English and effects of sex,
   age, and geographical location", Journal of Voice 36(3).

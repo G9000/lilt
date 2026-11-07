@@ -10,7 +10,7 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's "Shaping your voice: articulation" and its articulation tuning-in activity. "The tip of the tongue, the teeth, the lips" is a traditional diction exercise; the other texts and the no-prop clarity comparison are Lilt's own.
 ---
 
-Articulation is how your lips, tongue and jaw shape sounds. Lighter, quicker contact with the tip of the tongue and the lips keeps speech at the front of the mouth, which can help it sound brighter and lighter, and clearer too. Listeners notice a crisp, forward s in particular.
+Articulation is how your lips, tongue and jaw shape sounds. Lighter, quicker contact with the tip of the tongue and the lips keeps speech at the front of the mouth, which can help it sound brighter and lighter, and clearer too. Listeners do notice s sounds, but a clear s in your own accent is enough.
 
 **Light taps.** Say "la la la", then "ta ta ta". Let the tip of your tongue tap lightly just behind your top teeth at an easy pace. Think of tapping a phone screen, not pressing a doorbell.
 
@@ -44,7 +44,7 @@ pa pa pa · ba ba ba · ma ma ma
 
 Thanks, that's perfect, see you later!
 
-> Quick, light consonants in a real goodbye. The s sounds stay crisp and forward.
+> Quick, light consonants in a real goodbye. Let the s sounds be clear, in your own accent.
 
 ## tiny-kittens
 

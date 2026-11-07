@@ -16,13 +16,13 @@ Practice in a quiet room is one thing; a noisy café or a phone call is another.
 
 **Phones are harder.** The line is tinnier and there's no face to help, so voices often drop back. Start calls with a line you've rehearsed, and take your time.
 
-**When you're tired or upset.** Tiredness, stress and strong feelings pull voices back to old habits. That's normal. Practise a few lines with real feeling behind them, and on tired days let your voice be easier rather than forcing it.
+**When you're tired or upset.** Tiredness, stress and strong feelings pull voices back to their everyday setting. That's normal. Practise a few lines with real feeling behind them, and on tired days let your voice be easier rather than forcing it.
 
 **Being heard.** In a noisy place, aim your words at the person and open your mouth a little more. Getting louder from your throat makes the voice heavier and tires it.
 
 **Borrow an ear.** Once a month, if you'd like, send someone you trust two unlabelled takes of the same line, an old one and a new one, and ask which sounds more like the voice you described. One opinion, not a verdict. Think twice before posting recordings on public forums: they can be saved and shared.
 
-**Keep it.** Clinical programmes run from a few months to longer, so give yourself time. When this is simply your voice, keep one check-in a week and your before-and-afters. If one drifts, spend a week back in that skill's chapter.
+**Keep it.** There's no deadline, so give yourself time. When this is simply your voice, keep one check-in a week and your before-and-afters. If one drifts, go back to that skill's chapter for a while.
 
 **Come back after.** Record the line again, or just say how it went. Did it feel easy, and did it feel like you? Someone else's reaction is only one piece of information.
 

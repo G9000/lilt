@@ -23,8 +23,10 @@ with its own `course.md`.
 - `_pitch.md`: the average speaking pitch for men and women (averages and standard deviations in Hz,
   the overlap band) and where those numbers come from. After each take, Lilt shows your middle
   pitch on that scale in words and semitones, never as a percentage or a score.
-- `_about.md`: the version, the date the sources were checked, and the note shown at the end of
-  every chapter.
+- `_about.md`: the edition (`version`), the date the sources were checked, and the note shown at
+  the end of every chapter. Updates compares this edition: raising it offers the whole course to
+  personal copies as one change. `course.md` has its own `version`, the course's listing in
+  Courses (version 2 is when chapters began naming their own `exercises:`), so the two differ.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
 - `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file

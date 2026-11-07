@@ -15,13 +15,13 @@ Now you start combining. Counting and lists are words you never have to think ab
 
 **Pick one cue.** A cue is one thing you've practised: your note, the brighter "ee" space, or a light feel. Just one per take. Trying to manage everything at once is how voices get stiff.
 
-**Add a second cue.** Once one cue lasts from Monday to Sunday, keep it and add one more, in whatever order is easiest; many people find brightness easiest to hold. If both fall apart, go back to one. That's how the separate skills turn into one voice.
+**Add a second cue.** Once one cue lasts from "Monday" to "Sunday" in the list below, keep it and add one more, in whatever order is easiest. If both fall apart, go back to one. That's how the separate skills turn into one voice.
 
-**Say it, keep it going.** Run through the list with your cue. The hard part isn't the start; it's still having it at the end. Most voices drift back towards the old habit as the list goes on.
+**Say it, keep it going.** Run through the list with your cue. The hard part isn't the start; it's still having it at the end. Most voices drift back towards their everyday setting as the list goes on.
 
 **Reset as often as you like.** When you notice the drift, pause, hum your note or do a quick "ee", and carry on. Resetting often is the skill, not a failure.
 
-**Use it off the clock.** Exercises train the skill; using the voice makes it yours. Today, talk to yourself for two minutes in your practice voice while you make tea or tidy up. Each week, add a few minutes, as long as your voice still feels fresh in the evening.
+**Use it off the clock.** Exercises train the skill; using the voice makes it yours. Today, talk to yourself for two minutes in your practice voice while you make tea or tidy up. Let those minutes grow slowly, as long as your voice still feels fresh in the evening.
 
 **Use it in words.** Finish with "Monday works for me. How about you?" or a line you actually say.
 

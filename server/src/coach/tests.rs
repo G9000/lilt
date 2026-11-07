@@ -332,7 +332,7 @@ fn invalid_agent_reviews_are_rejected_and_valid_ones_are_idempotent() {
     let mut bad_cue = measured_pointer(&t, shown, "Descriptive only.");
     bad_cue.next_action = Some(NextAction {
         exercise_id: "nhsfife.forward-hum".into(),
-        exercise_version: 3,
+        exercise_version: 4,
         cue_id: Some("push-harder".into()),
         cue_text: None,
         summary: "do it".into(),
@@ -352,7 +352,7 @@ fn forward_hum_scores_what_you_hear_and_old_versions_keep_their_own() {
     let dir = tempfile::tempdir().unwrap();
     // A data folder from before: forward hum v1, as Lilt seeded it then (its questions and signals).
     let mut v1: serde_json::Value = serde_json::from_str(
-        &std::fs::read_to_string(root().join("content/exercises/nhsfife.forward-hum.v3.json"))
+        &std::fs::read_to_string(root().join("content/exercises/nhsfife.forward-hum.v4.json"))
             .unwrap(),
     )
     .unwrap();
@@ -370,9 +370,9 @@ fn forward_hum_scores_what_you_hear_and_old_versions_keep_their_own() {
     let id = new_take(&app, &s.id, T::default(), "audio/wav");
     let mut t = app.take(&id).unwrap();
     let reg = app.registry.read().unwrap();
-    let (v1, v3) = (
+    let (v1, v4) = (
         reg.get("nhsfife.forward-hum", 1).unwrap(),
-        reg.get("nhsfife.forward-hum", 3).unwrap(),
+        reg.get("nhsfife.forward-hum", 4).unwrap(),
     );
     let answers = |pairs: &[(&str, &str)]| {
         Some(TakeSelfReport {
@@ -389,9 +389,9 @@ fn forward_hum_scores_what_you_hear_and_old_versions_keep_their_own() {
         Some("target_not_met"),
         "v1 unchanged"
     );
-    t.exercise_version = Some(3);
+    t.exercise_version = Some(4);
     assert_eq!(
-        coach::take_signal(v3, &t),
+        coach::take_signal(v4, &t),
         None,
         "where you felt it alone isn't a result"
     );
@@ -400,7 +400,7 @@ fn forward_hum_scores_what_you_hear_and_old_versions_keep_their_own() {
         ("where_felt", "throat_chest"),
     ]);
     assert_eq!(
-        coach::take_signal(v3, &t).map(|x| x.0).as_deref(),
+        coach::take_signal(v4, &t).map(|x| x.0).as_deref(),
         Some("target_met")
     );
     t.self_report = answers(&[
@@ -408,9 +408,9 @@ fn forward_hum_scores_what_you_hear_and_old_versions_keep_their_own() {
         ("where_felt", "lips_face_nose"),
     ]);
     assert_eq!(
-        coach::take_signal(v3, &t).map(|x| x.0).as_deref(),
+        coach::take_signal(v4, &t).map(|x| x.0).as_deref(),
         Some("target_not_met")
     );
-    assert_eq!(reg.latest("nhsfife.forward-hum").unwrap().version, 3);
-    assert_eq!(reg.latest("nhsfife.smile-brighten").unwrap().version, 3);
+    assert_eq!(reg.latest("nhsfife.forward-hum").unwrap().version, 4);
+    assert_eq!(reg.latest("nhsfife.smile-brighten").unwrap().version, 4);
 }

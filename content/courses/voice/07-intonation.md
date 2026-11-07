@@ -21,9 +21,7 @@ Intonation is the melody of speech: where your pitch goes up and down, which wor
 
 **Find your pace.** Rushing flattens the melody and lets your cues slip. A slightly unhurried pace leaves room for both: not slow, just not racing.
 
-**Endings can fall.** Not every question needs to rise and not every statement needs to fall. Let the meaning choose. A confident falling ending is fine.
-
-**Choose your endings.** Falling pitch and occasional creak are not automatic failures or proof that your voice became heavier. If you want a clearer ending, try a shorter phrase with an easy breath. A jumpy pitch line cannot tell you whether the sound is feminine or comfortable; listen and notice how it feels.
+**Endings can fall.** Not every question needs to rise and not every statement needs to fall; let the meaning choose. A confident falling ending, or an occasional creak, is not a failure or proof that your voice became heavier. If you want a clearer ending, try a shorter phrase with an easy breath.
 
 **Listen back.** Does it sound like what you meant? Does the pitch line move, or is it a straight ruler? A wavier line isn't automatically better; it just shouldn't be stuck.
 

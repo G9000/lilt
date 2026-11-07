@@ -16,7 +16,7 @@ Talking freely is the hardest step, because your brain is busy with what to say 
 
 **Short answers first.** Fifteen to thirty seconds is plenty to begin with. Build towards a minute over the weeks.
 
-**Pause instead of pushing.** When you notice your old voice coming back, stop, take a breath, and start the next sentence fresh. Pauses sound natural in conversation; nobody minds them.
+**Pause instead of pushing.** When you notice your everyday voice coming back, stop, take a breath, and start the next sentence fresh. Pauses sound natural in conversation; nobody minds them.
 
 **Use it today.** Send someone a voice note, or answer a question out loud while you're on your own.
 
@@ -56,4 +56,4 @@ What would you cook for a friend tonight, and why?
 
 What's a small thing that made you smile recently?
 
-> Answer naturally. If you lose your voice mid-story, pause and pick it back up.
+> Answer naturally. If your practice voice slips mid-story, pause and pick it back up.

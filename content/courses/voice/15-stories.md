@@ -24,7 +24,7 @@ Three short stories, each told in parts of about a minute. Read one part a visit
 
 The number forty-two was the last bus of the night, and Rosa had driven it for eleven years. She knew every pothole on the route and every regular passenger by their stop. There was the nurse who got on at the hospital at ten past midnight and fell asleep against the window. There were the two cooks from the noodle bar, still smelling of ginger, arguing cheerfully about football. And there was the man who never said a word, who sat at the very back and got off by the river. On the first cold night of November, a new passenger climbed aboard at the stop outside the music college. She was young, with a cello case almost as big as she was, and she tapped her card, apologised to nobody in particular, and wedged herself and the cello into the seat behind Rosa. Then, very quietly, she began to hum.
 
-> Part one of three. Set the scene calmly, like the start of a bedtime story, and let each passenger have their own little moment.
+> Your check-in for this shelf: the same opening each visit. Part one of three. Set the scene calmly, like the start of a bedtime story, and let each passenger have their own little moment.
 
 ## night-bus-2
 

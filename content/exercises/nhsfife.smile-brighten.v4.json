@@ -1,6 +1,6 @@
 {
   "id": "nhsfife.smile-brighten",
-  "version": 3,
+  "version": 4,
   "title": "Smile to brighten",
   "areas": [
     "resonance",
@@ -112,7 +112,7 @@
   "stop_conditions": [
     "Anything hurts, feels tight or scratchy, or your voice turns hoarse: that usually means too much, too soon.",
     "Rest your voice and come back another day, starting smaller.",
-    "If hoarseness or discomfort lasts or keeps coming back, see a GP, or a speech and language therapist who works with voices."
+    "Hoarseness that lasts more than about three weeks, sudden voice loss or pain needs a GP or primary care doctor, who can have your vocal folds looked at. A speech and language therapist who works with voices can help with technique."
   ],
   "adaptations": [
     "Use phrases you really say."
@@ -133,9 +133,9 @@
   "license_note": "Written for Lilt in its own words. The idea comes from an NHS Fife activity, credited and linked here; none of NHS Fife's text is reproduced.",
   "review": {
     "status": "source_checked",
-    "reviewer": "Rewritten for Lilt on 2026-11-04 (AI-assisted, not clinical review)",
+    "reviewer": "Revised for Lilt on 2026-11-08 (AI-assisted, not clinical review)",
     "clinician_reviewed": false,
-    "notes": "Version 3 (2026-11-04): rewritten in Lilt's own words from the idea of the NHS Fife activity, keeping version 2's questions, answers and cues so coaching works the same. No clinician has reviewed it."
+    "notes": "Version 4 (2026-11-08): the stop sign for lasting hoarseness now matches the course: a GP or primary care doctor first, who can have your vocal folds looked at. Keeps version 3's questions, answers and cues so coaching works the same. No clinician has reviewed it."
   },
   "examples": [
     {
