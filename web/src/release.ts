@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "A tidier menu bar", body: "The bar along the top of the room and the desk now shares one look: softer glass, your course as a small chip beside Lilt, and the same order of controls in both places. Make it yours and Reset layout are now quiet icons; hover one to see its name." },
       { title: "Players feel at home", body: "The cassette, boombox, walnut radio and record player now sit at their own size and angle on the desk, with soft contact shadows. The chair and pink throw overlap them naturally in front." },
       { title: "Your spinning CD", body: "The metallic CD and its cover artwork are back in the compact Music controls. It spins while music plays. Open Change player to swap the boombox, radio or record player on your desk." },
       { title: "Music stays in the room", body: "Click your player for compact controls, just like your tea mug. Pick a mood, adjust the volume or change the player without entering the computer. Music keeps playing when you close it." },

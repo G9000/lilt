@@ -44,5 +44,5 @@ export function SettingsSheet() {
 
 /** The settings button in the menu bar. */
 export function SettingsButton() {
-  return <button className={["ds-mb-btn ss-open", roomStyles["ds-mb-btn"]].join(" ")} onClick={() => openSettings()} aria-label="Settings">{Icon.settings}</button>;
+  return <button className={["ds-mb-btn ss-open", roomStyles["ds-mb-btn"]].join(" ")} onClick={() => openSettings()} aria-label="Settings" data-tip="Settings">{Icon.settings}</button>;
 }

@@ -111,11 +111,11 @@ export function RoomAppearance() {
   return (
     <>
       <button ref={trigger} type="button" className={["ds-mb-btn room-appearance-trigger", roomStyles["ds-mb-btn"], roomStyles["room-appearance-trigger"]].join(" ")} aria-expanded={open}
-        aria-controls={open ? id : undefined} aria-haspopup="dialog" onClick={() => setOpen(!open)}>
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-          <path d="M3 5h14M3 10h14M3 15h14" /><path d="M7 3v4m6 1v4m-7 1v4" strokeWidth="3" />
+        aria-controls={open ? id : undefined} aria-haspopup="dialog" aria-label="Make it yours" data-tip="Make it yours" onClick={() => setOpen(!open)}>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M10 3a7 7 0 1 0 0 14c1 0 1.6-.7 1.6-1.5 0-.5-.3-.9-.3-1.4 0-.8.6-1.4 1.4-1.4H14a3 3 0 0 0 3-3C17 5.9 13.9 3 10 3z" />
+          <circle cx="6.4" cy="9.2" r="1" fill="currentColor" stroke="none" /><circle cx="8.8" cy="6.4" r="1" fill="currentColor" stroke="none" /><circle cx="12.4" cy="6.6" r="1" fill="currentColor" stroke="none" />
         </svg>
-        <span>Make it yours</span>
       </button>
       {open && <div ref={panel} id={id} className={["room-appearance", roomStyles["room-appearance"]].join(" ")} role="dialog" aria-modal="false"
         aria-labelledby={`${id}-title`} aria-describedby={`${id}-intro`}>

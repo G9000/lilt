@@ -11,7 +11,7 @@ import { practice } from '/src/ui/practice.ts';
 import { roomStyles } from '/src/desk/roomStyles.ts';
 const h = React.createElement;
 createRoot(document.getElementById('root')).render(h(React.StrictMode, null,
-  h('header', {className: ['ds-roomtop', roomStyles['ds-roomtop']].join(' ')}, h('span', null, 'Lilt'), h(RoomAppearance)),
+  h('header', {className: ['ds-roomtop', roomStyles['ds-bar'], roomStyles['ds-roomtop']].join(' ')}, h('span', null, 'Lilt'), h(RoomAppearance)),
   h('main', {style: {padding: '70px 18px 20px', maxWidth: 640, background: 'var(--page)', color: 'var(--ink)'}},
     h('h1', null, 'Your practice'),
     h('p', {style: {color: 'var(--accent-ink)'}}, 'One comfortable next step.'),

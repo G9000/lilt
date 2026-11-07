@@ -86,7 +86,7 @@ const ENVELOPE = <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stro
 export function InboxButton({ inbox }: { inbox: InboxState }) {
   return (
     <button className={[`ib-btn${inbox.unread ? "" : " read"}`, roomStyles["ib-btn"]].join(" ")} onClick={(e) => { e.stopPropagation(); inbox.toggle(); }} aria-expanded={inbox.open}
-      aria-label={inbox.unread ? `Notifications, ${inbox.unread} new` : "Notifications"}>
+      aria-label={inbox.unread ? `Notifications, ${inbox.unread} new` : "Notifications"} data-tip="Notifications">
       {ENVELOPE}<span className={cx("dot", shared["dot"])} aria-hidden="true" />
     </button>
   );

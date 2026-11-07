@@ -76,17 +76,17 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
     <div className={[`ds${inside ? " in" : ""}${instant ? " instant" : ""}${page || section === "music" ? " app-open" : ""}${win?.full ? " app-full" : ""}`, roomStyles["ds"]].join(" ")} aria-hidden={!inside} {...({ inert: inside ? undefined : "" } as object)}>
       <div className={["ds-wall", roomStyles["ds-wall"]].join(" ")} style={{ backgroundImage: `url(${roomUrl(light)})` }} />
 
-      <header className={["ds-menubar ds-boot", roomStyles["ds-menubar"], roomStyles["ds-boot"]].join(" ")}>
-        <Mark />
-        <b>{appName}</b>
-        {courseTitle && <button className="max-w-40 truncate text-xs text-inherit" onClick={() => go("/courses")} title="Choose a course" aria-label={`Choose a course. Current course: ${courseTitle}`}>{courseTitle}</button>}
+      <header className={["ds-menubar ds-boot", roomStyles["ds-bar"], roomStyles["ds-menubar"], roomStyles["ds-boot"]].join(" ")}>
+        <span className={["ds-rt-mark", roomStyles["ds-rt-mark"]].join(" ")}><Mark /><b>{appName}</b></span>
+        {courseTitle && <><BarSep /><CourseChip courseTitle={courseTitle} /></>}
         <div className={["ds-mr", roomStyles["ds-mr"]].join(" ")}>
           <MusicMini />
+          <button className={["ds-mb-btn", roomStyles["ds-mb-btn"]].join(" ")} onClick={onTheme} aria-label={`Theme: ${theme}. Switch theme`} data-tip={theme === "dark" ? "Dark theme" : "Light theme"}>{theme === "dark" ? Icon.moon : Icon.sun}</button>
           <InboxButton inbox={inbox} />
-          <span className={["ds-hide-s", roomStyles["ds-hide-s"]].join(" ")}>{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
-          <span className={["ds-time", roomStyles["ds-time"]].join(" ")}>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
-          <button className={["ds-mb-btn", roomStyles["ds-mb-btn"]].join(" ")} onClick={onTheme} aria-label={`Theme: ${theme}. Switch theme`} title={`Theme: ${theme}`}>{theme === "dark" ? Icon.moon : Icon.sun}</button>
           <SettingsButton />
+          <BarSep />
+          <BarClock now={now} />
+          <BarSep />
           <button className={["ds-leave", roomStyles["ds-leave"]].join(" ")} onClick={() => go("/")}>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9.5 3H4a1 1 0 00-1 1v8a1 1 0 001 1h5.5M7 8h6.5M11 5.5L13.5 8 11 10.5" /></svg>
             <span>Leave desk</span>
@@ -261,21 +261,43 @@ export const ShuffleIcon = () => (
 export function RoomTop({ inbox, courseTitle }: { inbox: InboxState; courseTitle?: string }) {
   const now = useNow();
   return (
-    <header className={["ds-roomtop", roomStyles["ds-roomtop"]].join(" ")}>
+    <header className={["ds-roomtop", roomStyles["ds-bar"], roomStyles["ds-roomtop"]].join(" ")}>
       <span className={["ds-rt-mark", roomStyles["ds-rt-mark"]].join(" ")}><Mark />Lilt</span>
-      <button className="max-w-40 truncate text-xs text-inherit" onClick={() => go("/courses")} title="Choose a course" aria-label={courseTitle ? `Choose a course. Current course: ${courseTitle}` : "Choose a course"}>{courseTitle ?? "Courses"}</button>
+      <BarSep />
+      <CourseChip courseTitle={courseTitle} />
       <span className={["ds-rt-r", roomStyles["ds-rt-r"]].join(" ")}>
         <RoomAppearance />
-        <MusicMini />
-        <button className={["ds-mb-btn ds-reset", roomStyles["ds-mb-btn"], roomStyles["ds-reset"]].join(" ")} aria-label="Reset layout" title="Reset layout" onClick={resetLayout}>
+        <button className={["ds-mb-btn ds-reset", roomStyles["ds-mb-btn"]].join(" ")} aria-label="Reset layout" data-tip="Reset layout" onClick={resetLayout}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6a5 5 0 1 1 0 4M3 2v4h4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          <span className={["ds-hide-s", roomStyles["ds-hide-s"]].join(" ")}>Reset layout</span>
         </button>
+        <BarSep />
+        <MusicMini />
         <InboxButton inbox={inbox} />
         <SettingsButton />
-        <span className={["ds-hide-s", roomStyles["ds-hide-s"]].join(" ")}>{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
-        <span className={["ds-time", roomStyles["ds-time"]].join(" ")}>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
+        <BarSep />
+        <BarClock now={now} />
       </span>
     </header>
+  );
+}
+
+/** A quiet divider between groups in either menu bar; hidden on narrow screens. */
+const BarSep = () => <i className={["ds-bar-sep", roomStyles["ds-bar-sep"]].join(" ")} aria-hidden="true" />;
+
+function CourseChip({ courseTitle }: { courseTitle?: string }) {
+  return (
+    <button className={["ds-bar-course", roomStyles["ds-bar-course"]].join(" ")} onClick={() => go("/courses")} title="Choose a course"
+      aria-label={courseTitle ? `Choose a course. Current course: ${courseTitle}` : "Choose a course"}>
+      <span>{courseTitle ?? "Courses"}</span>{Icon.chevron}
+    </button>
+  );
+}
+
+function BarClock({ now }: { now: Date }) {
+  return (
+    <span className={["ds-bar-clock", roomStyles["ds-bar-clock"]].join(" ")}>
+      <span className={["ds-hide-s", roomStyles["ds-hide-s"]].join(" ")}>{now.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</span>
+      <span className={["ds-time", roomStyles["ds-time"]].join(" ")}>{now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</span>
+    </span>
   );
 }

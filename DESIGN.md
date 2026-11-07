@@ -121,9 +121,17 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
 - **The move**: the camera pushes into the painted monitor (about 1.1 s, ease in-out). As the
   screen fills the view, the desktop fades up out of a blur. Leaving reverses it. No rectangles
   are drawn over the painting during the move.
-- **Menu bar** (room and desk alike): 30px, dark glass, the mark and app name left; now playing,
-  notifications, date and time right. The room's Reset layout action stays visible even at the
-  default layout; on small screens it uses a reset-arrow icon with the same accessible name.
+- **Menu bar** (room and desk alike, one `ds-bar` recipe): 30px in the room and 32px on the desk,
+  dark glass with a 0.5px light hairline underneath and a faint text shadow so it reads over the
+  morning painting. Left: the mark and app name, a 1px divider, then the course as a quiet chip with
+  a small chevron (it truncates first when space runs out). Right, in groups split by short dividers:
+  the room's icon actions (a palette for Make it yours, a reset arrow for Reset layout), then now
+  playing, the desk's theme toggle, notifications and settings, then the date and time as one clock,
+  then Leave desk on the desk. Every control is 24px tall with a radius of 6, a soft white hover, and
+  the .97 press. Icon buttons keep their names for assistive tech and show a small ink tip under
+  them after a short hover or on keyboard focus (`data-tip`), hidden while their panel is open. Below
+  760px the dividers and the date go; below 1000px the now-playing title is capped at 150px. Reset
+  layout stays visible even at the default layout.
   **Notification Center** slides in from the right edge (368px,
   greeting + date on top, one frosted card per notification, "Clear all"); a soft scrim dims the
   room behind it (a full blur on phones). An orange dot on the envelope means unread; never a count.

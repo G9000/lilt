@@ -10,6 +10,6 @@ import { roomStyles } from '/src/desk/roomStyles.ts';
 window.entered = 0;
 createRoot(document.getElementById('root')).render(React.createElement(React.StrictMode, null,
   React.createElement(Room, {inside: false, onEnter: () => window.entered++, cards: 0, done: false}),
-  React.createElement('header', {className: ['ds-roomtop', roomStyles['ds-roomtop']].join(' ')}, React.createElement('span', null, 'Lilt'), React.createElement(RoomAppearance))
+  React.createElement('header', {className: ['ds-roomtop', roomStyles['ds-bar'], roomStyles['ds-roomtop']].join(' ')}, React.createElement('span', null, 'Lilt'), React.createElement(RoomAppearance))
 ));
 </script></body></html>
