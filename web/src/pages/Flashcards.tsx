@@ -158,16 +158,19 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
           </div>
         )}
         {voice && !hurt && top?.kind === "text" ? (
-          <div className={cx("ve fc-ve", practice["ve"], practice["fc-ve"])}>
+          <><div className={cx("ve fc-ve", practice["ve"], practice["fc-ve"])}>
             <Dock key={top.id} band={band} allowRetake retake={!!takes[top.id]}
               meta={sessionId ? { session_id: sessionId, role: "free", prompt_id: textId(DEFAULT_COURSE, level.id, top.item.id), prompt_text: top.item.text } : null}
               onSaved={(t) => setTakes((x) => ({ ...x, [top.id]: t }))} onRecording={setRecording}
-              idleHint={takes[top.id] ? "Listen back on the card, then swipe" : "Press record and say the card"}>
-              <span className={cx(`fc-say-first${locked ? "" : " ok"}`, practice["fc-say-first"])} aria-live="polite">
-                {locked ? "Say it to unlock the swipe" : "Swipe right when you've got it"}
-              </span>
-            </Dock>
-          </div>
+              idleHint={takes[top.id] ? "Listen back on the card, then swipe" : "Press record and say the card"} />
+            </div>
+            <p className={cx(`fc-say-first${locked ? "" : " ok"}`, practice["fc-say-first"])} aria-live="polite">
+              {locked
+                ? <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6.5" rx="1.6" fill="none" stroke="currentColor" strokeWidth="1.4" /><path d="M5.5 7V5.2a2.5 2.5 0 015 0V7" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
+                : <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l3 3 6-6.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+              {locked ? "Say it to unlock the swipe" : "Swipe right when you've got it"}
+            </p>
+          </>
         ) : !voice && top?.kind === "text" ? (
           <div className="mx-auto max-w-[640px] px-5"><OptionalCourseRecorder key={top.id} course={course} promptId={textId(course, level.id, top.item.id)} promptText={top.item.text} showPlayback={false}
             onBusy={setRecording} onSaved={take => setTakes(previous => ({ ...previous, [top.id]: take }))} /></div>
@@ -318,12 +321,22 @@ function CardFace({ card, level, tips, take, band, onHurt, course, chapters }: {
               {course === DEFAULT_COURSE && <FoldedMeasures key={take.id} take={take} band={band} />}
             </section>
           )}
-          {tips.length > 0 && (
+          {(tips.length > 0 || course === DEFAULT_COURSE) && (
             <div className={cx("fc-tips", practice["fc-tips"])}>
-              <button className={cx("fc-tips-btn", practice["fc-tips-btn"])} aria-expanded={showTips} onClick={() => setShowTips((v) => !v)}>
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8a4.3 4.3 0 00-2.6 7.7c.5.4.8 1 .8 1.6v.4h3.6v-.4c0-.6.3-1.2.8-1.6A4.3 4.3 0 008 1.8zM6.4 13.6h3.2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                {showTips ? "Hide tips" : `Tips for ${level.title.toLowerCase()} (${tips.length})`}
-              </button>
+              <div className={cx("fc-foot", practice["fc-foot"])}>
+                {tips.length > 0 && (
+                  <button className={cx("fc-tips-btn", practice["fc-tips-btn"])} aria-expanded={showTips} onClick={() => setShowTips((v) => !v)}>
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8a4.3 4.3 0 00-2.6 7.7c.5.4.8 1 .8 1.6v.4h3.6v-.4c0-.6.3-1.2.8-1.6A4.3 4.3 0 008 1.8zM6.4 13.6h3.2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    {showTips ? "Hide tips" : <span>Tips<span className="fc-tips-for"> for {level.title.toLowerCase()}</span> ({tips.length})</span>}
+                  </button>
+                )}
+                {course === DEFAULT_COURSE && (
+                  <button className={cx("fc-hurt", practice["fc-hurt"])} onClick={onHurt}>
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d={HEART} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
+                    {HURT}
+                  </button>
+                )}
+              </div>
               {showTips && (
                 <ol>
                   {tips.map((t, i) => (
@@ -336,7 +349,6 @@ function CardFace({ card, level, tips, take, band, onHurt, course, chapters }: {
               )}
             </div>
           )}
-          {course === DEFAULT_COURSE && <button className={cx("fc-hurt", practice["fc-hurt"])} onClick={onHurt}>{HURT}</button>}
         </>}
       </div>
     </>

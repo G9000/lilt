@@ -3,6 +3,15 @@
 Approved direction: mockup v7 (Oct 2026). The room painting is the world; inside its middle
 monitor is a small macOS-style desktop where every part of Lilt is an app window.
 
+**November 2026 refresh: clean and minimal.** The painting keeps the warmth; everything you read
+and use is quiet. Greys are neutral (no blue cast) in both themes, the Practice sidebar is a solid
+surface rather than glass over the room, and Today's card is plain white (`#222222` in dark) on the
+page. Fewer boxes: a suggestion after a take is a sentence, not a tinted card; resonance sits
+under **More about this take** rather than in a box inside the take. Part names in the sidebar are
+sentence case, and only the chapter you're in and the one up next show a count. Placeholders for
+unfinished features (Remix) stay hidden until they work. Windows close with Escape, when you go to
+another page, and with **Done** on phones, so no one has to aim for the 12px red light.
+
 ## The world
 
 **Your companion** in Make it yours opens a compact cat picker: the original black-and-white
@@ -209,8 +218,10 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   Lilt offers that take's range as your comfortable range and keeps it as Day 1. Under Home's welcome
   and opening paragraph sits a quiet callout (a `--panel` surface with a hairline): "First time here?" with a
   mic icon and a "Find my starting voice" primary button until a range is set; after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
-  button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots,
-  and **Then and now** (your first and latest take of the same text, the reference line first).
+  button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots
+  (today ringed), and **Then and now** (your first and latest take of the same text, the reference line first, with how far
+  apart they are). The two takes sit flat on the panel, each pitch chart in a `--fill` well, both on one shared scale, with one
+  caption under the pair.
   **Today** opens **Your daily deck** with one active stationery card: ivory paper in light mode,
   charcoal in dark, subtle grain and two decorative paper edges. The card position sits above
   the exercise, and the room's cat (92px) dozes on the card's top edge: it
@@ -422,12 +433,13 @@ they remain readable over the detailed painting. Prompts and provenance are in `
 | `--font` | Geist Variable | everything except texts you read aloud |
 | `--read` | Newsreader Variable | the practice texts in the Practice document |
 | `--mono` | Geist Mono, else system mono | kbd and numbers that must align, never labels |
-| `--ink` | `#17171d` | text, primary buttons |
-| `--ink-2` | `#4c4c58` | secondary text |
-| `--ink-3` | `#8b8b97` | captions, meta |
+| `--ink` | `#171717` (dark `#f4f4f4`) | text, primary buttons |
+| `--ink-2` | `#4a4a4a` (dark `#c8c8c8`) | secondary text |
+| `--ink-3` | `#737373` (dark `#9a9a9a`) | captions, meta |
 | `--hair` | `rgba(0,0,0,.07)` | dividers |
 | `--fill` / `--fill-2` | `rgba(0,0,0,.04)` / `.075` | quiet surfaces, hover |
-| `--win` | `rgba(250,249,247,.92)` + `blur(30px) saturate(1.7)` | windows |
+| `--page` / `--panel` | `#fafafa` / `#fff` (dark `#181818` / `#212121`) | reading pages, raised surfaces |
+| `--win` | `rgba(250,250,250,.94)` (dark `rgba(26,26,26,.92)`) + `blur(30px) saturate(1.7)` | windows |
 | `--accent` / `--accent-ink` / `--accent-soft` | orange defaults: `#e0643c` / `#b8461f` / `rgba(224,100,60,.12)` | next-up, progress, current selection; custom light/dark shades from Accent color |
 | `--rec` | `#ff4255` | the record dot only |
 | `--ok` / `--warn` | `#16936a` / `#b26a00` | status text |
@@ -443,7 +455,9 @@ Weights are 400, 500, 600 and 700 (200 and 300 for big live numbers). The readin
 own sizes. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
 
 Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Reading pages use a centered 1280px column with
-18–40px responsive side padding, including Today's practice. Reading
+18–40px responsive side padding; running text inside it (chapter intros, tips, hints, notes) stops
+at about 68 characters, while players, charts and videos use the full column. Today's practice
+uses a narrower 880px column, one card at a time. Reading
 surfaces are opaque `--page` so room artwork does not compete with the text. Course Home's
 shortcuts are quiet links, and its guide is a disclosure between hairlines.
 
@@ -458,8 +472,10 @@ same 1280px outer width and 40px desktop side padding. Today's practice uses the
 width with its existing paper cards.
 The active voice exercise keeps the plain reading surface with its recorder below; all exercises
 use compact rows with hairline dividers.
-The chapter stays centered with its original side padding, number gutter and introduction
-spacing. Only the column is wider. Selection and hover keep the reading surface plain.
+A voice chapter is a centered 960px column, so its intro, tips, texts and players line up with
+the text width and wide screens keep even margins instead of an empty right side. It keeps its
+side padding, number gutter and introduction spacing. Selection and hover keep the reading
+surface plain.
 
 ## Components
 

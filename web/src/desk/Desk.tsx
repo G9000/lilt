@@ -66,6 +66,18 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
   const win = windowSpec && course !== DEFAULT_COURSE && (section === "guided" || section === "practice")
     ? { ...windowSpec, width: 1280 } : windowSpec;
   const appName = section === "music" ? "Music" : win ? win.title : "Lilt";
+  // Escape closes a window, like the red light. Full-screen apps (Practice, Flashcards, Yarn…) keep
+  // their own keys, and Escape in a field stays with the field.
+  useEffect(() => {
+    if (!win || win.full || !inside) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      if ((e.target as HTMLElement | null)?.closest?.("input, textarea, select, [contenteditable]")) return;
+      go("/desk");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [win?.title, win?.full, inside]); // eslint-disable-line react-hooks/exhaustive-deps
   const dockApp = (to: string, label: string, icon: ReactNode, on: boolean) => (
     <button className={[`ds-app${on ? " on" : ""}`, roomStyles["ds-app"]].join(" ")} onClick={() => go(to)} aria-label={label} aria-current={on ? "page" : undefined}>
       <span className={["ds-tip", roomStyles["ds-tip"]].join(" ")}>{label}</span>{icon}
@@ -106,6 +118,8 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
               <span className={["ds-l2", roomStyles["ds-l2"]].join(" ")} aria-hidden="true" /><span className={["ds-l3", roomStyles["ds-l3"]].join(" ")} aria-hidden="true" />
             </div>
             <div className={cx(["ds-title", roomStyles["ds-title"]].join(" "), practice["ds-title"])}>{win.title}</div>
+            {/* On a phone the red light is too small to aim for; Done closes the window too. */}
+            <button type="button" className="ml-auto hidden min-h-[44px] px-[10px] rounded-[12px] font-semibold text-accent-ink max-[700px]:inline-flex max-[700px]:items-center" onClick={() => go("/desk")}>Done</button>
           </div>
           <main id="main" tabIndex={-1} className={cx(["ds-body", roomStyles["ds-body"]].join(" "), practice["ds-body"])}>{page}</main>
         </section>

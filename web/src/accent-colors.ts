@@ -37,5 +37,5 @@ export function accentPalette(value: string) {
       on: contrast(accent, '#ffffff') >= contrast(accent, '#000000') ? '#ffffff' : '#000000',
       rgb: rgb(accent).join(', ') };
   };
-  return { light: tone('#faf9f7', 0), dark: tone('#26262d', 255) };
+  return { light: tone('#fafafa', 0), dark: tone('#212121', 255) };
 }

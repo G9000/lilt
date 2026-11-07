@@ -98,6 +98,10 @@ in this browser. **Reset room** returns the original colors, artwork and automat
 The panel closes with Escape or a click outside. Your bed, computer, microphone and animated
 cat stay in the original illustration. The experimental 3D views have been removed.
 
+**Closing windows.** An app window on the computer (Courses, Exercises and the like) closes with
+its red light or Escape; Settings also closes with a click outside, and when you go to another
+page. On a phone, where the red light is small, each has a **Done** button at the top right.
+
 **Choose your cat.** In **Make it yours → Your companion → Choose your cat**, choose the original
 sleepy black-and-white cat, a soft grey-and-white **Dilute tuxedo**, **Ginger tabby**, **Siamese** or
 **Fluffy white** companion. Each keeps the curled sleeping pose and room light, with soft breathing,
@@ -414,7 +418,15 @@ Monitor uploads and playback have an isolated check with locally generated media
      best on a steady sound on one note (a hum, a held vowel, a whisper), not on speech, and it never
      shows an absolute value.
    - Every take is saved. Your last take of the same text appears beside it as an A/B pair, with the
-     measured pitch line; click the line to play from that point.
+     measured pitch line; click the line to play from that point. Press and drag along a waveform or a
+     pitch line to scrub through the take.
+   - A take lists the players first, then one plain suggestion, then **I like this one** and your
+     note. **More about this take** holds the resonance comparison, **Use this take's range as my
+     comfortable range** and **Detailed comparison**; in the Resonance chapter it starts open.
+   - A chapter's check-in text shows **Then and now** once you've recorded it on two different days:
+     your first take and your latest, side by side on one pitch scale, with how many days apart they
+     are. On a fresh take, **Leave a note for next time** saves one cue (like "easy start"); the next
+     time you open that text, your newest note from an earlier take shows under its hint.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
    - **Flashcards** (`#/flashcards`, in the dock, or the Flashcards widget beside the plant in the
      room, which shows the chapter you're on and how far through it you are) opens full screen and
@@ -443,8 +455,22 @@ Monitor uploads and playback have an isolated check with locally generated media
      marked with their notes, with room to spare either side); with no range yet, two easy hums,
      a low one and a high one, find one, and you can save it as your comfortable range or keep it
      just for the game. **Hear low and high** plays both ends, and each loop's note can play as
-     it comes, while you're quiet. There's no score, timer or leaderboard: when you stop it says
-     how long you kept the yarn afloat and where in your range your voice mostly was. Every two
+     it comes, while you're quiet. The yarn has a little weight: it eases into a rise, floats down
+     when you're quiet and gives a small bounce as it lands, rolling along the floor. The loop
+     you're heading for glows softly as your voice lines up with it, and each loop you thread winds
+     its colour onto the ball (the last few, newest on top). The ball, its trailing thread and the
+     loops are drawn as plied wool, the range ends as a running stitch with paper note tags.
+     Humming sometimes brings three loops on a slope or five on a longer, eased glide, joined by a
+     faint strand to follow. Speaking deals loops in pairs, the start and end of a sentence: the
+     line shown belongs to the pair coming up and matches its tune, rising for a yes/no question
+     ("Lifts a little at the end") and falling for most other lines ("Settles at the end");
+     **Another line** picks a different line with the same tune. **A soft sound when the yarn
+     goes through a loop** (off by default, remembered in this browser) plays a short pluck; the
+     yarn ignores the microphone for that moment without dropping. With a screen reader, humming
+     describes each loop or glide as it comes near and says when the yarn goes through.
+     There's no score, timer or leaderboard: when you stop it says
+     how long you kept the yarn afloat and where in your range your voice mostly was, and draws
+     the thread you spun across the whole game between the two ends of your range. Every two
      minutes it pauses for a breath; **It hurts or feels strained** stops it with Lilt's rest
      advice. It shows a hint when the room sounds noisy. Nothing is recorded or saved, and the
      lo-fi radio steps aside while you play. Setup sits beside the illustration on desktop and
@@ -453,8 +479,10 @@ Monitor uploads and playback have an isolated check with locally generated media
      motion keeps decorative movement still while the yarn continues following your voice.
      The painted room has embroidered curtains, a garden view, a woven rug and a knitting corner.
      A fluffy kitten watches the yarn, reaches when it is nearby, perks up when you thread a
-     loop, and curls up when you finish. It bobs gently while following the yarn. Choose **Free play**
-     at setup for just your voice, yarn and cat, without loops or their note cues; the choice is
+     loop, and curls up when you finish. It trots after the yarn, taking turns between its standing
+     and paw-raised poses, and pats the yarn when it lands nearby and now and then while it rests,
+     rolling it on a little. Choose **Free play**
+     at setup for just your voice, yarn and cat, without loops, their note cues or the threading sound; the choice is
      remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
      work in either style of play.
      <kbd>Esc</kbd> closes it.

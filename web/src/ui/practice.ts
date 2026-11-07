@@ -129,6 +129,7 @@ export const practice = {
     `[.ve_&_.w.annotated::after]:not-italic [.ve_&_.w.annotated::after]:font-semibold ` +
     `[.ve_&_.w.annotated::after]:[font-size:0.42em] [.ve_&_.w.annotated::after]:[line-height:normal] ` +
     `[.ve_&_.w.annotated::after]:font-sans [.ve_&_.w.annotated::after]:text-accent-ink ` +
+    `[.sd-current:has(.sd-tips:not([open]))_&_.w.annotated::after]:[content:none] ` +
     `[.ve_&_.w.now.annotated::after]:text-accent-on [.ve_&_.w_.wpitch]:absolute [.ve_&_.w_.wpitch]:[left:0] ` +
     `[.ve_&_.w_.wpitch]:[right:0] [.ve_&_.w_.wpitch]:[bottom:-0.36em] [.ve_&_.w_.wpitch]:[height:0.36em] ` +
     `[.ve_&_.w_.wpitch]:pointer-events-none [.ve_&_.w_.wpitch]:overflow-visible ` +
@@ -286,17 +287,17 @@ export const practice = {
     `[&_>_summary_span]:[margin-inline-start:auto] [&_>_summary_span]:text-ink-2 [&_>_summary_span]:text-[13px] ` +
     `[&_>_summary_span]:font-normal [&_>_.md]:pt-[8px] [&_>_.md]:pr-[0] [&_>_.md]:pb-[24px] [&_>_.md]:pl-[0]`,
   "ve": `[--read:"Newsreader_Variable",_Georgia,_serif] [--ve-paper:#fff] [--ve-card:rgba(255,_255,_255,_0.72)] ` +
-    `[--ve-mk:rgba(23,_23,_29,_0.3)] [--ve-glass:rgba(250,_250,_252,_0.58)] ` +
-    `[--ve-glass-hi:rgba(252,_252,_253,_0.8)] [--ve-blur:blur(40px)_saturate(1.8)] ` +
-    `[--ve-glass-side:rgba(243,_242,_246,_0.9)] [flex:1] min-w-0 min-h-0 grid ` +
+    `[--ve-mk:rgba(0,_0,_0,_0.3)] [--ve-glass:rgba(250,_250,_250,_0.6)] ` +
+    `[--ve-glass-hi:rgba(250,_250,_250,_0.82)] [--ve-blur:blur(40px)_saturate(1.8)] ` +
+    `[--ve-glass-side:#f3f3f3] [flex:1] min-w-0 min-h-0 grid ` +
     `[grid-template-columns:var(--ve-side-w,_272px)_minmax(0,_1fr)] [grid-template-rows:minmax(0,_1fr)] relative ` +
     `text-ink not-italic [font-weight:normal] text-[15px] [line-height:1.55] font-sans ` +
-    `[:root[data-theme="dark"]_&]:[--ve-paper:#1c1c22] ` +
+    `[:root[data-theme="dark"]_&]:[--ve-paper:#1d1d1d] ` +
     `[:root[data-theme="dark"]_&]:[--ve-card:rgba(255,_255,_255,_0.07)] ` +
     `[:root[data-theme="dark"]_&]:[--ve-mk:rgba(255,_255,_255,_0.3)] ` +
-    `[:root[data-theme="dark"]_&]:[--ve-glass:rgba(28,_28,_34,_0.55)] ` +
-    `[:root[data-theme="dark"]_&]:[--ve-glass-hi:rgba(26,_26,_32,_0.74)] ` +
-    `[:root[data-theme="dark"]_&]:[--ve-glass-side:rgba(22,_22,_27,_0.9)] [&::before]:[content:""] ` +
+    `[:root[data-theme="dark"]_&]:[--ve-glass:rgba(24,_24,_24,_0.6)] ` +
+    `[:root[data-theme="dark"]_&]:[--ve-glass-hi:rgba(24,_24,_24,_0.8)] ` +
+    `[:root[data-theme="dark"]_&]:[--ve-glass-side:#141414] [&::before]:[content:""] ` +
     `[&::before]:absolute [&::before]:[top:0] [&::before]:[right:0] [&::before]:[bottom:0] [&::before]:[left:0] ` +
     `[&::before]:[z-index:-1] [&::before]:pointer-events-none [&::before]:[backdrop-filter:var(--ve-blur)] ` +
     `[&::before]:[-webkit-backdrop-filter:var(--ve-blur)] ` +
@@ -388,8 +389,8 @@ export const practice = {
     `[.ve_.sd-controls_&]:ml-[0] [.ve_.sd-controls_&.quiet]:hidden ` +
     `[@media_(max-width:_700px)]:[.ve_.sd-controls_&.idle]:[grid-template-columns:1fr] ` +
     `[@media_(max-width:_700px)]:[.ve_.sd-controls_&.idle]:[grid-template-areas:"rec"_"sub"] ` +
-    `[@media_(max-width:_700px)]:[.ve_.sd-controls_&.idle]:[row-gap:12px] [.fc-ve_&]:mt-[0] [.fc-ve_&]:mr-[0] ` +
-    `[.fc-ve_&]:mb-[0] [.fc-ve_&]:ml-[0] [.fc-ve_&.idle]:justify-center ` +
+    `[@media_(max-width:_700px)]:[.ve_.sd-controls_&.idle]:[row-gap:12px] [.fc-ve_&]:mt-[0]! [.fc-ve_&]:mr-[0] ` +
+    `[.fc-ve_&]:mb-[0]! [.fc-ve_&]:ml-[0] [.fc-ve_&.idle]:justify-center ` +
     `[.fc-ve_&.idle]:[grid-template-columns:auto_auto]`,
   "ve-side-scroll": `[flex:1] min-h-0 overflow-auto pt-[6px] pr-[8px] pb-[12px] pl-[8px] flex flex-col [scrollbar-width:thin] ` +
     `[&_>_*]:[flex-shrink:0] [&_>_*]:[min-width:calc(var(--ve-side-open,_272px)_-_16px)] ` +
@@ -398,9 +399,9 @@ export const practice = {
     `[.ve-side_.ve-tree_+_h6&]:mt-[14px] [.ve_&_button]:w-full [.ve_&_button]:h-[26px] [.ve_&_button]:min-h-0 ` +
     `[.ve_&_button]:flex [.ve_&_button]:items-center [.ve_&_button]:justify-start [.ve_&_button]:[row-gap:6px] ` +
     `[.ve_&_button]:[column-gap:6px] [.ve_&_button]:pt-[0] [.ve_&_button]:pr-[8px] [.ve_&_button]:pb-[0] ` +
-    `[.ve_&_button]:pl-[10px] [.ve_&_button]:rounded-[7px] [.ve_&_button]:text-ink-2 [.ve_&_button]:not-italic ` +
-    `[.ve_&_button]:[font-weight:650] [.ve_&_button]:text-[11px] [.ve_&_button]:[line-height:normal] ` +
-    `[.ve_&_button]:font-sans [.ve_&_button]:[letter-spacing:0.06em] [.ve_&_button]:uppercase ` +
+    `[.ve_&_button]:pl-[10px] [.ve_&_button]:rounded-[7px] [.ve_&_button]:text-ink-3 [.ve_&_button]:not-italic ` +
+    `[.ve_&_button]:font-semibold [.ve_&_button]:text-[12px] [.ve_&_button]:[line-height:normal] ` +
+    `[.ve_&_button]:font-sans ` +
     `[.ve_&_button]:text-left [.ve_&_button]:[transition:background-color_0.12s_ease,_color_0.12s_ease] ` +
     `[&_.t]:[flex:1] [&_.t]:min-w-0 [&_.t]:whitespace-nowrap [&_.t]:overflow-hidden [&_.t]:text-ellipsis ` +
     `[&_.c]:text-[12px] [&_.c]:font-medium [&_.c]:tracking-[0] [&_.c]:[text-transform:none] [&_.c]:text-ink-3 ` +
@@ -573,14 +574,14 @@ export const practice = {
     `[@media_(max-width:_860px)]:[.ve_&_button[aria-current="page"]]:[background-image:none] ` +
     `[@media_(max-width:_860px)]:[.ve_&_button[aria-current="page"]]:[color:var(--ve-paper)]`,
   // Retain this small guard: removing it changes the reading column's centering in the cascade.
-  "ve-chapter": `[--content-width:1280px] [&_>_.ve-head]:border-b [&_>_.ve-head]:border-hair [&_>_.ve-head]:pb-5 ` +
+  "ve-chapter": `[--content-width:960px] [&_>_.ve-head]:border-b [&_>_.ve-head]:border-hair [&_>_.ve-head]:pb-5 ` +
     `[&_.ve-items]:grid [&_.ve-items]:gap-0 [&_.ve-items_>_.ve-item]:m-0 ` +
     `[&_.ve-items_>_.ve-item]:rounded-none [&_.ve-items_>_.ve-item]:border-b [&_.ve-items_>_.ve-item]:border-hair ` +
     `[&_.ve-items_>_.ve-item:last-child]:border-b-0 ` +
     `[&_.ve-items_>_.ve-item]:py-5 [&_.ve-items_>_.ve-item]:pr-5 [&_.ve-items_>_.ve-item]:pl-14 ` +
     `[&_.ve-items_>_.ve-item:not(.on):not(.done):hover]:bg-transparent ` +
     `[&_.ve-item:not(.on):not(.done)_.readtext]:text-ink-2 [&_.ve-item:not(.on)_.ve-hint]:text-ink-2 ` +
-    `[&_.ve-item_.ve-hint]:max-w-none [&_.ve-item_.ve-hint]:block [&_.ve-item_.ve-hint]:text-[14px] ` +
+    `[&_.ve-item_.ve-hint]:[max-width:68ch] [&_.ve-item_.ve-hint]:block [&_.ve-item_.ve-hint]:text-[14px] ` +
     `[&_.ve-item_.ve-mk.num]:top-8 [&_.ve-item:has(>_.ve-checkin)_.ve-mk.num]:top-7 ` +
     `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item]:px-4 ` +
     `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item]:py-4`,
@@ -632,8 +633,8 @@ export const practice = {
     `[.ve_&.warn]:[max-width:none] [.ve_&.warn_b]:block [.ve_&.warn_b]:mt-[0] [.ve_&.warn_b]:mr-[0] ` +
     `[.ve_&.warn_b]:mb-[3px] [.ve_&.warn_b]:ml-[0]`,
   "ci": `mt-[0] mr-[0] mb-[32px] ml-[0]`,
-  "ci-lede": `[--md-body-size:19px] w-full text-ink`,
-  "ci-tips": `list-none mt-[16px] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [&_>_li]:grid ` +
+  "ci-lede": `[--md-body-size:19px] w-full [max-width:62ch] text-ink`,
+  "ci-tips": `list-none mt-[16px] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [&_>_li]:grid [&_>_li_>_div]:[max-width:68ch] ` +
     `[&_>_li]:[grid-template-columns:28px_minmax(0,_1fr)] [&_>_li]:[row-gap:12px] [&_>_li]:[column-gap:12px] ` +
     `[&_>_li]:[align-items:start] [&_>_li]:pt-[16px] [&_>_li]:pr-[0] [&_>_li]:pb-[16px] [&_>_li]:pl-[0] ` +
     `[&_>_li]:[border-top-width:1px] [&_>_li]:[border-top-style:solid] [&_>_li]:[border-top-color:var(--hair)] ` +
@@ -976,7 +977,8 @@ export const practice = {
     `min-h-[30px] [@media_(max-width:_860px)]:[.ve-dock.quiet_&]:hidden [.ve_.ve-dock_&]:min-h-0 ` +
     `[.ve_.ve-dock_&]:[row-gap:4px] [.ve_.ve-dock_&]:[column-gap:12px] [.ve_.ve-dock_&]:justify-start ` +
     `[.ve_.ve-dock_&_>_*]:ml-[0] [.ve_.ve-dock.idle_&]:flex-nowrap ` +
-    `[@media_(max-width:_700px)]:[.ve_.sd-controls_.ve-dock.idle_&]:flex-wrap`,
+    `[@media_(max-width:_700px)]:[.ve_.sd-controls_.ve-dock.idle_&]:flex-wrap ` +
+    `[@media_(max-width:_560px)]:[.fc-ve_.ve-dock.idle_&]:flex-wrap`,
   "ve-dock-msg": `inline-flex items-center [row-gap:5px] [column-gap:5px] [&:empty]:hidden [@media_(max-width:_860px)]:hidden ` +
     `[&.quiet-mic]:text-warn [&.quiet-mic]:font-medium [.ve_.ve-dock.idle_&]:hidden`,
   "ve-sp": `[flex:1] [.ve_.ve-dock_&]:hidden`,
@@ -1045,21 +1047,23 @@ export const practice = {
     `[&_ol]:mb-[0] [&_ol]:ml-[0] [&_ol]:pt-[0] [&_ol]:pr-[0] [&_ol]:pb-[0] [&_ol]:pl-[0] [&_ol]:flex ` +
     `[&_ol]:[row-gap:5px] [&_ol]:[column-gap:5px] [&_li]:w-[12px] [&_li]:h-[12px] [&_li]:rounded-[4px] ` +
     `[&_li]:[background-color:color-mix(in_srgb,_var(--ink)_12%,_transparent)] [&_li]:[background-image:none] ` +
-    `[&_li.on]:bg-accent [&_li.on]:[background-image:none]`,
-  "ve-then": `grid [row-gap:10px] [column-gap:10px] pt-[16px] [border-top-width:1px] [border-top-style:solid] ` +
-    `[border-top-color:var(--hair)] [&_.ab]:grid [&_.ab]:[row-gap:8px] [&_.ab]:[column-gap:8px]`,
-  "ve-then-h": `mt-[0] mr-[0] mb-[0] ml-[0] flex items-baseline justify-between [row-gap:12px] [column-gap:12px] ` +
-    `[&_b]:text-[15px] [&_b]:font-semibold [&_b]:text-ink [&_span]:text-[13px] [&_span]:text-ink-3 ` +
-    `[&_span]:whitespace-nowrap [&_span]:overflow-hidden [&_span]:text-ellipsis`,
+    `[&_li.on]:bg-accent [&_li.on]:[background-image:none] ` +
+    `[&_li.today]:[box-shadow:0_0_0_1.5px_var(--panel),0_0_0_2.5px_var(--ink-3)]`,
+  // The two takes sit flat on the panel, each chart in a quiet well, not cards inside a card.
+  "ve-then": `grid [row-gap:14px] [column-gap:14px] pt-[18px] [border-top-width:1px] [border-top-style:solid] ` +
+    `[border-top-color:var(--hair)] [&_.ab]:grid [&_.ab]:[row-gap:24px] [&_.ab]:[column-gap:32px] ` +
+    `[&_.player]:bg-transparent [&_.player]:[padding:0] [&_.pianoroll]:bg-fill`,
+  "ve-then-h": `mt-[0] mr-[0] mb-[0] ml-[0] grid [row-gap:2px] min-w-0 ` +
+    `[&_b]:text-[15px] [&_b]:font-semibold [&_b]:text-ink [&_span]:text-[13px] [&_span]:[line-height:1.5] ` +
+    `[&_span]:text-ink-3`,
+  "ve-then-note": `mt-[0] mr-[0] mb-[0] ml-[0] text-[13px] [line-height:1.5] text-ink-3`,
   "ve-then-wait": `mt-[0] mr-[0] mb-[0] ml-[0] pt-[14px] [border-top-width:1px] [border-top-style:solid] ` +
     `[border-top-color:var(--hair)] text-[14px] text-ink-2`,
   "ve-start-done": `mt-[14px] pt-[16px] pr-[18px] pb-[16px] pl-[18px] rounded-[14px] bg-ok-soft [background-image:none] grid ` +
     `[row-gap:12px] [column-gap:12px] [&_p]:mt-[0] [&_p]:mr-[0] [&_p]:mb-[0] [&_p]:ml-[0] [&_p]:text-[15px] ` +
     `[&_p]:[line-height:1.5] [&_p]:text-ink [&_div]:flex [&_div]:items-center [&_div]:flex-wrap ` +
     `[&_div]:[row-gap:10px] [&_div]:[column-gap:16px]`,
-  "prc-insight": `pt-[14px] pr-[16px] pb-[14px] pl-[16px] rounded-[14px] bg-accent-soft [background-image:none] grid ` +
-    `[row-gap:4px] [column-gap:4px] [&_.t]:text-[11px] [&_.t]:font-semibold [&_.t]:[letter-spacing:0.06em] ` +
-    `[&_.t]:uppercase [&_.t]:text-accent-ink [&_.t]:[opacity:0.8] [&_.n]:mt-[0] [&_.n]:mr-[0] [&_.n]:mb-[0] ` +
+  "prc-insight": `grid [row-gap:4px] [column-gap:4px] [max-width:68ch] [&_.n]:mt-[0] [&_.n]:mr-[0] [&_.n]:mb-[0] ` +
     `[&_.n]:ml-[0] [&_.n]:text-[15px] [&_.n]:font-semibold [&_.n]:text-ink [&_.n]:[letter-spacing:-0.01em] ` +
     `[&_.c]:mt-[0] [&_.c]:mr-[0] [&_.c]:mb-[0] [&_.c]:ml-[0] [&_.c]:text-[14px] [&_.c]:[line-height:1.5] ` +
     `[&_.c]:text-ink-2 [&_.c_b]:text-accent-ink [&_.c_b]:font-semibold [&_.c_b]:mr-[4px] [.prc-result_&]:mb-[14px] ` +
@@ -1084,8 +1088,7 @@ export const practice = {
     `[&_span]:[justify-items:center] [&_span]:text-[12px] [&_span]:font-medium [&_span]:text-ink-2 ` +
     `[&_span]:whitespace-nowrap [&_small]:text-[12px] [&_small]:font-normal [&_small]:text-ink-3 ` +
     `[&_small]:tabular-nums`,
-  "rz": `mt-[16px] mr-[0] mb-[4px] ml-[0] pt-[14px] pr-[16px] pb-[12px] pl-[16px] rounded-[14px] ` +
-    `[background-color:var(--ve-card,_var(--panel))] [background-image:none] [box-shadow:0_0_0_1px_var(--hair)]`,
+  "rz": `mt-[4px] mr-[0] mb-[4px] ml-[0] [max-width:68ch]`,
   "rz-head": `flex items-baseline [row-gap:8px] [column-gap:8px] mb-[12px] [&_b]:text-[14px] [&_b]:[font-weight:650] ` +
     `[&_b]:text-ink [&_small]:text-[12.5px] [&_small]:text-ink-3`,
   "rz-track": `relative h-[10px] rounded-[99px] [background-color:transparent] ` +
@@ -1336,12 +1339,12 @@ export const practice = {
   "th-hz": `grid [row-gap:1px] [column-gap:1px] text-[13px] text-ink-3 [&_b]:text-[14px] [&_b]:font-semibold ` +
     `[&_b]:text-ink [&_b]:tabular-nums`,
   "th-play": `min-w-0 [@media_(max-width:_640px)]:[grid-column:1_/_-1]`,
-  "sd-page": `[.ve_&]:[--sd-paper:#fffaf0] [.ve_&]:[--sd-edge:#e9e0cf] [.ve_&]:[--sd-line:#766951] ` +
+  "sd-page": `[.ve_&]:[--sd-paper:#ffffff] [.ve_&]:[--sd-edge:#ebebeb] [.ve_&]:[--sd-line:#6b6b6b] ` +
     `[.ve_&]:[--sd-sage:#a9b29a] [.ve_&]:[--sd-clay:#c58968] [.ve_&]:bg-page [.ve_&]:[background-image:none] ` +
-    `[:root[data-theme="dark"]_.ve_&]:[--sd-paper:#292b29] [:root[data-theme="dark"]_.ve_&]:[--sd-edge:#393d37] ` +
-    `[:root[data-theme="dark"]_.ve_&]:[--sd-line:#c5b89d] [:root[data-theme="dark"]_.ve_&]:[--sd-sage:#849680] ` +
+    `[:root[data-theme="dark"]_.ve_&]:[--sd-paper:#222222] [:root[data-theme="dark"]_.ve_&]:[--sd-edge:#2f2f2f] ` +
+    `[:root[data-theme="dark"]_.ve_&]:[--sd-line:#c4c4c4] [:root[data-theme="dark"]_.ve_&]:[--sd-sage:#849680] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-clay:#ce9578]`,
-  "sd-deck": `[.ve_&]:max-w-[var(--content-width)] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
+  "sd-deck": `[.ve_&]:max-w-[880px] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
     `[.ve_&]:pb-[64px] [.ve_&]:[padding-left:var(--page-padding)] [@media_(max-width:_700px)]:[.ve_&]:pt-[24px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pr-[18px] [@media_(max-width:_700px)]:[.ve_&]:pb-[50px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pl-[18px]`,
@@ -1451,7 +1454,7 @@ export const practice = {
     `[grid-template-rows:auto_minmax(0,_1fr)_auto] text-ink not-italic [font-weight:normal] text-[15px] ` +
     `[line-height:1.55] font-sans [background-color:var(--fc-glass)] [background-image:none] ` +
     `[:root[data-theme="dark"]_&]:[--fc-glass:rgba(24,_24,_30,_0.58)] ` +
-    `[:root[data-theme="dark"]_&]:[--fc-bar:rgba(26,_26,_32,_0.74)] [&::before]:[content:""] [&::before]:absolute ` +
+    `[:root[data-theme="dark"]_&]:[--fc-bar:rgba(24,_24,_24,_0.8)] [&::before]:[content:""] [&::before]:absolute ` +
     `[&::before]:[top:0] [&::before]:[right:0] [&::before]:[bottom:0] [&::before]:[left:0] [&::before]:[z-index:-1] ` +
     `[&::before]:pointer-events-none [&::before]:[backdrop-filter:blur(40px)_saturate(1.8)] ` +
     `[&::before]:[-webkit-backdrop-filter:blur(40px)_saturate(1.8)]`,
@@ -1479,8 +1482,8 @@ export const practice = {
     `pt-[6px] pr-[6px] pb-[6px] pl-[6px] rounded-[16px] bg-panel [background-image:none] ` +
     `[box-shadow:0_0_0_1px_var(--hair),_0_24px_48px_-20px_rgba(0,_0,_0,_0.45)] [scrollbar-width:thin] ` +
     `[animation:fc-pop_0.18s_var(--ease)] [@media_(prefers-reduced-motion:_reduce)]:[animation:none]`,
-  "fc-menu-part": `[&_p]:mt-[8px] [&_p]:mr-[10px] [&_p]:mb-[4px] [&_p]:ml-[10px] [&_p]:text-[11px] [&_p]:font-semibold ` +
-    `[&_p]:[letter-spacing:0.06em] [&_p]:uppercase [&_p]:text-ink-3 [&_button]:w-full [&_button]:min-h-[36px] ` +
+  "fc-menu-part": `[&_p]:mt-[8px] [&_p]:mr-[10px] [&_p]:mb-[4px] [&_p]:ml-[10px] [&_p]:text-[12px] [&_p]:font-semibold ` +
+    `[&_p]:text-ink-3 [&_button]:w-full [&_button]:min-h-[36px] ` +
     `[&_button]:flex [&_button]:items-center [&_button]:justify-between [&_button]:[row-gap:12px] ` +
     `[&_button]:[column-gap:12px] [&_button]:pt-[6px] [&_button]:pr-[10px] [&_button]:pb-[6px] [&_button]:pl-[10px] ` +
     `[&_button]:rounded-[9px] [&_button]:[background-color:transparent] [&_button]:[background-image:none] ` +
@@ -1514,9 +1517,9 @@ export const practice = {
   "fc-pile": `relative h-full min-h-0 grid [grid-template:minmax(0,_1fr)_/_minmax(0,_1fr)] ` +
     `[@media_(max-width:_860px)]:[grid-column:1_/_-1] [@media_(max-width:_860px)]:[grid-row:1]`,
   "fc-card": `[--ink:#f2f2f5] [--ink-2:#c9c9d3] [--ink-3:#9a9aa6] [--hair:rgba(255,_255,_255,_0.1)] ` +
-    `[--fill:rgba(255,_255,_255,_0.07)] [--fill-2:rgba(255,_255,_255,_0.12)] [--page:#1c1c21] [--panel:#26262d] ` +
+    `[--fill:rgba(255,_255,_255,_0.07)] [--fill-2:rgba(255,_255,_255,_0.12)] [--page:#181818] [--panel:#212121] ` +
     `[--wave:rgba(255,_255,_255,_0.22)] [--wave-played:#fff] [--ve-card:rgba(255,_255,_255,_0.07)] ` +
-    `[--ve-paper:#1c1c22] [--accent:var(--chosen-dark-accent,_#e0643c)] [--focus:var(--accent)] ` +
+    `[--ve-paper:#1d1d1d] [--accent:var(--chosen-dark-accent,_#e0643c)] [--focus:var(--accent)] ` +
     `[--accent-rgb:var(--chosen-dark-rgb,_224,_100,_60)] [--accent-on:var(--chosen-dark-on,_#fff)] ` +
     `[--accent-ink:var(--accent-dark-ink)] [--ok:#4cc38a] [--ok-soft:rgba(76,_195,_138,_0.16)] ` +
     `[--accent-soft:rgba(var(--accent-rgb),_0.2)] [grid-area:1_/_1] relative flex flex-col min-h-0 rounded-[28px] ` +
@@ -1537,7 +1540,8 @@ export const practice = {
   "fc-body": `relative [flex:1] min-h-0 overflow-auto pt-[4px] pr-[30px] pb-[22px] pl-[30px] flex flex-col [row-gap:12px] ` +
     `[column-gap:12px] [scrollbar-width:thin] [scrollbar-color:rgba(255,_255,_255,_0.2)_transparent] ` +
     `[&.lede]:justify-center [&.lede]:pb-[34px] [&.step]:justify-center [&.step]:pb-[34px] [&.video]:justify-center ` +
-    `[&.video]:pb-[34px] [@media_(max-width:_860px)]:pt-[4px] [@media_(max-width:_860px)]:pr-[20px] ` +
+    `[&.video]:pb-[34px] [&.text_>_.fc-say]:[margin-top:auto] [&.text_>_.fc-md:first-child]:[margin-top:auto] ` +
+    `[@media_(max-width:_860px)]:pt-[4px] [@media_(max-width:_860px)]:pr-[20px] ` +
     `[@media_(max-width:_860px)]:pb-[18px] [@media_(max-width:_860px)]:pl-[20px]`,
   "fc-chip": `absolute [left:18px] [top:16px] inline-flex items-center [row-gap:5px] [column-gap:5px] pt-[4px] pr-[11px] ` +
     `pb-[4px] pl-[11px] rounded-[99px] text-[12px] font-semibold [color:#fff] ` +
@@ -1582,11 +1586,14 @@ export const practice = {
     `[&_li::before]:text-ink-2 [&_li::before]:not-italic [&_li::before]:font-semibold [&_li::before]:text-[12px] ` +
     `[&_li::before]:[line-height:normal] [&_li::before]:font-sans [&_li.care::before]:[content:"♥"] ` +
     `[&_li.care::before]:[color:var(--accent-dark-ink)] [&_li_b]:block [&_li_b]:mb-[2px] [&_li_b]:text-[14.5px]`,
+  "fc-foot": `flex items-center justify-between flex-wrap [row-gap:4px] [column-gap:16px]`,
   "fc-tips-btn": `min-h-0 inline-flex items-center [row-gap:7px] [column-gap:7px] pt-[6px] pr-[2px] pb-[6px] pl-[2px] ` +
     `[background-color:transparent] [background-image:none] [color:#ffc38a] text-[13.5px] font-semibold ` +
-    `[&_svg]:w-[16px] [&_svg]:h-[16px] [&:hover]:[color:#ffd7b0]`,
-  "fc-hurt": `[align-self:flex-start] min-h-0 pt-[2px] pr-[0] pb-[2px] pl-[0] [background-color:transparent] ` +
-    `[background-image:none] text-ink-3 text-[12.5px] font-medium [&:hover]:[color:var(--accent-dark-ink)]`,
+    `[&_svg]:w-[16px] [&_svg]:h-[16px] [&:hover]:[color:#ffd7b0] ` +
+    `[@media_(max-width:_560px)]:[&_.fc-tips-for]:hidden`,
+  "fc-hurt": `min-h-0 inline-flex items-center [column-gap:6px] pt-[6px] pr-[2px] pb-[6px] pl-[2px] ` +
+    `[margin-left:auto] [background-color:transparent] [background-image:none] text-ink-3 text-[12.5px] font-medium ` +
+    `[transition:color_0.15s_ease] [&_svg]:w-[14px] [&_svg]:h-[14px] [&:hover]:[color:var(--accent-dark-ink)]`,
   "fc-side": `min-h-0 pt-[0] pr-[0] pb-[0] pl-[0] grid [justify-items:center] [row-gap:8px] [column-gap:8px] ` +
     `[background-color:transparent] [background-image:none] text-ink-2 text-[13px] font-semibold ` +
     `[&[aria-disabled="true"]]:[opacity:0.4] [&[aria-disabled="true"]]:[cursor:not-allowed] ` +
@@ -1616,18 +1623,26 @@ export const practice = {
     `[&_button]:font-semibold [@media_(prefers-reduced-motion:_reduce)]:[animation:none]`,
   "fc-row": `flex flex-wrap [row-gap:8px] [column-gap:8px] mt-[6px]`,
   "fc-primary": `min-h-[42px] pt-[0] pr-[18px] pb-[0] pl-[18px] rounded-[99px] [background-color:#fff] [background-image:none] ` +
-    `[color:#17171d] font-semibold`,
+    `[color:#171717] font-semibold`,
   "fc-ghost": `min-h-[42px] pt-[0] pr-[16px] pb-[0] pl-[16px] rounded-[99px] [background-color:rgba(255,_255,_255,_0.1)] ` +
     `[background-image:none] [color:#fff] font-medium`,
   "fc-dock": `relative [z-index:4]`,
-  "fc-ve": `block max-w-[640px] mt-[0] [margin-right:auto] mb-[16px] [margin-left:auto] pt-[12px] pr-[20px] pb-[12px] ` +
+  // `!`: it also carries .ve, whose page grid would otherwise squeeze the recorder into the sidebar column.
+  // The card recorder: idle, a snug capsule of two matching pills; recording, it opens wide for the live line.
+  // `!`: it also carries .ve, whose page grid and button sizes would otherwise win.
+  "fc-ve": `block! max-w-[640px] mt-[0] [margin-right:auto] mb-[6px] [margin-left:auto] pt-[12px] pr-[20px] pb-[12px] ` +
     `pl-[20px] rounded-[22px] [background-color:var(--fc-bar)] [background-image:none] ` +
     `[box-shadow:0_0_0_1px_var(--hair),_0_18px_40px_-24px_rgba(0,_0,_0,_0.5)] [&::before]:hidden ` +
     `[@media_(max-width:_860px)]:pt-[12px] [@media_(max-width:_860px)]:pr-[14px] ` +
-    `[@media_(max-width:_860px)]:pb-[12px] [@media_(max-width:_860px)]:pl-[14px]`,
-  "fc-say-first": `inline-flex items-center [row-gap:6px] [column-gap:6px] text-[13px] font-medium text-accent-ink ` +
-    `[&::before]:[content:""] [&::before]:w-[7px] [&::before]:h-[7px] [&::before]:[border-radius:50%] ` +
-    `[&::before]:[background-color:currentColor] [&::before]:[background-image:none] [&.ok]:text-ok`,
+    `[@media_(max-width:_860px)]:pb-[12px] [@media_(max-width:_860px)]:pl-[14px] ` +
+    `[&:has(.ve-dock.idle)]:w-fit [&:has(.ve-dock.idle)]:rounded-[99px] [&:has(.ve-dock.idle)]:p-[6px]! ` +
+    `[&_.ve-dock.idle]:[column-gap:6px]! [&_.ve-dock.idle_.ve-dock-sub]:[column-gap:6px]! ` +
+    `[&_.ve-rec]:h-[40px]! [&_.ve-rec]:pl-[16px]! [&_.ve-rec]:pr-[18px]! ` +
+    `[&_.ve-note]:h-[40px]! [&_.ve-note]:rounded-[99px]! [&_.ve-note]:pl-[14px]! [&_.ve-note]:pr-[16px]! ` +
+    `[&_.ve-note]:text-[13.5px]! [&_.ve-note:not([aria-pressed="true"])]:[background-color:var(--fill)]!`,
+  "fc-say-first": `flex items-center justify-center [column-gap:6px] mt-[0] mr-[0] mb-[14px] ml-[0] text-[12.5px] ` +
+    `font-medium text-ink-3 [transition:color_0.2s_ease] [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:[flex:none] ` +
+    `[&.ok]:text-ok`,
   "fc-keys": `mt-[0] mr-[0] mb-[0] ml-[0] pt-[16px] pr-[24px] pb-[16px] pl-[24px] flex items-center justify-center ` +
     `[row-gap:10px] [column-gap:10px] text-ink-3 text-[13px] [&_kbd]:[opacity:0.8] ` +
     `[@media_(max-width:_860px)]:hidden`,

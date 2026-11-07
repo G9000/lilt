@@ -25,7 +25,7 @@ function InsightNote({ analysis, band, card }: { analysis: any; band: [number, n
     style: takeStyle(card), flags: (analysis?.quality_flags ?? []).map((f: { code: string }) => f.code),
   });
   if (!said) return null;
-  return <div className={cx("prc-insight", practice["prc-insight"])}><span className="t">Suggestion</span><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
+  return <div className={cx("prc-insight", practice["prc-insight"])}><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
 }
 
 let reference: Promise<PitchReference | null> | null = null;
@@ -133,7 +133,7 @@ function ResonanceForTake({ take }: { take: Take }) {
       )}
       {r.k === "start" && <p className={cx("rz-say", practice["rz-say"])}>Measured. This take is your starting point for this text; later takes are compared with it.{r.unmeasured && " Your earlier takes were recorded before Lilt measured resonance: measure them again in Recordings to compare them too."}</p>}
       {r.k === "apart" && <p className={cx("rz-say", practice["rz-say"])}>Not compared: {r.reason}</p>}
-      <p className={cx("rz-foot", practice["rz-foot"])}>From F2 and F3, two resonances of your vowels. A rough guide; your ear decides.</p>
+      <p className={cx("rz-foot", practice["rz-foot"])}>Measured from your vowels' resonances, the colour of the sound. A rough guide; your ear decides.</p>
     </section>
   );
 }

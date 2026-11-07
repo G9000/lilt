@@ -1,7 +1,7 @@
 import { cx } from "../ui/cx";
 import { shared } from "../ui/shared";
 import { useEffect, useRef, useState } from "react";
-import { cleanContour, ContourPoint, hzToMidi, midiToHz, noteName } from "../pitch";
+import { cleanContour, ContourPoint, fitRange, hzToMidi, midiToHz, noteName } from "../pitch";
 
 /** A reading; live ones also carry clarity and loudness (see `ContourPoint`). */
 export type PitchPoint = ContourPoint;
@@ -80,16 +80,7 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
     // Vertical range: fixed when given; else the take's 5th–95th percentile and the band, at least an octave, padded.
     let lo: number, hi: number;
     if (range) { lo = hzToMidi(range[0]); hi = hzToMidi(range[1]); }
-    else {
-      const ms = clean.filter((p) => p.hz).map((p) => hzToMidi(p.hz as number)).sort((a, b) => a - b);
-      const pick = (f: number) => ms[Math.min(ms.length - 1, Math.floor(ms.length * f))];
-      const fit = ms.length ? [pick(0.05), pick(0.95)] : [hzToMidi(110), hzToMidi(330)];
-      if (band) fit.push(hzToMidi(band[0]), hzToMidi(band[1]));
-      if (median) fit.push(hzToMidi(median));
-      lo = Math.min(...fit); hi = Math.max(...fit);
-      if (hi - lo < 12) { const mid = (hi + lo) / 2; lo = mid - 6; hi = mid + 6; }
-      lo = Math.floor(lo - 2); hi = Math.ceil(hi + 2);
-    }
+    else [lo, hi] = fitRange([clean], [...(band ?? []), ...(median ? [median] : [])]);
     const X = (t: number) => padL + ((t - tStart) / (tEnd - tStart)) * (w - padL - 6);
     const Y = (m: number) => h - 5 - ((m - lo) / (hi - lo)) * (h - 10);
     const yHz = (hz: number) => Y(hzToMidi(Math.max(midiToHz(lo), Math.min(midiToHz(hi), hz))));
@@ -213,9 +204,10 @@ export function PianoRoll({ points, duration, currentTime, onSeek, band, live, w
       style={{ height, cursor: onSeek && !live ? "pointer" : "default" }}
       role="img"
       aria-label={label}
-      onPointerMove={(e) => { if (onSeek && !live) setHover(at(e)); }}
+      onPointerMove={(e) => { if (onSeek && !live) { setHover(at(e)); if (e.buttons & 1) onSeek(at(e)); } }}
       onPointerLeave={() => setHover(null)}
-      onPointerDown={(e) => { if (onSeek && !live) onSeek(at(e)); }}
+      // Press and drag along the line to scrub through the take.
+      onPointerDown={(e) => { if (onSeek && !live) { e.currentTarget.setPointerCapture(e.pointerId); onSeek(at(e)); } }}
     />
   );
 }

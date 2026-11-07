@@ -54,6 +54,10 @@ export interface PlayerProps {
   /** Show the measured pitch line for this take (fetched from its stored analysis). */
   pitchTakeId?: string;
   band?: [number, number] | null;
+  /** A fixed pitch scale in Hz, so takes side by side are drawn alike. */
+  pitchRange?: [number, number];
+  /** The line under the pitch chart; off when one line already explains a pair of charts. */
+  pitchCaption?: boolean;
 }
 
 /** Stored Praat contour for a take, as plot points (null until analysed). */
@@ -71,7 +75,7 @@ export function useTakePitch(takeId: string | undefined, ready = true): PitchPoi
   return pts;
 }
 
-export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmentSignal, knownDuration, compact, pitchTakeId, band }: PlayerProps) {
+export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmentSignal, knownDuration, compact, pitchTakeId, band, pitchRange, pitchCaption = true }: PlayerProps) {
   const pitch = useTakePitch(pitchTakeId);
   const audio = useRef<HTMLAudioElement>(null);
   // Decoded duration also covers WebM files that carry no duration header.
@@ -81,6 +85,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
   const [dur, setDur] = useState<number>(knownDuration ?? NaN);
   useEffect(() => { if (knownDuration && !isFinite(dur)) setDur(knownDuration); }, [knownDuration]); // eslint-disable-line react-hooks/exhaustive-deps
   const [playing, setPlaying] = useState(false);
+  const [scrubbing, setScrubbing] = useState(false);
   const stopAt = useRef<number | null>(null);
 
   useEffect(() => {
@@ -167,7 +172,11 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
     // Header-less WebM reports an infinite duration, so seek against the decoded one.
     const a = audio.current!;
     const d = isFinite(a.duration) ? a.duration : dur;
-    if (isFinite(d)) a.currentTime = Math.max(0, Math.min(1, f)) * d;
+    if (isFinite(d)) { a.currentTime = Math.max(0, Math.min(1, f)) * d; setT(a.currentTime); }
+  };
+  const seekAt = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    seekFrac((e.clientX - r.left) / r.width);
   };
 
   const onKey = (e: React.KeyboardEvent) => {
@@ -197,7 +206,7 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
             : <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3l12 7-12 7z" fill="currentColor" /></svg>}
         </button>
         <div
-          className={cx(`wave flex-1 ${compact ? "h-11!" : "h-16!"}`, shared["wave"])}
+          className={cx(`wave flex-1 ${compact ? "h-11!" : "h-16!"}${scrubbing ? " scrubbing" : ""}`, shared["wave"])}
           role="slider"
           tabIndex={0}
           aria-label={`Position in ${label}`}
@@ -206,22 +215,23 @@ export function AudioPlayer({ src, label, tag, segment, segmentLabel, playSegmen
           aria-valuenow={Math.round(t * 10) / 10}
           aria-valuetext={`${fmt(t)} of ${fmt(dur)}`}
           onKeyDown={onKey}
-          onPointerDown={(e) => {
-            const r = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-            seekFrac((e.clientX - r.left) / r.width);
-          }}
+          // Press and drag to scrub; the pointer stays captured if it leaves the waveform.
+          onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); setScrubbing(true); seekAt(e); }}
+          onPointerMove={(e) => { if (scrubbing) seekAt(e); }}
+          onPointerUp={() => setScrubbing(false)}
+          onPointerCancel={() => setScrubbing(false)}
         >
           <canvas ref={canvas} />
           {segStyle && <div className="seg" style={segStyle} title={segmentLabel ?? "Evidence segment"} />}
-          {isFinite(dur) && dur > 0 && (playing || t > 0) && <div className="cursor" style={{ left: `${(t / dur) * 100}%` }} />}
+          {isFinite(dur) && dur > 0 && (playing || scrubbing || t > 0) && <div className="cursor" style={{ left: `${(t / dur) * 100}%` }}><i className="knob" /></div>}
         </div>
       </div>
       {pitch && isFinite(dur) && (
         <div className="mt-2.5">
-          <PianoRoll points={pitch} duration={dur} currentTime={t} band={band}
+          <PianoRoll points={pitch} duration={dur} currentTime={t} band={band} range={pitchRange}
             onSeek={(x) => { const a = audio.current!; a.currentTime = x; if (a.paused) a.play().catch(() => {}); }}
             label={`Measured pitch line for ${label}. Click to play from a point.`} height={compact ? 140 : 180} />
-          <p className={cx("small muted [margin:4px_0_0]", shared["small"], shared["muted"])}>Measured pitch (Praat). Click the line to play from there. Gaps are unvoiced or silent.</p>
+          {pitchCaption && <p className={cx("small muted [margin:4px_0_0]", shared["small"], shared["muted"])}>Measured pitch (Praat). Click the line to play from there. Gaps are unvoiced or silent.</p>}
         </div>
       )}
       {segment && (

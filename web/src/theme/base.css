@@ -1,14 +1,14 @@
 /* Document defaults and runtime theme tokens; component styling lives in Tailwind recipes. */
 :root {
-  --ink: #17171d;
-  --ink-2: #4c4c58;
-  --ink-3: #75757f;
+  --ink: #171717;
+  --ink-2: #4a4a4a;
+  --ink-3: #737373;
   --muted: var(--ink-3);
   --hair: rgba(0, 0, 0, 0.07);
   --fill: rgba(0, 0, 0, 0.04);
   --fill-2: rgba(0, 0, 0, 0.075);
-  --win: rgba(250, 249, 247, 0.92);
-  --page: #faf9f7;
+  --win: rgba(250, 250, 250, 0.94);
+  --page: #fafafa;
   --stage: var(--fill);
   --panel: #ffffff;
   --line: var(--hair);
@@ -53,25 +53,25 @@
   --mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
   /* the old device look, until each page is restyled */
   --dev: #f1f0ee; --dev-2: #f7f6f4; --dev-edge: #d6d4cf;
-  --screen: #17171d; --screen-ink: #f1f1f4; --screen-dim: #9a9aa6;
+  --screen: #171717; --screen-ink: #f2f2f2; --screen-dim: #9a9a9a;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  --ink: #f2f2f5; --ink-2: #c4c4cf; --ink-3: #9a9aa6;
+  --ink: #f4f4f4; --ink-2: #c8c8c8; --ink-3: #9a9a9a;
   --hair: rgba(255, 255, 255, 0.09); --fill: rgba(255, 255, 255, 0.06); --fill-2: rgba(255, 255, 255, 0.11);
-  --win: rgba(30, 30, 36, 0.9); --page: #1e1e24; --panel: #26262d; --line-strong: rgba(255, 255, 255, 0.18);
+  --win: rgba(26, 26, 26, 0.92); --page: #181818; --panel: #212121; --line-strong: rgba(255, 255, 255, 0.18);
   --accent: var(--chosen-dark-accent, #e0643c); --accent-rgb: var(--chosen-dark-rgb, 224, 100, 60);
   --accent-on: var(--chosen-dark-on, #fff); --accent-ink: var(--accent-dark-ink); --accent-soft: rgba(var(--accent-rgb), 0.18);
   --ok: #4cc38a; --ok-soft: rgba(76, 195, 138, 0.14); --warn: #ffc53d; --warn-soft: rgba(255, 197, 61, 0.14);
   --info: #a9b4ff; --info-soft: rgba(124, 140, 255, 0.14); --wave: rgba(255, 255, 255, 0.2);
-  --dev: #26262d; --dev-2: #2c2c33; --dev-edge: #111;
+  --dev: #212121; --dev-2: #282828; --dev-edge: #0e0e0e;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 html { margin: 0; overflow-x: clip; }
 body { margin: 0; overflow-x: clip; }
-body { background: #0b0d13; color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+body { background: #0b0b0b; color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; min-height: 100dvh; }
 a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
 a:hover { text-decoration-color: currentColor; }
 h1 { font-family: var(--font); font-weight: 600; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
@@ -85,6 +85,8 @@ small { font-size: 0.87rem; }
 kbd { font: 500 0.72em var(--mono); border: 1px solid currentColor; border-radius: 5px; padding: 0 4px; opacity: 0.65; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 8px; }
 ::selection { background: var(--accent-soft); }
+html { scrollbar-color: var(--line-strong) transparent; caret-color: var(--accent); }
+input, select, textarea { accent-color: var(--accent); }
 button { font: inherit; font-weight: 600; cursor: pointer; border-radius: var(--control-radius); border: 1px solid transparent; padding: 9px 16px; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: inherit; background: none; transition: transform 0.12s var(--ease), background-color 0.15s, border-color 0.15s, opacity 0.15s; }
 button:disabled { opacity: 0.42; cursor: not-allowed; }
 button:active:not(:disabled) { transform: scale(0.97); }

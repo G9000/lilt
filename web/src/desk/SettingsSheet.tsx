@@ -14,15 +14,20 @@ export function openSettings(pane?: Pane) {
 
 /**
  * Settings as its own window over everything, like System Settings: large, centred, the room or
- * the desk dimmed behind it. Escape, the red light or a click outside closes it.
+ * the desk dimmed behind it. Escape, the red light, Done (on phones), a click outside or going to
+ * another page closes it.
  */
 export function SettingsSheet() {
   const [open, setOpen] = useState(false);
   const [at, setAt] = useState<Pane>(null);
   useEffect(() => {
-    const on = (e: Event) => { setAt((e as CustomEvent<Pane>).detail); setOpen(true); };
+    // The page it opened over; `#/settings` swaps itself for `#/` as it opens, which isn't leaving.
+    let openedOn = "";
+    const on = (e: Event) => { openedOn = window.location.hash; setAt((e as CustomEvent<Pane>).detail); setOpen(true); };
+    const away = () => { if (window.location.hash !== openedOn) setOpen(false); };
     window.addEventListener("lilt:settings", on);
-    return () => window.removeEventListener("lilt:settings", on);
+    window.addEventListener("hashchange", away);
+    return () => { window.removeEventListener("lilt:settings", on); window.removeEventListener("hashchange", away); };
   }, []);
   useEffect(() => {
     if (!open) return;
@@ -36,6 +41,8 @@ export function SettingsSheet() {
           computer, a card or the radio underneath. */}
       <div className={[`ss-scrim${open ? " on" : ""}`, roomStyles["ss-scrim"]].join(" ")} aria-hidden="true" onClick={() => setOpen(false)} />
       <section className={[`ss${open ? " open" : ""}`, roomStyles["ss"]].join(" ")} role="dialog" aria-label="Settings" aria-hidden={!open} {...({ inert: open ? undefined : "" } as object)}>
+        {/* On a phone the red light is too small to aim for, so Done sits where a thumb expects it. */}
+        {open && <button type="button" className="absolute top-[6px] right-[8px] z-[5] hidden min-h-[44px] px-[14px] rounded-[12px] font-semibold text-accent-ink max-[700px]:inline-flex" onClick={() => setOpen(false)}>Done</button>}
         {open && <Deferred><SettingsPage start={at} onClose={() => setOpen(false)} /></Deferred>}
       </section>
     </>

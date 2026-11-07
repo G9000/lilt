@@ -32,10 +32,11 @@ import { PianoRoll, PitchPoint } from "../components/PianoRoll";
 import { useTakeAudio } from "../components/takeAudio";
 import { useMic } from "../components/Recording";
 import { ReadAlong, ReadNotes } from "../components/ReadAlong";
-import { cleanContour, noteName, recentMedian, steadinessSt } from "../pitch";
+import { cleanContour, fitRange, midiToHz, noteName, recentMedian, steadinessSt } from "../pitch";
 import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
 import { clearOfTone, noteFor, onTone, playTone, stopTone } from "../tone";
 import { Brightness, brightnessWords, meterPosition, trackBrightness } from "../brightness";
+import { apartWords, lastNote, takeDay, takesOf, thenAndNow as checkInPair, type ThenNow } from "../checkIn";
 
 /**
  * Voice practice as a writing app: chapters in a sidebar (today's cards first, then the seven
@@ -308,7 +309,7 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
       <Markdown src={steps?.lede ?? basis} className={cx(steps ? "ci-lede" : "ci-body", practice["ci-lede"])} headingOffset={1} />
       {tips.length > 0 && open && (
         <button type="button" className={cx("ci-link ci-skip", practice["ci-skip"], practice["ci-link"])} onClick={() => document.getElementById(`texts-${level.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
-          Skip to the texts<span aria-hidden="true">↓</span>
+          Skip to the texts<Arrow />
         </button>
       )}
       {tips.length > 0 && open && (
@@ -329,11 +330,11 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
       <div className={cx("ci-foot", practice["ci-foot"])}>
         {tips.length > 0 && (
           <button type="button" className={cx("ci-link", practice["ci-link"])} aria-expanded={open} aria-controls={`tips-${level.id}`} onClick={() => setOpen((o) => !o)}>
-            {open ? "Hide tips" : `Show tips (${tips.length})`}<span aria-hidden="true">{open ? "↑" : "↓"}</span>
+            {open ? "Hide tips" : `Show tips (${tips.length})`}<Arrow up={open} />
           </button>
         )}
         <button type="button" className={cx("ci-link quiet", practice["ci-link"])} aria-expanded={sources} onClick={() => setSources((v) => !v)}>
-          Sources<span aria-hidden="true">{sources ? "↑" : "↓"}</span>
+          Sources<Arrow up={sources} />
         </button>
       </div>
       {sources && <p className={cx("ci-src", practice["ci-src"])}>{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>}
@@ -346,6 +347,10 @@ const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it)
 /** The first chapter you haven't finished: next up. */
 const nextChapter = (texts: Texts, practised: Set<string>) => texts.levels.find((l) => !chapterDone(l, practised));
 
+/** A small drawn arrow for "show more" links, down to open and up to close. */
+const Arrow = ({ up = false }: { up?: boolean }) => (
+  <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" style={{ transform: up ? "rotate(180deg)" : undefined }}><path d="M6 2.5v7M3 6.5l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
 const Chevron = ({ open }: { open: boolean }) => (
   <svg className={cx(`ve-chev${open ? " open" : ""}`, practice["ve-chev"])} viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
@@ -586,14 +591,13 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
       {/* Each part of the course is a heading of its own, with how many of its chapters are done; a
           course without parts keeps one "Chapters" heading. */}
       {texts && byPart(texts.levels).map((g, gi, groups) => {
-        const name = g.part ?? "Chapters", shut = folded.has(name), inPart = g.part ? g.levels : texts.levels;
+        const name = g.part ?? "Chapters", shut = folded.has(name);
         return (
         <Fragment key={`${gi}-${g.part ?? ""}`}>
           {(g.part || gi === 0) && (
             <h6 className={cx("ve-part", practice["ve-part"])}>
               <button onClick={() => fold(name, !shut)} aria-expanded={!shut}>
                 <span className="t">{name}</span>
-                <span className="c">{inPart.filter((l) => chapterDone(l, practised)).length} of {inPart.length}</span>
                 <Chevron open={!shut} />
               </button>
             </h6>
@@ -601,14 +605,16 @@ function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter
           {!shut && <ul className={cx("ve-tree", practice["ve-tree"])}>
             {g.levels.map((l) => {
               const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
+              // Counts only where they help: the chapter you're in and the one up next.
+              const counted = l.id === current || l.id === next?.id;
               return (
                 <Folder key={l.id} id={l.id} label={l.title} current={current === l.id && !itemId} open={open.has(l.id)} onToggle={toggle} onOpen={() => go(`/studio/${l.id}`)} locked={locked}
-                  extra={d >= n ? <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} /> : <span className={l.id === next?.id ? "c next" : "c"} title={l.id === next?.id ? "Next up" : undefined}>{d}/{n}</span>}>
+                  extra={d >= n ? <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} /> : counted ? <span className={l.id === next?.id ? "c next" : "c"} title={l.id === next?.id ? "Next up" : undefined}>{d}/{n}</span> : null}>
                   {l.items.map((it) => file(it.id, textLabel(it.text, it.id), practised.has(textId(COURSE, l.id, it.id)), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
                 </Folder>
               );
             })}
-            {gi === groups.length - 1 && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked || !REMIX_AVAILABLE}><span aria-hidden="true">+</span>{REMIX_AVAILABLE ? "New chapter" : "New chapter · Coming soon"}</button></li>}
+            {gi === groups.length - 1 && REMIX_AVAILABLE && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
           </ul>}
         </Fragment>
         );
@@ -1131,21 +1137,30 @@ function YourPractice({ history, band, next }: { history: Take[]; band: [number,
   const thisMonth = [...days].filter((d) => d.startsWith(month)).length;
   const last14 = Array.from({ length: 14 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - 13 + i); return iso(d); });
   const pair = thenAndNow(history);
+  const [first, latest] = pair ?? [];
+  const pitchA = useTakePitch(first?.analysis_summary ? first.id : undefined);
+  const pitchB = useTakePitch(latest?.analysis_summary ? latest.id : undefined);
+  // One scale for both lines, so higher on one chart means higher on the other.
+  const scale = useMemo(() => pitchA && pitchB
+    ? fitRange([cleanContour(pitchA), cleanContour(pitchB)], band).map(midiToHz) as [number, number]
+    : undefined, [pitchA, pitchB, band]);
+  const apart = first && latest ? Math.round((Date.parse(`${dayKey(latest)}T12:00:00`) - Date.parse(`${dayKey(first)}T12:00:00`)) / 86400000) : 0;
   return (
     <section className={cx("ve-practice", practice["ve-practice"])} aria-label="Your practice">
       {next}
       {history.length > 0 && <>
       <div className={cx("ve-days", practice["ve-days"])}>
-        <p><b>{thisMonth === 0 ? "A fresh month" : `${thisMonth} day${thisMonth === 1 ? "" : "s"} of practice this month`}</b>{thisMonth > 0 && <span>Every day you show up counts. Missed days don't.</span>}</p>
-        <ol aria-label="The last two weeks">{last14.map((d) => <li key={d} className={days.has(d) ? "on" : ""} title={shortDate(d)} />)}</ol>
+        <p><b>{thisMonth === 0 ? "A fresh month" : `${thisMonth} day${thisMonth === 1 ? "" : "s"} of practice this month`}</b><span>The last two weeks, one dot a day.</span></p>
+        <ol aria-label="The last two weeks">{last14.map((d, i) => <li key={d} className={[days.has(d) ? "on" : "", i === 13 ? "today" : ""].join(" ").trim() || undefined} title={i === 13 ? `Today, ${shortDate(d)}` : shortDate(d)} />)}</ol>
       </div>
-      {pair ? (
+      {first && latest ? (
         <div className={cx("ve-then", practice["ve-then"])}>
-          <p className={cx("ve-then-h", practice["ve-then-h"])}><b>Then and now</b><span>{pair[0].prompt_text}</span></p>
+          <p className={cx("ve-then-h", practice["ve-then-h"])}><b>Then and now</b><span>The same line, {apart === 1 ? "a day" : `${apart} days`} apart: “{first.prompt_text}”</span></p>
           <div className={cx("ab", shared["ab"])}>
-            <AudioPlayer src={pair[0].audio_url} tag="A" label={`Day 1 · ${shortDate(dayKey(pair[0]))}`} knownDuration={pair[0].analysis_summary?.duration_s} pitchTakeId={pair[0].analysis_summary ? pair[0].id : undefined} band={band} compact />
-            <AudioPlayer src={pair[1].audio_url} tag="B" label={`latest · ${shortDate(dayKey(pair[1]))}`} knownDuration={pair[1].analysis_summary?.duration_s} pitchTakeId={pair[1].analysis_summary ? pair[1].id : undefined} band={band} compact />
+            <AudioPlayer src={first.audio_url} tag="A" label={`Day 1 · ${shortDate(dayKey(first))}`} knownDuration={first.analysis_summary?.duration_s} pitchTakeId={first.analysis_summary ? first.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
+            <AudioPlayer src={latest.audio_url} tag="B" label={`Latest · ${shortDate(dayKey(latest))}`} knownDuration={latest.analysis_summary?.duration_s} pitchTakeId={latest.analysis_summary ? latest.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
           </div>
+          {(pitchA || pitchB) && <p className={cx("ve-then-note", practice["ve-then-note"])}>{scale ? "Both lines share one scale. " : ""}Measured pitch (Praat), with your comfortable range shaded. Click a line to play from there; gaps are unvoiced or silent.</p>}
         </div>
       ) : (
         <p className={cx("ve-then-wait", practice["ve-then-wait"])}>Your first takes are saved. Come back on another day and this is where you'll hear them next to your newest ones.</p>
@@ -1268,6 +1283,16 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
     }, () => undefined);
     return () => { live = false; };
   }, [promptId]);
+  // The check-in's saved takes, for its then and now.
+  const checkInId = level.check_in ? textId(COURSE, level.id, level.check_in) : null;
+  const [checkInSaved, setCheckInSaved] = useState<Take[]>([]);
+  useEffect(() => {
+    setCheckInSaved([]);
+    if (!checkInId) return;
+    let live = true;
+    void api.history({ prompt_id: checkInId, days: 3650 }).then((h) => { if (live) setCheckInSaved(h.takes); }, () => undefined);
+    return () => { live = false; };
+  }, [checkInId]);
   useEffect(() => { itemRefs.current[sel]?.scrollIntoView({ block: "nearest", behavior: "smooth" }); }, [sel]);
 
   const choose = (i: number) => {
@@ -1301,6 +1326,10 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   }, [earlier, forText, latest?.id]);
   const before = aPick === "first" ? choices[0] ?? null : aPick === "last" ? choices.at(-1) ?? null : choices.find((t) => t.id === aPick) ?? choices.at(-1) ?? null;
   const latestPitch = useTakePitch(latest?.id, latest?.status === "review_ready");
+  const checkInTakes = useMemo(() => (checkInId ? takesOf(checkInId, checkInSaved, takes) : []), [checkInId, checkInSaved, takes]);
+  const thenNow = checkInPair(checkInTakes);
+  // The note you left last time on the text you're on (today's take shows its own).
+  const remembered = useMemo(() => lastNote(takesOf(promptId, earlier, forText), latest?.id), [promptId, earlier, forText, latest?.id]);
 
   const onSaved = async (t: Take) => {
     let saved = t;
@@ -1338,12 +1367,13 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             <h1>{level.title}</h1>
             <p className={cx("ve-subtitle", practice["ve-subtitle"])}>{level.subtitle}</p>
             <p className={cx("ve-meta", practice["ve-meta"])}>{n} texts, about {Math.max(2, n)} minutes, chapter {level.level} of {texts.levels.length}</p>
-            <div className={cx(pages.veHeadActions, "ve-head-actions")}>
-              <button className="ve-remix-btn" disabled={!REMIX_AVAILABLE || recording} title={!REMIX_AVAILABLE ? "Coming soon" : recording ? "Stop recording first" : undefined} onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
+            {/* Remix shows once it exists; a greyed-out promise isn't the first thing to see. */}
+            {REMIX_AVAILABLE && <div className={cx(pages.veHeadActions, "ve-head-actions")}>
+              <button className="ve-remix-btn" disabled={recording} title={recording ? "Stop recording first" : undefined} onClick={() => openRemix({ course: COURSE, chapter: level.id, title: level.title, starter: level.title === "New chapter" ? "What should this chapter be about? Say who it's for and what you'd like to practise." : undefined })}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              {REMIX_AVAILABLE ? "Remix" : "Remix · Coming soon"}
+              Remix
               </button>
-            </div>
+            </div>}
             {complete && (
               <div className={cx(`ve-award${fresh ? " fresh" : ""}`, practice["ve-award"])} role={fresh ? "status" : undefined}>
                 <Medal className={cx("ve-award-medal", practice["ve-award-medal"])} />
@@ -1368,11 +1398,15 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                         onStarts={(s) => { starts.current = s; }} alignment={latest?.read_along?.starts ?? null} pitch={latestPitch} />
                     : <p className={cx("readtext ve-read", practice["readtext"])} aria-label={on ? it.text : undefined}>{it.text}</p>}
                   <p className={cx("ve-hint", practice["ve-hint"])}>{it.hint}</p>
+                  {on && remembered && <div className={cx("rl-note ve-lastnote", practice["rl-note"], "mt-3")}><p>Your note from {shortDate(remembered.day)}: “{remembered.text}”</p></div>}
+                  {it.id === level.check_in && !(on && latest) && (thenNow
+                    ? <CheckInThenNow pair={thenNow} band={band} />
+                    : checkInTakes.length > 0 && <p className={cx("ve-small", practice["ve-small"])}>Record it again on another day to hear your first take beside your newest.</p>)}
                   {on && it.example && <div className={cx("ve-example", practice["ve-example"])}><AudioPlayer src={`/texts/${it.example}`} label="Hear an example" compact /></div>}
                   {!on && <button className={cx("ve-pick sr-only", shared["sr-only"])} onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && recorder}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
-                  {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} />}
+                  {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} more={level.id === "resonance"} />}
                 </li>
               );
             })}
@@ -1385,22 +1419,67 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   );
 }
 
+/** The check-in's first take beside its latest, on one pitch scale, once they're on different days. */
+function CheckInThenNow({ pair, band }: { pair: ThenNow<Take>; band: [number, number] | null }) {
+  const { first, latest, days } = pair;
+  const pitchA = useTakePitch(first.analysis_summary ? first.id : undefined);
+  const pitchB = useTakePitch(latest.analysis_summary ? latest.id : undefined);
+  const scale = useMemo(() => pitchA && pitchB
+    ? fitRange([cleanContour(pitchA), cleanContour(pitchB)], band ?? undefined).map(midiToHz) as [number, number]
+    : undefined, [pitchA, pitchB, band]);
+  return (
+    <section className={cx("ve-then", practice["ve-then"], "mt-4")} aria-label="Then and now" onClick={(e) => e.stopPropagation()}>
+      <p className={cx("ve-then-h", practice["ve-then-h"])}><b>Then and now</b><span>Your first check-in and your latest, {apartWords(days)}.</span></p>
+      <div className={cx("ab", shared["ab"])}>
+        <AudioPlayer src={first.audio_url} tag="A" label={`First · ${shortDate(takeDay(first))}`} knownDuration={first.analysis_summary?.duration_s} pitchTakeId={first.analysis_summary ? first.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
+        <AudioPlayer src={latest.audio_url} tag="B" label={`Latest · ${shortDate(takeDay(latest))}`} knownDuration={latest.analysis_summary?.duration_s} pitchTakeId={latest.analysis_summary ? latest.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
+      </div>
+      <p className={cx("ve-then-note", practice["ve-then-note"])}>Listen to both. Notice one thing you like in each.{scale ? " Both pitch lines share one scale." : ""}</p>
+    </section>
+  );
+}
+
+/** A short note on this take for next time, like "easy start"; it comes back under the text. */
+function TakeNote({ take, onUpdate }: { take: Take; onUpdate: (t: Take) => void }) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(take.note ?? "");
+  if (!open) return (
+    <>
+      {take.note && <div className={cx("rl-note", practice["rl-note"], "basis-full order-first")}><p>Your note: “{take.note}”</p></div>}
+      <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => { setDraft(take.note ?? ""); setOpen(true); }}>{take.note ? "Edit note" : "Leave a note for next time"}</button>
+    </>
+  );
+  return (
+    <div className={cx("rl-note", practice["rl-note"], "basis-full")}>
+      <form onSubmit={(e) => { e.preventDefault(); void api.patchTake(take.id, { note: draft.trim() }).then((t) => { onUpdate(t); setOpen(false); }); }}>
+        <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="One cue for next time, like “easy start”" aria-label="Note for next time" maxLength={200} autoFocus />
+        <button type="submit" className={cx("ve-ghost", practice["ve-ghost"])}>Save</button>
+        <button type="button" className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => setOpen(false)}>Cancel</button>
+      </form>
+    </div>
+  );
+}
+
 const Star = ({ on }: { on: boolean }) => <svg viewBox="0 0 16 16" aria-hidden="true" fill={on ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"><path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" /></svg>;
 
 /** Which earlier take plays as A: the one just before (the default), your first, or one you picked. */
 type APick = "last" | "first" | string;
 const takeDate = (t: Take) => new Date(t.created_utc).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 
-function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card, onUseRange, onUpdate }: {
+/**
+ * Your take, listening first: the A/B players, one plain suggestion, then keep it or note it. The
+ * rest (resonance, using its range, the detailed comparison) folds under "More about this take",
+ * open from the start where it is the point (`more`, the Resonance chapter).
+ */
+function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card, onUseRange, onUpdate, more = false }: {
   take: Take; before: Take | null; choices: Take[]; pick: APick; onPick: (p: APick) => void; promptId: string;
-  band: [number, number] | null; card: CardKind; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void;
+  band: [number, number] | null; card: CardKind; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void; more?: boolean;
 }) {
   useTakeStatus(take, onUpdate);
   const ready = take.status === "review_ready";
   return (
     <section className={cx("ve-take", practice["ve-take"])} aria-label="Your take" onClick={(e) => e.stopPropagation()}>
       <div className={cx("ve-take-head", practice["ve-take-head"])}><b>Your take</b><StatusBadge status={take.status} /><TakeFlags take={take} /></div>
-      <TakeInsight take={take} band={band} card={card} />
       {before && (
         <div className={cx("ve-ab-pick", practice["ve-ab-pick"])} role="group" aria-label="Play as A">
           <span>Compare with</span>
@@ -1421,12 +1500,21 @@ function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card
       </div>
       {!ready && take.status === "analysis_pending" && <p className={cx("ve-small", practice["ve-small"])}>Measuring your pitch line…</p>}
       {before && <p className={cx("ve-small", practice["ve-small"])}>Listen to both. Which feels more like you? Your ear decides.</p>}
-      <ResonanceNote take={take} />
+      <TakeInsight take={take} band={band} card={card} />
       <div className={cx("ve-take-actions", practice["ve-take-actions"])}>
         <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => void api.patchTake(take.id, { favourite: !take.favourite }).then(onUpdate)} aria-pressed={take.favourite}><Star on={take.favourite} />{take.favourite ? "Favourite" : "I like this one"}</button>
-        {ready && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => onUseRange(take)}>Use this take's range as my comfortable range</button>}
-        {before && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => go(`/compare?a=${before.id}&b=${take.id}`)}>Detailed comparison</button>}
+        <TakeNote key={take.id} take={take} onUpdate={onUpdate} />
       </div>
+      {(ready || before) && (
+        <details className={cx("ve-details ve-take-more", practice["ve-details"])} open={more}>
+          <summary>More about this take</summary>
+          <ResonanceNote take={take} />
+          <div className={cx("ve-take-actions", practice["ve-take-actions"], "mt-3")}>
+            {ready && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => onUseRange(take)}>Use this take's range as my comfortable range</button>}
+            {before && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => go(`/compare?a=${before.id}&b=${take.id}`)}>Detailed comparison</button>}
+          </div>
+        </details>
+      )}
     </section>
   );
 }

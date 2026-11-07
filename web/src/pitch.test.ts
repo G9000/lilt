@@ -1,7 +1,7 @@
 // node --test src/pitch.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { yin, noteName, steadinessSt, recentMedian, noiseFloor, cleanContour } from "./pitch.ts";
+import { yin, noteName, steadinessSt, recentMedian, noiseFloor, cleanContour, fitRange, hzToMidi } from "./pitch.ts";
 
 const SR = 48000;
 function tone(hz: number, n = 2048, harmonics = 1, amp = 0.3): Float32Array {
@@ -212,4 +212,16 @@ test("cleaning: a halved onset over 0.2 s and creak far under the take go; a rea
   assert.ok(out.slice(0, 31).every((p) => p.hz === null), "creak before the first word is hidden");
   assert.ok(out.slice(110, 135).every((p) => p.hz === null), "the halved onset is hidden");
   assert.ok(out.slice(136, 149).every((p) => p.hz !== null) && out.slice(161, 179).every((p) => p.hz !== null), "the word and a real dip stay");
+});
+
+test("fitRange gives two takes one scale that covers both, padded, at least an octave", () => {
+  const low = Array.from({ length: 50 }, (_, i) => ({ hz: 110 + (i % 5) }));
+  const high = Array.from({ length: 50 }, (_, i) => ({ hz: 220 + (i % 5) }));
+  const [lo, hi] = fitRange([low, high]);
+  assert.ok(lo <= Math.floor(hzToMidi(110)) - 2 && hi >= Math.ceil(hzToMidi(224)) + 2, `${lo}..${hi}`);
+  const [lo1, hi1] = fitRange([low]);
+  assert.ok(hi1 - lo1 >= 16, "a narrow take still gets an octave plus padding");
+  assert.deepEqual(fitRange([[{ hz: null }]]), fitRange([[]]), "no readings falls back to a speaking range");
+  const [, hiBand] = fitRange([low], [110, 300]);
+  assert.ok(hiBand >= Math.ceil(hzToMidi(300)), "the comfortable range is always in view");
 });

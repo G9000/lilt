@@ -15,7 +15,7 @@ test('custom accent tones keep text, focus and button labels readable at color e
   for (const r of ['00', '40', '80', 'c0', 'ff']) for (const g of ['00', '40', '80', 'c0', 'ff']) for (const b of ['00', '40', '80', 'c0', 'ff']) {
     const chosen = `#${r}${g}${b}`;
     const palette = accentPalette(chosen);
-    for (const [theme, background] of [['light', '#faf9f7'], ['dark', '#26262d']] as const) {
+    for (const [theme, background] of [['light', '#fafafa'], ['dark', '#212121']] as const) {
       const tone = palette[theme];
       assert.ok(contrast(tone.accent, background) >= 3, `${chosen}/${theme}: focus`);
       assert.ok(contrast(tone.ink, background) >= 5.5, `${chosen}/${theme}: text`);

@@ -276,6 +276,8 @@ async function main() {
   await page.getByText(/^last time ·/i).first().waitFor({ timeout: 10000 });
   check("Second take shows a before/after A/B pair", true);
   await page.waitForTimeout(3000);
+  // Using a take's range sits under "More about this take", folded away after the players.
+  await page.locator("summary", { hasText: "More about this take" }).first().click();
   await page.getByRole("button", { name: "Use this take's range as my comfortable range" }).click();
   await page.getByText(/Your range is now \d+–\d+ Hz/).waitFor();
   check("A take's range can become the comfortable range", true);

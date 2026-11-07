@@ -73,6 +73,21 @@ export function noteName(hz: number): string {
   return `${NOTES[((m % 12) + 12) % 12]}${Math.floor(m / 12) - 1}`;
 }
 
+/**
+ * A pitch chart's vertical span, in semitones: the 5th–95th percentile of the readings plus any
+ * marks (the comfortable range, a median), at least an octave, padded two semitones each side.
+ * Several lines share one span, so two takes side by side are drawn on the same scale.
+ */
+export function fitRange(lines: { hz: number | null }[][], marksHz: number[] = []): [number, number] {
+  const ms = lines.flat().filter((p) => p.hz).map((p) => hzToMidi(p.hz as number)).sort((a, b) => a - b);
+  const pick = (f: number) => ms[Math.min(ms.length - 1, Math.floor(ms.length * f))];
+  const fit = ms.length ? [pick(0.05), pick(0.95)] : [hzToMidi(110), hzToMidi(330)];
+  for (const hz of marksHz) if (hz > 0) fit.push(hzToMidi(hz));
+  let lo = Math.min(...fit), hi = Math.max(...fit);
+  if (hi - lo < 12) { const mid = (hi + lo) / 2; lo = mid - 6; hi = mid + 6; }
+  return [Math.floor(lo - 2), Math.ceil(hi + 2)];
+}
+
 /** Median of the last `n` voiced values, to steady the readout without hiding change. */
 export function recentMedian(values: (number | null)[], n = 7): number | null {
   const v = values.slice(-n).filter((x): x is number => x !== null).sort((a, b) => a - b);

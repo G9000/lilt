@@ -73,11 +73,16 @@ export const shared = {
     `[&_.label]:text-ink`,
   "player-head": `flex items-center gap-[10px] mb-2 flex-wrap`,
   "play-btn": `w-[38px] h-[38px] min-h-[38px] p-0 rounded-full bg-ink text-page flex-none [&_svg]:w-[14px] [&_svg]:h-[14px]`,
-  "wave": `relative h-[54px] cursor-pointer touch-none [&_canvas]:w-full [&_canvas]:h-full [&_canvas]:block ` +
+  "wave": `relative h-[54px] cursor-pointer touch-none select-none [&_canvas]:w-full [&_canvas]:h-full [&_canvas]:block ` +
     `[&_.seg]:absolute [&_.seg]:[top:0] [&_.seg]:[bottom:0] [&_.seg]:[background:var(--segment)] ` +
     `[&_.seg]:[border-left:1.5px_solid_var(--accent)] [&_.seg]:[border-right:1.5px_solid_var(--accent)] ` +
     `[&_.seg]:pointer-events-none [&_.cursor]:absolute [&_.cursor]:[top:-2px] [&_.cursor]:[bottom:-2px] ` +
-    `[&_.cursor]:w-[1.5px] [&_.cursor]:bg-accent [&_.cursor]:pointer-events-none`,
+    `[&_.cursor]:w-[1.5px] [&_.cursor]:bg-accent [&_.cursor]:pointer-events-none [&.scrubbing]:cursor-grabbing ` +
+    `[&_.knob]:absolute [&_.knob]:[left:50%] [&_.knob]:[top:50%] [&_.knob]:w-[11px] [&_.knob]:h-[11px] ` +
+    `[&_.knob]:rounded-full [&_.knob]:bg-accent [&_.knob]:[box-shadow:0_0_0_2px_var(--panel)] ` +
+    `[&_.knob]:[transform:translate(-50%,-50%)] [&_.knob]:[transition:transform_120ms_ease-out] ` +
+    `[&.scrubbing_.knob]:[transform:translate(-50%,-50%)_scale(1.3)] ` +
+    `motion-reduce:[&_.knob]:[transition:none]`,
   "time": `[font-size:0.8rem] tabular-nums text-ink-3`,
   "ab": `grid [grid-template-columns:1fr] gap-[10px] [@media_(min-width:_720px)]:[grid-template-columns:1fr_1fr]`,
   "ab-tag": `inline-grid place-items-center w-[22px] h-[22px] rounded-full bg-ink text-page [font:700_0.7rem_var(--font)]`,
