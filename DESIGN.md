@@ -72,24 +72,22 @@ palette and composition. Night has visible midtones and warm interior light. The
 connected alpha cutout over empty bedding, gently breathing; it no longer rotates fragments
 over a baked-in duplicate. Desktop framing includes the cat where possible while keeping
 the main monitor's navigation target visible, including tall displays. The small left monitor
-is replaced with a painted music player. Clicking it opens the Music app with lo-fi and Spotify;
-**Your room player** folds open below the source selector to choose Cream cassette, Sage boombox,
+is replaced with a painted music player. Clicking it opens a compact 340px dialog over the room,
+matching the mug controls, with lo-fi and Spotify. **Your room player** folds open beneath the
+playback controls to choose Cream cassette, Sage boombox,
 Walnut radio or Record player. Shaded cutouts stay anchored on the desk and match all four lights.
 The cassette reels and record label turn during playback; the walnut radio has a soft tuning-light
 pulse. Motion pauses at the desk, in hidden tabs, while the microphone ducks music and with reduced
 motion. Choosing a design never starts music or changes its source. Browser-local preferences
 survive Reset layout; failed artwork loads retain the original or previous player with a retry.
-the camera opens Photos and the microphone opens the same Practice entry as the computer.
+The camera opens Photos and the microphone opens the same Practice entry as the computer.
 Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music/Plants/Tea row
 keeps these actions reachable when their painted objects are cropped. Music opens without
-playing, in a responsive window with a fully visible metallic CD and a mood library.
-There are no expand/restore controls. Mood rows use fixed artwork, text and checkmark
-columns, so choosing one never shifts the others. The library has two small headings (12px,
-`--ink-2`): **Keys and beats** and **Strings, tines and pads**; side by side, the player is sticky
-while the list scrolls (on phones it scrolls with it). Covers are square photos or square crops
-of the room's own paintings. The CD spins gently only during
-playback and remains still with reduced motion.
-Closing or pressing Escape returns to the previous view while music continues. A compact
+playing or changing the route or camera. Its small player preview sits above source tabs,
+a mood select, skip/play/pause and volume controls; four artwork choices fit in one row.
+The dialog uses the mug's rounded surface and backdrop, stays within phone bounds and scrolls
+on short screens. Closing, Escape or a backdrop click returns focus while music continues.
+Old `#/music` links open the same compact controls over the room. A compact
 player in both menu bars shows the selection with a separate play/pause button; clicking
 its artwork/title reopens Music, even when paused. Spotify stays mounted across navigation.
 

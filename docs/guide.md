@@ -131,11 +131,11 @@ computer can also fit. Both monitor choices save independently; older side-monit
 are preserved. Artwork provenance and prompts live in `web/public/room/CREDITS.md`.
 
 **Use the things on your desk.** The small left monitor is now a cassette music player;
-the main and right monitors keep their own picture choices. Click the player for the Music app:
-a full CD with artwork, an aligned list of lo-fi moods, playback and volume controls,
-and the existing Spotify option. The window fits your screen without resize controls. Opening
-Music does not start playback. Close or Escape returns to the previous view while music
-continues. The compact player in the top bar shows your selection and play/pause; click
+the main and right monitors keep their own picture choices. Click the player for compact Music
+controls, like opening the tea mug: a painted player preview, a mood menu, playback and volume
+controls, and the existing Spotify option. The small dialog stays over your current view;
+opening Music doesn't enter the computer or start playback. Close it, press Escape or click outside;
+music continues. The compact player in the top bar shows your selection and play/pause; click
 the artwork or title to reopen Music, including when paused. The camera opens your Photos gallery; the microphone
 opens Practice using the same next-card/Start here entry as the computer. On phones a small
 Photos/Practice/Music row keeps these actions available even when the objects are cropped;
@@ -248,8 +248,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      **Strings, tines and pads** bring other instruments and places: plucked strings ("Morning coffee",
      "Fireplace"), a music box, a kalimba ("Summer crickets", "Greenhouse") and slow pads ("Sea breeze",
      "Stargazing"), with the sea, a crackling fire, crickets or birdsong around them. Moods live in
-     `web/src/desk/moods.ts`; `lofi.ts` plays them. The Music app's player stays in place while the
-     list scrolls. The
+     `web/src/desk/moods.ts`; `lofi.ts` plays them. Choose a mood from the compact Music menu. The
      radio has a volume slider and a mute button, remembered in this browser. Nothing is
      downloaded or sent anywhere. The current mood shows in the menu
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live

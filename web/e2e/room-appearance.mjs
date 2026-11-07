@@ -148,8 +148,9 @@ try {
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.setViewportSize({width:390,height:844});
   await home.getByRole('group',{name:'Room shortcuts'}).getByRole('button',{name:'Music',exact:true}).click();
-  await home.waitForFunction(()=>location.hash==='#/music');
   const mobilePlayer=home.locator('.music-window');
+  await mobilePlayer.waitFor({state:'visible'});
+  assert.equal(await home.evaluate(()=>location.hash),'#/','Music stays in the room');
   const mobileBounds=await mobilePlayer.boundingBox();
   assert.ok(mobileBounds&&mobileBounds.x>=0&&mobileBounds.x+mobileBounds.width<=390&&mobileBounds.y+mobileBounds.height<=844,'mobile music fits');
   await mobilePlayer.getByRole('button',{name:'Close Music',exact:true}).click();

@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Music stays in the room", body: "Click your player for compact controls, just like your tea mug. Pick a mood, adjust the volume or change the player without entering the computer. Music keeps playing when you close it." },
       { title: "A music player of your own", body: "Open Music and choose Your room player: a cream cassette, sage boombox, walnut radio or record player. Shaded artwork sits beside your desk, with small details moving while music plays. Your choice stays in this browser." },
       { title: "A warm cup on your desk", body: "Gentle curls of steam drift from your cup, growing fuller during a tea break and settling when it ends. Reduced motion keeps the wisps still." },
       { title: "A plant inside your room", body: "Click the painted floor plant beside the drawers to choose a ficus, monstera, fern or jade plant. Shaded artwork follows the room's light and grows gently with your week. On smaller screens, use Plants. Your choice stays in this browser." },

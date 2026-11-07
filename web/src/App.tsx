@@ -86,7 +86,7 @@ export function App() {
   const [mode, setMode] = useState<ThemeMode>(readThemeMode);
   const [theme, setTheme] = useState<Theme>(() => resolveTheme(mode));
   const seg = routeSegments(path);
-  const inside = seg.length > 0;
+  const inside = seg.length > 0 && seg[0] !== 'music';
   // Opening straight onto a desktop route skips the walk to the desk.
   const [instant, setInstant] = useState(inside);
   const [remembered, setRemembered] = useState(savedCourse);

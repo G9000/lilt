@@ -60,6 +60,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
 }) {
   const now = useNow();
   const light = currentLight();
+  useEffect(() => { if (section === 'music') openMusic(); }, [section]);
 
   const windowSpec = page ? WINDOWS[section] ?? { title: "Lilt", width: 760 } : null;
   const win = windowSpec && course !== DEFAULT_COURSE && (section === "guided" || section === "practice")
@@ -110,7 +111,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
         </section>
       )}
 
-      <MusicWindow open={inside && section === "music"} />
+      <MusicWindow />
 
       <nav className={cx(["ds-dock ds-boot", roomStyles["ds-dock"], roomStyles["ds-boot"]].join(" "), practice["ds-dock"])} aria-label="Apps">
         {/* Named for what they open. Practice texts and Progress stay reachable by link but aren't

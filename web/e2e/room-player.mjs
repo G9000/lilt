@@ -39,7 +39,7 @@ try {
     assert.deepEqual(await art.evaluate(el => [el.style.left, el.style.top, el.style.width, el.style.height]), home);
     await open(); await shot('picker');
     await music.getByRole('button', { name: 'Play lo-fi radio', exact: true }).click();
-    await state('playing', true); await state('moving', false);
+    await state('playing', true); await state('moving', true);
     await close(); await state('moving', true);
     assert.equal(await art.locator('.room-player-spin').first().evaluate(el => getComputedStyle(el).animationName), 'none');
     await page.emulateMedia({ reducedMotion: 'no-preference' });

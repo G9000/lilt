@@ -46,29 +46,29 @@ try {
   `}));
   const root=server.resolvedUrls.local[0];
   await page.goto(root);
+  const roomHash = await page.evaluate(()=>location.hash);
   await page.getByRole('button',{name:'Open music player',exact:true}).click();
-  await page.waitForFunction(()=>location.hash==='#/music');
   const music=page.locator('.music-window');
   await music.waitFor({state:'visible'});
-  assert.equal(await page.locator('.room-music-panel').count(),0,'old popover is removed');
-  const title=music.locator('h1');
-  const rows=await music.locator('.music-moods button').evaluateAll(buttons=>buttons.map(button=>({
-    image:button.querySelector('img').getBoundingClientRect().left,
-    title:button.querySelector('b').getBoundingClientRect().left,
-  })));
-  assert.ok(rows.every(row=>Math.abs(row.image-rows[0].image)<1&&Math.abs(row.title-rows[0].title)<1),'selected and unselected mood rows share aligned artwork and titles');
-  assert.equal(await music.locator('.music-cover').count(),0,'square sleeve no longer hides the disc');
-  const disc=await music.locator('.music-record').boundingBox();
-  assert.ok(disc&&Math.abs(disc.width-disc.height)<1,'full disc remains circular');
+  assert.equal(await page.evaluate(()=>location.hash),roomHash,'opening Music stays in the room');
+  assert.equal(await music.evaluate(el=>el.tagName),'DIALOG','Music uses the mug-style dialog');
+  const title=music.getByRole('combobox',{name:'A mood for now'});
+  const bounds=await music.boundingBox();
+  assert.ok(bounds.width<=340&&bounds.height<600,'default Music panel stays compact');
+  assert.equal(await page.locator('.room').evaluate(el=>el.classList.contains('inside')),false,'room camera stays outside');
+  for(let i=0;i<15;i++){
+    await page.keyboard.press('Tab');
+    assert.equal(await music.evaluate(el=>el.contains(document.activeElement) || (document.activeElement === document.body && !document.hasFocus())),true,'Tab stays in the dialog or browser chrome, never the room behind it');
+  }
   assert.equal(await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).count(),1,'opening never autoplays');
   await music.getByRole('button',{name:'Next mood',exact:true}).click();
-  assert.match(await title.textContent(),/Desk lamp/);
+  assert.match(await title.inputValue(),/Desk lamp/);
   await music.getByRole('button',{name:'Previous mood',exact:true}).click();
-  assert.match(await title.textContent(),/Rain on the window/);
-  await music.locator('.music-moods').getByRole('button',{name:/Snow day/}).click();
-  assert.match(await title.textContent(),/Snow day/);
+  assert.match(await title.inputValue(),/Rain on the window/);
+  await title.selectOption('Snow day');
+  assert.match(await title.inputValue(),/Snow day/);
   assert.equal(await music.getByRole('button',{name:'Play lo-fi radio',exact:true}).count(),1,'choosing a mood does not autoplay');
-  await music.locator('.music-moods').getByRole('button',{name:/Rain on the window/}).click();
+  await title.selectOption('Rain on the window');
   await music.getByRole('slider',{name:'Radio volume',exact:true}).fill('27');
   assert.equal(await page.evaluate(()=>localStorage.getItem('lilt.radio.volume')),'0.27');
   await music.getByRole('button',{name:'Mute radio',exact:true}).click();
@@ -79,19 +79,19 @@ try {
   await music.getByRole('button',{name:'Pause lo-fi radio',exact:true}).waitFor();
   assert.equal(await music.getByRole('button',{name:/Expand|Restore/}).count(),0,'music has no expand/restore controls');
   // Every mood, the newer ones with their own instruments and places too, plays: sound, no clipping, no broken samples.
-  const moods=await music.locator('.music-moods button b').allTextContents();
+  const moods=await title.locator('option').allTextContents();
   assert.ok(moods.length>=17,'the radio has the newer moods too');
   for(const name of moods){
-    await music.locator('.music-moods').getByRole('button',{name:new RegExp(name)}).click();
-    assert.match(await title.textContent(),new RegExp(name));
+    await title.selectOption(name);
+    assert.match(await title.inputValue(),new RegExp(name));
     const heard=await page.evaluate(()=>window.__hear(2600));
     assert.ok(heard.rms>0.002&&heard.peak<0.99&&!heard.bad,`${name} plays cleanly: ${JSON.stringify(heard)}`);
     console.log(`PASS ${name} plays — rms ${heard.rms.toFixed(3)}, peak ${heard.peak.toFixed(2)}`);
   }
-  await music.locator('.music-moods').getByRole('button',{name:/Rain on the window/}).click();
+  await title.selectOption('Rain on the window');
   if(shots) await page.screenshot({path:path.join(shots,'music-app.png')});
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
-  await page.waitForFunction(()=>location.hash==='#/');
+  await music.waitFor({state:'hidden'});
   const mini=page.locator('.ds-roomtop .music-mini');
   await mini.waitFor({state:'visible'});
   assert.match(await mini.textContent(),/Rain on the window/);
@@ -109,11 +109,15 @@ try {
   await music.waitFor({state:'visible'});
   assert.equal(await music.getByRole('slider',{name:'Radio volume'}).inputValue(),'27');
   await page.keyboard.press('Escape');
-  await page.waitForFunction(()=>location.hash==='#/');
+  await music.waitFor({state:'hidden'});
   // Opening from another app must return there without losing playback state.
   await page.evaluate(()=>{location.hash='/photos';});
+  await page.waitForFunction(()=>location.hash==='#/photos' && !!document.querySelector('.ds.in .ds-body'));
+  await page.evaluate(()=>{window.musicUnderlyingPage=document.querySelector('.ds.in .ds-body');});
   await page.locator('.ds-menubar .music-mini').getByRole('button',{name:/Open Music/}).click();
   await music.waitFor({state:'visible'});
+  assert.equal(await page.evaluate(()=>location.hash),'#/photos','opening Music keeps the current app route');
+  assert.equal(await page.evaluate(()=>document.querySelector('.ds.in .ds-body')===window.musicUnderlyingPage),true,'underlying app stays mounted');
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
   await page.waitForFunction(()=>location.hash==='#/photos');
   // Simulated Spotify controller verifies routing never destroys the playing host.
@@ -155,7 +159,7 @@ try {
   await page.evaluate(()=>document.documentElement.setAttribute('data-theme','dark'));
   if(shots) await page.screenshot({path:path.join(shots,'music-mobile-dark.png')});
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
-  await page.waitForFunction(()=>location.hash==='#/');
+  await music.waitFor({state:'hidden'});
   const compact=await mini.boundingBox();
   assert.ok(compact.x>=0&&compact.x+compact.width<=390,'mini player remains within phone top bar');
   assert.equal(await page.locator('.ds-roomtop').evaluate(el=>el.scrollWidth<=window.innerWidth),true,'phone top bar does not overflow');
@@ -164,7 +168,20 @@ try {
   await page.getByRole('button',{name:'Open music player',exact:true}).click();
   await music.waitFor({state:'visible'});
   await music.getByRole('button',{name:'Close Music',exact:true}).click();
-  await page.waitForFunction(()=>location.hash==='#/'&&document.activeElement?.classList.contains('room-music'));
+  await page.waitForFunction(()=>document.activeElement?.classList.contains('room-music'));
+  // Backdrop dismissal restores focus without navigating.
+  await page.getByRole('button',{name:'Open music player',exact:true}).click();
+  await music.waitFor({state:'visible'});
+  await page.mouse.click(10,100);
+  await music.waitFor({state:'hidden'});
+  await page.waitForFunction(()=>document.activeElement?.classList.contains('room-music'));
+  // Existing bookmarks still open the compact controls over the room.
+  await page.goto(root+'#/music');
+  await music.waitFor({state:'visible'});
+  assert.equal(await page.locator('.room').evaluate(el=>el.classList.contains('inside')),false);
+  await page.keyboard.press('Escape');
+  await music.waitFor({state:'hidden'});
+  assert.equal(await page.evaluate(()=>location.hash),'#/');
   assert.deepEqual(errors,[]);
-  console.log('PASS: Music app navigation, aligned mood rows, no autoplay, controls, persistent mini player, microphone ducking and phone layout.');
+  console.log('PASS: compact Music dialog, unchanged routes, focus containment and dismissal, no autoplay, controls, persistent mini player, microphone ducking and phone layout.');
 } finally {await browser?.close();await server.close();}
