@@ -1,12 +1,13 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { CATS, openCatPicker } from './catChoices';
 import { type RoomCatState } from './useRoomCat';
 import { CAT_BOX } from './scene';
 import { roomStyles } from '../desk/roomStyles';
 import { ObjectOutline } from './ObjectOutline';
+import { CAT_SPRITE_WIDTH, CAT_SPRITE_HEIGHT } from './catPuppet';
 
-export function CatPicker({ inside, state, onPet }: { inside: boolean; state: RoomCatState; onPet: () => void }) {
+export function CatPicker({ inside, state, onPet, outlineCanvas }: { inside: boolean; state: RoomCatState; onPet: () => void; outlineCanvas: RefObject<HTMLCanvasElement> }) {
   const { selected, shown, failed, unsaved, choose, retry } = state;
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null), opener = useRef<HTMLElement | null>(null);
@@ -44,7 +45,7 @@ export function CatPicker({ inside, state, onPet }: { inside: boolean; state: Ro
   return <>
     {state.image && <div className="room-cat-contour pointer-events-none absolute" style={{ left: CAT_BOX.x, top: CAT_BOX.y, width: CAT_BOX.w, height: CAT_BOX.h,
       transformOrigin: `50% ${CAT_BOX.h - 8}px`, transform: 'scale(var(--cat-scale-x, 1), var(--cat-scale-y, 1))' }}>
-      <ObjectOutline kind="cat"><img src={state.image.src} alt="" draggable={false} className="block h-full w-full" /></ObjectOutline>
+      <ObjectOutline kind="cat"><canvas ref={outlineCanvas} data-cat-source={state.image.src} width={CAT_SPRITE_WIDTH} height={CAT_SPRITE_HEIGHT} className="block h-full w-full" /></ObjectOutline>
     </div>}
     <button type="button" disabled={inside || !state.image} tabIndex={inside ? -1 : 0} aria-label="Pet the cat" aria-describedby={hint} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!state.image}
       className={`room-cat-target pointer-events-auto select-none ${roomStyles['room-object']}`}

@@ -101,7 +101,7 @@ cat stay in the original illustration. The experimental 3D views have been remov
 **Choose your cat.** In **Make it yours → Your companion → Choose your cat**, choose the original
 sleepy black-and-white cat, a soft grey-and-white **Dilute tuxedo**, **Ginger tabby**, **Siamese** or
 **Fluffy white** companion. Each keeps the curled sleeping pose and room light, with soft breathing,
-an occasional sleepy stretch and a tiny settling twitch. The paws stay on the blanket and the
+an occasional sleepy stretch, a little ear flick and a gentle tail-tip swish. The paws stay on the blanket and the
 outline follows the movement. Your system's reduced-motion preference keeps the cat still.
 Hover or focus the cat to outline its whole shape. Click to pet it; press and hold briefly to open
 the compact picker. Enter or Space pets the focused cat. Make it yours also opens the choices

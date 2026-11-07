@@ -105,6 +105,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   const screenHitId = useId();
   const stage = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const catOutline = useRef<HTMLCanvasElement>(null);
   const bubble = useRef<HTMLDivElement>(null);
   const arts = useRef<Record<string, HTMLImageElement | null>>({});
   const [, bump] = useState(0);
@@ -127,8 +128,8 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   const redraw = useRef(() => {});
   useEffect(() => { redraw.current(); }, [appearance]);
   useLayoutEffect(() => {
-    frame.current.catImage = cat.image; redraw.current();
-    return () => { frame.current.catImage = undefined; };
+    frame.current.catImage = cat.image; frame.current.catOutline = catOutline.current ?? undefined; redraw.current();
+    return () => { frame.current.catImage = undefined; frame.current.catOutline = undefined; };
   }, [cat.image]);
 
   // Fly the camera whenever we go in or out.
@@ -300,7 +301,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
         <ChairForeground />
         <ChairPicker inside={inside} />
         <canvas ref={canvas} className={["room-fx", roomStyles["room-fx"]].join(" ")} data-cat={cat.shown ?? 'none'} width={W} height={H} />
-        <CatPicker inside={inside} state={cat} onPet={petCat} />
+        <CatPicker inside={inside} state={cat} onPet={petCat} outlineCanvas={catOutline} />
         <div className={["room-color-wash", roomStyles["room-color-wash"]].join(" ")} style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
         </div>
         <svg className={["room-screen-light", roomStyles["room-screen-light"]].join(" ")} viewBox={`0 0 ${W} ${H}`} aria-hidden="true">

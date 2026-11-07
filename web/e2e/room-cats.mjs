@@ -53,7 +53,7 @@ try {
     });
     await page.mouse.move(point.x, point.y);
     await page.waitForFunction(() => getComputedStyle(document.querySelector('.room-cat-outline')).opacity === '1');
-    assert.equal(await page.locator('.room-cat-outline img').getAttribute('src').then(src => src.endsWith(id === 'original' ? '/room/cat-v2.webp' : `/room/cats/${id}.png`)), true);
+    assert.equal(await page.locator('.room-cat-outline canvas').getAttribute('data-cat-source').then(src => src.endsWith(id === 'original' ? '/room/cat-v2.webp' : `/room/cats/${id}.png`)), true);
     if (shots) await page.screenshot({ path: path.join(shots, `cat-outline-${id}.png`), clip: crop });
     await page.mouse.click(point.x, point.y);
     await page.waitForFunction(() => /purr|prrrr|mrrp!|happy cat noises/.test(document.querySelector('.room-bubble')?.textContent ?? ''));
@@ -156,10 +156,13 @@ try {
     localStorage.setItem('lilt.room.cat', 'dilute-tuxedo'); window.catTransforms = [];
     const draw = CanvasRenderingContext2D.prototype.drawImage;
     CanvasRenderingContext2D.prototype.drawImage = function(image, ...args) {
-      if (this.canvas.classList.contains('room-fx') && image instanceof HTMLImageElement && image.src.endsWith('/cats/dilute-tuxedo.png')) {
+      if (this.canvas.classList.contains('room-fx') && image instanceof HTMLCanvasElement && image.dataset.catSource?.endsWith('/cats/dilute-tuxedo.png')) {
         const m = this.getTransform(), outline = document.querySelector('.room-cat-contour');
         const contour = outline ? new DOMMatrix(getComputedStyle(outline).transform) : null;
+        const pixels = image.getContext('2d');
+        const signature = (x, y, w, h) => pixels.getImageData(x,y,w,h).data.reduce((sum, value, index) => (sum + value * (index % 17 + 1)) >>> 0, 0);
         window.catTransforms.push({ a: m.a, d: m.d, b: m.b, c: m.c, baseline: m.d * 846 + m.f, box: args,
+          ear: signature(365,60,42,65), tail: signature(365,265,50,40), body: signature(100,100,40,40),
           outlineMatches: !!contour && Math.abs(contour.a - m.a) < .00001 && Math.abs(contour.d - m.d) < .00001 });
       }
       return draw.call(this, image, ...args);
@@ -174,6 +177,8 @@ try {
   await movingPage.waitForFunction(() => window.catTransforms.some(m => m.a < .999), null, { timeout: 18000 });
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => Math.abs(m.baseline - 846) < .001 && m.b === 0 && m.c === 0 && JSON.stringify(m.box) === '[80,689,330,165]')), true, 'breathing stays anchored without rotating or separating the cat');
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => m.outlineMatches)), true, 'outline tracks the same breathing scale on every painted frame');
+  assert.equal(await movingPage.evaluate(() => new Set(window.catTransforms.map(m => m.ear)).size > 2 && new Set(window.catTransforms.map(m => m.tail)).size > 2), true, 'actual ear and tail pixels animate in the room');
+  assert.equal(await movingPage.evaluate(() => new Set(window.catTransforms.map(m => m.body)).size), 1, 'local motion keeps the body pixels unchanged');
   await movingPage.emulateMedia({ reducedMotion: 'reduce' });
   await movingPage.waitForFunction(() => {
     const last = window.catTransforms.at(-1); return last.a === 1 && last.d === 1;
@@ -186,6 +191,7 @@ try {
   });
   await movingPage.waitForFunction(() => window.catTransforms.length > 0);
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => m.a === 1 && m.d === 1)), true, 'reduced motion holds a neutral pose even across redraws');
+  assert.equal(await movingPage.evaluate(() => new Set(window.catTransforms.map(m => `${m.ear}/${m.tail}`)).size), 1, 'reduced motion also freezes the ears and tail');
   await movingPage.emulateMedia({ reducedMotion: 'no-preference' });
   await movingPage.waitForFunction(() => window.catTransforms.some(m => m.a !== 1 || m.d !== 1));
   await movingPage.getByRole('button', { name: /^Sit down at the computer/ }).click();

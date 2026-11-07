@@ -4,6 +4,8 @@
  * (birds in the windows, dust, city lights, glows). Coordinates are in the painting's pixels.
  */
 
+import { catLocalPose, renderCatPuppet, syncCatOutline } from './catPuppet.ts';
+
 export const W = 1672, H = 941;
 export type Light = "morning" | "day" | "sunset" | "night";
 export const LIGHTS: Light[] = ["day", "morning", "sunset", "night"];
@@ -102,6 +104,7 @@ export interface Frame {
   /** 0–1: the string lights and the warm lamp, on once today's cards are done. */
   lights: number;
   catImage?: HTMLImageElement;
+  catOutline?: HTMLCanvasElement;
   reducedMotion?: boolean;
 }
 
@@ -258,6 +261,9 @@ function cat(g: CanvasRenderingContext2D, f: Frame) {
   const { w, catImage } = f;
   if (!catImage?.complete || !catImage.naturalWidth) return;
   const scale = catScale(f);
+  const sprite = renderCatPuppet(catImage, catLocalPose(f.t, f.reducedMotion, f.cat === 'sleep'));
+  const art = sprite?.canvas ?? catImage;
+  if (f.catOutline) syncCatOutline(f.catOutline, art, sprite?.revision ?? 0);
   const floor = CAT_BOX.y + CAT_BOX.h - 8;
   g.save();
   g.fillStyle = 'rgba(51,35,50,.18)';
@@ -266,7 +272,7 @@ function cat(g: CanvasRenderingContext2D, f: Frame) {
   g.scale(scale.x, scale.y);
   g.translate(-CAT_BOX.x - CAT_BOX.w / 2, -floor);
   g.filter = `brightness(${1 - w.night * 0.22}) saturate(${1 - w.night * 0.15})`;
-  g.drawImage(catImage, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);
+  g.drawImage(art, CAT_BOX.x, CAT_BOX.y, CAT_BOX.w, CAT_BOX.h);
   g.restore();
 }
 

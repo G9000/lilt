@@ -1,5 +1,12 @@
 # Lilt: validation report
 
+## 7 November 2026: Sleeping ears and tail
+
+Localized ear flicks and tail swishes passed real-pixel checks for all five cats, stationary
+faces/paws, matching outlines, exact rest restoration and reduced motion. Existing room
+interactions, refresh checks and all required checks passed; see
+[ear-and-tail validation](docs/validation/2026-11-07-cat-ear-tail.md).
+
 ## 7 November 2026: Small sleeping movements
 
 Soft breathing, a slow stretch and a tiny settling twitch passed rendered-frame checks for bed
