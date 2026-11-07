@@ -6,10 +6,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 ## The world
 
 **Desk finishes** gives the microphone and each physical monitor frame its own compact picker:
-original black, warm cream, soft sage and brushed silver. Fixed registered masks preserve the
-boom attachment, frame perspective and stands. Screen media is above the frame art; the mug
-repair is below it. Pale-blue contours follow the whole assembly and each frame/stand, including
+original black, warm cream, soft sage and brushed silver. Both monitors also offer Cream retro,
+Sage rounded and Silver studio: distinct thicker housings, rounded openings and broad grounded
+stands. Existing choices remain available and the microphone keeps its original four finishes.
+Registered artwork preserves the boom attachment and follows each monitor's perspective.
+Screen media is below the bezel; legacy finishes explicitly exclude the screen quad, and each
+new model exposes its own rounded opening. The mug repair is below it. Pale-blue contours follow the whole assembly and each frame/stand, including
 their openings, without brightening the interior. The screen itself remains the entry target.
+Its hit area follows the exact rounded opening, leaving the entire casing available to its picker.
 Make it yours exposes all three pickers on phones; the microphone picker retains Open Practice.
 Saved choices, retry, storage feedback and dismissal focus follow the existing prop controls.
 First reveal waits for decoded saved artwork and monitor content, or explicit failure fallback;

@@ -3,7 +3,7 @@ import { loadRoomImage, useRoomArtReady } from './roomReadiness';
 import { hardwareImage, hardwareKey, hardwareMask, readFinish, type Finish, type Hardware } from './hardware';
 
 function stored(kind: Hardware) {
-  try { return readFinish(localStorage.getItem(hardwareKey(kind))); } catch { return 'black' as const; }
+  try { return readFinish(localStorage.getItem(hardwareKey(kind)), kind); } catch { return 'black' as const; }
 }
 
 export function useHardware(kind: Hardware) {
@@ -28,8 +28,9 @@ export function useHardware(kind: Hardware) {
     return () => window.removeEventListener('storage', sync);
   }, [kind]);
   const choose = (finish: Finish) => {
-    setSelected(finish);
-    try { localStorage.setItem(hardwareKey(kind), finish); setUnsaved(false); } catch { setUnsaved(true); }
+    const next = readFinish(finish, kind);
+    setSelected(next);
+    try { localStorage.setItem(hardwareKey(kind), next); setUnsaved(false); } catch { setUnsaved(true); }
   };
   return { selected, shown, failed, unsaved, choose, retry: () => setAttempt(n => n + 1) };
 }

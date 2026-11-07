@@ -19,6 +19,8 @@ import { plantLight } from './plant';
 import { RoomProp, RoomPropBackdrop } from './RoomProps';
 import { useRoomProp } from './useRoomProp';
 import { RoomHardware } from './RoomHardware';
+import { type Finish } from './hardware';
+import { isMonitorModel, MODEL_CONTOURS } from './monitorModels';
 
 /**
  * The illustrated room. Outside, it is the whole screen; the middle monitor is a way in. Inside,
@@ -95,8 +97,10 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   }, []);
   const appearance = useRoomAppearance();
   const coffee = useRoomProp('coffee'), camera = useRoomProp('camera');
+  const [mainFrame, setMainFrame] = useState<Finish | null>(null);
   const appearanceRef = useRef(appearance); appearanceRef.current = appearance;
   const screenGlowId = useId();
+  const screenHitId = useId();
   const stage = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const bubble = useRef<HTMLDivElement>(null);
@@ -285,9 +289,9 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
         <RoomPropBackdrop kind="camera" shown={camera.shown} />
         <RoomPlant days={days} inside={inside} />
         <TeaBreak inside={inside} />
-        <RoomHardware inside={inside} onEnter={onEnter} />
         <MonitorScreen monitor="main" appearance={appearance} inside={inside} />
         <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
+        <RoomHardware inside={inside} onEnter={onEnter} onMainChange={setMainFrame} />
         <RoomProp kind="coffee" state={coffee} inside={inside} onCoffee={onCoffee} />
         <RoomProp kind="camera" state={camera} inside={inside} />
         <PlayerBackdrop />
@@ -303,7 +307,10 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
           <polygon className={["room-screen-bloom", roomStyles["room-screen-bloom"]].join(" ")} points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="none" stroke="#a8dfff" strokeWidth="10" filter={`url(#${screenGlowId})`} />
           <polygon className={["room-screen-edge", roomStyles["room-screen-edge"]].join(" ")} points={MAIN_SCREEN.map(p => p.join(",")).join(" ")} fill="rgba(180,220,255,0.06)" stroke="#c9edff" strokeWidth="1.7" strokeLinejoin="round" />
         </svg>
-        <button className={["room-hit", roomStyles["room-hit"]].join(" ")} style={{ transform: quadMatrix(100, 100, MAIN_SCREEN) }} onClick={onEnter} tabIndex={inside ? -1 : 0}
+        {mainFrame && isMonitorModel(mainFrame) && <svg width="0" height="0" className="absolute" aria-hidden="true"><defs><clipPath id={screenHitId}><path d={MODEL_CONTOURS[mainFrame].opening} /></clipPath></defs></svg>}
+        <button className={["room-hit", roomStyles["room-hit"]].join(" ")} style={mainFrame && isMonitorModel(mainFrame)
+          ? { width: W, height: H, transform: 'none', clipPath: `url(#${screenHitId})` }
+          : { transform: quadMatrix(100, 100, MAIN_SCREEN) }} onClick={onEnter} tabIndex={inside ? -1 : 0}
           aria-label={`Sit down at the computer${cards !== null ? `: ${cards} card${cards === 1 ? "" : "s"} today` : ""}`}
           onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)} onFocus={() => setHover(true)} onBlur={() => setHover(false)} />
         <div className={["room-peek", roomStyles["room-peek"]].join(" ")} style={{ left: peekX, top: peekTop }} aria-hidden="true">

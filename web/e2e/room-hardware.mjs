@@ -28,7 +28,8 @@ try {
     await page.getByRole('dialog', { name: title, exact: true }).waitFor(); await page.keyboard.press('Escape');
     await target.focus(); await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: title, exact: true }); await dialog.waitFor();
-    for (const [finish, label] of finishes) {
+    const choices = kind === 'microphone' ? finishes : [['retro', 'Cream retro'], ['rounded', 'Sage rounded'], ['studio', 'Silver studio'], ...finishes];
+    for (const [finish, label] of choices) {
       await dialog.getByRole('button', { name: label, exact: true }).click(); await chosen(kind, finish);
       assert.equal(await outline.evaluate(el => getComputedStyle(el).opacity), '0');
       await dialog.getByRole('button', { name: 'Done', exact: true }).click();
@@ -36,6 +37,20 @@ try {
       assert.equal(await outline.evaluate(el => getComputedStyle(el).opacity), '1');
       assert.equal(await target.evaluate(el => getComputedStyle(el, '::before').display), 'none');
       if (shots) await page.screenshot({ path: path.join(shots, `${kind}-${finish}.png`), clip: clip(550, 205, 900, 370) });
+      if (['retro', 'rounded', 'studio'].includes(finish)) {
+        const corner = { retro: [866,330], rounded: [871,333], studio: [866,324] }[finish];
+        for (const source of kind === 'main-frame' ? [[1149,400], corner] : [[1149,400]]) {
+          const point = await page.evaluate(async ({ kind, source }) => {
+            const { monitorProjection } = await import('/src/room/monitorModels.ts');
+            const p = monitorProjection(kind === 'side-frame').transformPoint({ x: source[0], y: source[1] });
+            const stage = document.querySelector('.room-stage').getBoundingClientRect(), scale = stage.width / 1672;
+            return { x: stage.x + p.x / p.w * scale, y: stage.y + p.y / p.w * scale };
+          }, { kind, source });
+          await page.mouse.click(point.x, point.y); await dialog.waitFor();
+          assert.equal(await page.locator('.room').evaluate(el => el.classList.contains('inside')), false, 'thick bezel opens picker instead of entering the screen');
+          await page.keyboard.press('Escape');
+        }
+      }
       await page.keyboard.press('Enter');
     }
     if (shots) await dialog.screenshot({ path: path.join(shots, `${kind}-picker.png`) });
@@ -48,10 +63,17 @@ try {
   await page.locator('.room-main-frame-art').evaluate(el => { el.style.visibility = ''; });
   await page.reload(); await ready();
   for (const [kind] of groups) await chosen(kind, 'silver');
+  for (const [kind, label] of [['main-frame', 'Cream retro'], ['side-frame', 'Sage rounded']]) {
+    await page.locator(`.room-${kind}-target`).focus(); await page.keyboard.press('Enter');
+    await page.getByRole('button', { name: label, exact: true }).click();
+    await chosen(kind, kind === 'main-frame' ? 'retro' : 'rounded'); await page.keyboard.press('Escape');
+  }
   for (const light of ['morning', 'sunset', 'night']) {
     await page.evaluate(async light => { const { setRoomAppearance } = await import('/src/room/appearance.ts'); await setRoomAppearance({ light }); }, light);
     if (shots) await page.screenshot({ path: path.join(shots, `hardware-${light}.png`), clip: clip(550, 205, 900, 370) });
   }
+  await page.locator('.room-side-frame-target').focus(); await page.keyboard.press('Enter');
+  await page.getByRole('button', { name: 'Brushed silver', exact: true }).click(); await chosen('side-frame', 'silver'); await page.keyboard.press('Escape');
   // Both frame stores remain independent, including cross-tab changes.
   const other = await context.newPage(); await other.goto(server.resolvedUrls.local[0]);
   await other.evaluate(() => localStorage.setItem('lilt.room.main-frame', 'cream'));
@@ -113,14 +135,26 @@ try {
   // Cold first reveal waits for the selected hardware, including delayed response decoding.
   const cold = await browser.newContext({ viewport: { width: 1600, height: 950 }, reducedMotion: 'reduce' });
   await cold.route('**/api/**', route => route.fulfill({ status: 503, json: {} }));
-  await cold.addInitScript(() => localStorage.setItem('lilt.room.main-frame', 'sage'));
+  await cold.addInitScript(() => localStorage.setItem('lilt.room.main-frame', 'retro'));
   let release; const gate = new Promise(resolve => { release = resolve; });
-  await cold.route('**/room/hardware/frames-sage.png', async route => { await gate; await route.continue(); });
+  await cold.route('**/room/hardware/monitor-retro.png', async route => { await gate; await route.continue(); });
   const coldPage = await cold.newPage(); await coldPage.goto(server.resolvedUrls.local[0], { waitUntil: 'domcontentloaded' });
   await coldPage.locator('.room-main-frame-target').waitFor({ state: 'attached' });
   assert.equal(await coldPage.locator('.room-paint').evaluate(el => getComputedStyle(el).visibility), 'hidden');
   release(); await coldPage.waitForFunction(() => document.querySelector('.room-paint')?.dataset.ready === 'true');
-  assert.equal(await coldPage.locator('.room-main-frame-art').getAttribute('data-design'), 'sage');
+  assert.equal(await coldPage.locator('.room-main-frame-art').getAttribute('data-design'), 'retro');
+  const screenPoint = await coldPage.evaluate(() => {
+    const stage = document.querySelector('.room-stage').getBoundingClientRect(), scale = stage.width / 1672;
+    return { x: stage.x + 990 * scale, y: stage.y + 400 * scale };
+  });
+  await coldPage.mouse.click(screenPoint.x, screenPoint.y);
+  await coldPage.waitForFunction(() => document.querySelector('.room')?.classList.contains('inside'));
+  await cold.route('**/room/hardware/monitor-retro.png', route => route.abort());
+  await coldPage.goto(server.resolvedUrls.local[0]);
+  await coldPage.waitForFunction(() => document.querySelector('.room-paint')?.dataset.ready === 'true');
+  assert.equal(await coldPage.locator('.room-main-frame-art').count(), 0, 'failed saved model reveals original artwork');
+  await coldPage.locator('.room-main-frame-target').focus(); await coldPage.keyboard.press('Enter');
+  await coldPage.getByRole('button', { name: 'Try again', exact: true }).waitFor();
   await cold.close();
-  console.log('Room hardware passed: 12 finishes, pointer/keyboard outlines, media, saved choices, retry/stale loads, storage errors, phone, entry and cold reveal.');
+  console.log('Room hardware passed: 18 choices, pointer/keyboard outlines, media, saved choices, retry/stale loads, storage errors, phone, entry and cold reveal.');
 } finally { await browser?.close(); await server.close(); }

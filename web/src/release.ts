@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Monitors with more character", body: "Choose a chunky cream retro monitor, a rounded sage design or a silver studio display for either screen. Each has its own thicker housing, stand and outline. Your pictures stay in place, and the original finishes are still there." },
       { title: "Your microphone and monitor frames", body: "Choose black, cream, sage or silver for your microphone and each monitor frame. Their whole shapes share the gentle outline; your screen pictures stay put. Find all three in Make it yours. Refresh also waits for your saved artwork, without flashing the old room first." },
       { title: "Your drink, your camera", body: "Click the iced coffee or camera to choose a new painted design, with the same gentle outline as your chair. Pick a latte, cold brew, matcha or strawberry milk, and a classic black, silver film, cream instant or sage camera. Photos and Buy me a coffee stay inside their small pickers." },
       { title: "Follow your favourite things", body: "Your mug, plant and music player now share the chair's pale-blue outline on hover or keyboard focus. It follows each design, including your plant's growing leaves." },

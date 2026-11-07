@@ -1,5 +1,12 @@
 # Lilt: validation report
 
+## 7 November 2026: Distinct monitor models
+
+Cream retro, Sage rounded and Silver studio passed isolated Chrome checks on both monitors,
+including rounded bezel clicks, screen entry, mixed designs, phone controls and saved-artwork
+loading. Web 169/169, server 129/129 and Python 47 with one skip passed, along with types, scratch
+build, formatting and strict Clippy. See [monitor-model validation](docs/validation/2026-11-07-monitor-models.md).
+
 ## 7 November 2026: Microphone, monitor frames and first room reveal
 
 Independent hardware finishes, whole-object outlines, compact controls and saved-artwork refresh

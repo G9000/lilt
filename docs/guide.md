@@ -143,8 +143,10 @@ the artwork or title to reopen Music, including when paused. Click the camera to
 Silver film, Cream instant or Sage compact, or use **Open Photos** inside its compact picker.
 Click the microphone to choose Original black, Warm cream, Soft sage or Brushed silver; **Open Practice**
 inside its picker uses the same next-card/Start here entry as the computer. Both monitor frames have
-independent finish choices: click a frame or stand, or open **Make it yours → Desk finishes**.
-Your screen pictures stay in place, and clicking the main screen still enters the computer.
+independent choices: **Cream retro** has a chunky shell and little buttons, **Sage rounded** has
+soft corners and an oval base, and **Silver studio** has a broad lower bezel and aluminium stand.
+The four original finishes are still available. Click a frame or stand, or open **Make it yours → Desk finishes**.
+Your screen pictures stay in place behind the chosen bezel, and clicking the main screen still enters the computer.
 Hover or focus outlines the whole microphone assembly or monitor frame and stand. Choices stay in
 this browser, survive Reset layout, and keep the previous artwork if a new finish cannot load.
 The room waits for your saved artwork before first appearing, so refresh no longer flashes the
