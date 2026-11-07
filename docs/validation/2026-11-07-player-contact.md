@@ -1,7 +1,7 @@
 # Player contact and browser fixture isolation
 
 - Player shadows now use the artwork's foot coordinates inside the same transformed element.
-  The turntable follows the desk angle more closely. Original artwork, chair masking and
+  Original artwork, chair masking and
   playback remain in place.
 - `bun run typecheck`: passed.
 - `bun run test`: 167 passed.
@@ -24,3 +24,11 @@ to a 16:08 start on 7 November. No owner server was stopped or restarted during 
 Cache sharing is a confirmed isolation defect, but the cause of that process restart is not
 established without the terminal's exit/restart messages. Native checks were not rerun for
 these web-only fixes.
+
+## Level turntable correction
+
+The owner found the 8-degree rotation visibly tilted. Removed that rotation and lowered the
+turntable by 6 scene pixels to retain its contact with the desk. The foot shadows stay attached.
+Typecheck and `node e2e/player-depth.mjs ../.tmp/player-level` passed after this correction;
+the latter checks all players/lights, contact shadows, chair coverage and stationary playback.
+Inspected the updated larger crop at `.tmp/player-refinement/grounded.png`.
