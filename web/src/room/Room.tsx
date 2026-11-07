@@ -116,7 +116,13 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   const doneRef = useRef(done);
   doneRef.current = done;
   const mouse = useRef({ x: 0, y: 0, sx: 0, sy: 0 });
-  const reduced = typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const change = () => setReduced(preference.matches);
+    preference.addEventListener('change', change);
+    return () => preference.removeEventListener('change', change);
+  }, []);
   // With reduced motion there is no loop: this redraws the room once, on demand.
   const redraw = useRef(() => {});
   useEffect(() => { redraw.current(); }, [appearance]);
@@ -155,6 +161,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
     const f = frame.current;
     const place = (now: number) => {
       const c = cam.current, m = mouse.current;
+      if (reduced && c.flying) { c.now = c.to; c.flying = false; }
       if (c.flying) {
         const k = Math.min(1, (now - c.start) / FLY_MS);
         c.now = between(c.from, c.to, ease(k));
@@ -183,6 +190,8 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
     };
     const step = (now: number) => {
       f.t = now / 1000;
+      f.reducedMotion = reduced;
+      if (reduced) f.hearts.length = 0;
       const choice = appearanceRef.current;
       if (now - lastLight > 30000 || lastChoice !== choice.light) {
         lastLight = now;
@@ -197,7 +206,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
       const lightTarget = choice.lights === 'auto' ? Number(doneRef.current) : Number(choice.lights === 'on');
       f.lights += (lightTarget - f.lights) * (reduced ? 1 : 0.035);
       f.cat = state.mode === "watch" || state.mode === "awake" ? "listen" : state.mode === "happy" ? "happy" : "sleep";
-      if (f.cat === "happy" && now - lastHeart > 1400) { lastHeart = now; f.hearts.push({ x: 250, y: 740, born: f.t, drift: Math.random() - 0.5 }); }
+      if (!reduced && f.cat === "happy" && now - lastHeart > 1400) { lastHeart = now; f.hearts.push({ x: 250, y: 740, born: f.t, drift: Math.random() - 0.5 }); }
       place(now);
       // Once we're inside, the desktop covers the room, so the painting can rest.
       if (!cam.current.inside || cam.current.flying) paint(g, f);

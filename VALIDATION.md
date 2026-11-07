@@ -1,5 +1,12 @@
 # Lilt: validation report
 
+## 7 November 2026: Small sleeping movements
+
+Soft breathing, a slow stretch and a tiny settling twitch passed rendered-frame checks for bed
+contact and matching outlines. Live reduced-motion changes and camera transitions passed, along
+with existing cat interactions and all required checks. See
+[sleeping-cat validation](docs/validation/2026-11-07-cat-sleep.md).
+
 ## 7 November 2026: Click to pet, hold to choose
 
 The cat now pets on a short click or tap and opens choices on a hold. Mouse/touch release,

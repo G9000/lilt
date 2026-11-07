@@ -102,6 +102,7 @@ export interface Frame {
   /** 0–1: the string lights and the warm lamp, on once today's cards are done. */
   lights: number;
   catImage?: HTMLImageElement;
+  reducedMotion?: boolean;
 }
 
 function quadPath(g: CanvasRenderingContext2D, q: readonly (readonly [number, number])[]) {
@@ -236,8 +237,21 @@ function plants(g: CanvasRenderingContext2D, t: number, w: Weights) {
 }
 
 export function catScale(f: Frame) {
-  const breathe = Math.sin(f.t * (f.cat === "sleep" ? 1.66 : 2.1));
-  return { x: 1 + 0.0015 * breathe, y: 1 + 0.007 * breathe };
+  if (f.reducedMotion) return { x: 1, y: 1 };
+  if (f.cat !== 'sleep') {
+    const breathe = Math.sin(f.t * 2.1);
+    return { x: 1 + .0015 * breathe, y: 1 + .007 * breathe };
+  }
+  const breathe = (1 - Math.cos(f.t * Math.PI * 2 / 4.8)) / 2;
+  const phase = f.t % 23;
+  const pulse = (start: number, duration: number) => {
+    const progress = (phase - start) / duration;
+    return progress > 0 && progress < 1 ? Math.sin(Math.PI * progress) ** 2 : 0;
+  };
+  // A slow stretch and two tiny settling twitches, with long quiet gaps between them.
+  const stretch = pulse(6, 4.6), twitch = pulse(15.2, .22) + .6 * pulse(15.55, .32);
+  return { x: 1 + .002 * breathe + .009 * stretch - .0025 * twitch,
+    y: 1 + .014 * breathe - .008 * stretch + .004 * twitch };
 }
 
 function cat(g: CanvasRenderingContext2D, f: Frame) {

@@ -166,9 +166,42 @@ try {
     };
   });
   const movingPage = await moving.newPage(); await movingPage.goto(server.resolvedUrls.local[0]);
+  await movingPage.waitForFunction(() => document.querySelector('.room-paint')?.dataset.ready === 'true');
   await movingPage.waitForFunction(() => new Set(window.catTransforms.map(m => m.d)).size > 2);
+  if (shots) await movingPage.screenshot({ path: path.join(shots, 'sleeping-rest.png'), clip: crop });
+  await movingPage.waitForFunction(() => window.catTransforms.some(m => m.a > 1.007), null, { timeout: 18000 });
+  if (shots) await movingPage.screenshot({ path: path.join(shots, 'sleeping-stretch.png'), clip: crop });
+  await movingPage.waitForFunction(() => window.catTransforms.some(m => m.a < .999), null, { timeout: 18000 });
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => Math.abs(m.baseline - 846) < .001 && m.b === 0 && m.c === 0 && JSON.stringify(m.box) === '[80,689,330,165]')), true, 'breathing stays anchored without rotating or separating the cat');
   assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => m.outlineMatches)), true, 'outline tracks the same breathing scale on every painted frame');
+  await movingPage.emulateMedia({ reducedMotion: 'reduce' });
+  await movingPage.waitForFunction(() => {
+    const last = window.catTransforms.at(-1); return last.a === 1 && last.d === 1;
+  });
+  await movingPage.evaluate(async () => {
+    window.catTransforms = [];
+    const { setRoomAppearance } = await import('/src/room/appearance.ts');
+    setRoomAppearance({ light: 'night' });
+    window.dispatchEvent(new Event('resize'));
+  });
+  await movingPage.waitForFunction(() => window.catTransforms.length > 0);
+  assert.equal(await movingPage.evaluate(() => window.catTransforms.every(m => m.a === 1 && m.d === 1)), true, 'reduced motion holds a neutral pose even across redraws');
+  await movingPage.emulateMedia({ reducedMotion: 'no-preference' });
+  await movingPage.waitForFunction(() => window.catTransforms.some(m => m.a !== 1 || m.d !== 1));
+  await movingPage.getByRole('button', { name: /^Sit down at the computer/ }).click();
+  await movingPage.waitForFunction(() => document.querySelector('.room.inside') && !document.querySelector('.room-stage.settled'));
+  await movingPage.emulateMedia({ reducedMotion: 'reduce' });
+  const deskScale = await movingPage.evaluate(async () => {
+    const { innerBox, MAIN_SCREEN } = await import('/src/room/scene.ts');
+    const box = innerBox(MAIN_SCREEN); return Math.max(innerWidth / box.w, innerHeight / box.h) * 1.06;
+  });
+  await movingPage.waitForFunction(scale => Math.abs(new DOMMatrix(getComputedStyle(document.querySelector('.room-stage')).transform).a - scale) < .001, deskScale, { timeout: 1500 });
+  await movingPage.emulateMedia({ reducedMotion: 'no-preference' });
+  await movingPage.getByRole('button', { name: 'Leave desk', exact: true }).click();
+  await movingPage.waitForFunction(() => !document.querySelector('.room.inside') && !document.querySelector('.room-stage.settled'));
+  await movingPage.emulateMedia({ reducedMotion: 'reduce' });
+  await movingPage.locator('.room-stage.settled').waitFor({ timeout: 1500 });
+  assert.equal(await movingPage.locator('.room-cat-target').isVisible(), true, 'switching reduced motion during camera exit immediately restores cat controls');
   await moving.close();
   const touch = await browser.newContext({ viewport: { width: 1600, height: 950 }, hasTouch: true, reducedMotion: 'reduce' });
   await touch.route('**/api/**', route => route.fulfill({ status: 503, json: {} }));

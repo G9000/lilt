@@ -1,7 +1,31 @@
 // node --test src/room/scene.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { innerBox, layerOpacity, MAIN_SCREEN, quadMatrix, SIDE_SCREEN, weights } from "./scene.ts";
+import { catScale, CAT_BOX, type Frame, innerBox, layerOpacity, MAIN_SCREEN, quadMatrix, SIDE_SCREEN, weights } from "./scene.ts";
+
+test('sleeping movement stays small and settles smoothly through repeated cycles', () => {
+  const frame: Frame = { t: 0, w: weights(720), cat: 'sleep', poked: -100, hearts: [], lights: 0 };
+  let minX = Infinity, maxX = -Infinity, previous = catScale(frame);
+  for (let tick = 0; tick <= 120 * 120; tick++) {
+    frame.t = tick / 120;
+    const scale = catScale(frame);
+    minX = Math.min(minX, scale.x); maxX = Math.max(maxX, scale.x);
+    assert.ok(Math.abs(scale.x - 1) * CAT_BOX.w < 4, 'horizontal movement stays under four painting pixels');
+    assert.ok(Math.abs(scale.y - 1) * CAT_BOX.h < 4, 'vertical movement stays under four painting pixels');
+    assert.ok(Math.abs(scale.x - previous.x) * CAT_BOX.w < .25, 'no horizontal jump at a cycle boundary');
+    assert.ok(Math.abs(scale.y - previous.y) * CAT_BOX.h < .25, 'no vertical jump at a cycle boundary');
+    previous = scale;
+  }
+  assert.ok((maxX - minX) * CAT_BOX.w > 2, 'an occasional stretch is distinct from breathing alone');
+});
+
+test('reduced motion keeps every cat pose still across time and moods', () => {
+  for (const cat of ['sleep', 'listen', 'happy'] as const) {
+    for (const t of [0, 4, 8, 15.3, 23, 47, 119]) {
+      assert.deepEqual(catScale({ t, cat, reducedMotion: true, w: weights(720), poked: t - .1, hearts: [], lights: 0 }), { x: 1, y: 1 });
+    }
+  }
+});
 
 /** Apply a CSS matrix3d (column-major) to a 2D point. */
 function apply(css: string, x: number, y: number) {
