@@ -25,7 +25,7 @@ export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () 
         onPointerDown={event => event.stopPropagation()} onPointerMove={event => event.stopPropagation()}>
         <a href="#/photos">Photos</a>
         <button type="button" onClick={onEnter}>Practice</button>
-        <button type="button" onClick={openMusic}>Music</button>
+        <button type="button" className="room-music-shortcut" onClick={openMusic}>Music</button>
         <button type="button" onClick={openRoomPlant}>Plants</button>
         <button type="button" onClick={openTeaBreak}>Tea</button>
       </div>, document.body)}

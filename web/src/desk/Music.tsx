@@ -7,6 +7,7 @@ import { radio, radioMoods, useRadio } from "./lofi";
 import { closeMusic, openMusic, selectMusicSource, useMusic, visitMusic } from "./musicState";
 import { SpotifyRadio } from "./Spotify";
 import { Volume } from "./Volume";
+import { PlayerPicker } from '../room/PlayerPicker';
 
 /** The moods in two groups by how they're played, so the newer instruments are easy to find. */
 const MOOD_SHELVES = [{ title: "Keys and beats", keys: true }, { title: "Strings, tines and pads", keys: false }];
@@ -69,6 +70,7 @@ export function MusicWindow({ open }: { open: boolean }) {
           <span>{source === "lofi" ? "Lo-fi" : "Spotify"}</span>
         </label>)}
       </fieldset>
+      <PlayerPicker />
       <div hidden={music.source !== "lofi"}><LofiPlayer /></div>
       <div className={["music-spotify", roomStyles["music-spotify"]].join(" ")} hidden={music.source !== "spotify"}>
         {music.visited && <SpotifyContent selected={music.source === "spotify"} />}

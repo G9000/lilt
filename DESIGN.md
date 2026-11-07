@@ -72,9 +72,15 @@ palette and composition. Night has visible midtones and warm interior light. The
 connected alpha cutout over empty bedding, gently breathing; it no longer rotates fragments
 over a baked-in duplicate. Desktop framing includes the cat where possible while keeping
 the main monitor's navigation target visible, including tall displays. The small left monitor
-is replaced with a painted cassette player. Clicking it opens the Music app with lo-fi and Spotify;
+is replaced with a painted music player. Clicking it opens the Music app with lo-fi and Spotify;
+**Your room player** folds open below the source selector to choose Cream cassette, Sage boombox,
+Walnut radio or Record player. Shaded cutouts stay anchored on the desk and match all four lights.
+The cassette reels and record label turn during playback; the walnut radio has a soft tuning-light
+pulse. Motion pauses at the desk, in hidden tabs, while the microphone ducks music and with reduced
+motion. Choosing a design never starts music or changes its source. Browser-local preferences
+survive Reset layout; failed artwork loads retain the original or previous player with a retry.
 the camera opens Photos and the microphone opens the same Practice entry as the computer.
-Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music row
+Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music/Plants/Tea row
 keeps these actions reachable when their painted objects are cropped. Music opens without
 playing, in a responsive window with a fully visible metallic CD and a mood library.
 There are no expand/restore controls. Mood rows use fixed artwork, text and checkmark

@@ -232,6 +232,17 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the room as a floating widget you can drag. The weekly plant is part of the painting;
      its picker describes the week's practice days, with "A new week" rather than a zero.
      Music opens from the painted player.
+   - **Your room player:** open Music from the painted radio or the **Music** room shortcut,
+     then expand **Your room player**. Choose **Cream cassette, Sage boombox, Walnut radio or
+     Record player**. The shaded artwork stays in the desk's radio spot and follows the room's
+     light. Tape reels and the record label turn while music plays; the walnut radio's tuning
+     light gently pulses. They stop for paused music, microphone use, hidden tabs and when you
+     enter the desk. Reduced motion keeps the details still. The same artwork follows lo-fi or
+     Spotify playback; choosing a design doesn't start music or change your source.
+     Your choice stays in this browser (`lilt.room.player`) and survives Reset layout. If artwork
+     can't load, the previous player stays visible and **Try again** retries it. If storage is
+     unavailable, the choice still works for this visit. Closing Music restores keyboard focus
+     to its opener, including the phone shortcut or the menu-bar player after resizing.
    - **Lo-fi radio:** seventeen moods, made live in the browser. **Keys and beats** are the original nine
      ("Rain on the window", "Desk lamp", "City at dusk"…) plus "Midnight jazz" with a walking bass.
      **Strings, tines and pads** bring other instruments and places: plucked strings ("Morning coffee",

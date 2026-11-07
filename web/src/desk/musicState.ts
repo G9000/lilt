@@ -31,6 +31,7 @@ export function spotifySelected() { return state.source === "spotify"; }
 
 let returnTo = "/desk";
 let opener: HTMLElement | null = null;
+let openedFromShortcut = false;
 let focusTimer = 0;
 let focusFrame = 0;
 const cancelFocusRestore = () => {
@@ -44,6 +45,7 @@ export function openMusic() {
   if (window.location.hash !== "#/music") {
     returnTo = window.location.hash.replace(/^#/, "") || "/";
     opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    openedFromShortcut = opener?.classList.contains('room-music-shortcut') ?? false;
     window.location.hash = "/music";
   }
 }
@@ -51,6 +53,7 @@ export function closeMusic() {
   cancelFocusRestore();
   const closingFocus = document.activeElement;
   const destination = returnTo;
+  const focusDeadline = performance.now() + 1600;
   window.location.hash = destination;
   const restore = () => {
     focusTimer = 0;
@@ -59,8 +62,14 @@ export function closeMusic() {
     const focused = document.activeElement;
     if (focused !== document.body && focused !== closingFocus
       && !(focused instanceof Element && focused.closest(".music-window[hidden]"))) return;
+    const shortcut = openedFromShortcut && destination === '/' ? document.querySelector<HTMLElement>('.room-music-shortcut') : null;
     const target = opener?.isConnected && opener.getClientRects().length ? opener
-      : document.querySelector<HTMLElement>(destination === "/" ? ".ds-roomtop .music-mini-open" : ".ds-menubar .music-mini-open");
+      : shortcut?.getClientRects().length ? shortcut
+        : document.querySelector<HTMLElement>(destination === "/" ? ".ds-roomtop .music-mini-open" : ".ds-menubar .music-mini-open");
+    // Room shortcuts remount on return; the menu bar can still be inert on the first frame.
+    if ((!target || target.closest('[inert]') || !target.getClientRects().length) && performance.now() < focusDeadline) {
+      focusFrame = window.requestAnimationFrame(restore); return;
+    }
     target?.focus({ preventScroll: true });
   };
   // Only the room's painted targets need to wait for the camera to pull back.
