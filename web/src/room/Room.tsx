@@ -10,7 +10,9 @@ import { MonitorScreen } from './MonitorMedia';
 import { RoomObjects } from './RoomObjects';
 import { RoomPlant } from './RoomPlant';
 import { TeaBreak } from './TeaBreak';
-import { RoomPlayer } from './RoomPlayer';
+import { PlayerBackdrop, RoomPlayer } from './RoomPlayer';
+import { ChairBackdrop, ChairForeground } from './ChairForeground';
+import { ChairPicker } from './ChairPicker';
 import { plantLight } from './plant';
 
 /**
@@ -262,7 +264,11 @@ export function Room({ inside, onEnter, cards, done, days = 0, children }: { ins
         <MonitorScreen monitor="side" appearance={appearance} inside={inside} />
         <RoomPlant days={days} inside={inside} />
         <TeaBreak inside={inside} />
+        <PlayerBackdrop />
+        <ChairBackdrop />
         <RoomPlayer inside={inside} />
+        <ChairForeground />
+        <ChairPicker inside={inside} />
         <canvas ref={canvas} className={["room-fx", roomStyles["room-fx"]].join(" ")} width={W} height={H} />
         <div className={["room-color-wash", roomStyles["room-color-wash"]].join(" ")} style={{ background: appearance.warmth >= 0 ? '#ffb36c' : '#78b5ff', opacity: Math.abs(appearance.warmth) * 0.0028 }} />
         </div>

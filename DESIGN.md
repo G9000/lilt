@@ -5,6 +5,14 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 
 ## The world
 
+**Your chair** opens a compact 360px picker when clicked, with Mesh & pink throw,
+Cream upholstered, Sage padded and Walnut & cane choices. A Chair shortcut serves narrow
+screens. The original painting remains the default; replacements use stationary cutouts,
+matching room light and repaired desk/floor artwork. Players stay behind the chosen chair,
+and the foreground bed covers its wheels where they overlap. Changes save in this browser
+and survive Reset layout. Failed artwork retains the previous chair with Retry; Original
+works without replacement assets. Escape, Done and outside click restore focus to the opener.
+
 **Weekly plant** is the painted floor plant beside the drawers, with shaded ficus, monstera,
 fern and jade artwork. Clicking it opens a light/dark picker; Plants in the room shortcuts
 opens it on smaller screens. The pot stays anchored while the canopy subtly grows with this
@@ -76,7 +84,7 @@ is replaced with a painted music player. Clicking it opens a compact 340px dialo
 matching the mug controls, with lo-fi and Spotify. **Change player** folds open beneath the
 playback controls to choose Cream cassette, Sage boombox,
 Walnut radio or Record player. Shaded cutouts stay anchored on the desk and match all four lights.
-Each device has its own size, slight desk angle and contact shadow. The chair and pink throw
+Each device has its own size and contact shadow; the turntable stays level. The original chair and pink throw
 are a foreground layer: a registered transparent cutout masks the original room pixels above
 the players, preserving the chair's texture and lighting while covering their lower left edges.
 The chair mask loads with the player before a replacement appears; missing layers retain the
@@ -86,7 +94,7 @@ pulse. Motion pauses at the desk, in hidden tabs, while the microphone ducks mus
 motion. Choosing a design never starts music or changes its source. Browser-local preferences
 survive Reset layout; failed artwork loads retain the original or previous player with a retry.
 The camera opens Photos and the microphone opens the same Practice entry as the computer.
-Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music/Plants/Tea row
+Object targets glow on hover/focus. On narrow screens, a compact Photos/Practice/Music/Plants/Tea/Chair row
 keeps these actions reachable when their painted objects are cropped. Music opens without
 playing or changing the route or camera. Its metallic CD with cover artwork sits above source tabs,
 a mood select, skip/play/pause and volume controls; four artwork choices fit in one row.

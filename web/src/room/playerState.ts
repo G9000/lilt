@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { LIGHTS } from './scene';
 import { PLAYER_KEY, playerImage, readPlayer, type Player } from './player';
-import { CHAIR_MASK } from './ChairForeground';
+import { CHAIR_MASK } from './chair';
 
 function stored() { try { return readPlayer(localStorage.getItem(PLAYER_KEY)); } catch { return readPlayer(null); } }
 let state: { selected: Player; shown: Player | null; failed: boolean; unsaved: boolean } = {

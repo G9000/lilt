@@ -235,11 +235,17 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the room as a floating widget you can drag. The weekly plant is part of the painting;
      its picker describes the week's practice days, with "A new week" rather than a zero.
      Music opens from the painted player.
+   - **Your chair:** click the chair's back, or **Chair** in the room shortcuts on smaller
+     screens, to choose **Mesh & pink throw**, **Cream upholstered**, **Sage padded** or
+     **Walnut & cane**. Each stays planted in the room, follows its light and sits in front of
+     the music player. Your choice stays in this browser and survives Reset layout. Escape,
+     Done or a click outside closes the picker. If artwork cannot load, the previous chair
+     stays visible with **Try again**; you can always return to Mesh & pink throw.
    - **Your room player:** open Music from the painted radio or the **Music** room shortcut,
      then expand **Change player**. Choose **Cream cassette, Sage boombox, Walnut radio or
      Record player**. The shaded artwork stays in the desk's radio spot and follows the room's
      light. Each design sits at its own size and angle, with shadows attached to its feet and
-     the chair and pink throw overlapping it in front. Tape reels and the record label turn while music plays; the walnut radio's tuning
+     your chosen chair overlapping it in front. Tape reels and the record label turn while music plays; the walnut radio's tuning
      light gently pulses. They stop for paused music, microphone use, hidden tabs and when you
      enter the desk. Reduced motion keeps the details still. The same artwork follows lo-fi or
      Spotify playback; choosing a design doesn't start music or change your source.

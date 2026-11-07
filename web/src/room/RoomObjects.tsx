@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { openMusic, useMusic } from "../desk/musicState";
 import { openRoomPlant } from './RoomPlant';
 import { openTeaBreak } from './TeaBreak';
+import { openChairPicker } from './ChairPicker';
 
 /** Transparent targets follow the painted objects; narrow screens keep the same shortcuts. */
 export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () => void }) {
@@ -29,6 +30,7 @@ export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () 
         <button type="button" className="room-music-shortcut" onClick={openMusic} aria-haspopup="dialog" aria-expanded={music.open}>Music</button>
         <button type="button" onClick={openRoomPlant}>Plants</button>
         <button type="button" onClick={openTeaBreak}>Tea</button>
+        <button type="button" className="room-chair-shortcut" onClick={openChairPicker} aria-haspopup="dialog">Chair</button>
       </div>, document.body)}
   </>;
 }
