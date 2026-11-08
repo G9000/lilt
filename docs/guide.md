@@ -405,7 +405,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    of places: Home, Today (with how many cards are left), Chapters, Recordings, Studio and Mixtape,
    with Practice settings at the foot. On the Chapters page and in a chapter, every chapter is
    listed under Chapters by part, and the one you're in opens to its texts (a tick once
-   practised), so you can jump to any of them. **Home** greets
+   practised), so you can jump to any of them. The arrow beside Chapters folds the list away,
+   leaving just the chapter you're in, and this browser remembers your choice. **Home** greets
    you, offers one next step and shows the chapters as tiles by part. **Chapters**
    (`#/studio/chapters`) has the course's cover, every chapter as a tile with its subtitle (the
    next one outlined, a medal once you've practised them all) and the **Course guide**. A chapter

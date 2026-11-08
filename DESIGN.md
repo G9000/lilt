@@ -295,7 +295,9 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   settings at the foot. On the Chapters page and in a chapter, every chapter is listed indented
   under Chapters, by part (12px part names in sentence case), with a small medal once complete;
   the one you're in is semibold and opens to its texts as short 13px rows on a hairline guide (a
-  tick once practised, the open one highlighted). Elsewhere the list stays folded away.
+  tick once practised, the open one highlighted). Elsewhere the list stays folded away. A 30px
+  chevron beside Chapters folds and unfolds the list (kept in this browser as
+  `lilt.sidebar.chapters`); folded, only the chapter you're in and its texts remain.
   Choosing a text there or in the chapter keeps the URL (`#/studio/<chapter>/<text>`) in step. Links at the bottom carry the desk's app icons
   (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document

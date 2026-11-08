@@ -422,6 +422,11 @@ export const practice = {
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:[background-image:none]`,
   "ve-here": `[.ve_&]:h-[30px] [.ve_&]:pl-[40px] [.ve_&]:text-[13px] [.ve_&]:mb-[1px] [.ve_&.on]:text-ink ` +
     `[.ve_&.on]:font-semibold`,
+  "ve-placerow": `flex items-center [column-gap:2px] [&_>_.ve-home]:[flex:1] [&_>_.ve-home]:min-w-0`,
+  "ve-listfold": `[.ve_&]:[flex:none] [.ve_&]:w-[30px] [.ve_&]:h-[30px] [.ve_&]:mb-[2px] [.ve_&]:grid [.ve_&]:place-items-center ` +
+    `[.ve_&]:rounded-[8px] [.ve_&]:text-ink-3 [.ve_&:hover:not(:disabled)]:bg-fill [.ve_&:hover:not(:disabled)]:text-ink ` +
+    `[&_svg]:w-[12px] [&_svg]:h-[12px] [&_svg]:[transition:transform_0.18s_var(--ease)] [&.open_svg]:[transform:rotate(90deg)] ` +
+    `[@media_(prefers-reduced-motion:_reduce)]:[&_svg]:[transition:none]`,
   "ve-chpart": `mt-[10px] mb-[2px] pl-[40px] text-[12px] font-semibold text-ink-3`,
   "ve-home-ic": `[flex:none] w-[22px] grid place-items-center [&_svg]:w-[17px] [&_svg]:h-[17px]`,
   "ve-tree": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [.ve-home_+_&]:mt-[8px]`,

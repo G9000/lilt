@@ -347,6 +347,8 @@ const PLACES = [
   { id: "free", label: "Studio", to: "/studio/free", icon: "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2" },
   { id: "mixtape", label: "Mixtape", to: "/studio/mixtape", icon: "M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8M5 12l1-2h4l1 2" },
 ];
+/** Whether the sidebar's chapter list is folded, kept in this browser. */
+const CHAPTER_LIST_KEY = "lilt.sidebar.chapters";
 const SETTINGS_PLACE = { id: "settings", label: "Practice settings", to: "/studio/settings", icon: "M8 5.6a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8zM8 1.8v1.6M8 12.6v1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M1.8 8h1.6M12.6 8h1.6M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1" };
 
 /**
@@ -510,6 +512,38 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
   const left = deck ? deck.items.filter((i) => !i.done_today).length : 0;
   const total = deck?.items.length ?? 0;
   const here = texts?.levels.find((l) => l.id === current);
+  // The chapter list shows on the Chapters page and in a chapter; it can be folded (kept in this
+  // browser), leaving just the chapter you're in and its texts.
+  const listable = !!texts && (!!here || current === "chapters");
+  const [listOpen, setListOpen] = useState(() => { try { return localStorage.getItem(CHAPTER_LIST_KEY) !== "closed"; } catch { return true; } });
+  const toggleList = () => setListOpen((o) => {
+    try { localStorage.setItem(CHAPTER_LIST_KEY, o ? "closed" : "open"); } catch { /* private window: the choice just isn't kept */ }
+    return !o;
+  });
+  const chapterRows = (levels: TextLevel[]) => levels.map((l) => (
+    <Fragment key={l.id}>
+      <button className={cx(`ve-home ve-here${l.id === current ? " on" : ""}`, practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${l.id}`)} disabled={locked}
+        aria-current={l.id === current && !itemId ? "page" : undefined}>
+        <span className="t">{l.title}</span>
+        {chapterDone(l, practised) && <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />}
+      </button>
+      {l.id === current && (
+        <ul className={cx("ve-files", practice["ve-files"])} aria-label={`Texts in ${l.title}`}>
+          {l.items.map((it) => {
+            const done = practised.has(textId(COURSE, l.id, it.id));
+            return (
+              <li key={it.id}>
+                <button className={cx(`ve-file${done ? " done" : ""}`, practice["ve-file"])} onClick={() => go(`/studio/${l.id}/${it.id}`)} disabled={locked}
+                  aria-current={itemId === it.id ? "page" : undefined} title={it.text}>
+                  <span className="t">{textLabel(it.text, it.id)}</span>{done && <Tick className={cx("ve-tick", practice["ve-tick"])} />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Fragment>
+  ));
   const place = (p: (typeof PLACES)[number], extra?: ReactNode) => (
     <button key={p.id} className={cx("ve-home", practice["ve-home"])} onClick={() => go(p.to)} disabled={locked}
       aria-current={current === p.id ? "page" : undefined}>
@@ -522,42 +556,33 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
       <div className={cx("ve-side-scroll", practice["ve-side-scroll"])}>
         {PLACES.map((p) => (
           <Fragment key={p.id}>
-            {place(p, p.id === "today" && deck && !deck.paused && total ? <span className="c">{left ? `${left} left` : "Done"}</span>
+            {p.id === "chapters" && listable ? (
+              <div className={cx("ve-placerow", practice["ve-placerow"])}>
+                {place(p)}
+                <button className={cx(`ve-listfold${listOpen ? " open" : ""}`, practice["ve-listfold"])} onClick={toggleList} disabled={locked}
+                  aria-expanded={listOpen} aria-controls="ve-chlist" aria-label={listOpen ? "Collapse the chapter list" : "Expand the chapter list"} title={listOpen ? "Collapse the chapter list" : "Expand the chapter list"}>
+                  <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+              </div>
+            ) : place(p, p.id === "today" && deck && !deck.paused && total ? <span className="c">{left ? `${left} left` : "Done"}</span>
               : p.id === "mixtape" && texts?.edition ? (texts.edition.updates
                 ? <span className={cx("ve-mix-tag new", practice["ve-mix-tag"])}>{texts.edition.updates} new</span>
                 : texts.edition.mine ? <span className={cx("ve-mix-tag", practice["ve-mix-tag"])}>{texts.edition.changes}</span> : null)
               : undefined)}
             {/* On the Chapters page or in a chapter, every chapter is listed by part; the one you're
-                in opens to its texts (a tick once practised). */}
-            {p.id === "chapters" && texts && (here || current === "chapters") && byPart(texts.levels).map((g, gi) => (
-              <Fragment key={`${gi}-${g.part ?? ""}`}>
-                {g.part && <p className={cx("ve-chpart", practice["ve-chpart"])}>{g.part}</p>}
-                {g.levels.map((l) => (
-                  <Fragment key={l.id}>
-                    <button className={cx(`ve-home ve-here${l.id === current ? " on" : ""}`, practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${l.id}`)} disabled={locked}
-                      aria-current={l.id === current && !itemId ? "page" : undefined}>
-                      <span className="t">{l.title}</span>
-                      {chapterDone(l, practised) && <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />}
-                    </button>
-                    {l.id === current && (
-                      <ul className={cx("ve-files", practice["ve-files"])} aria-label={`Texts in ${l.title}`}>
-                        {l.items.map((it) => {
-                          const done = practised.has(textId(COURSE, l.id, it.id));
-                          return (
-                            <li key={it.id}>
-                              <button className={cx(`ve-file${done ? " done" : ""}`, practice["ve-file"])} onClick={() => go(`/studio/${l.id}/${it.id}`)} disabled={locked}
-                                aria-current={itemId === it.id ? "page" : undefined} title={it.text}>
-                                <span className="t">{textLabel(it.text, it.id)}</span>{done && <Tick className={cx("ve-tick", practice["ve-tick"])} />}
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </Fragment>
-                ))}
-              </Fragment>
-            ))}
+                in opens to its texts (a tick once practised). Folded, only the one you're in stays. */}
+            {p.id === "chapters" && texts && listable && (
+              <div id="ve-chlist">
+                {listOpen
+                  ? byPart(texts.levels).map((g, gi) => (
+                    <Fragment key={`${gi}-${g.part ?? ""}`}>
+                      {g.part && <p className={cx("ve-chpart", practice["ve-chpart"])}>{g.part}</p>}
+                      {chapterRows(g.levels)}
+                    </Fragment>
+                  ))
+                  : here && chapterRows([here])}
+              </div>
+            )}
           </Fragment>
         ))}
         <div className="flex-1" />
