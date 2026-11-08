@@ -412,7 +412,7 @@ export const practice = {
     `[&.open]:[transform:rotate(90deg)] [@media_(prefers-reduced-motion:_reduce)]:[transition:none]`,
   "ve-home": `[.ve_&]:w-full [.ve_&]:h-[38px] [.ve_&]:flex [.ve_&]:items-center [.ve_&]:justify-start ` +
     `[.ve_&]:[column-gap:10px] [.ve_&]:mt-[0] [.ve_&]:mr-[0] [.ve_&]:mb-[2px] [.ve_&]:ml-[0] [.ve_&]:pt-[0] ` +
-    `[.ve_&]:pr-[10px] [.ve_&]:pb-[0] [.ve_&]:pl-[8px] [.ve_&]:rounded-[10px] [.ve_&]:text-ink-2 [.ve_&]:font-medium ` +
+    `[.ve_&]:pr-[10px] [.ve_&]:pb-[0] [.ve_&]:pl-[8px] [.ve_&]:rounded-[8px] [.ve_&]:text-ink-2 [.ve_&]:font-medium ` +
     `[.ve_&]:text-[14px] [.ve_&]:text-left [.ve_&]:[transition:background-color_0.12s_ease,_color_0.12s_ease] ` +
     `[.ve_&[aria-current="page"]]:bg-fill-2 [.ve_&[aria-current="page"]]:text-ink ` +
     `[.ve_&[aria-current="page"]]:[background-image:none] [&_.t]:[flex:1] [&_.t]:min-w-0 [&_.t]:truncate ` +
@@ -420,18 +420,20 @@ export const practice = {
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:bg-fill ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:text-ink ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:[background-image:none]`,
-  "ve-here": `[.ve_&]:h-[30px] [.ve_&]:pl-[40px] [.ve_&]:text-[13px] [.ve_&]:mb-[1px] [.ve_&.on]:text-ink ` +
-    `[.ve_&.on]:font-semibold`,
-  "ve-placerow": `flex items-center [column-gap:2px] [&_>_.ve-home]:[flex:1] [&_>_.ve-home]:min-w-0`,
-  "ve-listfold": `[.ve_&]:[flex:none] [.ve_&]:w-[30px] [.ve_&]:h-[30px] [.ve_&]:mb-[2px] [.ve_&]:grid [.ve_&]:place-items-center ` +
-    `[.ve_&]:rounded-[8px] [.ve_&]:text-ink-3 [.ve_&:hover:not(:disabled)]:bg-fill [.ve_&:hover:not(:disabled)]:text-ink ` +
+  "ve-here": `[.ve_&]:h-[30px] [.ve_&]:pl-[40px] [.ve_&]:text-[13px] [.ve_&]:mb-[1px] [.ve_&]:font-normal [.ve_&.on]:text-ink ` +
+    `[.ve_&.on]:font-medium`,
+  "ve-placerow": `flex items-center rounded-[8px] mb-[2px] [transition:background-color_0.12s_ease] ` +
+    `[@media_(hover:_hover)_and_(pointer:_fine)]:[&:hover]:bg-fill [&:has(>_.ve-home[aria-current="page"])]:bg-fill-2 ` +
+    `[&_>_.ve-home]:[flex:1] [&_>_.ve-home]:min-w-0 [&_>_.ve-home]:mb-0! [&_>_.ve-home]:bg-transparent!`,
+  "ve-listfold": `[.ve_&]:[flex:none] [.ve_&]:w-[28px] [.ve_&]:h-[28px] [.ve_&]:mr-[4px] [.ve_&]:grid [.ve_&]:place-items-center ` +
+    `[.ve_&]:rounded-[6px] [.ve_&]:text-ink-3 [.ve-placerow:hover_&]:text-ink [.ve_&:focus-visible]:text-ink ` +
     `[&_svg]:w-[12px] [&_svg]:h-[12px] [&_svg]:[transition:transform_0.18s_var(--ease)] [&.open_svg]:[transform:rotate(90deg)] ` +
     `[@media_(prefers-reduced-motion:_reduce)]:[&_svg]:[transition:none]`,
-  "ve-chpart": `mt-[10px] mb-[2px] pl-[40px] text-[12px] font-semibold text-ink-3`,
+  "ve-chpart": `mt-[12px] mb-[2px] pl-[40px] text-[12px] font-medium text-ink-3`,
   "ve-home-ic": `[flex:none] w-[22px] grid place-items-center [&_svg]:w-[17px] [&_svg]:h-[17px]`,
   "ve-tree": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [.ve-home_+_&]:mt-[8px]`,
-  "ve-files": `list-none mt-[0] mr-[0] mb-[6px] ml-[30px] pt-[0] pr-[0] pb-[0] pl-[6px] [.ve-side-scroll_>_&]:[min-width:0] [border-left-width:1px] ` +
-    `[border-left-style:solid] [border-left-color:var(--hair)]`,
+  "ve-files": `list-none mt-[0] mr-[0] mb-[6px] ml-[40px] pt-[0] pr-[0] pb-[0] pl-[6px] [.ve-side-scroll_>_&]:[min-width:0] ` +
+    `[border-left-width:1px] [border-left-style:solid] [border-left-color:var(--hair)]`,
   "ve-doc": `[&.solo]:[grid-template-columns:minmax(0,_1fr)] min-w-0 min-h-0 grid [grid-template-rows:auto_minmax(0,_1fr)] ` +
     `relative`,
   "ve-resize": `[.ve-doc.solo_&.split]:hidden absolute [top:0] [bottom:0] [z-index:6] w-[8px] [cursor:col-resize] touch-none ` +
@@ -550,17 +552,16 @@ export const practice = {
     `[&_.t]:overflow-hidden [&_.t]:text-ellipsis [&_.c]:text-[12px] [&_.c]:font-medium [&_.c]:text-ink-3 ` +
     `[&_.c]:tabular-nums`,
   "ve-file": `[&_.t]:[flex:1] [&_.t]:min-w-0 [&_.t]:whitespace-nowrap [&_.t]:overflow-hidden [&_.t]:text-ellipsis ` +
-    `[.ve_&]:w-full [.ve_&]:h-[26px] [.ve_&]:flex [.ve_&]:items-center [.ve_&]:[row-gap:6px] ` +
-    `[.ve_&]:[column-gap:6px] [.ve_&]:pt-[0] [.ve_&]:pr-[8px] [.ve_&]:pb-[0] [.ve_&]:pl-[8px] [.ve_&]:rounded-[6px] ` +
-    `[.ve_&]:text-left [.ve_&]:text-ink-2 [.ve_&]:text-[13px] ` +
+    `[.ve_&]:w-full [.ve_&]:h-[30px] [.ve_&]:mb-[1px] [.ve_&]:flex [.ve_&]:items-center [.ve_&]:[column-gap:8px] [.ve_&]:pt-[0] ` +
+    `[.ve_&]:pr-[10px] [.ve_&]:pb-[0] [.ve_&]:pl-[10px] [.ve_&]:rounded-[8px] [.ve_&]:text-left [.ve_&]:text-ink-2 [.ve_&]:text-[13px] ` +
     `[.ve_&]:[transition:background-color_0.12s_ease,_color_0.12s_ease] [.ve_&[aria-current="page"]]:bg-fill-2 ` +
     `[.ve_&[aria-current="page"]]:[background-image:none] [.ve_&[aria-current="page"]]:text-ink ` +
-    `[.ve_&[aria-current="page"]]:font-medium [.ve_&.done]:text-ink-3 [.ve_&:disabled]:[opacity:1] ` +
+    `[.ve_&[aria-current="page"]]:font-medium [.ve_&:disabled]:[opacity:1] ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not(:disabled):not([aria-current])]:bg-fill ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not(:disabled):not([aria-current])]:[background-image:none] ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not(:disabled):not([aria-current])]:text-ink`,
   "ve-medal-s": `w-[15px] h-[15px] [flex:none]`,
-  "ve-tick": `w-[13px] h-[13px] [flex:none] text-ok`,
+  "ve-tick": `w-[12px] h-[12px] [flex:none] text-ink-3`,
   "ve-note-row": `pt-[4px] pr-[8px] pb-[4px] pl-[8px] text-[12px] text-ink-3`,
   "ve-chips": `hidden [@media_(max-width:_860px)]:flex [@media_(max-width:_860px)]:[row-gap:6px] ` +
     `[@media_(max-width:_860px)]:[column-gap:6px] [@media_(max-width:_860px)]:overflow-x-auto ` +

@@ -294,9 +294,11 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   Today (with how many cards are left), Chapters, Recordings, Studio and Mixtape, and Practice
   settings at the foot. On the Chapters page and in a chapter, every chapter is listed indented
   under Chapters, by part (12px part names in sentence case), with a small medal once complete;
-  the one you're in is semibold and opens to its texts as short 13px rows on a hairline guide (a
-  tick once practised, the open one highlighted). Elsewhere the list stays folded away. A 30px
-  chevron beside Chapters folds and unfolds the list (kept in this browser as
+  the one you're in is a shade brighter and opens to its texts, 30px rows like the chapters on a
+  hairline guide, with a grey tick once practised (never a pass/fail green). Only what you're on
+  gets the `--fill-2` highlight, whether a place, a chapter or a text; every row has 8px corners.
+  Elsewhere the list stays folded away. A chevron inside the Chapters row folds and unfolds the
+  list (kept in this browser as
   `lilt.sidebar.chapters`); folded, only the chapter you're in and its texts remain.
   Choosing a text there or in the chapter keeps the URL (`#/studio/<chapter>/<text>`) in step. Links at the bottom carry the desk's app icons
   (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
