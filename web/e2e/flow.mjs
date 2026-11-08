@@ -286,7 +286,16 @@ async function main() {
   // In a chapter, the sidebar lists every chapter under Chapters, the one you're in open to its texts.
   check("The sidebar lists the chapters, the one you're in open", (await page.locator(".ve-side .ve-here").count()) >= 13 &&
     (await page.locator(".ve-side .ve-here.on").innerText()).trim() === "Everyday phrases" && (await page.locator(".ve-side .ve-files .ve-file").count()) === 7);
+  // Mixtape waits for your own copy; the way back to the desk sits above Practice settings.
+  check("The sidebar has a way back to the desk and no empty Mixtape",
+    (await page.locator(".ve-side .ve-home", { hasText: "Back to the desk" }).count()) === 1 && (await page.locator(".ve-side .ve-home", { hasText: "Mixtape" }).count()) === 0);
   await snap("14-studio-result");
+  // Practice settings and Lilt's Settings each lead to the other.
+  await page.goto(`${BASE}/#/studio/settings`);
+  await page.getByRole("button", { name: "Lilt's Settings" }).click();
+  await page.locator(".ss.open .sx-elsewhere button", { hasText: "Practice settings" }).click();
+  await page.locator(".ss.open").waitFor({ state: "detached", timeout: 3000 }).catch(() => {});
+  check("Practice settings and Settings link to each other", (await page.locator(".ss.open").count()) === 0 && (await page.locator(".sx-app h1", { hasText: "Practice settings" }).count()) === 1);
   await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
   await page.waitForTimeout(2500);

@@ -203,7 +203,7 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
           <nav className={cx("ve-chips", practice["ve-chips"])} aria-label="Chapters" ref={chips}>
-            {[...PLACES, SETTINGS_PLACE].map((p) => <button key={p.id} aria-current={(doc === "chapter" ? "chapters" : doc === "free" ? "free" : doc) === p.id ? "page" : undefined} onClick={() => go(p.to)} disabled={recording}>{p.id === "settings" ? "Settings" : p.label}</button>)}
+            {[DESK_PLACE, ...placesFor(texts, doc === "updates" ? "mixtape" : doc), SETTINGS_PLACE].map((p) => <button key={p.id} aria-current={(doc === "chapter" ? "chapters" : doc === "free" ? "free" : doc) === p.id ? "page" : undefined} onClick={() => go(p.to)} disabled={recording}>{p.id === "settings" ? "Settings" : p.id === "desk" ? "Desk" : p.label}</button>)}
           </nav>
         )}
         {loadErr && !texts
@@ -351,8 +351,17 @@ const PLACES = [
   { id: "free", label: "Studio", to: "/studio/free", icon: "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2" },
   { id: "mixtape", label: "Mixtape", to: "/studio/mixtape", icon: "M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8M5 12l1-2h4l1 2" },
 ];
+/**
+ * Mixtape is your own copy of the course, so it's a place once you have one (or can make one);
+ * before that it would only list the chapters again. A link to it still opens it.
+ */
+function placesFor(texts: Texts | null, current: string) {
+  return PLACES.filter((p) => p.id !== "mixtape" || REMIX_AVAILABLE || !!texts?.edition?.mine || !!texts?.edition?.updates || current === "mixtape");
+}
 /** Whether the sidebar's chapter list is folded, kept in this browser. */
 const CHAPTER_LIST_KEY = "lilt.sidebar.chapters";
+/** Practice fills the desk, with no window controls, so its way out sits in the sidebar. */
+const DESK_PLACE = { id: "desk", label: "Back to the desk", to: "/desk", icon: "M6.5 3H3.8a.8.8 0 00-.8.8v8.4a.8.8 0 00.8.8h2.7M13 8H6.5M9.5 5L6.5 8l3 3" };
 const SETTINGS_PLACE = { id: "settings", label: "Practice settings", to: "/studio/settings", icon: "M8 5.6a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8zM8 1.8v1.6M8 12.6v1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M1.8 8h1.6M12.6 8h1.6M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1" };
 
 /**
@@ -563,7 +572,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
   return (
     <nav className={cx("ve-side", practice["ve-side"])} aria-label="Practice">
       <div className={cx("ve-side-scroll", practice["ve-side-scroll"])}>
-        {PLACES.map((p) => (
+        {placesFor(texts, current).map((p) => (
           <Fragment key={p.id}>
             {p.id === "chapters" && listable ? (
               <div className={cx("ve-placerow", practice["ve-placerow"])}>
@@ -595,6 +604,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
           </Fragment>
         ))}
         <div className="flex-1" />
+        {place(DESK_PLACE)}
         {place(SETTINGS_PLACE)}
       </div>
     </nav>

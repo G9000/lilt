@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.2.1",
     date: "2026-11-07",
     items: [
+      { title: "Easier ways around Practice", body: "Practice's sidebar now has Back to the desk at the foot, so you're never stuck full screen. Mixtape only appears once you have your own copy of the course. Practice settings and Lilt's Settings each link to the other, so whichever you open first, the one you meant is a click away.", to: "/studio" },
       { title: "Notes on earlier takes", body: "The note you left last time now has an Edit button right under the text, and More about this take lets you note the earlier take you're comparing with. Home's then and now is your daily reference line; when it would only repeat a chapter's check-in, Home points you to that check-in instead.", to: "/studio" },
       { title: "Next up follows you", body: "Next up is where you left off, so skipping a text no longer pins a chapter as next forever. Home only says \"First time here?\" before your first take; after that it shows your practice, with a gentle line if your comfortable range isn't set. Other courses get the same look: one centred column, chapters as tiles, and Learn and Practise tabs.", to: "/studio" },
       { title: "One steady column", body: "Every Practice page now shares the same centred width, so nothing jumps as you move between Home, Today, Recordings, Studio and settings. Home shows the next few chapters rather than all of them, Today is titled Today, and the room waits for its painting before showing its widgets.", to: "/studio" },

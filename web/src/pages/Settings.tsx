@@ -14,6 +14,7 @@ import { updateStatus } from "../desktopUpdate";
 import { CURRENT } from "../release";
 import { BackupSettings } from "../components/BackupSettings";
 import { StorageSettings } from "../components/StorageSettings";
+import { openSettings } from "../desk/SettingsSheet";
 
 const ZONES = [...new Set(["UTC", ...Intl.supportedValuesOf("timeZone")])];
 
@@ -244,7 +245,18 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
             </li>
           ))}
           {/* Your goal, range, warm-up, session length and reminder live in Practice settings. */}
-          {shown.length === 0 && <li className={cx(pages.sxNone, "sx-none")}>No settings match here. <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={toPractice}>Look in Practice settings</button></li>}
+          {shown.length === 0 && <li className={cx(pages.sxNone, "sx-none")}>No settings match here; your goal, routine and range are in Practice settings.</li>}
+        </ul>
+        {/* Your goal, routine and range live in Practice; this goes there. */}
+        <ul className={cx(pages.sxElsewhere, "sx-elsewhere")}>
+          <li>
+            <button onClick={toPractice}>
+              <span className={cx(pages.sxTile, "sx-tile")} style={{ width: 26, height: 26 }} aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6h12M4 10h12M4 14h12" /><circle cx="8" cy="6" r="1.6" fill="currentColor" /><circle cx="13" cy="10" r="1.6" fill="currentColor" /><circle cx="7" cy="14" r="1.6" fill="currentColor" /></svg>
+              </span>
+              <span>Practice settings<small>Goal, routine, range</small></span>
+            </button>
+          </li>
         </ul>
       </nav>
       <section className={cx(pages.sxMain, "sx-main")} aria-label={cur?.title}>
@@ -297,6 +309,7 @@ export function PracticeSettings() {
         <h1>Practice settings</h1>
         <span className={cx(pages.sxSaved, `sx-saved ${saved}`)} aria-live="polite">{savedLabel(saved)}</span>
       </header>
+      <p className={cx(pages.sxNote, "sx-note")}>Your goal, routine and range. Theme, text size, notifications, AI and backups are in <button type="button" className={cx(pages.sxLink, "sx-link")} onClick={() => openSettings()}>Lilt's Settings</button>.</p>
       <section aria-labelledby="ps-goal">
         <h2 id="ps-goal">Your goal</h2>
         <div className={cx(pages.sxGroup, "sx-group")}>
@@ -353,7 +366,6 @@ export function PracticeSettings() {
         <p className={cx(pages.sxNote, "sx-note")}>Optional. A pitch range that feels comfortable and sounds like you, shown as a soft band on pitch views. It's your choice, not a target Lilt sets, and it never affects feedback. You can also set it from a take you like.</p>
       </section>
       {err && <Callout kind="warn"><p>{err}</p></Callout>}
-      <p className={cx(pages.sxNote, "sx-note")}>Theme, text size, AI connections and notifications are in Lilt's Settings (the gear in the room or the menu bar).</p>
     </div>
   );
 }

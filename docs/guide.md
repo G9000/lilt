@@ -402,8 +402,12 @@ Monitor uploads and playback have an isolated check with locally generated media
 6. If a pointer doesn't match what you hear or feel, say so. Your note is kept with the review and
    is taken into account next time.
 7. **Chapters** are free practice, in the same Practice page. Practice's sidebar is a short list
-   of places: Home, Today (with how many cards are left), Chapters, Recordings, Studio and Mixtape,
-   with Practice settings at the foot. On the Chapters page and in a chapter, every chapter is
+   of places: Home, Today (with how many cards are left), Chapters, Recordings and Studio, with
+   **Back to the desk** and Practice settings at the foot (on a phone they're the row of pills at
+   the top, Desk first). Mixtape joins the places once you have your own copy of the course, since
+   before that it would only list the chapters again. Practice settings holds your goal, routine
+   and range, and links to Lilt's Settings for theme, text size, notifications, AI and backups;
+   Settings, in turn, keeps a Practice settings row under its list. On the Chapters page and in a chapter, every chapter is
    listed under Chapters by part, and the one you're in opens to its texts (a tick once
    practised), so you can jump to any of them. The arrow beside Chapters folds the list away,
    leaving just the chapter you're in, and this browser remembers your choice. **Home** greets
