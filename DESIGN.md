@@ -268,8 +268,9 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   **Home** (`#/studio`, the dock's Chapters app) opens with a time-of-day greeting and the date
   under it, then your practice (the next step first) and the chapters as tiles by part with an
   "All chapters" link. **Chapters** (`#/studio/chapters`) shows the course cover as a rounded
-  picture, every chapter as a tile, and the owner's complete Markdown introduction in the
-  expandable **Course guide**, preserving references and code blocks across sections. The
+  picture, then the owner's complete Markdown introduction in the expandable **Course guide**
+  (above the chapters, since it introduces them), preserving references and code blocks across
+  sections, then every chapter as a tile. The
   guide and chapter introductions use one centred reading column, fitting smaller screens.
   Width controls and section columns are removed for now. Previously saved width choices have
   no effect. References and footnotes stay within the same parsed Markdown document. The

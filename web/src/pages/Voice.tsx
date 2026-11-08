@@ -1021,7 +1021,7 @@ function ChapterGrid({ texts, practised, compact = false }: { texts: Texts; prac
   );
 }
 
-/** Every chapter (#/studio/chapters): the course's cover, its chapters by part, and the course guide. */
+/** Every chapter (#/studio/chapters): the course's cover, the course guide, then its chapters by part. */
 function ChaptersDoc({ texts, practised, onNewChapter }: { texts: Texts; practised: Set<string>; onNewChapter: () => void }) {
   const cover = texts.home_cover && picture(texts.home_cover);
   return (
@@ -1029,6 +1029,8 @@ function ChaptersDoc({ texts, practised, onNewChapter }: { texts: Texts; practis
       <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
         <header className={cx("ve-head", practice["ve-head"])}><h1>Chapters</h1><p className={cx("ve-subtitle", practice["ve-subtitle"])}>{texts.levels.length} chapters, in the order they build. Start wherever you like.</p></header>
         {cover && <div className={cx("ve-cover-card", practice["ve-cover-card"])} style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
+        {/* The guide introduces the course, so it comes before the chapters. */}
+        {texts.home && <details className={cx("ve-course-guide ve-guide-top", practice["ve-course-guide"], "mb-6")}><summary>Course guide<span>Introduction and resources</span></summary><Markdown src={texts.home} className={cx("ve-md", practice["ve-md"])} headingOffset={1} /></details>}
         <ChapterGrid texts={texts} practised={practised} />
         {REMIX_AVAILABLE && <button type="button" className={cx("btn-secondary", shared["btn-secondary"], "mt-6")} onClick={onNewChapter}>New chapter</button>}
         {texts.edition?.mine && (
@@ -1037,7 +1039,6 @@ function ChaptersDoc({ texts, practised, onNewChapter }: { texts: Texts; practis
             <a href="#/studio/mixtape">{texts.edition.updates ? `See your mixtape, and ${texts.edition.updates} ${texts.edition.updates === 1 ? "update" : "updates"} from the original` : "See your mixtape"}</a>
           </p>
         )}
-        {texts.home && <details className={cx("ve-course-guide", practice["ve-course-guide"])}><summary>Course guide<span>Introduction and resources</span></summary><Markdown src={texts.home} className={cx("ve-md", practice["ve-md"])} headingOffset={1} /></details>}
       </article>
     </div>
   );
