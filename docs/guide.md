@@ -193,7 +193,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: a
      clock in the window, a sticky note taped to the photo wall, and
-     **What's new**: the version you're running (now 0.2) and what came with it, with a dot until
+     **What's new**: the version you're running (now 0.1) and what came with it, with a dot until
      you've opened it; each item opens the feature. New releases go at the top of
      `web/src/release.ts`.
      The clock shows a different photo each time you come in (cats, galaxies, plants, and any you
