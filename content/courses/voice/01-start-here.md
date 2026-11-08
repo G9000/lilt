@@ -26,7 +26,7 @@ Hi, friend. Five minutes of setup and a few words in your everyday voice, and yo
 
 **Record your "before".** Read the texts below in your everyday voice. Don't change anything yet. Future you will want this, trust me. You don't have to listen back to it until you want to.
 
-**How every chapter works.** The same small loop each time: watch the chapter's demonstration if it has one, or replay a take you like, try one change, record, listen back, then use it in a real phrase straight away. Five to ten minutes is plenty. Short and often beats long and rare.
+**How every chapter works.** The same small loop each time: watch the chapter's demonstration if it has one, or replay a take you like, try one change, record, listen back, then use it in a real phrase straight away. Five to ten minutes makes a good visit, and short and often beats long and rare.
 
 **Choose just one next step.** After your starting recording, try [hum to hello](#/studio/warmup/hum-to-hello). You do not need to finish every text here first. Next visit, choose one skill and one listening question: higher or lower for pitch, brighter or darker for resonance, lighter or heavier for weight. If a cue is unclear, revisit its demonstration or use a familiar sound; you do not need to make the change bigger.
 

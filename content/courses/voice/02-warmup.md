@@ -20,7 +20,7 @@ Two minutes that make everything after them easier. Pick two or three of these; 
 
 **Let go of the tension.** Let your shoulders and jaw relax. If it feels good, try a small, easy yawn-sigh as a reset. You do not need to stretch your mouth wide or hold a throat position for speaking.
 
-**Get the voice buzzing.** Hum, trill your lips like a motorboat, or say "ooo" into a straw. Narrowing the way out (your lips, a straw, or a hum through your nose) raises the air pressure just above your vocal folds, so they vibrate with less effort and less impact. That's why voice therapists love these.
+**Get the voice buzzing.** Hum, trill your lips like a motorboat, or say "ooo" into a straw. Narrowing the way out (your lips, a straw, or a hum through your nose) raises the air pressure just above your vocal folds, so they vibrate with less effort and less impact. That's why voice therapists love these. Keep the sound clear and easy rather than airy, and stop if it ever feels pushed or uncomfortable.
 
 **Notice early tiredness.** Before anything hurts, your voice often warns you: a tight neck or jaw, an ache or "lump" in the throat, wanting to clear it, or a voice that's lower or rougher by the evening. Any of these means do less today.
 

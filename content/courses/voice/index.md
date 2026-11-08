@@ -223,7 +223,7 @@ The exercise instructions are written in Lilt's own words, from ideas in the gui
 can read the originals. The listening questions, early greeting cards and suggested daily loop are
 Lilt's teaching choices; they have not been validated as a training programme. The chapter video
 cards link to their named creators' demonstrations; their audio is not copied into Lilt.
-Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, by an AI, not a clinician. This does not mean every resource below was re-reviewed; the NHS Lothian PDF could not be retrieved during that check.
+Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, and the chapters that credit NHS Lothian were checked against both of its guides on 8 November 2026. Both were editorial checks by an AI, not clinical review, and not every resource below was re-reviewed.
 
 - NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
   (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"
@@ -236,7 +236,8 @@ Pitch, resonance, articulation, intonation and goal-setting guidance was checked
 - NHS Lothian, Voice and Communication Therapy for Trans and Non-binary People:
   [What is it?](https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-What-is-it.pdf)
   and [Where to start](https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf)
-  (February 2026): warm-ups, relaxation, voice care and vocal weight.
+  (February 2026): voice care, breath and relaxation, warm-ups, what pitch, resonance, vocal weight
+  and emphasis are, choosing your own goals, and taking new skills into everyday talk.
 - NIDCD, [Taking care of your voice](https://www.nidcd.nih.gov/health/taking-care-your-voice).
 - ASHA, [Gender affirming voice and communication](https://www.asha.org/practice-portal/professional-issues/gender-affirming-voice-and-communication/):
   self-chosen goals, listening to your own recordings and considering communication in everyday situations.
