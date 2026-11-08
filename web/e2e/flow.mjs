@@ -38,7 +38,8 @@ async function main() {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   const external = [];
-  page.on("request", (r) => { if (!r.url().startsWith(BASE) && !r.url().startsWith("blob:") && !r.url().startsWith("data:")) external.push(r.url()); });
+  // Chapter video cards show YouTube's own thumbnail; nothing else may leave this computer.
+  page.on("request", (r) => { const u = r.url(); if (!u.startsWith(BASE) && !u.startsWith("blob:") && !u.startsWith("data:") && !u.startsWith("https://i.ytimg.com/vi/")) external.push(u); });
   const snap = async (n) => shots && page.screenshot({ path: `${shots}/${n}.png`, fullPage: true });
 
   // 0. The room: today's cards as a swipeable stack, then the desk with today's widget.
@@ -69,12 +70,13 @@ async function main() {
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);
   await page.locator('.sd-upcoming > summary').click();
   const listed = await page.locator(".sd-current, .sd-queue-pick").count();
-  const chapters = await page.locator(".ve-folder").count() - 1; // the tree's folders: Today, then the chapters
+  // The sidebar is a short list of places (Home, Today, Chapters…), not the whole course.
+  const places = await page.locator(".ve-side .ve-home").allInnerTexts();
   // Opened from the computer, the first card is up straight away: Record always records a card.
   const firstUp = await page.locator(".ve-item").first().evaluate((e) => e.classList.contains("on"));
   await page.locator(".ve-item.on .readtext").waitFor();
-  check("Today opens with the first card up, today's cards (warm-up, then the reference) and the chapters",
-    firstUp && deckList.length >= 3 && listed === deckList.length && chapters >= 5 && /one, two, three/i.test(await page.locator('.sd-queue-pick').first().innerText()), `${listed} cards, ${chapters} chapters`);
+  check("Today opens with the first card up, today's cards (warm-up, then the reference) and the places",
+    firstUp && deckList.length >= 3 && listed === deckList.length && ["Home", "Today", "Chapters"].every((p) => places.some((t) => t.startsWith(p))) && /one, two, three/i.test(await page.locator('.sd-queue-pick').first().innerText()), `${listed} cards, ${places.length} places`);
   await snap("00-deck");
   // "Again" on a new card (the third: after the warm-up and the reference, which come once a day).
   const ratings = ["good", "good", "again", "good", "good", "good", "good"];
@@ -281,8 +283,8 @@ async function main() {
   await page.getByRole("button", { name: "Use this take's range as my comfortable range" }).click();
   await page.getByText(/Your range is now \d+–\d+ Hz/).waitFor();
   check("A take's range can become the comfortable range", true);
-  // The open chapter folder in the sidebar (the tree is split by part of the course).
-  check("The chapter counts the practised text", /^1\/\d+$/.test(await page.locator(".ve-folder.open").filter({ hasText: "Everyday phrases" }).locator(".ve-open .c").first().textContent()));
+  // The sidebar names the chapter you're in, under Chapters.
+  check("The sidebar shows the chapter you're in", (await page.locator(".ve-side .ve-here").innerText()).trim() === "Everyday phrases");
   await snap("14-studio-result");
   await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
@@ -300,7 +302,7 @@ async function main() {
   await snap("15-dark");
 
   check("No page errors", errors.length === 0, errors.join("; "));
-  check("No requests to external hosts", external.length === 0, external.slice(0, 3).join(", "));
+  check("No requests to external hosts besides video thumbnails", external.length === 0, external.slice(0, 3).join(", "));
   await browser.close();
 
   // 11. Permission denial

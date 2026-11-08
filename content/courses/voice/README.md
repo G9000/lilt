@@ -11,7 +11,7 @@ data folder, and these files stay as they are. Another course is another folder 
 with its own `course.md`.
 
 - `index.md`: the Practice home page (why it exists, how it works, sources). `cover: images/<file>`
-  in its front matter sets the full-width banner at the top. `cover.webp` is an original generated
+  in its front matter sets the picture at the top of Practice's Chapters page. `cover.webp` is an original generated
   illustration of a microphone, notebook and resting cat, matching the guide's artwork. The welcome page uses three original
   generated illustrations: `practice-corner.png`, `listening-nook.png` and `resting-cat.png`.
   The older `placeholder-*` files remain available for personal copies that still reference them.

@@ -47,7 +47,7 @@ async function main() {
     const tag = (s) => `${s} (${scheme})`;
     const note = page.getByRole("button", { name: /^Play my note/ });
 
-    await page.goto(`${BASE}/#/studio/pitch`);
+    await page.goto(`${BASE}/#/studio/pitch/mm-hm`); // a text link opens the Practise tab
     await page.getByRole("heading", { name: "Pitch", level: 1 }).waitFor({ timeout: 15000 });
     const setRange = (range) => page.evaluate(async (r) => {
       const p = await fetch("/api/profile").then((x) => x.json());
@@ -95,7 +95,7 @@ async function main() {
     await saved(page);
 
     // Resonance: the meter appears while recording and moves with the sound.
-    await page.goto(`${BASE}/#/studio/resonance`);
+    await page.goto(`${BASE}/#/studio/resonance/small-dog`);
     await page.getByRole("heading", { name: "Resonance", level: 1 }).waitFor();
     await saved(page);
     check(tag("no meter before recording"), (await page.locator(".ve-bright").count()) === 0);
@@ -120,7 +120,7 @@ async function main() {
     check(tag("the meter goes once the take stops"), (await page.locator(".ve-bright").count()) === 0);
 
     // Another hum chapter (Warm-ups) records without the meter.
-    await page.goto(`${BASE}/#/studio/warmup`);
+    await page.goto(`${BASE}/#/studio/warmup/hum`);
     await page.getByRole("heading", { name: /Warm/, level: 1 }).waitFor();
     await page.getByRole("button", { name: "Start recording" }).click();
     await page.getByRole("button", { name: "Stop recording" }).waitFor();

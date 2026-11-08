@@ -54,7 +54,7 @@ try {
     return route.fulfill({ status: 503, json: { error: 'No live API in this fixture.' } });
   });
   const base = server.resolvedUrls.local[0];
-  const checkColumn = async (column, width, label) => {
+  const checkColumn = async (column, width, label, content = 1200) => {
     await column.waitFor();
     const box = await column.evaluate(el => {
       const rect = el.getBoundingClientRect(), style = getComputedStyle(el), viewport = el.closest('.ds-body');
@@ -62,7 +62,7 @@ try {
     });
     assert.ok(Math.abs(box.center - width / 2) <= 1, `${label} stays centered`);
     assert.ok(!box.overflow, `${label} fits its column`);
-    if (width >= 1440) assert.ok(Math.abs(box.content - 1200) <= 1, `${label} shares the chapter's reading width (${box.content}px)`);
+    if (width >= 1440) assert.ok(Math.abs(box.content - content) <= 1, `${label} has its reading width (${box.content}px, expected ${content}px)`);
   };
   for (const theme of ['light', 'dark']) for (const width of [390, 1440, 1920]) {
     await page.setViewportSize({ width, height: 950 });
@@ -115,16 +115,14 @@ try {
     });
     const sidebar = page.getByRole('button', { name: 'Hide sidebar', exact: true });
     if (await sidebar.isVisible()) await sidebar.click();
-    const tipsToggle = page.getByRole('button', { name: /^Hide tips/ });
-    if (await tipsToggle.count()) await tipsToggle.click();
+    // A link to a text opens the chapter's Practise tab; Learn holds the intro and steps.
+    assert.equal(await page.getByRole('tab', { name: /^Practise/ }).getAttribute('aria-selected'), 'true', 'a text link opens Practise');
     const layout = await page.locator('.ve-chapter').evaluate(el => {
       const row = el.querySelector('.ve-item.on'), other = el.querySelector('.ve-item:not(.on)');
-      const intro = el.querySelector('.ci'), first = el.querySelector('.ve-item:first-child');
+      const first = el.querySelector('.ve-item:first-child');
       const marker = first.querySelector('.ve-mk'), text = first.querySelector('.ve-checkin, .readtext');
       return { width: el.getBoundingClientRect().width, overflow: el.scrollWidth > el.clientWidth + 1,
         centerOffset: (el.getBoundingClientRect().left + el.getBoundingClientRect().right) / 2 - (el.closest('.ve-page').getBoundingClientRect().left + el.closest('.ve-page').getBoundingClientRect().right) / 2,
-        introGap: text.getBoundingClientRect().top - intro.getBoundingClientRect().bottom,
-        introWidth: intro.querySelector('.md').getBoundingClientRect().width,
         exercisesWidth: el.querySelector('.ve-items').getBoundingClientRect().width,
         markerGap: text.getBoundingClientRect().left - marker.getBoundingClientRect().right,
         selectedBackground: getComputedStyle(row).backgroundColor,
@@ -134,10 +132,8 @@ try {
     });
     assert.ok(!layout.overflow, 'voice chapter fits its column');
     assert.ok(Math.abs(layout.centerOffset) <= 1, 'chapter stays centered');
-    assert.ok(Math.abs(layout.introWidth - layout.exercisesWidth) <= 1, 'intro fills the same column as the exercises');
-    assert.ok(layout.introGap >= 47 && layout.introGap <= 55, `original intro spacing is restored (${width}px: ${layout.introGap}px)`);
     if (width > 860) assert.ok(layout.markerGap >= 8, 'exercise number stays clear of the text');
-    if (width >= 1440) assert.ok(Math.abs(layout.width - 1280) <= 1, 'desktop chapter uses the wider reading layout');
+    if (width >= 1440) assert.ok(Math.abs(layout.width - 960) <= 1, 'desktop chapter is a centred 960px reading column');
     assert.equal(layout.selectedBackground, 'rgba(0, 0, 0, 0)', 'selected exercise keeps the plain reading surface');
     assert.deepEqual(layout.selectedBorder, ['0px', '0px', '0px'], 'selected exercise has no enclosing panel');
     assert.ok([layout.hint, layout.activeInk].includes(layout.ink), 'inactive exercise stays readable, including on hover');
@@ -149,9 +145,10 @@ try {
     await page.locator('.ve-item').nth(1).click();
     assert.equal(await page.locator('.ve-item.on .readtext').textContent(), voiceItems[1].text);
     await page.goto(`${base}#/studio`);
-    await checkColumn(page.locator('.ve-home-col'), width, 'Voice course home');
+    await checkColumn(page.locator('.ve-home-col'), width, 'Voice course home', 880);
+    await page.goto(`${base}#/studio/chapters`);
     await page.locator('.ve-course-guide > summary').click();
-    await checkColumn(page.locator('.ve-course-guide .md'), width, 'Voice course guide');
+    await checkColumn(page.locator('.ve-course-guide .md'), width, 'Voice course guide', 880);
     await page.screenshot({ path: path.join(shots, `voice-home-${width}-${theme}.png`) });
   }
   assert.deepEqual(errors, []);

@@ -109,13 +109,17 @@ async function main() {
   check("leaving a recorder finishes its take and releases the lock", true);
   await peer.close();
 
-  // A chapter: its first text is up straight away (Record always records a text); pick text 1 from the tree and record it.
+  // A chapter you haven't started opens on Learn; Practise shows its texts with the first one up
+  // (Record always records a text). Picking another text moves the address with it.
   await page.goto(`${BASE}/#/studio/warmup`);
+  await page.getByRole("tab", { name: /^Learn/ }).waitFor();
+  check("an unstarted chapter opens on Learn", await page.getByRole("tab", { name: /^Learn/ }).getAttribute("aria-selected") === "true");
+  await page.getByRole("tab", { name: /^Practise/ }).click();
   await page.locator(".ve-item").first().waitFor();
   check("a chapter opens with its first text up", (await page.locator(".ve-item.on").count()) === 1);
-  await page.locator(".ve-file").filter({ hasText: /^Hum$/ }).first().click();
+  await page.locator(".ve-item").nth(1).click();
   await page.locator(".ve-item.on").waitFor();
-  check("the tree opens a text and the address follows", page.url().endsWith("/#/studio/warmup/hum"));
+  check("picking a text moves the address with it", page.url().endsWith("/#/studio/warmup/hum-to-hello"));
   await record(page);
   await page.locator(".ve-item.on .ve-take .prc-insight").waitFor({ timeout: 60000 });
   check("a chapter take shows under its text with a note", true);

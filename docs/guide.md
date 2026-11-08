@@ -401,11 +401,17 @@ Monitor uploads and playback have an isolated check with locally generated media
    - **Compare** puts the original and the retry side by side as an A/B pair.
 6. If a pointer doesn't match what you hear or feel, say so. Your note is kept with the review and
    is taken into account next time.
-7. **Chapters** are free practice, in the same Practice page. The sidebar lists the thirteen
-   chapters in three parts (Get ready, The skills, Bring it together) with how many texts you've
-   practised in each, and a dot on the chapter that's next up. A chapter reads like a document: how to do
-   it, then each text in a reading serif with a hint under it. Pick a text (or press <kbd>↓</kbd>),
-   press record, and the docked recorder draws your pitch live.
+7. **Chapters** are free practice, in the same Practice page. Practice's sidebar is a short list
+   of places: Home, Today (with how many cards are left), Chapters, Recordings, Studio and Mixtape,
+   with Practice settings at the foot; the chapter you're in shows under Chapters. **Home** greets
+   you, offers one next step and shows the chapters as tiles by part. **Chapters**
+   (`#/studio/chapters`) has the course's cover, every chapter as a tile with its subtitle (the
+   next one outlined, a medal once you've practised them all) and the **Course guide**. A chapter
+   has two tabs. **Learn** holds its opening, the video and each step, with **Start practising**
+   at the end; **Practise** holds its texts, each in a reading serif with a hint under it. A
+   chapter you haven't started opens on Learn; one you have, or a link to one of its texts, opens
+   on Practise. Pick a text (or press <kbd>↓</kbd>), press record, and the recorder draws your
+   pitch live.
    - **Show my pitch live** lets you watch without recording.
    - **Play my note · F♯3** (once you have a comfortable range) plays a soft tone for about two
      seconds at the middle of your range, on the nearest note, so you can hum along to it. It never

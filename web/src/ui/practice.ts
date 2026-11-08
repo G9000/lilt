@@ -410,14 +410,18 @@ export const practice = {
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&_button:hover]:text-ink`,
   "ve-chev": `[.ve-part_&]:text-ink-3 w-[12px] h-[12px] [transition:transform_0.18s_var(--ease)] ` +
     `[&.open]:[transform:rotate(90deg)] [@media_(prefers-reduced-motion:_reduce)]:[transition:none]`,
-  "ve-home": `[.ve_&]:w-full [.ve_&]:h-[28px] [.ve_&]:flex [.ve_&]:items-center [.ve_&]:justify-start [.ve_&]:[row-gap:2px] ` +
-    `[.ve_&]:[column-gap:2px] [.ve_&]:mt-[0] [.ve_&]:mr-[0] [.ve_&]:mb-[1px] [.ve_&]:ml-[0] [.ve_&]:pt-[0] ` +
-    `[.ve_&]:pr-[8px] [.ve_&]:pb-[0] [.ve_&]:pl-[0] [.ve_&]:rounded-[7px] [.ve_&]:text-ink [.ve_&]:font-medium ` +
-    `[.ve_&]:text-left [.ve_&]:[transition:background-color_0.12s_ease] [.ve_&[aria-current="page"]]:bg-fill-2 ` +
-    `[.ve_&[aria-current="page"]]:[background-image:none] ` +
+  "ve-home": `[.ve_&]:w-full [.ve_&]:h-[38px] [.ve_&]:flex [.ve_&]:items-center [.ve_&]:justify-start ` +
+    `[.ve_&]:[column-gap:10px] [.ve_&]:mt-[0] [.ve_&]:mr-[0] [.ve_&]:mb-[2px] [.ve_&]:ml-[0] [.ve_&]:pt-[0] ` +
+    `[.ve_&]:pr-[10px] [.ve_&]:pb-[0] [.ve_&]:pl-[8px] [.ve_&]:rounded-[10px] [.ve_&]:text-ink-2 [.ve_&]:font-medium ` +
+    `[.ve_&]:text-[14px] [.ve_&]:text-left [.ve_&]:[transition:background-color_0.12s_ease,_color_0.12s_ease] ` +
+    `[.ve_&[aria-current="page"]]:bg-fill-2 [.ve_&[aria-current="page"]]:text-ink ` +
+    `[.ve_&[aria-current="page"]]:[background-image:none] [&_.t]:[flex:1] [&_.t]:min-w-0 [&_.t]:truncate ` +
+    `[&_.c]:text-[12px] [&_.c]:font-medium [&_.c]:text-ink-3 [&_.c]:tabular-nums ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:bg-fill ` +
+    `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:text-ink ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:[background-image:none]`,
-  "ve-home-ic": `[flex:none] w-[22px] grid place-items-center text-ink-2 [&_svg]:w-[14px] [&_svg]:h-[14px]`,
+  "ve-here": `[.ve_&]:h-[32px] [.ve_&]:pl-[42px] [.ve_&]:text-[13px] [.ve_&]:mb-[4px]`,
+  "ve-home-ic": `[flex:none] w-[22px] grid place-items-center [&_svg]:w-[17px] [&_svg]:h-[17px]`,
   "ve-tree": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [.ve-home_+_&]:mt-[8px]`,
   "ve-files": `list-none mt-[1px] mr-[0] mb-[4px] ml-[18px] pt-[0] pr-[0] pb-[0] pl-[7px] [border-left-width:1px] ` +
     `[border-left-style:solid] [border-left-color:var(--hair)]`,
@@ -633,7 +637,7 @@ export const practice = {
     `[.ve_&.warn]:[max-width:none] [.ve_&.warn_b]:block [.ve_&.warn_b]:mt-[0] [.ve_&.warn_b]:mr-[0] ` +
     `[.ve_&.warn_b]:mb-[3px] [.ve_&.warn_b]:ml-[0]`,
   "ci": `mt-[0] mr-[0] mb-[32px] ml-[0]`,
-  "ci-lede": `[--md-body-size:19px] w-full [max-width:62ch] text-ink`,
+  "ci-lede": `[--md-body-size:19px] w-full [max-width:min(62ch,_680px)] text-ink`,
   "ci-tips": `list-none mt-[16px] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [&_>_li]:grid [&_>_li_>_div]:[max-width:68ch] ` +
     `[&_>_li]:[grid-template-columns:28px_minmax(0,_1fr)] [&_>_li]:[row-gap:12px] [&_>_li]:[column-gap:12px] ` +
     `[&_>_li]:[align-items:start] [&_>_li]:pt-[16px] [&_>_li]:pr-[0] [&_>_li]:pb-[16px] [&_>_li]:pl-[0] ` +
@@ -656,7 +660,7 @@ export const practice = {
     `[@media_(max-width:_860px)]:rounded-[7px]`,
   "ci-n": `not-italic font-semibold text-[13px] [line-height:1] font-sans tabular-nums`,
   "ci-skip": `hidden! [@media_(max-width:_860px)]:inline-flex! [@media_(max-width:_860px)]:mt-[12px]`,
-  "ci-foot": `flex flex-wrap items-center [row-gap:8px] [column-gap:20px] mt-[16px]`,
+  "ci-foot": `flex flex-wrap items-center [row-gap:8px] [column-gap:20px] mt-[28px]`,
   "ci-link": `[.ve_&]:inline-flex [.ve_&]:items-center [.ve_&]:[row-gap:5px] [.ve_&]:[column-gap:5px] [.ve_&]:min-h-[24px] ` +
     `[.ve_&]:pt-[0] [.ve_&]:pr-[0] [.ve_&]:pb-[0] [.ve_&]:pl-[0] [.ve_&]:[background-color:transparent] ` +
     `[.ve_&]:[background-image:none] [.ve_&]:[border-top-width:0] [.ve_&]:[border-top-style:none] ` +
@@ -708,7 +712,7 @@ export const practice = {
     `[&::before]:bg-accent [&::before]:[background-image:none]`,
   "ve-items": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [scroll-margin-top:16px] ` +
     `[.sd-deck_>_&]:relative [.sd-deck_>_&]:mt-[0] [.sd-deck_>_&]:mr-[0] [.sd-deck_>_&]:mb-[34px] ` +
-    `[.sd-deck_>_&]:ml-[0] [.sd-deck_>_&]:isolate [.sd-deck_>_&:has(.sd-current)::before]:[content:""] ` +
+    `[.sd-deck_>_&]:ml-[0] [.sd-deck_>_&]:isolate [.sd-deck_>_&:has(.sd-current)::before]:[content:none] ` +
     `[.sd-deck_>_&:has(.sd-current)::before]:absolute [.sd-deck_>_&:has(.sd-current)::before]:[top:24px] ` +
     `[.sd-deck_>_&:has(.sd-current)::before]:[right:24px] [.sd-deck_>_&:has(.sd-current)::before]:[bottom:-15px] ` +
     `[.sd-deck_>_&:has(.sd-current)::before]:[left:24px] [.sd-deck_>_&:has(.sd-current)::before]:[z-index:-1] ` +
@@ -728,7 +732,7 @@ export const practice = {
     `[.sd-deck_>_&:has(.sd-current)::before]:[background-color:var(--sd-edge)] ` +
     `[.sd-deck_>_&:has(.sd-current)::before]:[background-image:none] ` +
     `[.sd-deck_>_&:has(.sd-current)::before]:pointer-events-none ` +
-    `[.sd-deck_>_&:has(.sd-current)::after]:[content:""] [.sd-deck_>_&:has(.sd-current)::after]:absolute ` +
+    `[.sd-deck_>_&:has(.sd-current)::after]:[content:none] [.sd-deck_>_&:has(.sd-current)::after]:absolute ` +
     `[.sd-deck_>_&:has(.sd-current)::after]:[top:16px] [.sd-deck_>_&:has(.sd-current)::after]:[right:12px] ` +
     `[.sd-deck_>_&:has(.sd-current)::after]:[bottom:-8px] [.sd-deck_>_&:has(.sd-current)::after]:[left:12px] ` +
     `[.sd-deck_>_&:has(.sd-current)::after]:[z-index:-1] ` +
@@ -1040,7 +1044,7 @@ export const practice = {
     `[border-bottom-width:1px] [border-bottom-style:solid] [border-bottom-color:var(--hair)] [&:only-child]:pb-[0] ` +
     `[&:only-child]:[border-bottom-width:0] [&:only-child]:[border-bottom-style:none] ` +
     `[&:only-child]:[border-bottom-color:currentColor] [&_p]:mt-[0] [&_p]:mr-[0] [&_p]:mb-[0] [&_p]:ml-[0] ` +
-    `[&_p]:text-[15px] [&_p]:text-ink-2 [&_b]:text-ink [&_b]:font-semibold`,
+    `[&_p]:text-[17px] [&_p]:[line-height:1.45] [&_p]:text-ink-2 [&_b]:text-ink [&_b]:font-semibold`,
   "ve-days": `flex items-center justify-between [row-gap:16px] [column-gap:16px] flex-wrap [&_p]:mt-[0] [&_p]:mr-[0] ` +
     `[&_p]:mb-[0] [&_p]:ml-[0] [&_p]:grid [&_b]:text-[17px] [&_b]:font-semibold [&_b]:[letter-spacing:-0.02em] ` +
     `[&_b]:text-ink [&_span]:text-[13px] [&_span]:text-ink-3 [&_ol]:list-none [&_ol]:mt-[0] [&_ol]:mr-[0] ` +
@@ -1344,7 +1348,7 @@ export const practice = {
     `[:root[data-theme="dark"]_.ve_&]:[--sd-paper:#222222] [:root[data-theme="dark"]_.ve_&]:[--sd-edge:#2f2f2f] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-line:#c4c4c4] [:root[data-theme="dark"]_.ve_&]:[--sd-sage:#849680] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-clay:#ce9578]`,
-  "sd-deck": `[.ve_&]:max-w-[880px] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
+  "sd-deck": `[.ve_&]:max-w-[760px] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
     `[.ve_&]:pb-[64px] [.ve_&]:[padding-left:var(--page-padding)] [@media_(max-width:_700px)]:[.ve_&]:pt-[24px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pr-[18px] [@media_(max-width:_700px)]:[.ve_&]:pb-[50px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pl-[18px]`,
@@ -1646,4 +1650,37 @@ export const practice = {
   "fc-keys": `mt-[0] mr-[0] mb-[0] ml-[0] pt-[16px] pr-[24px] pb-[16px] pl-[24px] flex items-center justify-center ` +
     `[row-gap:10px] [column-gap:10px] text-ink-3 text-[13px] [&_kbd]:[opacity:0.8] ` +
     `[@media_(max-width:_860px)]:hidden`,
+  // Practice Home and Chapters (direction A, November 2026): a greeting, sections with a quiet link,
+  // and chapters as tiles grouped by part.
+  "ve-greet": `[&_p]:mt-[0] [&_p]:mb-[0] [&_p]:text-[15px] [&_p]:font-medium [&_p]:text-ink-3 ` +
+    `[&_h1]:[font-size:clamp(30px,_3.4vw,_40px)]!`,
+  "ve-home-chapters": `mt-[40px]`,
+  // Learn and Practise on a chapter: a segmented control, as in DESIGN.md.
+  "ve-tabs": `inline-flex p-[3px] mb-[28px] rounded-[12px] bg-fill [column-gap:2px] ` +
+    `[.ve_&_button]:h-[36px] [.ve_&_button]:px-[16px] [.ve_&_button]:rounded-[9px] [.ve_&_button]:text-[14px] ` +
+    `[.ve_&_button]:font-medium [.ve_&_button]:text-ink-2 [.ve_&_button]:inline-flex [.ve_&_button]:items-center ` +
+    `[.ve_&_button]:[column-gap:8px] [.ve_&_button]:[transition:background-color_0.15s_ease,_color_0.15s_ease] ` +
+    `[.ve_&_button[aria-selected="true"]]:bg-panel [.ve_&_button[aria-selected="true"]]:text-ink ` +
+    `[.ve_&_button[aria-selected="true"]]:[box-shadow:0_0_0_1px_var(--hair),_0_1px_2px_rgba(0,_0,_0,_0.08)] ` +
+    `[.ve_&_button:hover:not([aria-selected="true"])]:text-ink [&_button_span]:text-[12px] [&_button_span]:text-ink-3 ` +
+    `[&_button_span]:font-normal [&_button_span]:tabular-nums`,
+  "ve-sec-h": `flex items-baseline justify-between [column-gap:16px] mb-[4px] [&_h2]:m-0 [&_h2]:text-[20px] ` +
+    `[&_h2]:font-semibold [&_h2]:text-ink [&_h2]:[letter-spacing:-0.02em] [&_a]:text-[14px] [&_a]:font-medium ` +
+    `[&_a]:text-ink-2 [&_a]:no-underline [&_a:hover]:text-ink`,
+  "ve-cparts": `grid [row-gap:8px] [scroll-margin-top:24px]`,
+  "ve-cpart-h": `mt-[20px] mb-[10px] text-[13px] font-semibold text-ink-3`,
+  "ve-cgrid": `list-none m-0 p-0 grid [grid-template-columns:repeat(auto-fill,_minmax(190px,_1fr))] gap-[10px] [@media_(max-width:_600px)]:[grid-template-columns:repeat(2,_minmax(0,_1fr))]`,
+  "ve-ctile": `flex flex-col [row-gap:4px] h-full min-h-[104px] pt-[14px] pr-[16px] pb-[14px] pl-[16px] rounded-[14px] ` +
+    `bg-panel [box-shadow:0_0_0_1px_var(--hair)] no-underline text-ink ` +
+    `[transition:background-color_0.15s_ease,_box-shadow_0.15s_ease,_transform_0.15s_var(--ease)] ` +
+    `[&:hover]:[box-shadow:0_0_0_1px_var(--line-strong),_0_8px_24px_-16px_rgba(0,_0,_0,_0.35)] ` +
+    `[&:active]:[transform:scale(0.98)] ` +
+    `[&_.n]:text-[12px] [&_.n]:font-medium [&_.n]:text-ink-3 [&_.n]:tabular-nums ` +
+    `[&_b]:text-[15px] [&_b]:font-semibold [&_b]:[letter-spacing:-0.01em] [&_b]:[line-height:1.3] ` +
+    `[&_small]:text-[13px] [&_small]:text-ink-3 [&_small]:[line-height:1.4] ` +
+    `[&_.m]:mt-auto [&_.m]:pt-[8px] [&_.m]:flex [&_.m]:items-center [&_.m]:[column-gap:6px] [&_.m]:text-[12px] ` +
+    `[&_.m]:font-medium [&_.m]:text-ink-3 [&.next_.m]:text-accent-ink [&.next]:[box-shadow:0_0_0_1.5px_var(--accent)] ` +
+    `[@media_(prefers-reduced-motion:_reduce)]:[&:active]:[transform:none]`,
+  "ve-cover-card": `h-[clamp(140px,_22vw,_220px)] rounded-[16px] [background-size:cover] [background-position:center_40%] ` +
+    `mb-[24px] [box-shadow:0_0_0_1px_var(--hair)]`,
 } as const;

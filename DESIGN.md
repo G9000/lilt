@@ -7,8 +7,11 @@ monitor is a small macOS-style desktop where every part of Lilt is an app window
 and use is quiet. Greys are neutral (no blue cast) in both themes, the Practice sidebar is a solid
 surface rather than glass over the room, and Today's card is plain white (`#222222` in dark) on the
 page. Fewer boxes: a suggestion after a take is a sentence, not a tinted card; resonance sits
-under **More about this take** rather than in a box inside the take. Part names in the sidebar are
-sentence case, and only the chapter you're in and the one up next show a count. Placeholders for
+under **More about this take** rather than in a box inside the take. Practice's frame is a guided
+app: the sidebar is a short list of places (no file tree), Home greets you with one next step and
+chapter tiles, a Chapters page holds every chapter as a tile with the cover and guide, a chapter
+splits into **Learn** and **Practise** tabs (a segmented control), and Today is one card in a
+760px column without the stacked-paper edges. Placeholders for
 unfinished features (Remix) stay hidden until they work. Windows close with Escape, when you go to
 another page, and with **Done** on phones, so no one has to aim for the 12px red light.
 
@@ -262,10 +265,11 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   **Progress** says "Coming soon" (with a Soon tag in the sidebar) and points at Then and now and
   Recordings, until it can be trusted. While Practice fills the screen, the desk's widgets are hidden
   so nothing shows through the glass.
-  **Home** (`#/studio`, the dock's Chapters app) puts practice actions and the chapter catalog first:
-  a full-width course cover, a "Your practice" heading, the current practice state, and shortcuts to
-  the first/next chapter, Today, and the catalog. The owner's complete Markdown introduction is in
-  the expandable **Course guide**, preserving references and code blocks across sections. The
+  **Home** (`#/studio`, the dock's Chapters app) opens with a time-of-day greeting and the date
+  under it, then your practice (the next step first) and the chapters as tiles by part with an
+  "All chapters" link. **Chapters** (`#/studio/chapters`) shows the course cover as a rounded
+  picture, every chapter as a tile, and the owner's complete Markdown introduction in the
+  expandable **Course guide**, preserving references and code blocks across sections. The
   guide and chapter introductions use one centred reading column, fitting smaller screens.
   Width controls and section columns are removed for now. Previously saved width choices have
   no effect. References and footnotes stay within the same parsed Markdown document. The
@@ -286,13 +290,10 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   **folds away**, sliding and fading over about a third of a second (the toggle glides with it), with
   the toggle beside the traffic lights or ⌘\ / Ctrl+\; the recorder half never gets narrower than
   340px, whatever the split. These sizes are kept in
-  this browser. The sidebar (272px by default) is a **file tree, like Obsidian**, with a Home
-  row at the top, aligned like the folders (its icon where their chevrons sit): **Today** and each
-  **chapter** are folders (a chevron that folds, the name, a count, or a small medal once a chapter
-  is complete); their cards and texts are the files, under a hairline indent guide, with a green
-  tick once practised and the open one highlighted. The page you're on opens its folder. Clicking a
-  card starts it; clicking a text opens it (`#/studio/<chapter>/<text>`), and choosing a text in
-  the document keeps the URL and the tree in step. Links at the bottom carry the desk's app icons
+  this browser. The sidebar (224px by default) lists places in 38px rows with 17px icons: Home,
+  Today (with how many cards are left), Chapters, Recordings, Studio and Mixtape, and Practice
+  settings at the foot. The chapter you're in shows indented under Chapters. Choosing a text in a
+  chapter keeps the URL (`#/studio/<chapter>/<text>`) in step. Links at the bottom carry the desk's app icons
   (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document
   (720px column): a bold Geist H1 (54px, 760, −0.05em), a sans subtitle and meta line, an "About this chapter" note on a

@@ -188,7 +188,7 @@ export function App() {
     case "practice": page = <PracticePage sessionId={seg[1]} />; break;
     case "review": page = <FeedbackPage reviewId={seg[1]} />; break;
     case "compare": page = <ComparePage a={params.get("a") ?? ""} b={params.get("b") ?? ""} />; break;
-    case "studio": page = seg[1] === "start" ? <VoicePage doc="start" /> : seg[1] === "updates" ? <VoicePage doc="updates" /> : seg[1] === "mixtape" ? <VoicePage doc="mixtape" /> : seg[1] === "settings" ? <VoicePage doc="settings" /> : seg[1] === "free" ? <VoicePage doc="free" /> : seg[1] ? <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} /> : <VoicePage doc="home" />; break;
+    case "studio": page = seg[1] === "start" ? <VoicePage doc="start" /> : seg[1] === "updates" ? <VoicePage doc="updates" /> : seg[1] === "mixtape" ? <VoicePage doc="mixtape" /> : seg[1] === "settings" ? <VoicePage doc="settings" /> : seg[1] === "free" ? <VoicePage doc="free" /> : seg[1] === "chapters" ? <VoicePage doc="chapters" /> : seg[1] ? <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} /> : <VoicePage doc="home" />; break;
     case "flashcards": page = <FlashcardsPage key={course} course={course} chapter={seg[1]} />; break;
     case "photos": page = <PhotosPage />; break;
     case "yarn": page = <YarnPage />; break;

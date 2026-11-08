@@ -32,15 +32,14 @@ try {
   const errors = [];
   page.on("pageerror", e => errors.push(e.message));
   await page.goto(`${base}/#/studio`);
-  await page.getByRole("navigation", { name: "Course shortcuts" }).waitFor();
+  await page.locator(".ve-greet").waitFor();
   assert.equal(await page.locator(".ve-width-toggle").count(), 0, "the global width toolbar is removed");
+  if (shots) await page.screenshot({ path: path.join(shots, "course-desktop.png") });
+  // Every chapter, and the course guide, live on the Chapters page.
+  await page.getByRole("link", { name: "All chapters", exact: true }).click();
   await page.locator(".ve-course-guide > summary").click();
   await page.getByRole("heading", { name: "Your route through voice feminization" }).waitFor();
   await page.locator(".ve-course-guide > summary").click();
-  assert.equal(await page.locator(".ve-course-jumps a").count(), 2);
-  await page.locator(".ve-page").evaluate(el => el.scrollTo({ top: 0, behavior: "instant" }));
-  if (shots) await page.screenshot({ path: path.join(shots, "course-desktop.png") });
-  await page.getByRole("button", { name: /Browse 16 chapters/ }).click();
   await page.locator("#voice-chapters").waitFor({ state: "visible" });
   await page.locator("#voice-chapters").getByRole("link", { name: /Pitch Finding/ }).click();
   await page.getByRole("heading", { name: "Pitch", exact: true }).waitFor();
@@ -48,7 +47,7 @@ try {
   if (shots) await page.screenshot({ path: path.join(shots, "pitch-desktop.png") });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${base}/#/studio`);
-  await page.getByRole("navigation", { name: "Course shortcuts" }).waitFor();
+  await page.locator(".ve-greet").waitFor();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   assert.equal(overflow, false, "page must fit mobile width");
   if (shots) await page.screenshot({ path: path.join(shots, "course-mobile.png") });
@@ -57,7 +56,7 @@ try {
   const layoutFailures = [];
   for (const route of ["studio", "studio/free", "studio/pitch", "history", "studio/settings", "studio/mixtape", "courses"]) {
     await page.goto(`${base}/#/${route}`);
-    const ready = { studio: ".ve-course-jumps", "studio/free": ".ve-studio-rec", "studio/pitch": ".ci", history: ".rl-head", "studio/settings": ".sx-app", "studio/mixtape": ".ve-mixtape .co-box", courses: ".co-list" };
+    const ready = { studio: ".ve-greet", "studio/free": ".ve-studio-rec", "studio/pitch": ".ci", history: ".rl-head", "studio/settings": ".sx-app", "studio/mixtape": ".ve-mixtape .co-box", courses: ".co-list" };
     await page.locator(ready[route]).first().waitFor();
     await page.evaluate(() => document.fonts.ready);
     for (const width of [320, 768, 1440]) {
@@ -81,13 +80,12 @@ try {
     await route.fulfill({ response, json: { ...texts, home: generalMarkdown, levels: [{ ...texts.levels[0], id: "everyday-ideas", title: "A chapter for everyday ideas and experiments", subtitle: "Make room for something new", part: "Foundations", basis: generalMarkdown, video: null, source_url: null, check_in: null, items: [{ ...texts.levels[0].items[0], id: "one-small-idea", text: "Describe an idea you would like to explore.", hint: "Start with a short note, then try one small experiment." }] }] } });
   });
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto(`${base}/#/studio`);
+  await page.goto(`${base}/#/studio/chapters`);
   await page.reload();
   await page.locator(".ve-course-guide > summary").click();
   assert.equal(await page.locator(".ve-course-guide pre code").innerText(), "First line\n\n## This is code, not a heading\nLast line\n");
   assert.equal(await page.getByRole("link", { name: "the reference" }).getAttribute("href"), "https://example.com/guide");
-  assert.equal(await page.getByRole("link", { name: "First chapter", exact: true }).getAttribute("href"), "#/studio/everyday-ideas");
-  await page.getByRole("link", { name: "First chapter", exact: true }).click();
+  await page.locator('#voice-chapters a[href="#/studio/everyday-ideas"]').click();
   await page.locator(".ci-body pre").waitFor();
   assert.equal(await page.locator(".ve-col h1").count(), 1, "embedded Markdown must sit below the page title in the heading hierarchy");
   assert.equal(await page.locator(".ci-body pre code").innerText(), "First line\n\n## This is code, not a heading\nLast line\n");

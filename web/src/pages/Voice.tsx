@@ -8,7 +8,7 @@ import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
-import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, sameLabel, textLabel } from "../chapters";
+import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, sameLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 import { RemixBox } from "../components/RemixBox";
@@ -62,7 +62,7 @@ const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60))
 /** Sidebar layout, legacy recorder split, and reading width, kept in this browser. */
 interface Layout { side: number; collapsed: boolean; split: number }
 const LAYOUT_KEY = "lilt.practice.layout";
-const LAYOUT: Layout = { side: 272, collapsed: false, split: 0.5 };
+const LAYOUT: Layout = { side: 224, collapsed: false, split: 0.5 };
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 function useLayout() {
@@ -125,7 +125,7 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null;
+export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "chapters" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null;
   /** Recordings narrowed to one text over time (`#/history?text=…`). */
   text?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
@@ -196,19 +196,13 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <RemixPanel />
-      <Sidebar onNewChapter={() => void newChapter()} texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
+      <Sidebar texts={texts} deck={deck} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} locked={recording} />
       <div className={cx(`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "mixtape" || doc === "settings" ? " solo" : ""}`, practice["ve-doc"])} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
         {texts && (
           <nav className={cx("ve-chips", practice["ve-chips"])} aria-label="Chapters" ref={chips}>
-            <button aria-current={doc === "home" ? "page" : undefined} onClick={() => go("/studio")} disabled={recording}>Home</button>
-            <button aria-current={doc === "free" ? "page" : undefined} onClick={() => go("/studio/free")} disabled={recording}>Studio</button>
-            <button aria-current={doc === "recordings" ? "page" : undefined} onClick={() => go("/history")} disabled={recording}>Recordings</button>
-            <button aria-current={doc === "mixtape" ? "page" : undefined} onClick={() => go("/studio/mixtape")} disabled={recording}>Mixtape</button>
-            <button aria-current={doc === "today" ? "page" : undefined} onClick={() => go("/deck")} disabled={recording}>Today</button>
-            <button aria-current={doc === "settings" ? "page" : undefined} onClick={() => go("/studio/settings")} disabled={recording}>Settings</button>
-            {texts.levels.map((l) => <button key={l.id} aria-current={doc === "chapter" && l.id === level?.id ? "page" : undefined} onClick={() => go(`/studio/${l.id}`)} disabled={recording}>{l.title}</button>)}
+            {[...PLACES, SETTINGS_PLACE].map((p) => <button key={p.id} aria-current={(doc === "chapter" ? "chapters" : doc === "free" ? "free" : doc) === p.id ? "page" : undefined} onClick={() => go(p.to)} disabled={recording}>{p.id === "settings" ? "Settings" : p.label}</button>)}
           </nav>
         )}
         {loadErr && !texts
@@ -223,6 +217,8 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
           ? <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}><div className={cx("ve-col ve-embed", practice["ve-embed"], practice["ve-col"])}><MixtapeDoc onTexts={setTexts} /></div></div>
           : doc === "free"
           ? profile && <StudioDoc band={profile.comfort_range_hz ?? null} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
+          : doc === "chapters"
+          ? texts && <ChaptersDoc texts={texts} practised={practised} onNewChapter={() => void newChapter()} />
           : doc === "home"
           ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} />
           : doc === "start"
@@ -292,14 +288,10 @@ export function ChapterVideo({ video, course }: { video: NonNullable<TextLevel["
 }
 
 /**
- * A chapter's intro: its opening line, then each **Label.** paragraph as a numbered step (number,
- * label, a line or two), voice care tinted with a heart. All of it the first time; once you've
- * practised there, the opening line and "Show tips". The sources fold away under the list. On a
- * phone, "Skip to the texts" jumps past the steps.
+ * A chapter's Learn tab: its opening line, the video, then each **Label.** paragraph as a numbered
+ * step (voice care tinted with a heart), and a way into the texts. The sources fold away.
  */
-function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }) {
-  // Decided once per visit (the parent keys this by chapter), so it never folds up under you.
-  const [open, setOpen] = useState(!started);
+function ChapterIntro({ level, onPractise }: { level: TextLevel; onPractise: () => void }) {
   const [sources, setSources] = useState(false);
   const basis = howTo(level.basis);
   const steps = chapterSteps(level.basis);
@@ -307,12 +299,8 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
   return (
     <section className={cx("ci", practice["ci"])} aria-label="About this chapter">
       <Markdown src={steps?.lede ?? basis} className={cx(steps ? "ci-lede" : "ci-body", practice["ci-lede"])} headingOffset={1} />
-      {tips.length > 0 && open && (
-        <button type="button" className={cx("ci-link ci-skip", practice["ci-skip"], practice["ci-link"])} onClick={() => document.getElementById(`texts-${level.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}>
-          Skip to the texts<Arrow />
-        </button>
-      )}
-      {tips.length > 0 && open && (
+      {level.video && <ChapterVideo video={level.video} />}
+      {tips.length > 0 && (
         <ol className={cx("ci-tips", practice["ci-tips"])} id={`tips-${level.id}`}>
           {tips.map((t, i) => {
             const care = isCare(t.label);
@@ -328,17 +316,12 @@ function ChapterIntro({ level, started }: { level: TextLevel; started: boolean }
         </ol>
       )}
       <div className={cx("ci-foot", practice["ci-foot"])}>
-        {tips.length > 0 && (
-          <button type="button" className={cx("ci-link", practice["ci-link"])} aria-expanded={open} aria-controls={`tips-${level.id}`} onClick={() => setOpen((o) => !o)}>
-            {open ? "Hide tips" : `Show tips (${tips.length})`}<Arrow up={open} />
-          </button>
-        )}
+        <button type="button" className={cx("btn-primary", shared["btn-primary"])} onClick={onPractise}>Start practising</button>
         <button type="button" className={cx("ci-link quiet", practice["ci-link"])} aria-expanded={sources} onClick={() => setSources((v) => !v)}>
           Sources<Arrow up={sources} />
         </button>
       </div>
       {sources && <p className={cx("ci-src", practice["ci-src"])}>{level.written_by}{level.source_url && <> <a href={level.source_url} target="_blank" rel="noreferrer">Source</a></>}</p>}
-      {level.video && <ChapterVideo video={level.video} />}
     </section>
   );
 }
@@ -351,39 +334,20 @@ const nextChapter = (texts: Texts, practised: Set<string>) => texts.levels.find(
 const Arrow = ({ up = false }: { up?: boolean }) => (
   <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" style={{ transform: up ? "rotate(180deg)" : undefined }}><path d="M6 2.5v7M3 6.5l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-const Chevron = ({ open }: { open: boolean }) => (
-  <svg className={cx(`ve-chev${open ? " open" : ""}`, practice["ve-chev"])} viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-);
 const Tick = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l3 3 6-6.8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 
-/** One folder in the tree: a row that opens the page, a chevron that folds it, and its files under it. */
-function Folder({ id, label, extra, current, open, onToggle, onOpen, locked, children }: {
-  id: string; label: string; extra: ReactNode; current: boolean; open: boolean; onToggle: (id: string) => void; onOpen: () => void; locked: boolean; children: ReactNode;
-}) {
-  return (
-    <li className={`ve-folder${open ? " open" : ""}`}>
-      <div className={cx("ve-row", practice["ve-row"])}>
-        <button className={cx("ve-fold", practice["ve-fold"])} onClick={() => onToggle(id)} aria-expanded={open} aria-label={`${open ? "Fold" : "Unfold"} ${label}`}><Chevron open={open} /></button>
-        <button className={cx("ve-open", practice["ve-open"])} onClick={onOpen} disabled={locked} aria-current={current ? "page" : undefined}><span className="t">{label}</span>{extra}</button>
-      </div>
-      {open && <ul className={cx("ve-files", practice["ve-files"])}>{children}</ul>}
-    </li>
-  );
-}
-
-/** Where the sidebar keeps which parts of the course are folded. */
-const FOLDED_KEY = "lilt.sidebar.folded";
-
-/** The places above the tree: Home, your recordings and your progress. */
+/** The places in Practice's sidebar, in order; Practice settings sits apart at the bottom. */
 const PLACES = [
   { id: "home", label: "Home", to: "/studio", icon: "M2.8 7.2L8 2.8l5.2 4.4V13a.8.8 0 01-.8.8H9.6V10H6.4v3.8H3.6a.8.8 0 01-.8-.8z" },
-  { id: "free", label: "Studio", to: "/studio/free", icon: "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2" },
+  { id: "today", label: "Today", to: "/deck", icon: "M3 4.6h10v8.6a.8.8 0 01-.8.8H3.8a.8.8 0 01-.8-.8zM3 7.2h10M5.6 3v2.6M10.4 3v2.6" },
+  { id: "chapters", label: "Chapters", to: "/studio/chapters", icon: "M2.6 3.4h3.6a1.8 1.8 0 011.8 1.8v8.2a1.4 1.4 0 00-1.4-1.4h-4zM13.4 3.4H9.8A1.8 1.8 0 008 5.2v8.2a1.4 1.4 0 011.4-1.4h4z" },
   { id: "recordings", label: "Recordings", to: "/history", icon: "M3 6.5v3M5.5 4v8M8 2.5v11M10.5 5v6M13 7v2" },
+  { id: "free", label: "Studio", to: "/studio/free", icon: "M8 2.5a2 2 0 012 2v3.5a2 2 0 01-4 0V4.5a2 2 0 012-2zM4.5 8a3.5 3.5 0 007 0M8 11.5v2" },
   { id: "mixtape", label: "Mixtape", to: "/studio/mixtape", icon: "M2.6 4h10.8a.8.8 0 01.8.8v6.4a.8.8 0 01-.8.8H2.6a.8.8 0 01-.8-.8V4.8a.8.8 0 01.8-.8zM4.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M9.4 7.6a1.1 1.1 0 102.2 0 1.1 1.1 0 10-2.2 0M6.6 7.6h2.8M5 12l1-2h4l1 2" },
-  { id: "settings", label: "Practice settings", to: "/studio/settings", icon: "M8 5.6a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8zM8 1.8v1.6M8 12.6v1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M1.8 8h1.6M12.6 8h1.6M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1" },
 ];
+const SETTINGS_PLACE = { id: "settings", label: "Practice settings", to: "/studio/settings", icon: "M8 5.6a2.4 2.4 0 100 4.8 2.4 2.4 0 000-4.8zM8 1.8v1.6M8 12.6v1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M1.8 8h1.6M12.6 8h1.6M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1" };
 
 /**
  * Your mixtape, in Practice (#/studio/mixtape): your own remix of this course, made by your AI.
@@ -536,89 +500,39 @@ function ProgressSoon() {
 }
 
 /**
- * The sidebar as a file tree, like Obsidian: Today and each chapter are folders, their cards and
- * texts the files. The page you're on opens its folder; the chevrons fold the rest.
+ * The sidebar: a short list of places, not the whole course. The chapter you're in shows under
+ * Chapters, so you always know where you are; every chapter is on the Chapters page.
  */
-function Sidebar({ texts, deck, practised, current, itemId, locked, onNewChapter }: {
-  texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; itemId?: string; locked: boolean; onNewChapter: () => void;
-}) {
-  const [open, setOpen] = useState<Set<string>>(() => new Set([current]));
-  // Only the page you're on stays unfolded; the rest fold away as you move.
-  useEffect(() => { setOpen(new Set([current])); }, [current]);
-  const toggle = (id: string) => setOpen((o) => { const n = new Set(o); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+function Sidebar({ texts, deck, current, locked }: { texts: Texts | null; deck: Deck | null; current: string; locked: boolean }) {
   const left = deck ? deck.items.filter((i) => !i.done_today).length : 0;
   const total = deck?.items.length ?? 0;
-  const next = texts && nextChapter(texts, practised);
-  // Parts of the course you've folded away, kept in this browser. Going to a chapter unfolds its part.
-  const [folded, setFolded] = useState<Set<string>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(FOLDED_KEY) ?? "[]")); } catch { return new Set(); }
-  });
-  const fold = (part: string, on: boolean) => setFolded((f) => {
-    const n = new Set(f); if (on) n.add(part); else n.delete(part);
-    try { localStorage.setItem(FOLDED_KEY, JSON.stringify([...n])); } catch { /* private window: folds just aren't kept */ }
-    return n;
-  });
   const here = texts?.levels.find((l) => l.id === current);
-  const currentPart = here ? here.part?.trim() || "Chapters" : null;
-  useEffect(() => { if (currentPart && folded.has(currentPart)) fold(currentPart, false); }, [current]); // eslint-disable-line react-hooks/exhaustive-deps
-  const file = (key: string, label: string, done: boolean, on: boolean, to: string, disabled = false) => (
-    <li key={key}>
-      <button className={cx(`ve-file${done ? " done" : ""}`, practice["ve-file"])} onClick={() => go(to)} disabled={locked || disabled} aria-current={on ? "page" : undefined} title={label}>
-        <span className="t">{label}</span>{done && <Tick className={cx("ve-tick", practice["ve-tick"])} />}
-      </button>
-    </li>
+  const place = (p: (typeof PLACES)[number], extra?: ReactNode) => (
+    <button key={p.id} className={cx("ve-home", practice["ve-home"])} onClick={() => go(p.to)} disabled={locked}
+      aria-current={current === p.id ? "page" : undefined}>
+      <span className={cx("ve-home-ic", practice["ve-home-ic"])}><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+      <span className="t">{p.label}</span>{extra}
+    </button>
   );
   return (
     <nav className={cx("ve-side", practice["ve-side"])} aria-label="Practice">
-      {/* The list scrolls under a fixed top strip, so nothing slides beneath the sidebar toggle. */}
       <div className={cx("ve-side-scroll", practice["ve-side-scroll"])}>
-      {PLACES.map((p) => (
-        <button key={p.id} className={cx("ve-home", practice["ve-home"])} onClick={() => go(p.to)} disabled={locked} aria-current={current === p.id ? "page" : undefined}>
-          <span className={cx("ve-home-ic", practice["ve-home-ic"])}><svg viewBox="0 0 16 16" aria-hidden="true"><path d={p.icon} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
-          <span className="t">{p.label}</span>
-          {p.id === "mixtape" && texts?.edition && (texts.edition.updates
-            ? <span className={cx("ve-mix-tag new", practice["ve-mix-tag"])}>{texts.edition.updates} new</span>
-            : texts.edition.mine ? <span className={cx("ve-mix-tag", practice["ve-mix-tag"])}>{texts.edition.changes}</span> : null)}
-        </button>
-      ))}
-      <ul className={cx("ve-tree", practice["ve-tree"])}>
-        <Folder id="today" label="Today" current={current === "today"} open={open.has("today")} onToggle={toggle} onOpen={() => go("/deck")} locked={locked}
-          extra={deck && !deck.paused ? (left === 0 && total ? <Tick className={cx("ve-tick", practice["ve-tick"])} /> : <span className="c">{total - left}/{total}</span>) : null}>
-          {deck?.paused ? <li className={cx("ve-note-row", practice["ve-note-row"])}>Resting today</li>
-            : deck?.items.map((it) => file(it.card.id, textLabel(it.card.front, it.card.id.split(".").pop() ?? ""), it.done_today, false, `/deck?card=${encodeURIComponent(it.card.id)}`, it.done_today))}
-        </Folder>
-      </ul>
-      {/* Each part of the course is a heading of its own, with how many of its chapters are done; a
-          course without parts keeps one "Chapters" heading. */}
-      {texts && byPart(texts.levels).map((g, gi, groups) => {
-        const name = g.part ?? "Chapters", shut = folded.has(name);
-        return (
-        <Fragment key={`${gi}-${g.part ?? ""}`}>
-          {(g.part || gi === 0) && (
-            <h6 className={cx("ve-part", practice["ve-part"])}>
-              <button onClick={() => fold(name, !shut)} aria-expanded={!shut}>
-                <span className="t">{name}</span>
-                <Chevron open={!shut} />
+        {PLACES.map((p) => (
+          <Fragment key={p.id}>
+            {place(p, p.id === "today" && deck && !deck.paused && total ? <span className="c">{left ? `${left} left` : "Done"}</span>
+              : p.id === "mixtape" && texts?.edition ? (texts.edition.updates
+                ? <span className={cx("ve-mix-tag new", practice["ve-mix-tag"])}>{texts.edition.updates} new</span>
+                : texts.edition.mine ? <span className={cx("ve-mix-tag", practice["ve-mix-tag"])}>{texts.edition.changes}</span> : null)
+              : undefined)}
+            {p.id === "chapters" && here && (
+              <button className={cx("ve-home ve-here", practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${here.id}`)} disabled={locked} aria-current="page">
+                <span className="t">{here.title}</span>
               </button>
-            </h6>
-          )}
-          {!shut && <ul className={cx("ve-tree", practice["ve-tree"])}>
-            {g.levels.map((l) => {
-              const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
-              // Counts only where they help: the chapter you're in and the one up next.
-              const counted = l.id === current || l.id === next?.id;
-              return (
-                <Folder key={l.id} id={l.id} label={l.title} current={current === l.id && !itemId} open={open.has(l.id)} onToggle={toggle} onOpen={() => go(`/studio/${l.id}`)} locked={locked}
-                  extra={d >= n ? <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} /> : counted ? <span className={l.id === next?.id ? "c next" : "c"} title={l.id === next?.id ? "Next up" : undefined}>{d}/{n}</span> : null}>
-                  {l.items.map((it) => file(it.id, textLabel(it.text, it.id), practised.has(textId(COURSE, l.id, it.id)), current === l.id && itemId === it.id, `/studio/${l.id}/${it.id}`))}
-                </Folder>
-              );
-            })}
-            {gi === groups.length - 1 && REMIX_AVAILABLE && <li><button className="ve-new-chapter" onClick={onNewChapter} disabled={locked}><span aria-hidden="true">+</span>New chapter</button></li>}
-          </ul>}
-        </Fragment>
-        );
-      })}
+            )}
+          </Fragment>
+        ))}
+        <div className="flex-1" />
+        {place(SETTINGS_PLACE)}
       </div>
     </nav>
   );
@@ -994,62 +908,84 @@ function FreeResult({ take, band, onMeasured }: { take: Take; band: [number, num
 
 /* ---------------------------------------------------------------- home: what Practice is for */
 
+/** A greeting for the time of day. */
+function greeting(d = new Date()) {
+  const h = d.getHours();
+  return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 18 ? "Good afternoon" : "Good evening";
+}
+
 /**
- * The Practice home: actions and the chapter catalog, with the owner's complete Markdown guide
- * available in a disclosure. Keep the guide intact so code blocks and references work across sections.
- * Nothing is picked, so the recorder takes free recordings.
+ * The Practice home: a greeting, one clear next step, your practice so far, and the chapters as
+ * tiles. The cover and the course guide live on the Chapters page.
  */
 function HomeDoc({ texts, deck, practised, history, profile }: {
   texts: Texts; deck: Deck | null; practised: Set<string>; history: Take[]; profile: Profile;
 }) {
   const band = profile.comfort_range_hz ?? null;
-  const cover = texts.home_cover && picture(texts.home_cover);
+  const today = new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+  return (
+    <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
+      <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
+        <header className={cx("ve-head ve-greet", practice["ve-head"], practice["ve-greet"])}><h1>{greeting()}</h1><p>{today}</p></header>
+        {!band ? <StartCard /> : <YourPractice history={history} band={band} next={<NextStep deck={deck} texts={texts} practised={practised} />} />}
+        <section className={cx("ve-home-chapters", practice["ve-home-chapters"])} aria-label="Chapters">
+          <div className={cx("ve-sec-h", practice["ve-sec-h"])}><h2>Chapters</h2><a href="#/studio/chapters">All chapters</a></div>
+          <ChapterGrid texts={texts} practised={practised} compact />
+        </section>
+      </article>
+    </div>
+  );
+}
+
+/** The chapters as tiles, grouped by part of the course. */
+function ChapterGrid({ texts, practised, compact = false }: { texts: Texts; practised: Set<string>; compact?: boolean }) {
   const next = nextChapter(texts, practised);
   return (
-    <>
-      <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
-        {cover && <div className={cx("ve-cover", practice["ve-cover"])} style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
-        <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
-          <header className={cx("ve-head", practice["ve-head"])}><h1>Your practice</h1><p className={cx("ve-subtitle", practice["ve-subtitle"])}>Pick up where you left off, or explore a chapter.</p></header>
-          {!band ? <StartCard /> : <YourPractice history={history} band={band} next={<NextStep deck={deck} texts={texts} practised={practised} />} />}
-          <nav className={cx("ve-course-jumps", practice["ve-course-jumps"])} aria-label="Course shortcuts">
-            {texts.levels.length > 0 && <a href={`#/studio/${next?.id ?? texts.levels[0].id}`}>{practised.size ? "Continue learning" : "First chapter"}</a>}
-            <a href="#/deck">Today's practice</a>
-            <button type="button" onClick={() => document.getElementById("voice-chapters")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Browse {texts.levels.length} chapters <span aria-hidden="true">↓</span></button>
-          </nav>
-          {texts.home && <details className={cx("ve-course-guide", practice["ve-course-guide"])}><summary>Course guide<span>Introduction and resources</span></summary><Markdown src={texts.home} className={cx("ve-md", practice["ve-md"])} headingOffset={1} /></details>}
-          <section className={cx("ve-md", practice["ve-md"], practice["voice-chapters"])} id="voice-chapters" aria-label="Course chapters">
-            <h2>The chapters</h2>
-            {byPart(texts.levels).map((g, gi) => (
-              <div className="ve-part-group" key={`${gi}-${g.part ?? ""}`}>
-                {g.part && <h3 className={cx("ve-part-h", practice["ve-part-h"])}>{g.part}</h3>}
-                <ol className={cx("ve-chapters", practice["ve-chapters"])}>
-                  {g.levels.map((l) => {
-                    const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
-                    const isNext = l.id === next?.id;
-                    return (
-                      <li key={l.id}>
-                        <a href={`#/studio/${l.id}`} className={isNext ? "next" : undefined}>
-                          <span className="n">{l.level}</span>
-                          <span className="t"><b>{l.title}{isNext && <span className={cx("ve-tag next", practice["ve-tag"])}>Next up</span>}</b><small>{l.subtitle}</small></span>
-                          {d >= n ? <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} /> : <span className="c">{d}/{n}</span>}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-            ))}
-            {texts.edition?.mine && (
-              <p className={cx("ve-edition", practice["ve-edition"])}>
-                You're playing your mixtape of these chapters ({texts.edition.changes} {texts.edition.changes === 1 ? "change" : "changes"}).{" "}
-                <a href="#/studio/mixtape">{texts.edition.updates ? `See your mixtape, and ${texts.edition.updates} ${texts.edition.updates === 1 ? "update" : "updates"} from the original →` : "See your mixtape →"}</a>
-              </p>
-            )}
-          </section>
-        </article>
-      </div>
-    </>
+    <div className={cx("ve-cparts", practice["ve-cparts"])} id="voice-chapters">
+      {byPart(texts.levels).map((g, gi) => (
+        <section key={`${gi}-${g.part ?? ""}`} aria-label={g.part ?? "Chapters"}>
+          {g.part && <h3 className={cx("ve-cpart-h", practice["ve-cpart-h"])}>{g.part}</h3>}
+          <ul className={cx("ve-cgrid", practice["ve-cgrid"])}>
+            {g.levels.map((l) => {
+              const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
+              const isNext = l.id === next?.id;
+              return (
+                <li key={l.id}>
+                  <a href={`#/studio/${l.id}`} className={cx(`ve-ctile${isNext ? " next" : ""}`, practice["ve-ctile"])}>
+                    <span className="n">{l.level}</span>
+                    <b>{l.title}</b>
+                    {!compact && l.subtitle && <small>{l.subtitle}</small>}
+                    <span className="m">{d >= n ? <><Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />Practised</> : isNext ? "Next up" : `${n} texts`}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+/** Every chapter (#/studio/chapters): the course's cover, its chapters by part, and the course guide. */
+function ChaptersDoc({ texts, practised, onNewChapter }: { texts: Texts; practised: Set<string>; onNewChapter: () => void }) {
+  const cover = texts.home_cover && picture(texts.home_cover);
+  return (
+    <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
+      <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
+        <header className={cx("ve-head", practice["ve-head"])}><h1>Chapters</h1><p className={cx("ve-subtitle", practice["ve-subtitle"])}>{texts.levels.length} chapters, in the order they build. Start wherever you like.</p></header>
+        {cover && <div className={cx("ve-cover-card", practice["ve-cover-card"])} style={{ backgroundImage: `url(${cover})` }} role="img" aria-label="Cover picture" />}
+        <ChapterGrid texts={texts} practised={practised} />
+        {REMIX_AVAILABLE && <button type="button" className={cx("btn-secondary", shared["btn-secondary"], "mt-6")} onClick={onNewChapter}>New chapter</button>}
+        {texts.edition?.mine && (
+          <p className={cx("ve-edition", practice["ve-edition"])}>
+            You're playing your mixtape of these chapters ({texts.edition.changes} {texts.edition.changes === 1 ? "change" : "changes"}).{" "}
+            <a href="#/studio/mixtape">{texts.edition.updates ? `See your mixtape, and ${texts.edition.updates} ${texts.edition.updates === 1 ? "update" : "updates"} from the original` : "See your mixtape"}</a>
+          </p>
+        )}
+        {texts.home && <details className={cx("ve-course-guide", practice["ve-course-guide"])}><summary>Course guide<span>Introduction and resources</span></summary><Markdown src={texts.home} className={cx("ve-md", practice["ve-md"])} headingOffset={1} /></details>}
+      </article>
+    </div>
   );
 }
 
@@ -1269,6 +1205,12 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   const promptId = item ? textId(COURSE, level.id, item.id) : FREE.prompt_id;
   const isPrompt = level.kind === "prompt";
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
+  // Learn (how the chapter works) or Practise (its texts). A chapter you haven't started opens on
+  // Learn; one you have, or a link to one of its texts, opens on Practise.
+  const started = level.items.some((it) => practised.has(textId(COURSE, level.id, it.id)));
+  const [tab, setTab] = useState<"learn" | "practise">(() => (itemId || started ? "practise" : "learn"));
+  useEffect(() => { if (itemId) setTab("practise"); }, [itemId]);
+  const practise = () => { setTab("practise"); document.querySelector(".ve-page")?.scrollTo({ top: 0 }); };
 
   useEffect(() => {
     void api.studioSession().then((s) => { setSessionId(s.id); void api.session(s.id).then((d) => setTakes(d.takes.filter((x) => x.role === "free"))); });
@@ -1309,7 +1251,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName) || recording) return;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName) || recording || tab !== "practise") return;
       if (e.key === "ArrowDown" || e.key === "j") { e.preventDefault(); choose(sel + 1); }
       if (e.key === "ArrowUp" || e.key === "k") { e.preventDefault(); choose(sel - 1); }
     };
@@ -1381,7 +1323,12 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
               </div>
             )}
           </header>
-          <ChapterIntro key={level.id} level={level} started={level.items.some((it) => practised.has(textId(COURSE, level.id, it.id)))} />
+          <div className={cx("ve-tabs", practice["ve-tabs"])} role="tablist" aria-label="Chapter">
+            <button role="tab" id={`tab-learn-${level.id}`} aria-selected={tab === "learn"} aria-controls={`panel-${level.id}`} disabled={recording} onClick={() => setTab("learn")}>Learn</button>
+            <button role="tab" id={`tab-practise-${level.id}`} aria-selected={tab === "practise"} aria-controls={`panel-${level.id}`} disabled={recording} onClick={() => setTab("practise")}>Practise<span>{n} texts</span></button>
+          </div>
+          <div id={`panel-${level.id}`} role="tabpanel" aria-labelledby={`tab-${tab}-${level.id}`}>
+          {tab === "learn" ? <ChapterIntro key={level.id} level={level} onPractise={practise} /> : <>
           {freeView && !split && <section className={cx("ve-free", practice["ve-free"])} aria-label="Your free take"><h2>Your take</h2>{freeView}</section>}
           <ol className={cx("ve-items", practice["ve-items"])} id={`texts-${level.id}`}>
             {level.items.map((it, i) => {
@@ -1412,6 +1359,8 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             })}
           </ol>
           <p className={cx("ve-end", practice["ve-end"])}>{texts.note}</p>
+          </>}
+          </div>
         </article>
       </div>
       <Toast text={toast} />
