@@ -409,7 +409,11 @@ Monitor uploads and playback have an isolated check with locally generated media
    leaving just the chapter you're in, and this browser remembers your choice. **Home** greets
    you, offers one next step and shows the next four chapters as tiles. **Chapters**
    (`#/studio/chapters`) has the course's cover, then the **Course guide**, then every chapter as a
-   tile with its subtitle (the next one outlined, a medal once you've practised them all). A chapter
+   tile with its subtitle (the next one outlined, a medal once you've practised them all). **Next
+   up** is where you left off: the furthest chapter you've practised in, until about half its texts
+   are practised, then the one after it, so skipping a text never pins a chapter as next. Home's
+   "First time here?" card shows only before your first take; after that, Home shows your practice
+   with a gentle line to set your comfortable range if you haven't. A chapter
    has two tabs. **Learn** holds its opening, the video and each step, with **Start practising**
    at the end; **Practise** holds its texts, each in a reading serif with a hint under it. A
    chapter you haven't started opens on Learn; one you have, or a link to one of its texts, opens

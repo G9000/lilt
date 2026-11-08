@@ -37,6 +37,7 @@ import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
 import { clearOfTone, noteFor, onTone, playTone, stopTone } from "../tone";
 import { Brightness, brightnessWords, meterPosition, trackBrightness } from "../brightness";
 import { apartWords, lastNote, takeDay, takesOf, thenAndNow as checkInPair, type ThenNow } from "../checkIn";
+import { nextUp } from "../nextUp";
 
 /**
  * Voice practice as a writing app: chapters in a sidebar (today's cards first, then the seven
@@ -327,8 +328,11 @@ function ChapterIntro({ level, onPractise }: { level: TextLevel; onPractise: () 
 }
 
 const chapterDone = (l: TextLevel, practised: Set<string>) => l.items.every((it) => practised.has(textId(COURSE, l.id, it.id)));
-/** The first chapter you haven't finished: next up. */
-const nextChapter = (texts: Texts, practised: Set<string>) => texts.levels.find((l) => !chapterDone(l, practised));
+/** Next up: where you left off (see nextUp.ts), never the first chapter with a text left over. */
+const nextChapter = (texts: Texts, practised: Set<string>) => {
+  const id = nextUp(texts.levels.map((l) => ({ id: l.id, total: l.items.length, done: l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length })));
+  return texts.levels.find((l) => l.id === id);
+};
 
 /** A small drawn arrow for "show more" links, down to open and up to close. */
 const Arrow = ({ up = false }: { up?: boolean }) => (
@@ -986,7 +990,12 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
     <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
       <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
         <header className={cx("ve-head ve-greet", practice["ve-head"], practice["ve-greet"])}><h1>{greeting()}</h1><p>{today}</p></header>
-        {!band ? <StartCard /> : <YourPractice history={history} band={band} next={<NextStep deck={deck} texts={texts} practised={practised} />} />}
+        {/* The start card is for someone new: no takes and no range yet. Anyone who has practised
+            sees their practice, with a gentle nudge if their comfortable range isn't set. */}
+        {!band && history.length === 0 ? <StartCard /> : <YourPractice history={history} band={band} next={<>
+          <NextStep deck={deck} texts={texts} practised={practised} />
+          {!band && <p className={cx("ve-small", practice["ve-small"])}>No comfortable range yet. <a href="#/studio/start">Find your starting voice</a> to set one, and it shows behind your pitch lines.</p>}
+        </>} />}
         <section className={cx("ve-home-chapters", practice["ve-home-chapters"])} aria-label="Chapters">
           <div className={cx("ve-sec-h", practice["ve-sec-h"])}><h2>Chapters</h2><a href="#/studio/chapters">All chapters</a></div>
           <ChapterGrid texts={texts} practised={practised} compact upNext />
@@ -1138,7 +1147,7 @@ function NextStep({ deck, texts, practised }: { deck: Deck | null; texts: Texts;
   );
 }
 
-function YourPractice({ history, band, next }: { history: Take[]; band: [number, number]; next: ReactNode }) {
+function YourPractice({ history, band, next }: { history: Take[]; band: [number, number] | null; next: ReactNode }) {
   const days = new Set(history.map(dayKey));
   const today = new Date(), iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const month = iso(today).slice(0, 7);
@@ -1150,7 +1159,7 @@ function YourPractice({ history, band, next }: { history: Take[]; band: [number,
   const pitchB = useTakePitch(latest?.analysis_summary ? latest.id : undefined);
   // One scale for both lines, so higher on one chart means higher on the other.
   const scale = useMemo(() => pitchA && pitchB
-    ? fitRange([cleanContour(pitchA), cleanContour(pitchB)], band).map(midiToHz) as [number, number]
+    ? fitRange([cleanContour(pitchA), cleanContour(pitchB)], band ?? undefined).map(midiToHz) as [number, number]
     : undefined, [pitchA, pitchB, band]);
   const apart = first && latest ? Math.round((Date.parse(`${dayKey(latest)}T12:00:00`) - Date.parse(`${dayKey(first)}T12:00:00`)) / 86400000) : 0;
   return (
@@ -1168,7 +1177,7 @@ function YourPractice({ history, band, next }: { history: Take[]; band: [number,
             <AudioPlayer src={first.audio_url} tag="A" label={`Day 1 · ${shortDate(dayKey(first))}`} knownDuration={first.analysis_summary?.duration_s} pitchTakeId={first.analysis_summary ? first.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
             <AudioPlayer src={latest.audio_url} tag="B" label={`Latest · ${shortDate(dayKey(latest))}`} knownDuration={latest.analysis_summary?.duration_s} pitchTakeId={latest.analysis_summary ? latest.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
           </div>
-          {(pitchA || pitchB) && <p className={cx("ve-then-note", practice["ve-then-note"])}>{scale ? "Both lines share one scale. " : ""}Measured pitch (Praat), with your comfortable range shaded. Click a line to play from there; gaps are unvoiced or silent.</p>}
+          {(pitchA || pitchB) && <p className={cx("ve-then-note", practice["ve-then-note"])}>{scale ? "Both lines share one scale. " : ""}Measured pitch (Praat){band ? ", with your comfortable range shaded" : ""}. Click a line to play from there; gaps are unvoiced or silent.</p>}
         </div>
       ) : (
         <p className={cx("ve-then-wait", practice["ve-then-wait"])}>Your first takes are saved. Come back on another day and this is where you'll hear them next to your newest ones.</p>

@@ -221,7 +221,7 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   the sidebar, like a Mac app). **A new voice starts** at `#/studio/start`: read the reference line once in your everyday voice;
   Lilt offers that take's range as your comfortable range and keeps it as Day 1. Under Home's welcome
   and opening paragraph sits a quiet callout (a `--panel` surface with a hairline): "First time here?" with a
-  mic icon and a "Find my starting voice" primary button until a range is set; after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
+  mic icon and a "Find my starting voice" primary button, only for someone new (no takes and no range yet); after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
   button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots
   (today ringed), and **Then and now** (your first and latest take of the same text, the reference line first, with how far
   apart they are). The two takes sit flat on the panel, each pitch chart in a `--fill` well, both on one shared scale, with one

@@ -85,15 +85,15 @@ try {
     await page.getByRole('heading', { name: 'A small beginning', exact: true }).waitFor();
     const practice = page.getByRole('main', { name: 'Course practice' });
     assert.ok(await practice.evaluate(el => el.scrollWidth <= el.clientWidth + 1), 'chapter fits the viewport');
-    await checkColumn(practice.locator(':scope > div'), width, 'Other-course chapter');
+    await checkColumn(practice.locator(':scope > div'), width, 'Other-course chapter', 880);
     await page.screenshot({ path: path.join(shots, `course-chapter-${width}-${theme}.png`) });
     await page.goto(`${base}#/learn/drawing`);
     await page.getByRole('heading', { name: 'Drawing gently', exact: true }).waitFor();
-    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course home');
+    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course home', 880);
     await page.getByText('Course guide', { exact: true }).click();
-    await checkColumn(page.locator('details .md'), width, 'Other-course guide');
+    await checkColumn(page.locator('details .md'), width, 'Other-course guide', 880);
     await page.goto(`${base}#/learn/drawing/today`);
-    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course daily practice');
+    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course daily practice', 880);
     await page.goto(`${base}#/texts?course=drawing`);
     await checkColumn(page.locator('.tx'), width, 'Practice texts');
     if (!process.env.LILT_UI_BUILD) {
