@@ -795,6 +795,11 @@ export const practice = {
     `[.sd-completed_&]:text-ink-2 [.sd-completed_&]:bg-fill [.sd-completed_&]:[background-image:none]`,
   "ve-end": `mt-[24px] mb-0 w-full pt-[16px] [border-top-width:1px] [border-top-style:solid] [border-top-color:var(--hair)] text-[13px] ` +
     `[line-height:1.55] text-ink-2`,
+  "ve-nextch": `flex justify-end mt-[16px] [&_a]:inline-grid [&_a]:justify-items-end [&_a]:gap-[2px] ` +
+    `[&_a]:py-[8px] [&_a]:px-[12px] [&_a]:-mr-[12px] [&_a]:rounded-[10px] [&_a]:no-underline [&_a]:text-right ` +
+    `[&_a:hover]:bg-fill [&_a:focus-visible]:bg-fill [&_span]:text-[12px] [&_span]:text-ink-3 ` +
+    `[&_b]:inline-flex [&_b]:items-center [&_b]:gap-[4px] [&_b]:text-[15px] [&_b]:font-semibold [&_b]:text-ink ` +
+    `[&_svg]:w-[12px] [&_svg]:h-[12px] [&_svg]:text-ink-3 [&_a:hover_svg]:text-ink`,
   "ve-small": `text-[13px] text-ink-3 mt-[8px] mr-[0] mb-[0] ml-[0] [&_a]:text-ink-2`,
   "ve-err": `text-rec text-[13px] mt-[8px] mr-[0] mb-[0] ml-[0] [.ve-dock_>_&]:[grid-column:1_/_-1] ` +
     `[.ve-dock_>_&]:[justify-self:start]`,

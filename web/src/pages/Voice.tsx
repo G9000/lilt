@@ -1461,12 +1461,29 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
             })}
           </ol>
           <p className={cx("ve-end", practice["ve-end"])}>{texts.note}</p>
+          {!recording && <NextChapter texts={texts} level={level} />}
           </>}
           </div>
         </article>
       </div>
       <Toast text={toast} />
     </>
+  );
+}
+
+/**
+ * The way on at the foot of a chapter's texts: the next chapter whenever you like (nothing has to be
+ * finished first), or every chapter after the last one. A quiet link, since moving on is your call.
+ */
+function NextChapter({ texts, level }: { texts: Texts; level: TextLevel }) {
+  const next = texts.levels[texts.levels.findIndex((l) => l.id === level.id) + 1];
+  return (
+    <nav className={cx("ve-nextch", practice["ve-nextch"])} aria-label="Next chapter">
+      <a href={next ? `#/studio/${next.id}` : "#/studio/chapters"}>
+        <span>{next ? "Next chapter" : "That was the last chapter"}</span>
+        <b>{next ? next.title : "All chapters"}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.8L7.7 6 4.5 9.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></b>
+      </a>
+    </nav>
   );
 }
 

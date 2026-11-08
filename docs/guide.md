@@ -425,7 +425,9 @@ Monitor uploads and playback have an isolated check with locally generated media
    at the end; **Practise** holds its texts, each in a reading serif with a hint under it. A
    chapter you haven't started opens on Learn; one you have, or a link to one of its texts, opens
    on Practise. Pick a text (or press <kbd>↓</kbd>), press record, and the recorder draws your
-   pitch live.
+   pitch live. Under the last text, a quiet **Next chapter** link names the chapter after it,
+   whenever you like (nothing has to be finished first); the last chapter links to **All chapters**
+   instead. It hides while you record.
    - **Show my pitch live** lets you watch without recording.
    - **Play my note · F♯3** (once you have a comfortable range) plays a soft tone for about two
      seconds at the middle of your range, on the nearest note, so you can hum along to it. It never

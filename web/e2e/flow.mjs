@@ -289,6 +289,8 @@ async function main() {
   // Mixtape waits for your own copy; the way back to the desk sits above Practice settings.
   check("The sidebar has a way back to the desk and no empty Mixtape",
     (await page.locator(".ve-side .ve-home", { hasText: "Back to the desk" }).count()) === 1 && (await page.locator(".ve-side .ve-home", { hasText: "Mixtape" }).count()) === 0);
+  check("A chapter ends with a link to the next one", (await page.locator(".ve-nextch a").getAttribute("href"))?.startsWith("#/studio/") &&
+    (await page.locator(".ve-nextch").innerText()).includes("Next chapter"));
   await snap("14-studio-result");
   // Practice settings and Lilt's Settings each lead to the other.
   await page.goto(`${BASE}/#/studio/settings`);
