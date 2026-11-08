@@ -466,11 +466,22 @@ Monitor uploads and playback have an isolated check with locally generated media
    pitch live. Under the last text, a quiet **Next chapter** link names the chapter after it,
    whenever you like (nothing has to be finished first); the last chapter links to **All chapters**
    instead. It hides while you record.
+   - One recording runs up to **two minutes**. In the last fifteen seconds the recorder says
+     "Stops at 2:00 · 12 s left"; then it stops and saves by itself and says "Stopped at 2:00 and
+     saved. Record again to carry on." Nothing is lost or cut off without a word
+     (`web/src/takeLimit.ts`; `e2e/long-take.mjs` checks it with a full two-minute take).
    - **Show my pitch live** lets you watch without recording.
    - **Play my note · F♯3** (once you have a comfortable range) plays a soft tone for about two
      seconds at the middle of your range, on the nearest note, so you can hum along to it. It never
      ends up in a take: it can't play while the microphone is listening, pressing Record stops it at
      once, and the take waits until its half-second pre-roll is clear of the tone.
+   - **Reference notes** beside it opens three more tones to hum along to and compare with, taken
+     from the pitch scale's averages and rounded to the nearest note, for your direction. Going
+     higher: the top of the overlap, the average woman, and the upper part of her range (E3, G3,
+     A♯3). Going lower: the lower part of the average man's range, the average man, and the bottom
+     of the overlap (F♯2, A♯2, D3). Still open: the average man, the middle of the overlap and the
+     average woman. Each says where it comes from; they're for listening, not targets, and like
+     your note they never play while the microphone listens (`web/src/refnotes.ts`).
    - In **Resonance** and **Resonance, going darker**, while you record, a **darker–brighter strip** sits under the pitch line: the
      coral dot shows whether the sound is brighter or darker than when you started this take (its
      first second of sound is the tick in the middle), with one line in words. Silence and breaths

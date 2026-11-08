@@ -10,6 +10,7 @@ import { LiveReadout, useLivePitch } from "./LivePitch";
 
 export { MicProvider, useMic } from "./Microphone";
 import { useMic } from "./Microphone";
+import { cappedNote, limitNote, TAKE_MAX_S } from "../takeLimit";
 
 /** How long the room is listened to, quietly, before you're asked to speak. */
 const QUIET_MS = 2000;
@@ -134,7 +135,7 @@ const sentence = (s: string) => s.replace(/^\s*(cue:\s*)?/i, (_m, c) => (c ? "Cu
 
 /** The record surface: what to say, a live pitch line, and one record button.
  *  "Saved" appears only after the server confirms. */
-export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true, band, steadiness, onStateChange, onBusyChange, title, cue, screen, keys, knob }: {
+export function RecordPanel({ meta, onSaved, hint, maxSeconds = TAKE_MAX_S, live = true, band, steadiness, onStateChange, onBusyChange, title, cue, screen, keys, knob }: {
   meta: TakeMeta; onSaved: (t: Take) => void; hint?: string; maxSeconds?: number;
   /** Show the live pitch line while recording (display only). */
   live?: boolean; band?: [number, number] | null; steadiness?: boolean;
@@ -154,6 +155,7 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
   const [state, setState] = useState<RecState>("idle");
   const [err, setErr] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [capped, setCapped] = useState(false);
   const rec = useRef<TakeRecorder | null>(null);
   const starting = useRef(false);
   const [requesting, setRequesting] = useState(false);
@@ -185,7 +187,7 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
     const id = setInterval(() => {
       const s = (performance.now() - (rec.current?.startedAt ?? 0)) / 1000;
       setElapsed(s);
-      if (s > maxSeconds) void stop();
+      if (s > maxSeconds) { setCapped(true); void stop(); }
     }, 200);
     return () => clearInterval(id);
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -196,7 +198,7 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
     setRequesting(true);
     busyCallback.current?.(true);
     try {
-      setErr(null);
+      setErr(null); setCapped(false);
       const stream = mic.stream ?? (await mic.request());
       if (!stream || !mounted.current) return;
       const r = new TakeRecorder(stream, (x) => { setState(x.state); onStateChange?.(x.state); if (x.error) setErr(x.error); });
@@ -270,7 +272,7 @@ export function RecordPanel({ meta, onSaved, hint, maxSeconds = 120, live = true
           <b aria-hidden="true">{recording ? "Stop" : state === "saving" ? "Saving" : "Record"}</b>
           {state === "idle"
             ? (hint ? <span>{hint}</span> : <span className={cx("vkbd", practice["vkbd"])}>or press <kbd>Space</kbd></span>)
-            : <span className={cx("vrec-st", practice["vrec-st"])}><StatusBadge status={state === "error" ? "error" : state} />{recording && <span className={cx("vclock", practice["vclock"])}>{clock(elapsed)}</span>}</span>}
+            : <span className={cx("vrec-st", practice["vrec-st"])}><StatusBadge status={state === "error" ? "error" : state} />{recording && <span className={cx("vclock", practice["vclock"])}>{clock(elapsed)}</span>}{recording && limitNote(elapsed, maxSeconds) && <span className={cx("vclock", practice["vclock"])}>{limitNote(elapsed, maxSeconds)}</span>}{capped && !recording && <span className={cx("vclock", practice["vclock"])} role="status">{cappedNote(maxSeconds)}</span>}</span>}
         </div>
         {(knob || keys) && (
           <div className={cx("vkeys", practice["vkeys"])}>

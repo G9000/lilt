@@ -101,7 +101,8 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/results-extras.mjs /tmp/shots
 Every suite passed on fresh data folders on 6 November 2026 (Windows). They come in four kinds:
 
 - **Against a scratch server** (`LILT_URL`, a fresh data folder each): `flashcards`, `flow`, `photos`,
-  `practice`, `recorder-extras`, `results-extras`, `yarn`. `deck-extras` also needs `LILT_DATA_DIR`
+  `practice`, `recorder-extras`, `results-extras`, `yarn`. `long-take` records to the two-minute
+  limit, so it takes about three minutes. `deck-extras` also needs `LILT_DATA_DIR`
   set to the server's folder, and that folder's `cards/state.json` must hold `text.warmup.lip-trill`
   as a due review with `"reps": 3` (it's the eyes-off card).
 - **Their own Vite server with a stubbed API** (no `LILT_URL`): `markdown`, `feedback`,

@@ -872,6 +872,9 @@ export const practice = {
     `[.ve_&_button:hover]:bg-fill-2 [.ve_&_button:hover]:[background-image:none] [.ve_&_button.hurt:hover]:text-rec ` +
     `[@media_(max-width:_860px)]:[grid-template-columns:repeat(2,_minmax(0,_1fr))]`,
   // A note button also carries ve-ghost; its compact padding must win that composition.
+  "ve-dock-capped": `text-[12px] text-ink-2`,
+  "ve-refs": `inline-flex flex-wrap items-center [row-gap:6px] [column-gap:4px] ` +
+    `[&_.ve-ref]:tabular-nums [&_.ve-ref[aria-pressed="true"]]:bg-ok-soft [&_.ve-ref[aria-pressed="true"]]:text-ok`,
   "ve-note": `mt-[0] mr-[0] mb-[0] ml-[0] pt-[12px] pr-[14px] pb-[12px] pl-[14px] rounded-[12px] bg-ok-soft ` +
     `[background-image:none] text-ok font-semibold [.ve_&.ve-note]:pt-[0] [.ve_&]:pr-[13px] [.ve_&.ve-note]:pb-[0] ` +
     `[.ve_&]:pl-[11px] [.ve_&]:h-[36px] [.ve_&]:tabular-nums [.ve_&_svg]:w-[15px] [.ve_&_svg]:h-[15px] ` +

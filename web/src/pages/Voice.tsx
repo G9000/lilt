@@ -41,6 +41,8 @@ import { apartWords, lastNote, takeDay, takesOf, thenAndNow as checkInPair, type
 import { nextUp } from "../nextUp";
 import { DirectionChoice } from "../components/DirectionChoice";
 import { ClipSaver } from "../components/ClipSaver";
+import { ReferenceNotes } from "../components/ReferenceNotes";
+import { cappedNote, limitNote, TAKE_MAX_S } from "../takeLimit";
 import { announceDirection, directionOf, DIRECTIONS } from "../direction";
 
 /**
@@ -677,6 +679,8 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const [state, setState] = useState<RecState>("idle");
   const [err, setErr] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  // The two-minute limit stopped the last take: say so, so it never feels cut off without a word.
+  const [capped, setCapped] = useState(false);
   const [listening, setListening] = useState(false);
   const rec = useRef<TakeRecorder | null>(null);
   const box = useRef<HTMLElement>(null);
@@ -762,7 +766,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
     const id = setInterval(() => {
       const s = (performance.now() - (rec.current?.startedAt ?? 0)) / 1000;
       setElapsed(s);
-      if (s > 120) void stop();
+      if (s > TAKE_MAX_S) { setCapped(true); void stop(); }
     }, 200);
     return () => clearInterval(id);
   }, [recording]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -771,6 +775,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const start = async () => {
     if (!metaRef.current || starting.current) return;
     starting.current = true;
+    setCapped(false);
     try {
       setErr(null); setListening(false);
       const stream = mic.stream ?? (await mic.request());
@@ -884,7 +889,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
       <div className={cx("ve-dock-sub", practice["ve-dock-sub"])}>
         <span className={cx(`ve-dock-msg${tooQuiet ? " quiet-mic" : ""}`, practice["ve-dock-msg"])}>
           {tooQuiet ? "Your mic hears you very quietly. Come a little closer to it."
-            : recording ? "Read the highlighted text"
+            : recording ? limitNote(elapsed) ?? "Read the highlighted text"
             : listening ? "Listening only. Nothing is saved."
             : state === "saving" ? "Saving to your computer…" : ""}
         </span>
@@ -895,6 +900,8 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
             Play my note · {noteName(note)}
           </button>
         )}
+        {capped && !recording && <span className={cx("ve-dock-capped", practice["ve-dock-capped"])} role="status">{cappedNote()}</span>}
+        {!quiet && <ReferenceNotes disabled={recording || listening || state === "saving"} />}
         {children}
         {canFold && <button className={cx("ve-ghost", practice["ve-ghost"])} aria-expanded={!folded} onClick={() => setChartOpen(!chartOpen)}>{folded ? "Show pitch line" : "Hide pitch line"}</button>}
         <span className={cx("ve-sp", practice["ve-sp"])} />
