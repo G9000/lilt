@@ -22,7 +22,7 @@ A light voice can feel easy to lose in a busy room. Being heard is mostly about 
 
 **Short and paced.** Short phrases with small pauses are easier to catch in noise than one long run.
 
-**Listen back.** Record from a little further away than usual, about an arm's length. Does it still sound light, and could you keep it up for a whole conversation? If it sounds pushed, take it back a step.
+**Listen back.** Record from a little further away than usual, about an arm's length. These takes won't line up with ones made at your usual distance, so compare them with each other. Does it still sound light, and could you keep it up for a whole conversation? If it sounds pushed, take it back a step.
 
 ## say-again
 

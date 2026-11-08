@@ -12,11 +12,13 @@ loud, at your own pace. Nobody's listening but you (and the cat, who is asleep).
 
 You can start before reading the whole guide. One short recording is enough for today.
 
-1. **Check the sound.** Open [Start here](#/studio/start-here/level), choose the counting text,
-   press **Record**, and allow microphone access if asked. Count in your everyday voice, press
-   **Stop**, then play it back. Adjust the mic if the words are hard to hear.
-2. **Keep a starting point.** Record ["Hello, this is my voice today"](#/studio/start-here/today)
-   without changing your voice. Wait for the take to finish saving; you can listen another day.
+1. **Find your starting voice.** Open [Find your starting voice](#/studio/start), press **Record**,
+   and allow microphone access if asked. Count to ten in your everyday voice, press **Stop**, then
+   play it back. If the words are hard to hear, move a little closer and try again. This count is
+   your Day 1.
+2. **Keep a "before", when you like.** In Start here, read [the "before" lines](#/studio/start-here/baseline-read)
+   without changing your voice. In about six weeks Lilt brings them back so you can hear the change;
+   you don't have to listen to them until you want to.
 3. **Try one small bridge.** If you feel ready, open [hum to hello](#/studio/warmup/hum-to-hello).
    Read its hint, try it once, and notice whether the words feel as easy as the hum. Stop for strain.
 4. **Leave yourself one cue.** A few words such as "easy start" are enough for next time. You can
@@ -42,8 +44,9 @@ accent and language. You can adapt the English practice phrases to words you act
   you can repeat the first without bracing or running out of breath. Higher or brighter is not
   automatically better.
 - **Make it speech.** Explore [melody](#/studio/intonation) and [clear articulation](#/studio/articulation),
-  then [phrases](#/studio/phrases), [reading](#/studio/reading), [your own words](#/studio/own-words)
-  and [real situations](#/studio/real-life). Keep expression and personality in the voice.
+  then [phrases](#/studio/phrases), [reading](#/studio/reading), [your own words](#/studio/own-words),
+  [being heard](#/studio/being-heard) and [real situations](#/studio/real-life). Keep expression and
+  personality in the voice.
 - **Decide the next step.** If a short phrase feels easy, is repeatable and sounds closer to your
   goal, try a slightly longer phrase or one new situation. If not, shorten it or change the cue.
   Rest for strain or hoarseness. There is no required pitch increase or deadline.
@@ -72,11 +75,12 @@ and hear the change for yourself instead of guessing.
 
 - **Today** is a handful of cards. Say one, listen back, and tell Lilt how it felt. That decides
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
-- **[Start here](#/studio/start-here)** first: set up your mic and record your "before".
+- **[Find your starting voice](#/studio/start)** first: one count in your everyday voice, your Day 1.
+  Then [Start here](#/studio/start-here) sets up your corner and keeps your "before".
 - **Chapters** come in three parts. _Get ready_: setup and warm-ups. _The skills_: pitch,
   resonance, vocal weight, articulation and intonation, one at a time, each with an everyday phrase on
   the same visit. _Bring it together_: lists, phrases, reading, talking, laughs and little sounds,
-  then real life. Stay until it feels easy; go back whenever. Not a speedrun.
+  being heard, then real life. Stay until it feels easy; go back whenever. Not a speedrun.
 - **Extras**, for when you want a longer read: the [Reading room](#/studio/reading-room) (a letter,
   a recipe, a weather report, a job interview…), [Stories](#/studio/stories) told a minute-long part
   at a time, and short [Articles](#/studio/articles) about bees, octopuses, the sky and your own

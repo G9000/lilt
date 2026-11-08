@@ -10,7 +10,8 @@ agent over MCP (see "Courses, and your own copy" in the main README): your versi
 data folder, and these files stay as they are. Another course is another folder beside this one,
 with its own `course.md`.
 
-- `index.md`: the Practice home page (why it exists, how it works, sources). `cover: images/<file>`
+- `index.md`: the course guide (why it exists, how it works, sources), shown folded as **Course
+  guide** at the top of Practice's All chapters page. `cover: images/<file>`
   in its front matter sets the picture at the top of Practice's Chapters page. `cover.webp` is an original generated
   illustration of a microphone, notebook and resting cat, matching the guide's artwork. The welcome page uses three original
   generated illustrations: `practice-corner.png`, `listening-nook.png` and `resting-cat.png`.
@@ -21,8 +22,9 @@ with its own `course.md`.
   line (it opens the same way in Obsidian).
   The list of chapters under it is added automatically.
 - `_pitch.md`: the average speaking pitch for men and women (averages and standard deviations in Hz,
-  the overlap band) and where those numbers come from. After each take, Lilt shows your middle
-  pitch on that scale in words and semitones, never as a percentage or a score.
+  the overlap band) and where those numbers come from. The scale is off unless you turn it on in
+  Practice settings; then, after each take, Lilt shows your middle pitch on it in words and
+  semitones, never as a percentage or a score.
 - `_about.md`: the edition (`version`), the date the sources were checked, and the note shown at
   the end of every chapter. Updates compares this edition: raising it offers the whole course to
   personal copies as one change. `course.md` has its own `version`, the course's listing in
@@ -30,15 +32,19 @@ with its own `course.md`.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
 - `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
-  name sets the order (and the order Today's cards open in). To add a chapter, add a file like
-  `17-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
+  name sets the order (and the order Today's cards open in). `13-being-heard.md` and
+  `13-real-life.md` share a number and sort by name, so Being heard comes first. Leave the names as
+  they are: Updates would offer a renamed file to personal copies as a separate removal and
+  addition, and taking only one of them leaves a copy with two chapters of the same id. Renumber
+  them only in a new edition. To add a chapter, add a file like `17-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
   compared with your first take of the same vowel.
 
 ## How a lesson teaches
 
 The chapters come in three parts: **Get ready** (setup and warm-ups), **The skills** (pitch,
 resonance, vocal weight, articulation and intonation, one at a time) and **Bring it together**
-(automatic speech, everyday phrases, reading, your own words, laughs and little sounds, real life).
+(automatic speech, everyday phrases, reading, your own words, laughs and little sounds, being
+heard, real life).
 
 Each chapter's intro is a handful of short **Label.** steps, shown numbered in Practice. Teach the
 technique concretely: what the skill is, how to find it in your body (tongue, lips, larynx, breath),

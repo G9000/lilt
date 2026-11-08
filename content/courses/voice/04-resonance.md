@@ -7,7 +7,7 @@ kind: hum
 area: resonance
 check_in: ee
 video: https://www.youtube.com/watch?v=BW8X2nXexQs
-video_title: The Most Powerful Element of Voice Feminization: Resonance
+video_title: The Single Most Powerful Element of Voice Feminization: Meta Resonance
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-pitch-and-resonance/
 written_by: Written for Lilt, from NHS Fife's resonance and articulation tuning-in activities and "Shaping your voice" (Activity 1, and articulation). Making the space smaller (a higher larynx, a forward tongue, spread lips), the big-dog/small-dog pant, the whisper siren, the toy-dog "wa", the brightness-only slide and twang come from community voice coaching (TransVoiceLessons, the TransVoice wiki), chosen by Lilt; the lip-spreading follows Carew, Dacakis and Oates (2007), and resonance's place beside pitch draws on Leung, Oates, Chan and Papp (2021). The measurement and its limits are in analysis/EVALUATION.md.

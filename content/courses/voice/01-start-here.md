@@ -32,9 +32,9 @@ Hi, friend. Five minutes of setup and a few words in your everyday voice, and yo
 
 **Your ears decide.** Lilt shows your pitch and a rough read of your resonance, but numbers describe a take; they don't grade it. The questions that matter: did it feel easy, could I do it again, and do I like how it sounds? Inside your head your voice sounds lower and fuller than it does to anyone else; the recording is closer to what others hear. Listen back on headphones, not a laptop speaker.
 
-**Hard days.** Hearing your own recordings can sting, especially at first. You can rate a card by how it felt without listening back, and Home has people to talk to.
+**Hard days.** Hearing your own recordings can sting, especially at first. You can rate a card by how it felt without listening back, and the Course guide on [All chapters](#/studio/chapters) has people to talk to.
 
-**Be gentle with your voice.** It should never hurt: stop and rest if it strains. When to see a doctor is on Home and at the end of every chapter.
+**Be gentle with your voice.** It should never hurt: stop and rest if it strains. When to see a doctor is at the end of every chapter, and in the Course guide on [All chapters](#/studio/chapters).
 
 ## today
 
