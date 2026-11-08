@@ -1,5 +1,25 @@
 # Lilt: validation report
 
+## 9 November 2026: Pitch scale back on, resonance against the gap
+
+The man/woman pitch scale shows by default and can be hidden from under it or in Practice
+settings. On fresh scratch servers (port 7979) `results-extras` passed 18/18 (on from a fresh
+data folder, the spread sentence, Hide saved and kept, back on from Settings, light and dark),
+`practice` 25/25 and `flow` 42/42; `feedback` passed against its stubbed API. Web typecheck, 212
+unit tests and a production build passed; server Clippy and 138 tests passed. The last-week
+marker is covered by unit tests only (the browser suites record hums, which it leaves out).
+Resonance is not placed against population averages: two Windows voices read about 1.5 st above
+Peterson & Barney even on the same words (`analysis/EVALUATION.md`). Not tried on a real voice.
+
+## 9 November 2026: Windows 0.1.0 release
+
+`desktop/build.ps1` built `Lilt-0.1.0-x64-setup.exe` from `206402d`. The relocated app passed
+`desktop/scripts/windows-smoke.mjs` on a fresh `windows smoke` data folder (port 17981):
+synthetic-microphone recording, upload, bundled analysis, playback and saving the starting
+range, and Settings → About Lilt opened. Desktop and server exited on close. Published as
+[v0.1.0](https://github.com/G9000/lilt/releases/tag/v0.1.0), unsigned; not installed on a
+second machine.
+
 ## 9 November 2026: Hold to change room artwork
 
 The cat's hold interaction now covers the other painted objects. Mouse/touch cancellation,

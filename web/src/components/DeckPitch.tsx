@@ -3,7 +3,7 @@ import { practice } from "../ui/practice";
 import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
 import { bandShares, CardKind, describeBandShares, describeRangeShare, describeResonance, describeResonanceGap, describeTake, isSpeechKind, pitchCaveat, placePitch, shareInRange, takeStyle, usualPitch } from "../insight";
-import { parseTextId } from "../courseIds";
+import { DEFAULT_COURSE, parseTextId } from "../courseIds";
 import { noteName } from "../pitch";
 import { contourPoints, PianoRoll, PitchPoint } from "./PianoRoll";
 import { useTakeAudio } from "./takeAudio";
@@ -32,7 +32,7 @@ function InsightNote({ analysis, band, card }: { analysis: any; band: [number, n
 // The voice course's texts, once: the population reference and which chapters are spoken.
 let course: Promise<{ ref: PitchReference | null; speech: Set<string> }> | null = null;
 const voiceCourse = () => (course ??= api.texts().then(
-  (t) => ({ ref: t.pitch_reference ?? null, speech: new Set(t.levels.filter((l) => isSpeechKind(l.kind)).map((l) => l.id)) }),
+  (t) => ({ ref: t.pitch_reference ?? null, speech: new Set((t.levels ?? []).filter((l) => isSpeechKind(l.kind)).map((l) => l.id)) }),
   () => ({ ref: null, speech: new Set<string>() })));
 // Whether you want the man/woman scale (Practice settings, or Hide under it): on unless you turned it off.
 // A change shows straight away.
@@ -51,7 +51,8 @@ async function hideScale() {
 async function usualThisWeek(speech: Set<string>): Promise<number | null> {
   const h = await api.history({ days: 7 }).catch(() => null);
   if (!h) return null;
-  const medians = h.takes.filter((t) => speech.has(parseTextId(t.prompt_id)?.chapter ?? "")).map((t) => t.analysis_summary?.f0_median_hz ?? 0);
+  const spoken = (id: string) => { const p = parseTextId(id); return !!p && p.course === DEFAULT_COURSE && speech.has(p.chapter); };
+  const medians = h.takes.filter((t) => spoken(t.prompt_id)).map((t) => t.analysis_summary?.f0_median_hz ?? 0);
   return usualPitch(medians);
 }
 

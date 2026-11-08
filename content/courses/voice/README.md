@@ -22,9 +22,9 @@ with its own `course.md`.
   line (it opens the same way in Obsidian).
   The list of chapters under it is added automatically.
 - `_pitch.md`: the average speaking pitch for men and women (averages and standard deviations in Hz,
-  the overlap band) and where those numbers come from. The scale is off unless you turn it on in
-  Practice settings; then, after each take, Lilt shows your middle pitch on it in words and
-  semitones, never as a percentage or a score.
+  the overlap band) and where those numbers come from. After each take, Lilt shows your middle pitch
+  on the scale in words and semitones, how the take spread across it, and where your spoken takes
+  of the last week usually sit; never as a score. Hide it under the scale or in Practice settings.
 - `_about.md`: the edition (`version`), the date the sources were checked, and the note shown at
   the end of every chapter. Updates compares this edition: raising it offers the whole course to
   personal copies as one change. `course.md` has its own `version`, the course's listing in
