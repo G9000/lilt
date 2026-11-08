@@ -5,6 +5,7 @@ import { DEFAULT_COURSE, parseTextId } from "../courses";
 import { api, Take, TakeStatus, Texts } from "../api";
 import { loadPeaks } from "../components/AudioPlayer";
 import { Icon, takeName, Toast, useToast } from "../components/bits";
+import { ClipSaver } from "../components/ClipSaver";
 
 /**
  * Every take, newest first, grouped by day, one row each like a voice memo: play, what it was,
@@ -115,6 +116,7 @@ function TakeRow({ take, title, onUpdate, onDelete, more, sub }: { take: Take; t
   const [pos, setPos] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [noting, setNoting] = useState(false);
+  const [clipping, setClipping] = useState(false);
   const [note, setNote] = useState(take.note ?? "");
   useEffect(() => {
     let live = true;
@@ -147,6 +149,7 @@ function TakeRow({ take, title, onUpdate, onDelete, more, sub }: { take: Take; t
       <div className={cx("rl-actions", practice["rl-actions"])}>
         <button onClick={() => void api.patchTake(take.id, { favourite: !take.favourite }).then(onUpdate)} aria-pressed={take.favourite}
           aria-label={take.favourite ? "Remove from favourites" : "Add to favourites"} title={take.favourite ? "Your favourite take" : "Star this take"}>{Icon.star}</button>
+        <button onClick={() => setClipping((c) => !c)} aria-expanded={clipping} aria-label="Save a clip to share" title="Save a clip to share">{Icon.download}</button>
         <button onClick={() => setNoting((n) => !n)} aria-expanded={noting} aria-label="Note" title="Add a note">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 12.8V3.6c0-.5.4-.8.8-.8h8.4c.5 0 .8.4.8.8v6.2L10 12.8zM10 12.8V10h3" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg>
         </button>
@@ -154,6 +157,7 @@ function TakeRow({ take, title, onUpdate, onDelete, more, sub }: { take: Take; t
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.2c0 .4.4.8.8.8h4.2c.4 0 .8-.4.8-.8l.6-8.2" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       </div>
+      {clipping && <ClipSaver take={take} />}
       {(noting || take.note) && (
         <div className={cx("rl-note", practice["rl-note"])}>
           {noting ? (

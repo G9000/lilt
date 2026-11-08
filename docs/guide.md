@@ -588,6 +588,12 @@ Monitor uploads and playback have an isolated check with locally generated media
 12. **Progress** shows each skill in the task where it was practised, never an overall score.
    **Recordings** (the old History page) has playback, favourites, notes, deletion and export.
    Export all and Measure older takes again appear once there's a take to export or measure.
+   **Save a clip to share** (the download button on a recording, or under **More about this take**
+   in a chapter) saves a measured take, or the part you choose with From and To, as a WAV file in
+   your Downloads, named by day, text and the part saved (`lilt-2026-11-09-market-0m03s-0m15s.wav`).
+   **Play this part** plays the very file you'd save. A clip can be up to five minutes; nothing is
+   uploaded. The server cuts it from the take's decoded copy (`GET /api/takes/{id}/clip?start=&end=`,
+   seconds), never touching the original, and the desktop apps save it to Downloads like Export all.
 
 If you report strain, pain or new hoarseness, the activity is paused and never made harder. If
 it persists or keeps coming back, see a voice professional.

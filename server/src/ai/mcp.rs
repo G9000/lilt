@@ -240,58 +240,6 @@ fn req_str(a: &serde_json::Map<String, Value>, k: &str) -> anyhow::Result<String
     arg_str(a, k).ok_or_else(|| anyhow::anyhow!("missing argument {k}"))
 }
 
-/// Slice the 16-bit PCM analysis WAV.
-fn wav_clip(bytes: &[u8], start_s: f64, end_s: f64) -> anyhow::Result<(Vec<u8>, f64, f64)> {
-    anyhow::ensure!(
-        bytes.len() > 44 && &bytes[0..4] == b"RIFF" && &bytes[8..12] == b"WAVE",
-        "not a WAV file"
-    );
-    let mut pos = 12;
-    let (mut channels, mut rate, mut bits) = (0u16, 0u32, 0u16);
-    let mut data: Option<(usize, usize)> = None;
-    while pos + 8 <= bytes.len() {
-        let id = &bytes[pos..pos + 4];
-        let size = u32::from_le_bytes(bytes[pos + 4..pos + 8].try_into()?) as usize;
-        let body = pos + 8;
-        if id == b"fmt " {
-            channels = u16::from_le_bytes(bytes[body + 2..body + 4].try_into()?);
-            rate = u32::from_le_bytes(bytes[body + 4..body + 8].try_into()?);
-            bits = u16::from_le_bytes(bytes[body + 14..body + 16].try_into()?);
-        } else if id == b"data" {
-            data = Some((body, size.min(bytes.len() - body)));
-            break;
-        }
-        pos = body + size + (size & 1);
-    }
-    let (off, len) = data.ok_or_else(|| anyhow::anyhow!("WAV has no data chunk"))?;
-    anyhow::ensure!(
-        bits == 16 && channels >= 1 && rate > 0,
-        "unsupported WAV format"
-    );
-    let frame = (channels as usize) * 2;
-    let total = len / frame;
-    let dur = total as f64 / rate as f64;
-    let s = start_s.clamp(0.0, dur);
-    let e = end_s.clamp(s, dur).min(s + 30.0);
-    let (a, b) = ((s * rate as f64) as usize, (e * rate as f64) as usize);
-    let pcm = &bytes[off + a * frame..off + b * frame];
-    let mut out = Vec::with_capacity(44 + pcm.len());
-    out.extend_from_slice(b"RIFF");
-    out.extend_from_slice(&(36 + pcm.len() as u32).to_le_bytes());
-    out.extend_from_slice(b"WAVEfmt ");
-    out.extend_from_slice(&16u32.to_le_bytes());
-    out.extend_from_slice(&1u16.to_le_bytes());
-    out.extend_from_slice(&channels.to_le_bytes());
-    out.extend_from_slice(&rate.to_le_bytes());
-    out.extend_from_slice(&(rate * frame as u32).to_le_bytes());
-    out.extend_from_slice(&(frame as u16).to_le_bytes());
-    out.extend_from_slice(&16u16.to_le_bytes());
-    out.extend_from_slice(b"data");
-    out.extend_from_slice(&(pcm.len() as u32).to_le_bytes());
-    out.extend_from_slice(pcm);
-    Ok((out, s, e))
-}
-
 pub fn call(
     app: &Shared,
     name: &str,
@@ -417,7 +365,7 @@ pub fn call(
                 .get("end_s")
                 .and_then(|v| v.as_f64())
                 .unwrap_or(start + 30.0);
-            let (clip, s, e) = wav_clip(&bytes, start, end)?;
+            let (clip, s, e) = crate::recordings::clip::wav_clip(&bytes, start, end, 30.0)?;
             let b64 = base64::engine::general_purpose::STANDARD.encode(&clip);
             let note = json!({"take_id": t.id, "start_s": s, "end_s": e, "mime": "audio/wav",
                 "source": "derived analysis copy (16-bit PCM mono decoded from the original)",

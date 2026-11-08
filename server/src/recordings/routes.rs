@@ -35,6 +35,7 @@ pub fn router() -> Router<Shared> {
         .route("/api/takes/{id}/chunks/{seq}", put(put_chunk))
         .route("/api/takes/{id}/finalize", post(finalize))
         .route("/api/takes/{id}/audio", get(take_audio))
+        .route("/api/takes/{id}/clip", get(take_clip))
         .route("/api/history", get(history))
 }
 
@@ -288,6 +289,76 @@ async fn take_audio(
         "private, max-age=3600".parse().unwrap(),
     );
     Ok(res)
+}
+
+#[derive(Deserialize)]
+struct ClipQuery {
+    start: Option<f64>,
+    end: Option<f64>,
+}
+
+/// The longest clip you can save in one go, in seconds: plenty for a voice check, and a bound on memory.
+const CLIP_MAX_S: f64 = 300.0;
+
+/// Part of a take (or all of it) as a WAV file to keep or share, saved like any download. Cut from the
+/// decoded analysis copy, so it exists once the take has been measured; the original is never touched.
+async fn take_clip(
+    State(app): State<Shared>,
+    Path(id): Path<String>,
+    Query(q): Query<ClipQuery>,
+) -> R<Response> {
+    let t = app.take(&id)?;
+    let wav = app
+        .paths
+        .take_dir(&t.session_id, &t.id)
+        .join("analysis.wav");
+    let bytes = tokio::fs::read(&wav).await.map_err(|_| {
+        ApiError::from(anyhow::anyhow!(
+            "This take is still being measured; you can save a clip once it's done."
+        ))
+    })?;
+    let start = q.start.unwrap_or(0.0);
+    let end = q.end.unwrap_or(f64::MAX);
+    let (clip, s, e) = recordings::clip::wav_clip(&bytes, start, end, CLIP_MAX_S)?;
+    // Named by the day it was recorded where you are, not in UTC.
+    let day = chrono::DateTime::parse_from_rfc3339(&t.created_utc)
+        .map(|at| util::local_at(at.with_timezone(&chrono::Utc), &app.profile().timezone).0)
+        .unwrap_or_else(|_| t.created_utc.chars().take(10).collect());
+    let name = clip_name(&day, &t.prompt_id, s, e);
+    Ok(Response::builder()
+        .header(header::CONTENT_TYPE, "audio/wav")
+        .header(
+            header::CONTENT_DISPOSITION,
+            format!("attachment; filename=\"{name}\""),
+        )
+        .header(header::CACHE_CONTROL, "no-store")
+        .body(Body::from(clip))
+        .unwrap())
+}
+
+/// `lilt-2026-11-09-market-0m03s-0m15s.wav`: the take's day, its text and the part saved, in safe characters.
+fn clip_name(day: &str, prompt_id: &str, s: f64, e: f64) -> String {
+    let day: String = day
+        .chars()
+        .take(10)
+        .filter(|c| c.is_ascii_digit() || *c == '-')
+        .collect();
+    let text: String = prompt_id
+        .rsplit(['.', '/'])
+        .next()
+        .unwrap_or("take")
+        .chars()
+        .map(|c| {
+            if c.is_ascii_alphanumeric() {
+                c.to_ascii_lowercase()
+            } else {
+                '-'
+            }
+        })
+        .take(40)
+        .collect();
+    let at = |x: f64| format!("{}m{:02}s", (x as u64) / 60, (x as u64) % 60);
+    format!("lilt-{day}-{text}-{}-{}.wav", at(s), at(e))
 }
 
 #[derive(Deserialize)]

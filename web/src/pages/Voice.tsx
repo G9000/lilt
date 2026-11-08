@@ -40,6 +40,7 @@ import { Brightness, brightnessWords, meterPosition, trackBrightness } from "../
 import { apartWords, lastNote, takeDay, takesOf, thenAndNow as checkInPair, type ThenNow } from "../checkIn";
 import { nextUp } from "../nextUp";
 import { DirectionChoice } from "../components/DirectionChoice";
+import { ClipSaver } from "../components/ClipSaver";
 import { announceDirection, directionOf, DIRECTIONS } from "../direction";
 
 /**
@@ -1558,6 +1559,7 @@ function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card
 }) {
   useTakeStatus(take, onUpdate);
   const ready = take.status === "review_ready";
+  const [clipping, setClipping] = useState(false);
   return (
     <section className={cx("ve-take", practice["ve-take"])} aria-label="Your take" onClick={(e) => e.stopPropagation()}>
       <div className={cx("ve-take-head", practice["ve-take-head"])}><b>Your take</b><StatusBadge status={take.status} /><TakeFlags take={take} /></div>
@@ -1592,9 +1594,11 @@ function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card
           <ResonanceNote take={take} />
           <div className={cx("ve-take-actions", practice["ve-take-actions"], "mt-3")}>
             {ready && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => onUseRange(take)}>Use this take's range as my comfortable range</button>}
+            {ready && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => setClipping((c) => !c)} aria-expanded={clipping}>Save a clip to share</button>}
             {before && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => go(`/compare?a=${before.id}&b=${take.id}`)}>Detailed comparison</button>}
             {before && <TakeNote key={before.id} take={before} subject={`the ${takeDate(before)} take`} onUpdate={onBeforeUpdate} />}
           </div>
+          {clipping && <ClipSaver take={take} />}
         </details>
       )}
     </section>

@@ -507,6 +507,13 @@ export const practice = {
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&_button:hover]:text-ink ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&_button.danger:hover]:text-rec ` +
     `[@media_(max-width:_860px)]:[.ve_&_button]:[opacity:1]`,
+  "clip": `[grid-column:2_/_-1] grid [row-gap:10px] mt-[6px] mb-[4px] p-[14px] rounded-[12px] bg-fill [background-image:none] ` +
+    `[max-width:68ch] [&_label]:grid [&_label]:[row-gap:4px] [&_label_span]:text-[13px] [&_label_span]:text-ink-2 ` +
+    `[&_label_b]:text-ink [&_label_b]:font-semibold [&_label_b]:tabular-nums [&_input]:w-full [&_input]:accent-accent ` +
+    `[&_p]:m-[0] [&_p]:text-[12.5px] [&_p]:[line-height:1.45] [&_p]:text-ink-3 ` +
+    `[&.clip-wait]:bg-transparent [&.clip-wait]:p-[0] [&.clip-wait]:text-[13px] [&.clip-wait]:text-ink-3`,
+  "clip-do": `flex flex-wrap items-center [row-gap:8px] [column-gap:10px] [&_a]:no-underline ` +
+    `[&_span]:text-[13px] [&_span]:text-ink-3 [&_span]:tabular-nums`,
   "rl-note": `[grid-column:2_/_-1] [&_p]:mt-[0] [&_p]:mr-[0] [&_p]:mb-[0] [&_p]:ml-[0] [&_p]:text-[13px] [&_p]:text-ink-2 ` +
     `[&_p]:italic [&_form]:flex [&_form]:[row-gap:8px] [&_form]:[column-gap:8px] [&_input]:[flex:1] ` +
     `[&_input]:min-w-0 [&_input]:h-[34px] [&_input]:pt-[0] [&_input]:pr-[12px] [&_input]:pb-[0] [&_input]:pl-[12px] ` +

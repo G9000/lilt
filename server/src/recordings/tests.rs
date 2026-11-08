@@ -222,3 +222,59 @@ async fn huge_history_window_and_cursor_do_not_panic() {
         );
     }
 }
+
+/// A measured take saves as a WAV clip named after its day, text and the part saved; before it's
+/// measured there's nothing to cut, and the answer says so.
+#[tokio::test]
+async fn a_measured_take_saves_as_a_wav_clip_to_share() {
+    use axum::body::{Body, to_bytes};
+    use axum::http::{Request, StatusCode, header};
+    use tower::ServiceExt;
+    let (dir, app) = app();
+    let s = session(&app);
+    let t = upload(&app, &s.id, T::default(), "harmonic_240.webm");
+    let router = crate::build_router(app.clone(), &config(dir.path()));
+    let get = |uri: String| {
+        Request::builder()
+            .uri(uri)
+            .header("host", "127.0.0.1:7878")
+            .body(Body::empty())
+            .unwrap()
+    };
+    let res = router
+        .clone()
+        .oneshot(get(format!("/api/takes/{}/clip?start=0.5&end=1.5", t.id)))
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.headers()[header::CONTENT_TYPE], "audio/wav");
+    let disposition = res.headers()[header::CONTENT_DISPOSITION]
+        .to_str()
+        .unwrap()
+        .to_string();
+    assert!(
+        disposition.starts_with("attachment; filename=\"lilt-"),
+        "{disposition}"
+    );
+    assert!(disposition.ends_with("-0m00s-0m01s.wav\""), "{disposition}");
+    let body = to_bytes(res.into_body(), usize::MAX).await.unwrap();
+    assert_eq!(&body[0..4], b"RIFF");
+    assert_eq!(&body[8..12], b"WAVE");
+    // The whole take with no bounds.
+    let whole = router
+        .clone()
+        .oneshot(get(format!("/api/takes/{}/clip", t.id)))
+        .await
+        .unwrap();
+    assert_eq!(whole.status(), StatusCode::OK);
+    assert!(to_bytes(whole.into_body(), usize::MAX).await.unwrap().len() > body.len());
+    // Without the decoded copy (still being measured), it explains instead of failing silently.
+    std::fs::remove_file(app.paths.take_dir(&s.id, &t.id).join("analysis.wav")).unwrap();
+    let pending = router
+        .oneshot(get(format!("/api/takes/{}/clip", t.id)))
+        .await
+        .unwrap();
+    assert_eq!(pending.status(), StatusCode::BAD_REQUEST);
+    let text = to_bytes(pending.into_body(), usize::MAX).await.unwrap();
+    assert!(String::from_utf8_lossy(&text).contains("still being measured"));
+}
