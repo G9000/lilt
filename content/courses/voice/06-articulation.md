@@ -16,7 +16,7 @@ Articulation is how your lips, tongue and jaw shape sounds. Lighter, quicker con
 
 **Lips that move.** "Pa ba ma": let your lips meet and spring apart. Keep your jaw loose; it doesn't need to do the work.
 
-**Explore clarity.** Try an easy "see you soon" and listen to the consonants. Keep the pronunciation and accent that feel like you. You do not need a particular s sound, faster speech, or a different accent to have a feminine voice.
+**Explore clarity.** Try an easy "see you soon" and listen to the consonants. Keep the pronunciation and accent that feel like you. You do not need a particular s sound, faster speech, or a different accent for your voice to sound light.
 
 **Use it in words.** "Thanks, that's perfect, see you later!" with quick, light consonants. Clear doesn't mean slow or over-pronounced.
 

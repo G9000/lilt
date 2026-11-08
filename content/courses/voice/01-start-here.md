@@ -22,7 +22,7 @@ Hi, friend. Five minutes of setup, one "before" recording, and you're ready.
 
 **Make your first take.** Select the counting text, press Record, and allow microphone access if asked. Say the line, press Stop, and wait for it to finish saving. Play it back when you are ready. If there is no sound, check that your microphone is allowed and selected in your browser or app settings, then try a short count again. Saved takes are in [Recordings](#/history).
 
-**Choose your goal.** This guide focuses on a more feminine voice, but what that sounds like is yours to choose. Write a goal in [Practice settings](#/studio/settings); it becomes the note on your wall. Name a situation and a quality you want, such as an easy, light voice for everyday conversation. An androgynous voice or a flexible range are valid goals too. A band on a pitch chart cannot define any of these. Oestrogen generally does not reverse voice deepening from testosterone; voice training can work on more than pitch.
+**Choose your goal.** This guide focuses on a lighter, brighter voice, but what that sounds like is yours to choose. Write a goal in [Practice settings](#/studio/settings); it becomes the note on your wall. Name a situation and a quality you want, such as an easy, light voice for everyday conversation. A flexible range, or simply more ease, are good goals too. A band on a pitch chart cannot define any of these: pitch is one part, alongside resonance, weight and melody.
 
 **Record your "before".** Read the texts below in your everyday voice. Don't change anything yet. Future you will want this, trust me. You don't have to listen back to it until you want to.
 

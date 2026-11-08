@@ -10,10 +10,10 @@ video: https://www.youtube.com/watch?v=a0PpzrWsTUE
 video_title: Voice Essentials: Vocal Weight for Beginners
 video_by: TransVoiceLessons
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/
-written_by: Written for Lilt, from NHS Fife's vocal-cord tuning-in activity and NHS Lothian's "Where to start" (2026). The slide into lightness, the HEY/aww contrast, borrowing light little sounds and the whimper are community vocal-weight exercises from trans voice coaching (TransVoiceLessons, the TransVoice wiki); the uh-oh text is Lilt's own choice.
+written_by: Written for Lilt, from NHS Fife's vocal-cord tuning-in activity and NHS Lothian's "Where to start" (2026). The slide into lightness, the HEY/aww contrast, borrowing light little sounds and the whimper are community vocal-weight exercises from online voice coaching (TransVoiceLessons, the TransVoice wiki); the uh-oh text is Lilt's own choice.
 ---
 
-Vocal weight is how thick or thin your voice sounds: whether your vocal folds meet with a lot of their mass or mostly their thin edges. A heavy voice is thick and buzzy, like a friendly "HEY!" to someone across the street. A light voice is thin and clear, like "uh-oh" to a toddler. Weight, pitch and resonance are three separate dials. A lighter weight is one of the things listeners hear as feminine, and a light voice in a small space (the last chapter) can sound feminine without a high pitch. Light doesn't mean breathy or quiet: aim for thin and clear, at an ordinary speaking volume.
+Vocal weight is how thick or thin your voice sounds: whether your vocal folds meet with a lot of their mass or mostly their thin edges. A heavy voice is thick and buzzy, like a friendly "HEY!" to someone across the street. A light voice is thin and clear, like "uh-oh" to a toddler. Weight, pitch and resonance are three separate dials. A lighter weight is much of what listeners hear as a light voice, and with a small space (the last chapter) it can sound light and bright without a high pitch. Light doesn't mean breathy or quiet: aim for thin and clear, at an ordinary speaking volume.
 
 **Hear heavy and light.** Play the chapter video. Then say a friendly "HEY!" as if catching someone's attention across the street (a call, not a shout), and a soft "aww" at a puppy, at about the same pitch. Notice the thick buzz on "HEY" and how little there is on "aww". That thickness is weight.
 

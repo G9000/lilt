@@ -1,6 +1,6 @@
 {
   "id": "nhsfife.gentle-pitch-count",
-  "version": 3,
+  "version": 4,
   "title": "Gentle pitch and counting",
   "areas": [
     "pitch",
@@ -93,7 +93,7 @@
     "If a higher pitch sounds cartoon-like, the resonance is often staying dark. That's why the forward hum comes first."
   ],
   "common_misunderstandings": [
-    "Pitch is one part of a voice, not the whole goal, and no number shows how feminine a voice is.",
+    "Pitch is one part of a voice, not the whole goal, and no number shows whether your voice sounds the way you want.",
     "Higher isn't automatically better. Pick a comfortable level that sounds like you."
   ],
   "stop_conditions": [

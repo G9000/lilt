@@ -62,7 +62,7 @@ weight or resonance technique. No clinician has reviewed the content or pacing.
 
 ## November 2026 guidance review
 
-The general MtF route and listening-resource list are on `index.md`. The 3 November review checked
+The general route and listening-resource list are on `index.md`. The 3 November review checked
 the accessible ASHA and NHS Fife guidance and the YouTube resource metadata. It is an editorial
 review, not clinician approval or a full review of the video content. The NHS Lothian PDF was
 unavailable during that check. The course now avoids fixed weekly pitch increases, held swallowing

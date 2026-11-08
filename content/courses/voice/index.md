@@ -25,10 +25,10 @@ You can start before reading the whole guide. One short recording is enough for 
 The chapter list is a shelf to explore, not a checklist to finish. A comfortable range on the
 chart is optional; you do not need to choose a target number before making your first recording.
 
-## Your route through voice feminization
+## Your route to a lighter voice
 
-This is a general MtF guide for trans women and other people exploring a more feminine voice.
-There is no single feminine sound to copy. Start with a sound you would enjoy using, in your own
+This is a general guide for anyone exploring a lighter, brighter voice that still sounds like them.
+There is no single sound to copy. Start with a sound you would enjoy using, in your own
 accent and language. You can adapt the English practice phrases to words you actually say.
 
 - **Start with ease.** [Set up and save a baseline](#/studio/start-here), then choose one
@@ -123,8 +123,8 @@ Use this short viewing list alongside the lessons. Pick one demonstration per vi
   in sound colour. Treat physical imagery as optional cues, not positions to force.
 - [Vocal weight for beginners — TransVoiceLessons](https://www.youtube.com/watch?v=a0PpzrWsTUE):
   compare heavier and lighter examples; return to the weight chapter for a short phrase.
-- [Low-pitched feminine voice — TransVoiceLessons](https://www.youtube.com/watch?v=5OyfNLWf3UM):
-  explore the idea that feminine voices need not all be high. Use your own comfortable range.
+- [A light voice at a low pitch — TransVoiceLessons](https://www.youtube.com/watch?v=5OyfNLWf3UM):
+  explore the idea that a light voice need not be a high one. Use your own comfortable range.
 
 These are external teaching resources, not clinical approval of every exercise or a promise of
 results. The links and creator credits were checked on 3 November 2026; the videos have not had a
@@ -185,14 +185,14 @@ no clinician has reviewed this course.
 
 Hearing your own voice can be hard, especially at the start. You don't have to listen to your
 "before" recording until you want to. Plateaus and off days are part of it for everyone, and it's
-fine to pause for a while and come back. If things feel heavy, talk to someone you trust; in the US
-and Canada, [Trans Lifeline](https://translifeline.org) is run by and for trans people, and in the
-UK, [Switchboard LGBT+](https://switchboard.lgbt) is there to listen.
+fine to pause for a while and come back. If things feel heavy, talk to someone you trust, or a
+listening line: [Trans Lifeline](https://translifeline.org) in the US and Canada and
+[Switchboard LGBT+](https://switchboard.lgbt) in the UK are there to listen.
 
 ## Working with a professional
 
-Lilt is practice, not therapy. A speech and language therapist who works with gender-affirming
-voice can hear what you can't, and many offer online sessions. In the UK, search
+Lilt is practice, not therapy. A speech and language therapist who specialises in voice can hear
+what you can't, and many offer online sessions. In the UK, search
 [ASLTIP](https://asltip.com); in the US, [ASHA ProFind](https://www.asha.org/profind/). If you're
 considering voice surgery, therapists usually recommend voice training before and after it.
 

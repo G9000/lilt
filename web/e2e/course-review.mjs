@@ -38,7 +38,7 @@ try {
   // Every chapter, and the course guide, live on the Chapters page.
   await page.getByRole("link", { name: "All chapters", exact: true }).click();
   await page.locator(".ve-course-guide > summary").click();
-  await page.getByRole("heading", { name: "Your route through voice feminization" }).waitFor();
+  await page.getByRole("heading", { name: "Your route to a lighter voice" }).waitFor();
   await page.locator(".ve-course-guide > summary").click();
   await page.locator("#voice-chapters").waitFor({ state: "visible" });
   await page.locator("#voice-chapters").getByRole("link", { name: /Pitch Finding/ }).click();

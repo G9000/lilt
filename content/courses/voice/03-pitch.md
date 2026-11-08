@@ -13,7 +13,7 @@ source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping
 written_by: Written for Lilt, from NHS Fife's pitch tuning-in activity and "Shaping your voice: pitch and resonance" (Activity 2), and NHS Lothian's "Where to start" (2026). The mm-hm text is a common speech-therapy way to find a speaking pitch, chosen by Lilt.
 ---
 
-Pitch is how high or low your voice sounds. It is one important part of voice feminization, alongside resonance and voice quality. There is no single pitch that makes a voice feminine. Explore a speaking range you like and can use comfortably, rather than aiming for the highest note you can reach.
+Pitch is how high or low your voice sounds. It is one important part of a lighter voice, alongside resonance and vocal weight. There is no single pitch that makes a voice light. Explore a speaking range you like and can use comfortably, rather than aiming for the highest note you can reach.
 
 **How it fits together.** Your vocal folds make the sound: how fast they vibrate is pitch, and how thick and firmly they meet is weight. Your throat, mouth and nose then shape that sound: that's resonance. The next chapters take one each, so you can learn to change them separately.
 
@@ -21,7 +21,7 @@ Pitch is how high or low your voice sounds. It is one important part of voice fe
 
 **Explore a small change.** Try a short, gentle hum glide within an easy range, then say "Hello, how are you?" near a spot you liked. Compare it with your everyday version. A useful starting place feels easy in words as well as in the hum; it does not need to be a set number of semitones higher. Stop if speaking feels strained or becomes hoarse.
 
-**If your voice flips.** A glide may move into a different register. A flip does not by itself mean injury or failure, and register labels do not decide whether a voice is feminine. Return to an easy sound if the change is difficult to control. A voice-specialist speech and language therapist can help if you keep getting stuck or uncomfortable.
+**If your voice flips.** A glide may move into a different register. A flip does not by itself mean injury or failure, and register labels do not decide what your voice should be. Return to an easy sound if the change is difficult to control. A voice-specialist speech and language therapist can help if you keep getting stuck or uncomfortable.
 
 **Anchor it.** Hum your note, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
 
