@@ -6,6 +6,7 @@ subtitle: Light, not breathy
 kind: phrases
 area: lightness
 check_in: light-hello
+direction: higher
 video: https://www.youtube.com/watch?v=a0PpzrWsTUE
 video_title: Voice Essentials: Vocal Weight for Beginners
 video_by: TransVoiceLessons

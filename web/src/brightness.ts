@@ -1,10 +1,13 @@
-// The Resonance chapter's live brightness meter. Brightness here is where a sound's energy sits
+// The resonance chapters' live brightness meter. Brightness here is where a sound's energy sits
 // across the spectrum (its spectral centroid, 200–5000 Hz). It is only ever read against the start
 // of the same take: never as an absolute value, which would say more about the microphone, the
 // room and the vowel than about you. It means something on a steady sound on one note (a hum, a
 // held vowel, a whisper); speech moves it with every vowel and consonant.
 //
 // The maths is pure (tested in brightness.test.ts); `trackBrightness` at the end is the browser glue.
+
+/** The chapters that show the live darker–brighter strip and open each take's details: both resonance chapters. */
+export const isResonanceChapter = (levelId: string) => levelId === "resonance" || levelId === "lower-resonance";
 
 export const LOW_HZ = 200, HIGH_HZ = 5000;
 /** How much voiced sound sets "where you started". */

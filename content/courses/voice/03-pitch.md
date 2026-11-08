@@ -6,6 +6,7 @@ subtitle: Finding a range that feels like you
 kind: hum
 area: pitch
 check_in: count-5
+direction: higher
 video: https://www.youtube.com/watch?v=5OyfNLWf3UM
 video_title: Low-Pitched Feminine Voice: Guided Practice
 video_by: TransVoiceLessons

@@ -6,6 +6,7 @@ subtitle: Carrying a light voice through noise
 kind: phrases
 area: carryover
 check_in: say-again
+direction: higher
 source_url: https://www.nidcd.nih.gov/health/taking-care-your-voice
 written_by: Written for Lilt. The voice-care points (not shouting over noise, resting a tired voice) follow NIDCD's "Taking care of your voice" and NHS Fife's "How to take care of your voice"; the cues and texts are Lilt's own.
 ---

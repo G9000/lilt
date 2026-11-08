@@ -6,6 +6,7 @@ subtitle: The sounds you don't plan
 kind: phrases
 area: carryover
 check_in: laugh
+direction: higher
 source_url: https://www.nhsfife.org/services/all-services/speech-and-language-therapy/how-to-take-care-of-your-voice/
 written_by: Written for Lilt. The texts are Lilt's own; swallowing or sipping water instead of clearing your throat is common voice-care advice.
 ---

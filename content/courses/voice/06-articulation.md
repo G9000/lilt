@@ -6,6 +6,7 @@ subtitle: Light, quick and forward
 kind: phrases
 area: lightness
 check_in: tip-teeth-lips
+direction: higher
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lightenbrighten-articulation/
 written_by: Written for Lilt, from NHS Fife's "Shaping your voice: articulation" and its articulation tuning-in activity. "The tip of the tongue, the teeth, the lips" is a traditional diction exercise; the other texts and the no-prop clarity comparison are Lilt's own.
 ---

@@ -31,7 +31,7 @@ with its own `course.md`.
   Courses (version 2 is when chapters began naming their own `exercises:`), so the two differ.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. `17-going-lower.md` … `21-lower-emphasis.md` are the Going lower part (`part: Going lower`, `today: false`): a start on breath, care and testosterone, then pitch, resonance, vocal weight and emphasis for a deeper, darker, fuller voice, for people who set Which way to Lower. They come after the Extras only because the Extras' file names stay as they are. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
+- `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. `17-going-lower.md` … `21-lower-emphasis.md` are the Going lower part (`part: Going lower`, `direction: lower`): a start on breath, care and testosterone, then pitch, resonance, vocal weight and emphasis for a deeper, darker, fuller voice, for people who set Which way to Lower. The start stays out of Today (`today: false`); with Which way set to Lower, the four skill chapters are Today's cards in place of the chapters marked `direction: higher` (Pitch, Resonance, Vocal weight, Articulation, Intonation, Laughs and little sounds and Being heard). They come after the Extras only because the Extras' file names stay as they are. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
   name sets the order (and the order Today's cards open in). `13-being-heard.md` and
   `13-real-life.md` share a number and sort by name, so Being heard comes first. Leave the names as
   they are: Updates would offer a renamed file to personal copies as a separate removal and
@@ -107,9 +107,10 @@ Hancock, Childs and Irwig 2017; Ziegler et al. 2018; Azul et al. 2017). It follo
 never push the pitch down, press on the throat or hold the voice box down; creak, pressed voice and
 shouting are never "fuller"; and emphasis through loudness and pacing is a tendency, never a rule
 against a moving melody. Like the rest, it is an AI editorial piece, not clinician approval. No
-Trans Care BC voice page could be found to check against, and the chapters have no video yet. The
-Today deck doesn't follow Which way, so these chapters are `today: false` and are opened from
-Start here, the course guide and the Going lower chapter.
+Trans Care BC voice page could be found to check against, and the chapters have no video yet. Later
+that day Today's cards began to follow Which way: going lower, the four skill chapters
+(`direction: lower`) take the place of those aiming lighter (`direction: higher`), straight after
+the warm-ups, and the start stays a page to read, like Start here.
 
 Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
 review by a voice-specialist speech and language therapist; and real-user checks of comfort,
@@ -149,6 +150,10 @@ mmmmmmm
   - `exercises`: built-in exercises (from `content/exercises/`, by id, comma-separated) that join
     this chapter in Today.
   - `today: false`: keep this chapter's texts out of Today's cards (Start here uses it).
+  - `direction: higher` or `direction: lower`: a chapter for one way of changing the voice. Today's
+    cards use the chapters for the learner's Which way (unset and still open read as higher), and
+    the ones for the other way drop out; going lower, its chapters take the place of the first
+    higher one. A chapter without it is for any direction.
   - `video`, `video_title`, `video_by`: one YouTube video for the chapter (a link). Practice shows a
     card with YouTube's thumbnail and plays the video there; offline, the card says it needs an
     internet connection. `video_image: images/<file>` swaps in a picture of your own, which should

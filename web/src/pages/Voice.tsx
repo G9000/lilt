@@ -36,7 +36,7 @@ import { ReadAlong, ReadNotes } from "../components/ReadAlong";
 import { cleanContour, fitRange, midiToHz, noteName, recentMedian, steadinessSt } from "../pitch";
 import { levelMeter, RecState, TakeMeta, TakeRecorder } from "../recorder";
 import { clearOfTone, noteFor, onTone, playTone, stopTone } from "../tone";
-import { Brightness, brightnessWords, meterPosition, trackBrightness } from "../brightness";
+import { Brightness, brightnessWords, isResonanceChapter, meterPosition, trackBrightness } from "../brightness";
 import { apartWords, lastNote, takeDay, takesOf, thenAndNow as checkInPair, type ThenNow } from "../checkIn";
 import { nextUp } from "../nextUp";
 import { DirectionChoice } from "../components/DirectionChoice";
@@ -1393,7 +1393,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   // The recorder sits under the text it records.
   const recorder = (
     <Dock key={promptId} meta={sessionId ? { session_id: sessionId, ...FREE, ...(item && { prompt_id: promptId, prompt_text: item.text }) } : null}
-            band={band} allowRetake retake={!!(latest || earlier.length)} brightness={level.id === "resonance" && !!item} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
+            band={band} allowRetake retake={!!(latest || earlier.length)} brightness={isResonanceChapter(level.id) && !!item} onSaved={(t) => void onSaved(t)} onRecording={(on) => { setRec(on); onRecording(on); }} result={split ? freeView : null}
             idleHint={item ? "Press record and read the highlighted text" : FREE_HINT}>
             <button className={cx("ve-icon", practice["ve-icon"])} onClick={() => choose(sel + 1)} disabled={recording || sel >= n - 1} aria-label={item ? "Next text" : "Start with text 1"} title={`${item ? "Next text" : "Start with text 1"} (↓)`}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -1447,7 +1447,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                   {!on && <button className={cx("ve-pick sr-only", shared["sr-only"])} onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && recorder}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
-                  {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} more={level.id === "resonance"} onBeforeUpdate={updateEarlier} />}
+                  {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} more={isResonanceChapter(level.id)} onBeforeUpdate={updateEarlier} />}
                 </li>
               );
             })}

@@ -6,6 +6,7 @@ subtitle: The melody of your speech
 kind: sentences
 area: intonation
 check_in: melody
+direction: higher
 exercises: nhsfife.real-phrases-intonation
 source_url: https://www.nhsfife.org/services/all-services/patient-advice/shaping-your-voice-lighten-brighten-intonation/
 written_by: Written for Lilt, from NHS Fife's intonation tuning-in activity and "Shaping your voice: intonation", and NHS Lothian's "Where to start" (2026).

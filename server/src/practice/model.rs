@@ -38,8 +38,9 @@ pub struct Profile {
     #[serde(default = "default_pitch_scale")]
     pub show_pitch_scale: bool,
     /// Which way the learner is taking their voice: higher, lower, or still open. None until chosen,
-    /// which reads as higher, the voice course's own direction. Only the wording of range nudges and
-    /// suggestions follows it; nothing is measured differently.
+    /// which reads as higher, the voice course's own direction. Range nudges, suggestions and
+    /// which chapters Today's cards come from (`direction:` in a chapter) follow it; nothing is
+    /// measured differently.
     #[serde(default)]
     pub voice_direction: Option<VoiceDirection>,
     pub updated_utc: String,

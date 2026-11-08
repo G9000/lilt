@@ -10,7 +10,7 @@
 
 use crate::app::App;
 use crate::courses::{self, Course, syllabus};
-use crate::practice::model::Plan;
+use crate::practice::model::{Plan, VoiceDirection};
 use crate::store;
 use crate::util;
 use anyhow::{Result, anyhow, bail, ensure};
@@ -128,6 +128,31 @@ pub fn all_cards_for_course(app: &App, course: &Course) -> Result<Vec<Card>> {
     ))
 }
 
+/// The chapters for one way of changing the voice (`direction:` in a chapter): those for the other
+/// way drop out, and yours take the place of the first one that did, so going lower practises its
+/// own skills straight after the warm-ups. Chapters for any direction keep their order. Unset and
+/// "still open" read as higher, the course's own direction. Stages follow; card ids, and so their
+/// state, don't change.
+fn for_direction(levels: Vec<Value>, way: &str) -> Vec<Value> {
+    let other = |l: &Value| l["direction"].as_str().is_some_and(|d| d != way);
+    let Some(slot) = levels.iter().position(other) else {
+        return levels;
+    };
+    let (mut out, mut moved) = (vec![], vec![]);
+    for (i, l) in levels.into_iter().enumerate() {
+        if other(&l) {
+            continue;
+        }
+        if i > slot && l["direction"] == way {
+            moved.push(l);
+        } else {
+            out.push(l);
+        }
+    }
+    out.splice(slot..slot, moved);
+    out
+}
+
 fn cards_from_texts(app: &App, course: &str, texts: Value) -> Vec<Card> {
     let voice = course == courses::DEFAULT;
     let reg = app.registry.read().unwrap();
@@ -175,6 +200,12 @@ fn cards_from_texts(app: &App, course: &str, texts: Value) -> Vec<Card> {
         .into_iter()
         .filter(|l| l["draft"] != "true" && l["today"] != false)
         .collect();
+    let levels = if voice {
+        let lower = app.profile().voice_direction == Some(VoiceDirection::Lower);
+        for_direction(levels, if lower { "lower" } else { "higher" })
+    } else {
+        levels
+    };
     for (si, l) in levels.iter().enumerate() {
         let lid = l["id"].as_str().unwrap_or_default();
         let ltitle = l["title"].as_str().unwrap_or_default();

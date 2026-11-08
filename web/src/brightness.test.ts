@@ -1,7 +1,7 @@
 // node --test src/brightness.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { brightnessWords, meterPosition, rmsOf, spectralCentroid, startBrightness, stepBrightness, type Brightness } from "./brightness.ts";
+import { brightnessWords, isResonanceChapter, meterPosition, rmsOf, spectralCentroid, startBrightness, stepBrightness, type Brightness } from "./brightness.ts";
 
 const SR = 48000, BINS = 1024; // fftSize 2048
 const binHz = SR / (2 * BINS);
@@ -112,4 +112,10 @@ test("the words compare with the start, never judge", () => {
   assert.equal(brightnessWords(at(4)), "Brighter than when you started");
   assert.equal(brightnessWords(at(-4)), "Darker than when you started");
   for (const r of [-6, -2, 0, 2, 6]) assert.doesNotMatch(brightnessWords(at(r)), /good|bad|better|worse|%|male|female|man|woman/i);
+});
+
+test("the strip shows in both resonance chapters, going brighter or darker, and nowhere else", () => {
+  assert.equal(isResonanceChapter("resonance"), true);
+  assert.equal(isResonanceChapter("lower-resonance"), true);
+  for (const id of ["pitch", "lower-pitch", "warmup", "weight", "lower-weight"]) assert.equal(isResonanceChapter(id), false, id);
 });

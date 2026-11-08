@@ -183,6 +183,15 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
         );
     }
     let today = text("today").as_deref() != Some("false");
+    // `direction: higher` or `lower`: a chapter for one way of changing the voice. Today's cards
+    // use the ones for the learner's Which way; a chapter without it is for any direction.
+    let direction = text("direction");
+    if let Some(d) = &direction
+        && d != "higher"
+        && d != "lower"
+    {
+        bail!("direction `{d}` must be `higher` or `lower`");
+    }
     // Present but empty means none; absent means the built-in table applies (older copies).
     if let Some(ex) = meta
         .get("exercises")
@@ -205,6 +214,7 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
     meta.insert("area".into(), json!(area));
     meta.insert("check_in".into(), json!(check_in));
     meta.insert("today".into(), json!(today));
+    meta.insert("direction".into(), json!(direction));
     // Optional: no source link, or no subtitle or credit line.
     meta.entry("source_url").or_insert(Value::Null);
     for key in ["subtitle", "written_by"] {
@@ -398,6 +408,15 @@ mod tests {
             .unwrap()["video"]["id"],
             "dQw4w9WgXcQ"
         );
+        assert_eq!(plain["direction"], Value::Null, "no direction: any way");
+        assert_eq!(
+            chapter(&src.replace("today: false", "direction: lower"), 1).unwrap()["direction"],
+            "lower"
+        );
+        let e = chapter(&src.replace("today: false", "direction: deeper"), 1)
+            .unwrap_err()
+            .to_string();
+        assert!(e.contains("direction"), "{e}");
         assert!(
             chapter(
                 &src.replace("today: false", "video: https://evil.example/x"),

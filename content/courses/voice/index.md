@@ -92,7 +92,8 @@ and hear the change for yourself instead of guessing.
   voice. They stay out of Today's cards.
 - **[Going lower](#/studio/going-lower)**, for a deeper, darker or fuller voice: a start on
   breath, care and testosterone, then pitch, resonance, vocal weight and emphasis, one dial each.
-  These chapters stay out of Today's cards too; open them whenever you like.
+  With Which way set to Lower, its four skill chapters are Today's cards in place of the lighter
+  ones; open them whenever you like too.
 - **Check-ins**: one text per chapter, same words every visit, so you can hear how it changes over time.
 - **Free recording**: just talk. You'll get your pitch line back.
 - **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your

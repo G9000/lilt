@@ -7,11 +7,12 @@ kind: phrases
 area: recording
 check_in: monthly-read
 today: false
+direction: lower
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Testosterone-and-voice.pdf
 written_by: Written for Lilt, from NHS Lothian's "Testosterone and voice" and "Where to start" (2026), ASHA's "Gender affirming voice and communication" page, the London Gender Identity Clinic's transmasculine voice group (Mills, Stoneham and Davies 2019) and studies of the voice on testosterone (Nygren et al. 2016; Irwig, Childs and Hancock 2017; Ziegler et al. 2018). The texts are Lilt's own.
 ---
 
-Hi, friend. This part of the course is for a deeper, darker or fuller voice. It has its own four skill chapters, one dial each: [Pitch, going lower](#/studio/lower-pitch), [Resonance, going darker](#/studio/lower-resonance), [Vocal weight, going fuller](#/studio/lower-weight) and [Emphasis and melody](#/studio/lower-emphasis). They stay out of Today's cards, so open them from here whenever you like. Warm-ups, and the texts in Bring it together and the Extras, work in any direction alongside them.
+Hi, friend. This part of the course is for a deeper, darker or fuller voice. It has its own four skill chapters, one dial each: [Pitch, going lower](#/studio/lower-pitch), [Resonance, going darker](#/studio/lower-resonance), [Vocal weight, going fuller](#/studio/lower-weight) and [Emphasis and melody](#/studio/lower-emphasis). With Which way set to Lower in [Practice settings](#/studio/settings), they're your Today's cards in place of the lighter skill chapters; open them from here whenever you like too. Warm-ups, and the texts in Bring it together and the Extras, work in any direction alongside them.
 
 **Tell Lilt your direction.** Set **Which way** to Lower in [Practice settings](#/studio/settings). Lilt then only offers to move your range down, and never nudges you up.
 

@@ -6,7 +6,7 @@ subtitle: An easy spot, not the bottom note
 kind: hum
 area: pitch
 check_in: low-count
-today: false
+direction: lower
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf
 written_by: Written for Lilt, from NHS Lothian's "Where to start" and "Testosterone and voice" (2026) and ASHA's "Gender affirming voice and communication" page, which draws on Hancock, Childs and Irwig (2017) and Papp (2011). The sigh, the "uh-huh" and the hum into counting are Lilt's choices of common voice exercises.
 ---

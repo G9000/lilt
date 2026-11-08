@@ -583,3 +583,131 @@ fn reviews_leave_room_for_a_new_card() {
     );
     assert_eq!(q.iter().filter(|x| x.1 == "new").count(), 1, "{q:?}");
 }
+
+fn set_direction(app: &App, way: Option<crate::practice::model::VoiceDirection>) {
+    let mut p = app.profile();
+    p.voice_direction = way;
+    store::write_json(&app.paths.profile(), &p).unwrap();
+}
+
+/// The chapters Today's cards come from, in stage order.
+fn deck_chapters(app: &App) -> Vec<String> {
+    let mut out: Vec<String> = vec![];
+    for c in cards::all_cards(app).iter().filter(|c| c.stage > 0) {
+        if out.last() != Some(&c.level_id) {
+            out.push(c.level_id.clone());
+        }
+    }
+    out
+}
+
+/// Going lower, Today's cards come from the Going lower chapters in place of the ones aiming
+/// lighter, straight after the warm-ups. Higher, still open or unset, the deck is the course's own.
+#[test]
+fn todays_cards_follow_which_way() {
+    use crate::practice::model::VoiceDirection::*;
+    let (_d, app) = app();
+    let texts = crate::courses::syllabus::texts(&app);
+    let course: Vec<String> = texts["levels"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|l| l["today"] != false && l["direction"] != "lower")
+        .map(|l| l["id"].as_str().unwrap().to_string())
+        .collect();
+    let unset = deck_chapters(&app);
+    assert_eq!(unset, course, "unset: every chapter in course order");
+    assert_eq!(unset[..2], ["warmup", "pitch"]);
+    assert!(!unset.iter().any(|c| c.starts_with("lower-")));
+    for way in [Higher, Open] {
+        set_direction(&app, Some(way));
+        assert_eq!(
+            deck_chapters(&app),
+            unset,
+            "{way:?} keeps the course's deck"
+        );
+    }
+
+    set_direction(&app, Some(Lower));
+    let lower = deck_chapters(&app);
+    assert_eq!(
+        lower[..6],
+        [
+            "warmup",
+            "lower-pitch",
+            "lower-resonance",
+            "lower-weight",
+            "lower-emphasis",
+            "automatic"
+        ]
+    );
+    for lighter in [
+        "pitch",
+        "resonance",
+        "weight",
+        "articulation",
+        "intonation",
+        "little-sounds",
+        "being-heard",
+    ] {
+        assert!(!lower.iter().any(|c| c == lighter), "{lighter} drops out");
+    }
+    // The Going lower start is read like Start here, not carded.
+    assert!(!lower.iter().any(|c| c == "going-lower"));
+    let all = cards::all_cards(&app);
+    let max = all.iter().map(|c| c.stage).max().unwrap();
+    assert!(
+        (1..=max).all(|s| all.iter().any(|c| c.stage == s)),
+        "no empty stage"
+    );
+}
+
+/// Card state is kept by card id, so changing Which way loses nothing: the other way's cards wait,
+/// and come back as they were when you switch again.
+#[test]
+fn switching_which_way_keeps_every_cards_state() {
+    use crate::practice::model::VoiceDirection::*;
+    let (_d, app) = app();
+    let (light, low) = ("text.pitch.mm-hm", "text.lower-pitch.low-count");
+    let mut state = BTreeMap::new();
+    for id in [light, low] {
+        state.insert(
+            id.to_string(),
+            CardState {
+                due: Some("2020-01-01".into()),
+                interval_days: 3,
+                ease: 2.5,
+                reps: 2,
+                good_streak: 2,
+                ..Default::default()
+            },
+        );
+    }
+    store::write_json(&app.paths.root.join("cards/state.json"), &state).unwrap();
+    let reviews = |app: &App| -> Vec<String> {
+        queue_ids(app)
+            .into_iter()
+            .filter(|q| q.1 == "review")
+            .map(|q| q.0)
+            .collect()
+    };
+    assert_eq!(reviews(&app), [light]);
+    set_direction(&app, Some(Lower));
+    assert_eq!(reviews(&app), [low]);
+    rate(&app, low, None, "good");
+    set_direction(&app, None);
+    assert_eq!(
+        reviews(&app),
+        [light],
+        "the lighter card comes back as it was"
+    );
+    let kept = cards::load_state(&app);
+    assert_eq!(kept[light].reps, 2);
+    assert_eq!(kept[low].reps, 3, "the lower card keeps its new rating");
+    set_direction(&app, Some(Lower));
+    assert_eq!(
+        queue_ids(&app).iter().find(|q| q.0 == low).map(|q| q.2),
+        Some(true),
+        "and shows as done today"
+    );
+}

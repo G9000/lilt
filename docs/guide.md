@@ -385,13 +385,18 @@ Monitor uploads and playback have an isolated check with locally generated media
      come back.
    - **Which way** you're taking your voice is yours to choose: higher, lower or still open, on Find
      your starting voice (Day 1) or in Practice settings (`voice_direction` in the profile). Unset
-     reads as higher, the course's own direction. Only words follow it: a take past your range in
+     reads as higher, the course's own direction. Words and Today's cards follow it: a take past your range in
      your direction is offered as your new range ("move your range down to match it" when going
      lower), the other way gets a gentle way back and never a push ("Never press down"), and still
      open offers to widen the range either way. Day 1 says which way you'll move the range later.
      Nothing is measured differently, and the pitch scale is the same for everyone. The main
      chapters are written for a lighter voice; going lower has its own part, **Going lower**, and
-     Start here says which chapters help in any direction and points there.
+     Start here says which chapters help in any direction and points there. Going lower, Today's
+     cards come from Going lower's four skill chapters straight after the warm-ups, in place of
+     Pitch, Resonance, Vocal weight, Articulation, Intonation, Laughs and little sounds and Being
+     heard; higher, still open or unset, the deck is the course's own. A chapter says which way it's
+     for with `direction: higher` or `direction: lower`. Cards keep their progress by id, so
+     switching back and forth loses nothing: the other way's cards wait where you left them.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.
@@ -466,7 +471,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      seconds at the middle of your range, on the nearest note, so you can hum along to it. It never
      ends up in a take: it can't play while the microphone is listening, pressing Record stops it at
      once, and the take waits until its half-second pre-roll is clear of the tone.
-   - In **Resonance**, while you record, a **darker–brighter strip** sits under the pitch line: the
+   - In **Resonance** and **Resonance, going darker**, while you record, a **darker–brighter strip** sits under the pitch line: the
      coral dot shows whether the sound is brighter or darker than when you started this take (its
      first second of sound is the tick in the middle), with one line in words. Silence and breaths
      leave it where it was. It reads where the sound's energy sits across the spectrum, so it works
@@ -477,7 +482,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      pitch line to scrub through the take.
    - A take lists the players first, then one plain suggestion, then **I like this one** and your
      note. **More about this take** holds the resonance comparison, **Use this take's range as my
-     comfortable range** and **Detailed comparison**; in the Resonance chapter it starts open.
+     comfortable range** and **Detailed comparison**; in both resonance chapters it starts open.
      The resonance comparison sets a change against the usual gap between the average man's and
      woman's resonance, about 2.7 semitones ("about a third of the usual gap"). It never places your
      resonance against those averages: Lilt's readings sit about 1.5 semitones above the published
@@ -551,7 +556,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
      work in either style of play.
      <kbd>Esc</kbd> closes it.
-8. **Texts** has 177 texts across 22 chapters. Chapters 14–16 are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). The last five are **Going lower**, also outside Today, for a deeper, darker, fuller voice: a start on breath, care and what testosterone does to the voice (with a monthly reading to hear the change), then pitch (an easy spot above the bottom of your range, never pushed down), resonance (a bigger, looser space: a silent open-throat breath, humming while chewing or yawning, yawn into words), vocal weight (full and clear, never pressed, creaky or shouted, and kept as pitch rises) and emphasis (leaning on words with loudness, length and pauses rather than big jumps up, without going flat). Start here and the course guide point there; the sources are NHS Lothian's "Testosterone and voice" and "Where to start", ASHA, the London Gender Identity Clinic's transmasculine group and studies of voice on testosterone. Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
+8. **Texts** has 177 texts across 22 chapters. Chapters 14–16 are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). The last five are **Going lower**, for a deeper, darker, fuller voice: a start on breath, care and what testosterone does to the voice (with a monthly reading to hear the change), then pitch (an easy spot above the bottom of your range, never pushed down), resonance (a bigger, looser space: a silent open-throat breath, humming while chewing or yawning, yawn into words), vocal weight (full and clear, never pressed, creaky or shouted, and kept as pitch rises) and emphasis (leaning on words with loudness, length and pauses rather than big jumps up, without going flat). Its four skill chapters are Today's cards when Which way is Lower, in place of the chapters aiming lighter; its start stays outside Today, like Start here. Start here and the course guide point there; the sources are NHS Lothian's "Testosterone and voice" and "Where to start", ASHA, the London Gender Identity Clinic's transmasculine group and studies of voice on testosterone. Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, being heard (carrying a light voice through noise without pushing), and real life. Each chapter explains the technique in a few numbered steps (how to
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,

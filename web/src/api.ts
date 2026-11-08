@@ -439,7 +439,7 @@ export const api = {
 
 export const AREA_LABEL: Record<string, string> = {
   listening: "Listening & goals",
-  lightness: "Lightness",
+  lightness: "Vocal weight",
   resonance: "Resonance",
   pitch: "Pitch",
   intonation: "Intonation & expression",

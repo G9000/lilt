@@ -6,7 +6,7 @@ subtitle: A bigger, easier space for your voice
 kind: hum
 area: resonance
 check_in: ah
-today: false
+direction: lower
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Testosterone-and-voice.pdf
 written_by: Written for Lilt, from NHS Lothian's "Testosterone and voice" and "Where to start" (2026), including its throat-opening breath and the hum with a chewing or yawning mouth, and the low humming, chest tapping, yawn-talk and jaw and tongue release used in the London Gender Identity Clinic's transmasculine voice group (Mills, Stoneham and Davies 2019). The big-dog pant comes from Lilt's Resonance chapter; the texts are Lilt's own.
 ---
@@ -23,7 +23,7 @@ Resonance is the size of the space your voice sounds in: the tube from your voca
 
 **Feel it lower down.** Hum low and easy with a hand flat on your chest, and tap lightly with your fingertips. A buzz in your chest is a clue that your voice is low and easy; it isn't resonance itself, and you don't need to feel it.
 
-**Separate it from pitch.** Hold one easy note and make only the space bigger, then your usual size again. Record the same line twice, once as usual and once with the bigger space, then open **Detailed comparison** under the newer take: it plays them side by side and gives a rough read of whether the newer one is darker or brighter. It's rough, and a different mic or distance moves it, so trust your ears first.
+**Separate it from pitch.** Hold one easy note and make only the space bigger, then your usual size again. Record the same line twice, once as usual and once with the bigger space, then open **Detailed comparison** under the newer take: it plays them side by side and gives a rough read of whether the newer one is darker or brighter. While you record in this chapter, a darker–brighter strip under the pitch line shows whether the sound is darker or brighter than when the take began: on one held note, the pitch line stays put while the strip moves. Both are rough, and a different mic or distance moves them, so trust your ears first.
 
 **Keep it gentle.** Bigger is not pushed. Don't press your voice box down, tuck your chin, or hold a yawn open. If your neck, jaw or tongue tightens, or your voice turns muffled, swallowed or hooty, make the change smaller and shake out your jaw. Speech therapists sometimes use hands-on techniques around the throat; those are for them to do, not for pressing on your own neck.
 

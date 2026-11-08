@@ -6,6 +6,7 @@ subtitle: A smaller space for your voice
 kind: hum
 area: resonance
 check_in: ee
+direction: higher
 video: https://www.youtube.com/watch?v=BW8X2nXexQs
 video_title: The Single Most Powerful Element of Voice Feminization: Meta Resonance
 video_by: TransVoiceLessons

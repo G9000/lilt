@@ -119,6 +119,19 @@ async function main() {
     await saved(page);
     check(tag("the meter goes once the take stops"), (await page.locator(".ve-bright").count()) === 0);
 
+    // Resonance, going darker has the same strip.
+    await page.goto(`${BASE}/#/studio/lower-resonance/hum-chew`);
+    await page.getByRole("heading", { name: "Resonance, going darker", level: 1 }).waitFor();
+    await page.getByRole("button", { name: "Start recording" }).click();
+    await meter.waitFor({ timeout: 5000 });
+    check(tag("the meter appears while recording on Resonance, going darker"), true);
+    await page.waitForTimeout(800);
+    await page.getByRole("button", { name: "Stop recording" }).click();
+    await saved(page);
+    const more = page.locator("details.ve-take-more");
+    await more.waitFor({ timeout: 30000 });
+    check(tag("its take details start open"), (await more.getAttribute("open")) !== null);
+
     // Another hum chapter (Warm-ups) records without the meter.
     await page.goto(`${BASE}/#/studio/warmup/hum`);
     await page.getByRole("heading", { name: /Warm/, level: 1 }).waitFor();

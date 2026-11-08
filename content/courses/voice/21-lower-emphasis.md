@@ -6,7 +6,7 @@ subtitle: Leaning on words with loudness and time
 kind: sentences
 area: intonation
 check_in: long-way-home
-today: false
+direction: lower
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf
 written_by: Written for Lilt, from NHS Lothian's "Where to start" and "Testosterone and voice" (2026), ASHA's "Gender affirming voice and communication" page and the loudness, intonation and projection work in the London Gender Identity Clinic's transmasculine voice group (Mills, Stoneham and Davies 2019). The voice-care points about noise follow NHS Lothian and NIDCD; the texts are Lilt's own.
 ---

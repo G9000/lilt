@@ -6,7 +6,7 @@ subtitle: Full and clear, never pressed
 kind: phrases
 area: lightness
 check_in: full-hey
-today: false
+direction: lower
 source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf
 written_by: Written for Lilt, from NHS Lothian's "Where to start" and "Testosterone and voice" (2026) and the breath support for a changing voice in the London Gender Identity Clinic's transmasculine voice group (Mills, Stoneham and Davies 2019). The HEY/uh-oh contrast comes from Lilt's Vocal weight chapter; the "mm" and "uh-huh" sounds and the texts are Lilt's own.
 ---
