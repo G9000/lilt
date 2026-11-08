@@ -1,7 +1,7 @@
 // node --test src/insight.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bandShares, describeBandShares, describeRangeShare, describeResonance, describeResonanceGap, describeTake, endDropSt, isSpeechKind, pitchCaveat, placePitch, shareInRange, takeStyle, usualPitch } from "./insight.ts";
+import { bandShares, describeBandShares, describeRangeShare, describeResonance, describeResonanceGap, describeTake, endDropSt, isSpeechKind, offerRange, pitchCaveat, placePitch, shareInRange, takeStyle, usualPitch } from "./insight.ts";
 
 const line = (hz: (i: number) => number, n = 100) => Array.from({ length: n }, (_, i) => ({ t: i / 50, hz: hz(i) }));
 
@@ -80,6 +80,34 @@ test("a pitch is placed in words and semitones, never a percentage", () => {
   assert.match(placePitch(115, REF), /within the average man's range, about 4 semitones below the overlap/);
   assert.match(placePitch(240, REF), /above the average woman's range, about 6\.5 semitones above the overlap/);
   assert.doesNotMatch(placePitch(172, REF), /%/);
+});
+
+test("range nudges follow your direction: only the way you're going is offered, never a push the other way", () => {
+  const flat = (hz: number) => line(() => hz);
+  const at = (median: number, direction?: "higher" | "lower" | "open") => describeTake({ median, spanSt: 4, band: [150, 180], pts: flat(median), style: "speech", direction })!;
+  assert.match(at(200).cue, /move your range up/, "unset reads as higher");
+  assert.match(at(130).cue, /To lift it/);
+  assert.match(at(130, "lower").note, /^This take sat below your comfortable range\.$/);
+  assert.match(at(130, "lower").cue, /move your range down to match it/);
+  assert.match(at(200, "lower").cue, /settle lower.*Never press down/);
+  assert.doesNotMatch(at(200, "lower").cue, /range up|lift/);
+  for (const m of [130, 200]) {
+    assert.match(at(m, "open").cue, /widen your range/);
+    assert.doesNotMatch(at(m, "open").cue, /range up|range down|lift|settle lower/);
+  }
+  const steady = describeTake({ median: 160, spanSt: 1, band: null, pts: flat(160), style: "steady", direction: "lower" })!;
+  assert.doesNotMatch(steady.cue, /light/);
+});
+
+test("Lilt offers a take's range as yours only in your direction", () => {
+  assert.equal(offerRange(200, null, "lower"), true, "no range yet: always");
+  assert.equal(offerRange(200, [150, 180]), true);
+  assert.equal(offerRange(130, [150, 180]), false);
+  assert.equal(offerRange(130, [150, 180], "lower"), true);
+  assert.equal(offerRange(200, [150, 180], "lower"), false);
+  assert.equal(offerRange(130, [150, 180], "open"), true);
+  assert.equal(offerRange(200, [150, 180], "open"), true);
+  assert.equal(offerRange(165, [150, 180], "open"), false);
 });
 
 test("a take's time on the scale is split at the overlap and counted over voiced frames only", () => {

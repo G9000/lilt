@@ -13,6 +13,8 @@ import { isDesktop, openAppUpdates, useDesktopUpdate } from "../useDesktopUpdate
 import { updateStatus } from "../desktopUpdate";
 import { CURRENT } from "../release";
 import { BackupSettings } from "../components/BackupSettings";
+import { DirectionChoice } from "../components/DirectionChoice";
+import { announceDirection, directionOf, DIRECTIONS } from "../direction";
 import { StorageSettings } from "../components/StorageSettings";
 import { openSettings } from "../desk/SettingsSheet";
 import { computerZone, zoneCity, zoneGroups, zoneLabel, zoneNow } from "../timezone";
@@ -347,6 +349,9 @@ export function PracticeSettings() {
       <section aria-labelledby="ps-goal">
         <h2 id="ps-goal">Your goal</h2>
         <div className={cx(pages.sxGroup, "sx-group")}>
+          <Row label="Which way" help={DIRECTIONS.find((d) => d.id === directionOf(p.voice_direction))?.help} stack>
+            <DirectionChoice value={directionOf(p.voice_direction)} onChange={(voice_direction) => { edit({ ...p, voice_direction }); announceDirection(voice_direction); }} />
+          </Row>
           <Row label="In your words" htmlFor="goal" help="It starts the note on the wall too." stack>
             <textarea id="goal" value={p.goal.summary} onChange={(e) => edit({ ...p, goal: { ...p.goal, summary: e.target.value } })} />
           </Row>

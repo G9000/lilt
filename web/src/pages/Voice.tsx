@@ -3,7 +3,7 @@ import { cx } from "../ui/cx";
 import { pages } from "../ui/pages";
 import { practice } from "../ui/practice";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts } from "../api";
+import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, SyllabusUpdates, Take, TextLevel, Texts, VoiceDirection } from "../api";
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
@@ -39,6 +39,8 @@ import { clearOfTone, noteFor, onTone, playTone, stopTone } from "../tone";
 import { Brightness, brightnessWords, meterPosition, trackBrightness } from "../brightness";
 import { apartWords, lastNote, takeDay, takesOf, thenAndNow as checkInPair, type ThenNow } from "../checkIn";
 import { nextUp } from "../nextUp";
+import { DirectionChoice } from "../components/DirectionChoice";
+import { announceDirection, directionOf, DIRECTIONS } from "../direction";
 
 /**
  * Voice practice as a writing app: chapters in a sidebar (today's cards first, then the seven
@@ -1204,18 +1206,23 @@ function StartDoc({ profile, onProfile, onRecording, onTake }: {
     setRange(p10 && p90 ? [Math.round(p10), Math.round(p90)] : null);
   };
   const save = async () => { if (range) { onProfile(await api.saveProfile({ ...profile, comfort_range_hz: range })); setSaved(true); } };
+  const direction = directionOf(profile.voice_direction);
+  const choose = async (voice_direction: VoiceDirection) => { announceDirection(voice_direction); onProfile(await api.saveProfile({ ...profile, voice_direction })); };
+  const later = direction === "higher" ? { done: "Once you find your note in the Pitch chapter, move the range up to match in Practice settings.", first: "When you find your note in the Pitch chapter, you'll move it up." }
+    : direction === "lower" ? { done: "As your voice settles lower, move the range down to match in Practice settings.", first: "As your voice settles lower, you'll move it down." }
+    : { done: "You can move or widen it any time in Practice settings.", first: "You can move it any time." };
   const result = take && (
     <>
       {/* No range is chosen yet, so the take isn't judged against one. */}
       <FreeResult take={take} band={saved ? range : null} onMeasured={(m) => void measured(m)} />
       {range && (saved ? (
         <div className={cx("ve-start-done", practice["ve-start-done"])}>
-          <p><b>You're all set.</b> Your comfortable range is {range[0]}–{range[1]} Hz for now, and this take is your Day 1. Once you find your note in the Pitch chapter, move the range up to match in Practice settings.</p>
+          <p><b>You're all set.</b> Your comfortable range is {range[0]}–{range[1]} Hz for now, and this take is your Day 1. {later.done}</p>
           <div><button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go("/studio/start-here")}>Next: Start here</button><button className={cx("ve-link", practice["ve-link"])} onClick={() => go("/deck")}>Start today's cards</button></div>
         </div>
       ) : (
         <div className={cx("ve-start-done", practice["ve-start-done"])}>
-          <p>Right now you speak at about <b>{range[0]}–{range[1]} Hz</b>. Lilt can shade this behind your pitch line as your comfortable range for now. When you find your note in the Pitch chapter, you'll move it up.</p>
+          <p>Right now you speak at about <b>{range[0]}–{range[1]} Hz</b>. Lilt can shade this behind your pitch line as your comfortable range for now. {later.first}</p>
           <div><button className={cx("btn-primary", shared["btn-primary"])} onClick={() => void save()}>Use it for now</button><span className={cx("ve-small", practice["ve-small"])}>You can record it again first, if you like.</span></div>
         </div>
       ))}
@@ -1231,6 +1238,10 @@ function StartDoc({ profile, onProfile, onRecording, onTake }: {
           </header>
           <blockquote className={cx("ve-how", practice["ve-how"])}><b>How to do it</b>
             Use your everyday voice, the one you have now, not the one you're aiming for. Read the line below at an easy pace, then stop. This is just a starting point, so there's nothing to get right.</blockquote>
+          <div className={cx("ve-direction", practice["ve-direction"])}>
+            <p><b>Which way are you taking your voice?</b> {DIRECTIONS.find((d) => d.id === direction)?.help} You can change this in Practice settings.</p>
+            <DirectionChoice value={direction} onChange={(d) => void choose(d)} />
+          </div>
           <ol className={cx("ve-items", practice["ve-items"])}>
             <li className={cx(pages.veItem, cx("ve-item on", practice["ve-item"]))}>
               <span className={cx("ve-mk num", practice["ve-mk"])} aria-hidden="true">1.</span>

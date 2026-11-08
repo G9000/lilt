@@ -15,7 +15,12 @@ export interface InsightInput {
   style?: TakeStyle;
   /** The analysis's quality flags (clipping, low signal, ...): any of them and there's no suggestion. */
   flags?: string[];
+  /** Which way you're taking your voice; unset reads as higher. Only the range nudges follow it. */
+  direction?: Direction;
 }
+
+/** Which way you're taking your voice (the profile's `voice_direction`). */
+export type Direction = "higher" | "lower" | "open";
 
 export interface Insight { note: string; cue: string }
 
@@ -100,25 +105,50 @@ export function endDropSt(pts: InsightInput["pts"]): number | null {
   return head && tail ? st(head, tail) : null;
 }
 
-export function describeTake({ median, spanSt, band, pts, style = null, flags = [] }: InsightInput): Insight | null {
+/**
+ * A take outside your comfortable range, in the words of your direction: only the way you're going
+ * is ever offered as a new range, and the other way gets a gentle way back, never a push.
+ */
+function outsideRange(side: "above" | "below", direction: Direction): Insight {
+  const toward = (direction === "higher" && side === "above") || (direction === "lower" && side === "below");
+  const note = side === "above" ? "This take sat above your comfortable range." : direction === "lower" ? "This take sat below your comfortable range." : "This take sat a little below your comfortable range.";
+  if (toward) return side === "above" ? {
+    note, cue: "If it felt easy and this is the note you've been working towards, move your range up to match it. If there was any strain, ease back down a little next time.",
+  } : {
+    note, cue: "If it felt easy and this is the note you've been working towards, move your range down to match it. If it felt pressed, gravelly or tight, ease back up a little next time.",
+  };
+  if (direction === "open") return {
+    note, cue: "If it felt easy, you could widen your range to include it. If it felt strained, pressed or tight, ease back a little next time.",
+  };
+  return direction === "higher" ? {
+    note, cue: "If it felt natural, that's fine. To lift it, start with a short hum on your comfortable note.",
+  } : {
+    note, cue: "If it felt natural, that's fine. To settle lower, start with a relaxed hum on your comfortable note and let the words follow it. Never press down.",
+  };
+}
+
+/**
+ * Whether to offer "Use this take's range as my comfortable range": with no range yet, or when the take
+ * sat past your range in the direction you're going (either way while you're still open).
+ */
+export function offerRange(median: number, band: [number, number] | null, direction: Direction = "higher"): boolean {
+  if (!band) return true;
+  return (direction !== "lower" && median > band[1] * 1.03) || (direction !== "higher" && median < band[0] * 0.97);
+}
+
+export function describeTake({ median, spanSt, band, pts, style = null, flags = [], direction = "higher" }: InsightInput): Insight | null {
   if (!median || flags.length > 0 || voicedSeconds(pts) < MIN_VOICED_S) return null;
   if (style === "explore") return {
     note: "This exercise explores a sound or moves between sounds.",
     cue: "Follow the exercise's cue and compare what you hear. The pitch line only describes pitch; listen for the change this exercise asks for, and keep it comfortable.",
   };
-  if (band && median > band[1] * 1.03) return {
-    note: "This take sat above your comfortable range.",
-    cue: "If it felt easy and this is the note you've been working towards, move your range up to match it. If there was any strain, ease back down a little next time.",
-  };
+  if (band && median > band[1] * 1.03) return outsideRange("above", direction);
   const drop = endDropSt(pts);
   if (drop !== null && drop >= 2) return {
     note: "Your voice settled lower towards the end.",
     cue: "A falling ending can be natural. Listen back: did it express what you meant and feel easy? Pitch alone cannot tell whether brightness or vocal weight changed.",
   };
-  if (band && median < band[0] * 0.97) return {
-    note: "This take sat a little below your comfortable range.",
-    cue: "If it felt natural, that's fine. To lift it, start with a short hum on your comfortable note.",
-  };
+  if (band && median < band[0] * 0.97) return outsideRange("below", direction);
   if (style === "steady") {
     if (spanSt !== null && spanSt > 10) return {
       note: "Your pitch moved around quite a bit for a steady exercise.",
@@ -126,7 +156,7 @@ export function describeTake({ median, spanSt, band, pts, style = null, flags = 
     };
     if (spanSt !== null && spanSt < 3) return {
       note: "Nice and steady, which is what this one asks for.",
-      cue: "Keep the note easy and light, and notice how it feels so you can find it again.",
+      cue: `Keep the note easy${direction === "higher" ? " and light" : ""}, and notice how it feels so you can find it again.`,
     };
   }
   if (spanSt !== null && spanSt < 3) return style === "speech" ? {

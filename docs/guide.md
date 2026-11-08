@@ -380,8 +380,18 @@ Monitor uploads and playback have an isolated check with locally generated media
      middles. If the analysis suspects octave jumps, found little voice, or the recording was very
      loud or quiet, the scale says its place may be off. It's on unless you turn it off: **Hide this
      scale** under it, or untick "Pitch scale after each take" in Practice settings. These are
-     population averages, not targets or a gender test. When a take sits above your saved range,
-     Lilt suggests moving the range up instead of telling you to come down.
+     population averages, not targets or a gender test. When a take sits past your saved range in
+     the direction you're going, Lilt suggests moving the range to match instead of telling you to
+     come back.
+   - **Which way** you're taking your voice is yours to choose: higher, lower or still open, on Find
+     your starting voice (Day 1) or in Practice settings (`voice_direction` in the profile). Unset
+     reads as higher, the course's own direction. Only words follow it: a take past your range in
+     your direction is offered as your new range ("move your range down to match it" when going
+     lower), the other way gets a gentle way back and never a push ("Never press down"), and still
+     open offers to widen the range either way. Day 1 says which way you'll move the range later.
+     Nothing is measured differently, and the pitch scale is the same for everyone. The chapters are
+     written for a lighter voice; Start here says which ones help in any direction, and that a
+     lower-voice path isn't written yet.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.

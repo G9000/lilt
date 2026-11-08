@@ -225,6 +225,8 @@ export interface Profile {
   warmup_card?: string;
   /** Show the average man/woman pitch scale after each take (on unless turned off; missing means on). */
   show_pitch_scale?: boolean;
+  /** Which way you're taking your voice; unset reads as "higher", the voice course's own direction. */
+  voice_direction?: VoiceDirection | null;
   updated_utc: string;
 }
 
@@ -279,6 +281,7 @@ const cq = (course?: string) => (course ? `?course=${encodeURIComponent(course)}
 
 export interface SyllabusUpdates { using: "mine" | "original"; available: boolean; to_choose?: number; changes: SyllabusChange[] }
 /** Typical speaking pitch, from content/courses/voice/_pitch.md: averages and standard deviations in Hz, the overlap band, and the source. */
+export type VoiceDirection = "higher" | "lower" | "open";
 export interface PitchReference { men_mean: number; men_sd: number; women_mean: number; women_sd: number; overlap_low: number; overlap_high: number; source: string }
 
 export type Rating = "again" | "hard" | "good" | "easy";

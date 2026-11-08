@@ -2,8 +2,9 @@ import { cx } from "../ui/cx";
 import { practice } from "../ui/practice";
 import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
-import { bandShares, CardKind, describeBandShares, describeRangeShare, describeResonance, describeResonanceGap, describeTake, isSpeechKind, pitchCaveat, placePitch, shareInRange, takeStyle, usualPitch } from "../insight";
+import { bandShares, CardKind, describeBandShares, describeRangeShare, describeResonance, describeResonanceGap, describeTake, isSpeechKind, offerRange, pitchCaveat, placePitch, shareInRange, takeStyle, usualPitch } from "../insight";
 import { DEFAULT_COURSE, parseTextId } from "../courseIds";
+import { useDirection } from "../direction";
 import { noteName } from "../pitch";
 import { contourPoints, PianoRoll, PitchPoint } from "./PianoRoll";
 import { useTakeAudio } from "./takeAudio";
@@ -20,8 +21,9 @@ export interface Measured {
  * what the card asked (`card`, when the take came from one). None when the measurement is shaky.
  */
 function InsightNote({ analysis, band, card }: { analysis: any; band: [number, number] | null; card?: CardKind | null }) {
+  const direction = useDirection();
   const m = analysis?.measures ?? {};
-  const said = describeTake({
+  const said = describeTake({ direction,
     median: m.f0_median_hz?.value ?? null, spanSt: m.f0_p10_p90_span_st?.value ?? null, band, pts: contourPoints(analysis),
     style: takeStyle(card), flags: (analysis?.quality_flags ?? []).map((f: { code: string }) => f.code),
   });
@@ -204,6 +206,7 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
   /** Offered when no range is saved or the take sat above it: make this take's range your comfortable range. */
   onUseRange?: (lo: number, hi: number) => void;
 }) {
+  const direction = useDirection();
   const [take, setTake] = useState(initial);
   const [analysis, setAnalysis] = useState<any>(null);
   const [prev, setPrev] = useState<{ take: Take; cmp: Comparison | null; analysis: any } | null>(null);
@@ -278,7 +281,7 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
               {voiced !== null && <span>Voice heard <b>{Math.round(voiced * 100)}%</b></span>}
               {prev && comparable && prevMedian && <span>Last time <b>{fmtHz(prevMedian)}</b> ({shift! >= 0 ? "+" : "−"}{Math.abs(shift!)} Hz)</span>}
             </p>
-            {onUseRange && p10 && p90 && (!band || median > band[1] * 1.03) && (
+            {onUseRange && p10 && p90 && offerRange(median, band, direction) && (
               <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => onUseRange(Math.round(p10), Math.round(p90))}>Use this take's range as my comfortable range</button>
             )}
           </section>

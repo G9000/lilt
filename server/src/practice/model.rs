@@ -37,7 +37,20 @@ pub struct Profile {
     /// A profile without the field reads as on; one that saved `false` keeps it off.
     #[serde(default = "default_pitch_scale")]
     pub show_pitch_scale: bool,
+    /// Which way the learner is taking their voice: higher, lower, or still open. None until chosen,
+    /// which reads as higher, the voice course's own direction. Only the wording of range nudges and
+    /// suggestions follows it; nothing is measured differently.
+    #[serde(default)]
+    pub voice_direction: Option<VoiceDirection>,
     pub updated_utc: String,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum VoiceDirection {
+    Higher,
+    Lower,
+    Open,
 }
 
 fn default_new_cards() -> u32 {
@@ -82,6 +95,7 @@ impl Default for Profile {
             room_note_2: None,
             warmup_card: default_warmup(),
             show_pitch_scale: true,
+            voice_direction: None,
             updated_utc: crate::util::now_utc(),
         }
     }
@@ -121,5 +135,26 @@ mod tests {
         saved["show_pitch_scale"] = false.into();
         let kept: Profile = serde_json::from_value(saved).unwrap();
         assert!(!kept.show_pitch_scale);
+    }
+
+    #[test]
+    fn voice_direction_is_unset_until_chosen_and_only_takes_the_three_words() {
+        assert_eq!(Profile::default().voice_direction, None);
+        let mut saved = serde_json::to_value(Profile::default()).unwrap();
+        saved.as_object_mut().unwrap().remove("voice_direction");
+        let missing: Profile = serde_json::from_value(saved.clone()).unwrap();
+        assert_eq!(missing.voice_direction, None);
+        for (word, d) in [
+            ("higher", VoiceDirection::Higher),
+            ("lower", VoiceDirection::Lower),
+            ("open", VoiceDirection::Open),
+        ] {
+            saved["voice_direction"] = word.into();
+            let p: Profile = serde_json::from_value(saved.clone()).unwrap();
+            assert_eq!(p.voice_direction, Some(d));
+            assert_eq!(serde_json::to_value(&p).unwrap()["voice_direction"], word);
+        }
+        saved["voice_direction"] = "deeper".into();
+        assert!(serde_json::from_value::<Profile>(saved).is_err());
     }
 }

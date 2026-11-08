@@ -1082,6 +1082,9 @@ export const practice = {
   "ve-then-note": `mt-[0] mr-[0] mb-[0] ml-[0] text-[13px] [line-height:1.5] text-ink-3`,
   "ve-then-wait": `mt-[0] mr-[0] mb-[0] ml-[0] pt-[14px] [border-top-width:1px] [border-top-style:solid] ` +
     `[border-top-color:var(--hair)] text-[14px] text-ink-2`,
+  "ve-direction": `mt-[4px] mb-[18px] grid [row-gap:10px] justify-items-start [max-width:68ch] [&_p]:m-[0] ` +
+    `[&_p]:text-[14px] [&_p]:[line-height:1.5] [&_p]:text-ink-2 [&_p_b]:text-ink [&_p_b]:font-semibold ` +
+    `[&_.segmented_button]:[padding:6px_14px] [&_.segmented_button]:min-h-[36px] [&_.segmented_button]:text-[14px]`,
   "ve-start-done": `mt-[14px] pt-[16px] pr-[18px] pb-[16px] pl-[18px] rounded-[14px] bg-ok-soft [background-image:none] grid ` +
     `[row-gap:12px] [column-gap:12px] [&_p]:mt-[0] [&_p]:mr-[0] [&_p]:mb-[0] [&_p]:ml-[0] [&_p]:text-[15px] ` +
     `[&_p]:[line-height:1.5] [&_p]:text-ink [&_div]:flex [&_div]:items-center [&_div]:flex-wrap ` +

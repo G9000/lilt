@@ -30,6 +30,8 @@ chart is optional; you do not need to choose a target number before making your 
 ## Your route to a lighter voice
 
 This is a general guide for anyone exploring a lighter, brighter voice that still sounds like them.
+If you're taking your voice lower, or haven't decided, [Start here](#/studio/start-here) says
+which chapters still help and how to set Lilt to your direction.
 There is no single sound to copy. Start with a sound you would enjoy using, in your own
 accent and language. You can adapt the English practice phrases to words you actually say.
 
