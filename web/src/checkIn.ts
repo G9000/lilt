@@ -41,11 +41,11 @@ export function thenAndNow<T extends TakeLike>(takes: T[]): ThenNow<T> | null {
 
 export const apartWords = (days: number) => (days === 1 ? "a day apart" : `${days} days apart`);
 
-/** The newest note you left on any of these takes (skipping `except`), with the day you left it. */
-export function lastNote<T extends TakeLike>(takes: T[], except?: string): { text: string; day: string } | null {
+/** The newest note you left on any of these takes (skipping `except`), its take and the day you left it. */
+export function lastNote<T extends TakeLike>(takes: T[], except?: string): { id: string; text: string; day: string } | null {
   for (let i = takes.length - 1; i >= 0; i--) {
     const t = takes[i], text = t.note?.trim();
-    if (text && t.id !== except) return { text, day: takeDay(t) };
+    if (text && t.id !== except) return { id: t.id, text, day: takeDay(t) };
   }
   return null;
 }

@@ -4,7 +4,7 @@ import { idLabel } from "../chapters";
 import { Markdown } from "../components/Markdown";
 import { RecordPanel, useMic } from "../components/Recording";
 import { DEFAULT_COURSE, textId } from "../courseIds";
-import { guidedPath, practicePath, recordingsPath, validCourseId } from "../courseNavigation";
+import { dailyPath, guidedPath, practicePath, recordingsPath, textsPath, validCourseId } from "../courseNavigation";
 import { acquireRecordingLock } from "../recordingLock";
 import { shared } from "../ui/shared";
 
@@ -26,14 +26,33 @@ async function deleteCourseTake(course: string, take: Take): Promise<boolean> {
   } finally { release(); }
 }
 
-function CourseFrame({ course, children }: { course: string; children: ReactNode }) {
+/** Where a course page is, for the shared course navigation. */
+export type CoursePlace = "home" | "today" | "guided" | "recordings" | null;
+
+/**
+ * The same quiet pills on every page of a course that isn't voice: the desk, all courses, the
+ * course's home, today's cards, its texts, guided practice and recordings.
+ */
+export function CourseNav({ course, title, current }: { course: string; title?: string; current: CoursePlace }) {
+  const here = (place: CoursePlace) => (current === place ? "page" : undefined);
+  return (
+    <nav className="mb-8 flex flex-wrap items-center gap-1 text-sm [&_a]:inline-flex [&_a]:min-h-9 [&_a]:items-center [&_a]:rounded-full [&_a]:px-3 [&_a]:text-ink-2 [&_a]:no-underline [&_a:hover]:bg-fill [&_a:hover]:text-ink [&_a[aria-current=page]]:bg-fill-2 [&_a[aria-current=page]]:text-ink [&_a[aria-current=page]]:font-medium" aria-label="Course navigation">
+      <a href="#/desk" aria-label="Back to the desk">Desk</a>
+      <a href="#/courses">All courses</a>
+      <a href={`#${practicePath(course)}`} aria-current={here("home")}>{title ?? "Course home"}</a>
+      <a href={`#${dailyPath(course)}`} aria-current={here("today")}>Today's cards</a>
+      <a href={`#${textsPath(course)}`}>Practice texts</a>
+      <a href={`#${guidedPath(course)}`} aria-current={here("guided")}>Guided practice</a>
+      <a href={`#${recordingsPath(course)}`} aria-current={here("recordings")}>Recordings</a>
+    </nav>
+  );
+}
+
+/** Guided practice and Recordings share voice practice's centred 960px column and the course pills. */
+function CourseFrame({ course, current, children }: { course: string; current: CoursePlace; children: ReactNode }) {
   return <main className="course-frame h-full min-h-0 w-full flex-1 overflow-auto bg-page text-ink">
-    <div className="mx-auto w-full max-w-[var(--content-width)] px-[18px] py-6 sm:px-10 sm:py-8">
-      <nav className="mb-8 flex flex-wrap gap-x-5 gap-y-2 border-b border-hair pb-4" aria-label="Course navigation">
-        <a href={`#${practicePath(course)}`}>Course home</a>
-        <a href={`#${guidedPath(course)}`}>Guided practice</a>
-        <a href={`#${recordingsPath(course)}`}>Recordings</a>
-      </nav>
+    <div className="mx-auto w-full max-w-[960px] px-[18px] py-6 sm:px-10 sm:py-8">
+      <CourseNav course={course} current={current} />
       {children}
     </div>
   </main>;
@@ -96,7 +115,7 @@ function SavedAudio({ take }: { take: Take }) {
 
 export function CourseGuidedPage({ course, sessionId, promptId }: { course: string; sessionId?: string; promptId?: string }) {
   if (!validCourseId(course) || course === DEFAULT_COURSE) return <p role="alert">Choose a course from All courses to open this practice.</p>;
-  return <CourseFrame course={course}>{sessionId
+  return <CourseFrame course={course} current="guided">{sessionId
     ? <GuidedSession key={`${course}:${sessionId}`} course={course} sessionId={sessionId} />
     : <GuidedChooser key={`${course}:${promptId ?? ""}`} course={course} promptId={promptId} />}</CourseFrame>;
 }
@@ -230,7 +249,7 @@ function GuidedSession({ course, sessionId }: { course: string; sessionId: strin
 
 export function CourseRecordingsPage({ course }: { course: string }) {
   if (!validCourseId(course) || course === DEFAULT_COURSE) return <p role="alert">Choose a course from All courses to open its recordings.</p>;
-  return <CourseFrame course={course}><CourseRecordings key={course} course={course} /></CourseFrame>;
+  return <CourseFrame course={course} current="recordings"><CourseRecordings key={course} course={course} /></CourseFrame>;
 }
 
 function CourseRecordings({ course }: { course: string }) {

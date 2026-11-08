@@ -42,7 +42,7 @@ test("the newest note is the one that comes back, blank ones skipped", () => {
     take("b", "2026-11-03T09:00:00Z", { note: "  don't push  " }),
     take("c", "2026-11-05T09:00:00Z", { note: "   " }),
   ];
-  assert.deepEqual(lastNote(ts), { text: "don't push", day: "2026-11-03" });
-  assert.deepEqual(lastNote(ts, "b"), { text: "easy start", day: "2026-11-01" });
+  assert.deepEqual(lastNote(ts), { id: "b", text: "don't push", day: "2026-11-03" });
+  assert.deepEqual(lastNote(ts, "b"), { id: "a", text: "easy start", day: "2026-11-01" });
   assert.equal(lastNote([take("a", "2026-11-01T09:00:00Z")]), null);
 });

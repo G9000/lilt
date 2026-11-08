@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { api, type Course, type Deck, type Rating, type Take, type TextLevel, type Texts } from "../api";
 import { byPart, idLabel } from "../chapters";
 import { Markdown, picture } from "../components/Markdown";
-import { dailyPath, flashcardsPath, guidedPath, practicePath, recordingsPath, textsPath, validCourseId } from "../courseNavigation";
+import { dailyPath, flashcardsPath, guidedPath, practicePath, recordingsPath, validCourseId } from "../courseNavigation";
 import { parseTextId, textId } from "../courseIds";
 import { shared } from "../ui/shared";
 import { practice } from "../ui/practice";
 import { cx } from "../ui/cx";
 import { ChapterVideo } from "./Voice";
-import { CourseRecorder, OptionalCourseRecorder } from "./CourseRecording";
+import { CourseNav, CourseRecorder, OptionalCourseRecorder } from "./CourseRecording";
 
 const primary = `btn ${shared.btn} ${shared["btn-primary"]}`;
 const secondary = `btn ${shared.btn} ${shared["btn-secondary"]}`;
@@ -46,15 +46,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
     }}>
       {/* The same centred 960px column as voice practice. */}
       <div className="mx-auto w-full max-w-[960px] px-[18px] py-6 sm:px-10 sm:py-8">
-        <nav className="mb-8 flex flex-wrap items-center gap-1 text-sm [&_a]:inline-flex [&_a]:min-h-9 [&_a]:items-center [&_a]:rounded-full [&_a]:px-3 [&_a]:text-ink-2 [&_a]:no-underline [&_a:hover]:bg-fill [&_a:hover]:text-ink [&_a[aria-current=page]]:bg-fill-2 [&_a[aria-current=page]]:text-ink [&_a[aria-current=page]]:font-medium" aria-label="Course navigation">
-          <a className={quiet} href="#/desk" aria-label="Back to the desk">Desk</a>
-          <a className={quiet} href="#/courses">All courses</a>
-          <a className={quiet} href={`#${practicePath(course)}`} aria-current={!view && !chapter ? "page" : undefined}>{data?.course.title ?? "Course home"}</a>
-          <a className={quiet} href={`#${dailyPath(course)}`} aria-current={view === "today" ? "page" : undefined}>Today's cards</a>
-          <a className={quiet} href={`#${textsPath(course)}`}>Practice texts</a>
-          <a className={quiet} href={`#${guidedPath(course)}`}>Guided practice</a>
-          <a className={quiet} href={`#${recordingsPath(course)}`}>Recordings</a>
-        </nav>
+        <CourseNav course={course} title={data?.course.title} current={view === "today" ? "today" : !view && !chapter ? "home" : null} />
         {error ? <><p role="alert">{error}</p><button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button></>
           : !data ? <p role="status">Opening your course…</p>
           : view === "today" ? <DailyCards key={first ?? "today"} course={course} first={first} texts={data.texts} onBusy={setLocked} />

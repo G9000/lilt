@@ -439,7 +439,10 @@ Monitor uploads and playback have an isolated check with locally generated media
    - A chapter's check-in text shows **Then and now** once you've recorded it on two different days:
      your first take and your latest, side by side on one pitch scale, with how many days apart they
      are. On a fresh take, **Leave a note for next time** saves one cue (like "easy start"); the next
-     time you open that text, your newest note from an earlier take shows under its hint.
+     time you open that text, your newest note from an earlier take shows under its hint, with
+     **Edit** to change it. Under **More about this take** you can also note the earlier take it's
+     compared with. Home's then and now is your daily reference line ("Your daily line, then and
+     now"); when it would only repeat a chapter's check-in, Home points to that check-in instead.
    - Hum warm-ups show a **steadiness** meter. The NHS Fife source asks for a smooth sound.
    - **Flashcards** (`#/flashcards`, in the dock, or the Flashcards widget beside the plant in the
      room, which shows the chapter you're on and how far through it you are) opens full screen and

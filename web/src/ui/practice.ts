@@ -431,6 +431,9 @@ export const practice = {
     `[@media_(prefers-reduced-motion:_reduce)]:[&_svg]:[transition:none]`,
   "ve-chlist": `relative [.ve-side-scroll_>_&]:[min-width:0] max-h-[max(180px,_calc(100dvh_-_430px))] overflow-y-auto ` +
     `[scrollbar-width:thin] [overscroll-behavior:contain] mb-[2px]`,
+  "ve-note-edit": `[.ve_&]:ml-[6px] [.ve_&]:not-italic [.ve_&]:text-[12px] [.ve_&]:font-medium [.ve_&]:text-ink-2 ` +
+    `[.ve_&]:underline [.ve_&]:[text-underline-offset:3px] [.ve_&]:[text-decoration-color:var(--line-strong)] ` +
+    `[.ve_&:hover]:text-ink`,
   "ve-chpart": `mt-[12px] mb-[2px] pl-[40px] text-[12px] font-medium text-ink-3`,
   "ve-home-ic": `[flex:none] w-[22px] grid place-items-center [&_svg]:w-[17px] [&_svg]:h-[17px]`,
   "ve-tree": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [.ve-home_+_&]:mt-[8px]`,

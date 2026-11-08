@@ -43,7 +43,8 @@ analysis for other course subjects.
 - MCP: `courses_list`, and every `syllabus_*` tool takes `course`.
 - The Courses app (`#/courses`): each course, your copy, history, undo, reset, updates.
 - Practice (`#/learn/<id>`), chapter flashcards (`#/flashcards?course=<id>`) and daily cards
-  (`#/learn/<id>/today`). They share voice practice's look: a centred 960px column, chapters as
+  (`#/learn/<id>/today`), with guided practice and recordings. They share voice practice's look,
+  with the same pill navigation on every page: a centred 960px column, chapters as
   tiles by part, and **Learn** and **Practise** tabs in a chapter that has notes or a video (a
   link to a text opens Practise). Open **Courses → a course → Practise**. The room and desk remember this
   course in the browser; explicit voice links still open voice. A missing course shows an error.

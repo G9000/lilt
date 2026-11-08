@@ -992,7 +992,7 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
         <header className={cx("ve-head ve-greet", practice["ve-head"], practice["ve-greet"])}><h1>{greeting()}</h1><p>{today}</p></header>
         {/* The start card is for someone new: no takes and no range yet. Anyone who has practised
             sees their practice, with a gentle nudge if their comfortable range isn't set. */}
-        {!band && history.length === 0 ? <StartCard /> : <YourPractice history={history} band={band} next={<>
+        {!band && history.length === 0 ? <StartCard /> : <YourPractice history={history} band={band} texts={texts} next={<>
           <NextStep deck={deck} texts={texts} practised={practised} />
           {!band && <p className={cx("ve-small", practice["ve-small"])}>No comfortable range yet. <a href="#/studio/start">Find your starting voice</a> to set one, and it shows behind your pitch lines.</p>}
         </>} />}
@@ -1147,7 +1147,7 @@ function NextStep({ deck, texts, practised }: { deck: Deck | null; texts: Texts;
   );
 }
 
-function YourPractice({ history, band, next }: { history: Take[]; band: [number, number] | null; next: ReactNode }) {
+function YourPractice({ history, band, next, texts }: { history: Take[]; band: [number, number] | null; next: ReactNode; texts: Texts }) {
   const days = new Set(history.map(dayKey));
   const today = new Date(), iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const month = iso(today).slice(0, 7);
@@ -1161,6 +1161,10 @@ function YourPractice({ history, band, next }: { history: Take[]; band: [number,
   const scale = useMemo(() => pitchA && pitchB
     ? fitRange([cleanContour(pitchA), cleanContour(pitchB)], band ?? undefined).map(midiToHz) as [number, number]
     : undefined, [pitchA, pitchB, band]);
+  // Home's pair is your daily reference line when you have one. If it would only repeat a chapter's
+  // check-in (which shows its own then and now), Home points there instead of showing it twice.
+  const isRef = first?.prompt_id === REF.prompt_id;
+  const checkInOf = first && !isRef ? texts.levels.find((l) => l.check_in && textId(COURSE, l.id, l.check_in) === first.prompt_id) : undefined;
   const apart = first && latest ? Math.round((Date.parse(`${dayKey(latest)}T12:00:00`) - Date.parse(`${dayKey(first)}T12:00:00`)) / 86400000) : 0;
   return (
     <section className={cx("ve-practice", practice["ve-practice"])} aria-label="Your practice">
@@ -1170,9 +1174,11 @@ function YourPractice({ history, band, next }: { history: Take[]; band: [number,
         <p><b>{thisMonth === 0 ? "A fresh month" : `${thisMonth} day${thisMonth === 1 ? "" : "s"} of practice this month`}</b><span>The last two weeks, one dot a day.</span></p>
         <ol aria-label="The last two weeks">{last14.map((d, i) => <li key={d} className={[days.has(d) ? "on" : "", i === 13 ? "today" : ""].join(" ").trim() || undefined} title={i === 13 ? `Today, ${shortDate(d)}` : shortDate(d)} />)}</ol>
       </div>
-      {first && latest ? (
+      {first && latest && checkInOf ? (
+        <p className={cx("ve-then-wait", practice["ve-then-wait"])}>Your {checkInOf.title} check-in now has a then and now, {apart === 1 ? "a day" : `${apart} days`} apart. <a href={`#/studio/${checkInOf.id}/${checkInOf.check_in}`}>Hear it on the check-in</a>.</p>
+      ) : first && latest ? (
         <div className={cx("ve-then", practice["ve-then"])}>
-          <p className={cx("ve-then-h", practice["ve-then-h"])}><b>Then and now</b><span>The same line, {apart === 1 ? "a day" : `${apart} days`} apart: “{first.prompt_text}”</span></p>
+          <p className={cx("ve-then-h", practice["ve-then-h"])}><b>{isRef ? "Your daily line, then and now" : "Then and now"}</b><span>The same line, {apart === 1 ? "a day" : `${apart} days`} apart: “{first.prompt_text}”</span></p>
           <div className={cx("ab", shared["ab"])}>
             <AudioPlayer src={first.audio_url} tag="A" label={`Day 1 · ${shortDate(dayKey(first))}`} knownDuration={first.analysis_summary?.duration_s} pitchTakeId={first.analysis_summary ? first.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
             <AudioPlayer src={latest.audio_url} tag="B" label={`Latest · ${shortDate(dayKey(latest))}`} knownDuration={latest.analysis_summary?.duration_s} pitchTakeId={latest.analysis_summary ? latest.id : undefined} band={band} pitchRange={scale} pitchCaption={false} compact />
@@ -1353,6 +1359,11 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   const thenNow = checkInPair(checkInTakes);
   // The note you left last time on the text you're on (today's take shows its own).
   const remembered = useMemo(() => lastNote(takesOf(promptId, earlier, forText), latest?.id), [promptId, earlier, forText, latest?.id]);
+  // A note changed on an earlier take: keep every copy of it in step.
+  const updateEarlier = (t: Take) => {
+    setEarlier((xs) => xs.map((x) => (x.id === t.id ? t : x)));
+    setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)));
+  };
 
   const onSaved = async (t: Take) => {
     let saved = t;
@@ -1426,7 +1437,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                         onStarts={(s) => { starts.current = s; }} alignment={latest?.read_along?.starts ?? null} pitch={latestPitch} />
                     : <p className={cx("readtext ve-read", practice["readtext"])} aria-label={on ? it.text : undefined}>{it.text}</p>}
                   <p className={cx("ve-hint", practice["ve-hint"])}>{it.hint}</p>
-                  {on && remembered && <div className={cx("rl-note ve-lastnote", practice["rl-note"], "mt-3")}><p>Your note from {shortDate(remembered.day)}: “{remembered.text}”</p></div>}
+                  {on && remembered && <RememberedNote key={remembered.id} note={remembered} onUpdate={updateEarlier} />}
                   {it.id === level.check_in && !(on && latest) && (thenNow
                     ? <CheckInThenNow pair={thenNow} band={band} />
                     : checkInTakes.length > 0 && <p className={cx("ve-small", practice["ve-small"])}>Record it again on another day to hear your first take beside your newest.</p>)}
@@ -1434,7 +1445,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
                   {!on && <button className={cx("ve-pick sr-only", shared["sr-only"])} onClick={() => choose(i)}>Practise {it.text.slice(0, 40)}</button>}
                   {on && recorder}
                   {on && !isPrompt && <ReadNotes text={it.text} levelId={level.id} hint={it.hint} withHint={false} />}
-                  {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} more={level.id === "resonance"} />}
+                  {on && latest && <ChapterTake take={latest} before={before} choices={choices} pick={aPick} onPick={setAPick} promptId={promptId} band={band} card={{ kind: "text", text_kind: level.kind, front: it.text }} onUseRange={useRange} onUpdate={(t) => setTakes((xs) => xs.map((x) => (x.id === t.id ? t : x)))} more={level.id === "resonance"} onBeforeUpdate={updateEarlier} />}
                 </li>
               );
             })}
@@ -1469,14 +1480,17 @@ function CheckInThenNow({ pair, band }: { pair: ThenNow<Take>; band: [number, nu
   );
 }
 
-/** A short note on this take for next time, like "easy start"; it comes back under the text. */
-function TakeNote({ take, onUpdate }: { take: Take; onUpdate: (t: Take) => void }) {
+/**
+ * A short note on a take for next time, like "easy start"; it comes back under the text. `subject`
+ * names an earlier take ("the 7 Nov take") when the note isn't for this one.
+ */
+function TakeNote({ take, onUpdate, subject }: { take: Take; onUpdate: (t: Take) => void; subject?: string }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(take.note ?? "");
   if (!open) return (
     <>
-      {take.note && <div className={cx("rl-note", practice["rl-note"], "basis-full order-first")}><p>Your note: “{take.note}”</p></div>}
-      <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => { setDraft(take.note ?? ""); setOpen(true); }}>{take.note ? "Edit note" : "Leave a note for next time"}</button>
+      {take.note && <div className={cx("rl-note", practice["rl-note"], "basis-full order-first")}><p>{subject ? `Your note on ${subject}` : "Your note"}: “{take.note}”</p></div>}
+      <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => { setDraft(take.note ?? ""); setOpen(true); }}>{take.note ? (subject ? `Edit the note on ${subject}` : "Edit note") : subject ? `Leave a note on ${subject}` : "Leave a note for next time"}</button>
     </>
   );
   return (
@@ -1486,6 +1500,25 @@ function TakeNote({ take, onUpdate }: { take: Take; onUpdate: (t: Take) => void 
         <button type="submit" className={cx("ve-ghost", practice["ve-ghost"])}>Save</button>
         <button type="button" className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => setOpen(false)}>Cancel</button>
       </form>
+    </div>
+  );
+}
+
+/** The note you left on an earlier take of this text, shown under its hint; Edit changes it in place. */
+function RememberedNote({ note, onUpdate }: { note: { id: string; text: string; day: string }; onUpdate: (t: Take) => void }) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(note.text);
+  return (
+    <div className={cx("rl-note ve-lastnote", practice["rl-note"], "mt-3")} onClick={(e) => e.stopPropagation()}>
+      {open ? (
+        <form onSubmit={(e) => { e.preventDefault(); void api.patchTake(note.id, { note: draft.trim() }).then((t) => { onUpdate(t); setOpen(false); }); }}>
+          <input value={draft} onChange={(e) => setDraft(e.target.value)} aria-label={`Note from ${shortDate(note.day)}`} maxLength={200} autoFocus />
+          <button type="submit" className={cx("ve-ghost", practice["ve-ghost"])}>Save</button>
+          <button type="button" className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => { setDraft(note.text); setOpen(false); }}>Cancel</button>
+        </form>
+      ) : (
+        <p>Your note from {shortDate(note.day)}: “{note.text}” <button type="button" className={cx("ve-note-edit", practice["ve-note-edit"])} onClick={() => setOpen(true)}>Edit</button></p>
+      )}
     </div>
   );
 }
@@ -1501,9 +1534,9 @@ const takeDate = (t: Take) => new Date(t.created_utc).toLocaleDateString(undefin
  * rest (resonance, using its range, the detailed comparison) folds under "More about this take",
  * open from the start where it is the point (`more`, the Resonance chapter).
  */
-function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card, onUseRange, onUpdate, more = false }: {
+function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card, onUseRange, onUpdate, onBeforeUpdate, more = false }: {
   take: Take; before: Take | null; choices: Take[]; pick: APick; onPick: (p: APick) => void; promptId: string;
-  band: [number, number] | null; card: CardKind; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void; more?: boolean;
+  band: [number, number] | null; card: CardKind; onUseRange: (t: Take) => void; onUpdate: (t: Take) => void; onBeforeUpdate: (t: Take) => void; more?: boolean;
 }) {
   useTakeStatus(take, onUpdate);
   const ready = take.status === "review_ready";
@@ -1542,6 +1575,7 @@ function ChapterTake({ take, before, choices, pick, onPick, promptId, band, card
           <div className={cx("ve-take-actions", practice["ve-take-actions"], "mt-3")}>
             {ready && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => onUseRange(take)}>Use this take's range as my comfortable range</button>}
             {before && <button className={cx("ve-ghost", practice["ve-ghost"])} onClick={() => go(`/compare?a=${before.id}&b=${take.id}`)}>Detailed comparison</button>}
+            {before && <TakeNote key={before.id} take={before} subject={`the ${takeDate(before)} take`} onUpdate={onBeforeUpdate} />}
           </div>
         </details>
       )}

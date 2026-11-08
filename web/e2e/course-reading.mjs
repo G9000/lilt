@@ -99,7 +99,7 @@ try {
     if (!process.env.LILT_UI_BUILD) {
       for (const route of ['guided', 'recordings']) {
         await page.goto(`${base}#/learn/drawing/${route}`);
-        await checkColumn(page.locator('.course-frame > div'), width, `Other-course ${route}`);
+        await checkColumn(page.locator('.course-frame > div'), width, `Other-course ${route}`, 880);
       }
     }
   }
