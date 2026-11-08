@@ -186,7 +186,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      card away (or use the arrow keys) and it tucks in at the back; tap the card on top, or its
      arrow, to practise that one first. The others stay in today's run. The stack deals in when
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
-     Each plain card shows the exercise, its hint and a Start action. Photos are not used as
+     Each plain card shows the exercise, its hint (as on Today, without the chapter's "Your
+     check-in:") and a Start action; before your first take it reads **Day 1 first** and opens
+     Find your starting voice. Photos are not used as
      practice-card covers; the smaller paper stack keeps the content easy to read.
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: a
@@ -332,9 +334,13 @@ Monitor uploads and playback have an isolated check with locally generated media
    holds the daily reference phrase, any cards due for review, and a couple of new cards (2 a day
    by default, `new_cards_per_day` in the profile). **Start** opens the Practice window: say the
    line, listen back, then rate how it felt: **Again** (later today), **Hard**, **Good** or
-   **Easy**. Each button shows when the card will come back (keys 1–4 work too).
+   **Easy**. Each button shows when the card will come back (keys 1–4 work too). On a new card,
+   Hard brings it back tomorrow, Good in two days and Easy in four. When the deck is done, the
+   desk says when the next cards come back in words ("tomorrow", "in 3 days").
    - **One card at a time:** ivory paper by day, charcoal at night, with the exercise and card
-     position leading. Reading tips and **How to practise** open when you need them.
+     leading; the line above the card says how many are left. Reading tips and **How to
+     practise** open when you need them. The read-along highlight follows you while you record
+     and clears when you stop.
      **Up next** lets you choose another card before recording; **Practised today** holds
      your completed cards. Record, listen and review stay together below the prompt. Cards
      settle gently into view, with motion disabled when you prefer reduced motion.
