@@ -110,7 +110,7 @@ export const roomStyles = {
   "yn-breathe": "[justify-self:center] [width:96px] [height:96px] grid place-items-center [&_i]:[width:96px] [&_i]:[height:96px] [&_i]:[border-radius:50%] [&_i]:[background:radial-gradient(circle_at_40%_35%,_color-mix(in_srgb,_var(--accent)_45%,_transparent),_var(--accent-soft))] [&_i]:[animation:yn-breathe_10s_ease-in-out_infinite] [&.still_i]:[animation:none] [&.still_i]:[scale:0.85] [@media_(prefers-reduced-motion:_reduce)]:[&_i]:[animation:none] [@media_(prefers-reduced-motion:_reduce)]:[&_i]:[scale:0.85]",
   "yn-setup": "max-[900px]:overflow-y-auto",
   "room": "fixed [top:0] [right:0] [bottom:0] [left:0] [z-index:0] overflow-clip [background:#0b0d13]",
-  "room-stage": "absolute [left:0] [top:0] [transform-origin:0_0] [will-change:transform]",
+  "room-stage": "absolute [left:0] [top:0] [transform-origin:0_0]",
   "room-art": "absolute [top:0] [right:0] [bottom:0] [left:0] [width:100%] [height:100%] block select-none pointer-events-none [transition:opacity_2s_ease] [@media_(prefers-reduced-motion:_reduce)]:[transition:none] [&:first-child]:[opacity:1]!",
   "room-fx": "absolute [top:0] [right:0] [bottom:0] [left:0] [width:100%] [height:100%] block select-none pointer-events-none",
   "room-paint": "absolute [top:0] [right:0] [bottom:0] [left:0] isolate pointer-events-none",

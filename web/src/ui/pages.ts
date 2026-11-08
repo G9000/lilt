@@ -172,8 +172,6 @@ export const pages = {
     `shadow-[inset_0_0_0_1px_var(--hair)] text-ink-2 [&_svg]:w-[13px] [&_svg]:h-[13px] [&_svg]:flex-none ` +
     `[&:focus-within]:[outline:2px_solid_var(--focus)] [&:focus-within]:[outline-offset:2px]`,
   sxNone: `pt-[8px] pr-[10px] pb-[8px] pl-[10px] text-[13px] text-ink-3`,
-  sxElsewhere: `mt-[12px]! pt-[12px]! [border-top:1px_solid_var(--hair)] [&_small]:block [&_small]:mt-[1px] ` +
-    `[&_small]:text-[12px] [&_small]:font-normal [&_small]:text-ink-3`,
   sxLink: `inline min-h-0 p-0 border-0 bg-transparent font-[inherit] text-[length:inherit] text-ink underline ` +
     `[text-underline-offset:3px] [text-decoration-color:var(--accent)] cursor-pointer hover:[text-decoration-thickness:2px]`,
   sxTile: `flex-none grid place-items-center rounded-tl-[8px] rounded-tr-[8px] rounded-br-[8px] rounded-bl-[8px] ` +

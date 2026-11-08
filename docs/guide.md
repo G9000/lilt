@@ -414,7 +414,7 @@ Monitor uploads and playback have an isolated check with locally generated media
    the top, Desk first). Mixtape joins the places once you have your own copy of the course, since
    before that it would only list the chapters again. Practice settings holds your goal, routine
    and range, and links to Lilt's Settings for theme, text size, notifications, AI and backups;
-   Settings, in turn, keeps a Practice settings row under its list. On the Chapters page and in a chapter, every chapter is
+   Settings itself keeps to those general settings. On the Chapters page and in a chapter, every chapter is
    listed under Chapters by part, and the one you're in opens to its texts (a tick once
    practised), so you can jump to any of them. The arrow beside Chapters folds the list away,
    leaving just the chapter you're in, and this browser remembers your choice. **Home** greets

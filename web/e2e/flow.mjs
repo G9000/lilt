@@ -296,12 +296,13 @@ async function main() {
   check("A chapter ends with a link to the next one", (await page.locator(".ve-nextch a").getAttribute("href"))?.startsWith("#/studio/") &&
     (await page.locator(".ve-nextch").innerText()).includes("Next chapter"));
   await snap("14-studio-result");
-  // Practice settings and Lilt's Settings each lead to the other.
+  // Practice settings links to Lilt's Settings, which keeps to general settings.
   await page.goto(`${BASE}/#/studio/settings`);
   await page.getByRole("button", { name: "Lilt's Settings" }).click();
-  await page.locator(".ss.open .sx-elsewhere button", { hasText: "Practice settings" }).click();
-  await page.locator(".ss.open").waitFor({ state: "detached", timeout: 3000 }).catch(() => {});
-  check("Practice settings and Settings link to each other", (await page.locator(".ss.open").count()) === 0 && (await page.locator(".sx-app h1", { hasText: "Practice settings" }).count()) === 1);
+  await page.locator(".ss.open").waitFor({ timeout: 3000 }).catch(() => {});
+  check("Practice settings links to Settings, which has no Practice row", (await page.locator(".ss.open").count()) === 1 &&
+    (await page.locator(".ss.open .sx-side", { hasText: "Practice settings" }).count()) === 0);
+  await page.keyboard.press("Escape");
   await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
   await page.waitForTimeout(2500);

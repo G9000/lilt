@@ -246,19 +246,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
               </button>
             </li>
           ))}
-          {/* Your goal, range, warm-up, session length and reminder live in Practice settings. */}
-          {shown.length === 0 && <li className={cx(pages.sxNone, "sx-none")}>No settings match here; your goal, routine and range are in Practice settings.</li>}
-        </ul>
-        {/* Your goal, routine and range live in Practice; this goes there. */}
-        <ul className={cx(pages.sxElsewhere, "sx-elsewhere")}>
-          <li>
-            <button onClick={toPractice}>
-              <span className={cx(pages.sxTile, "sx-tile")} style={{ width: 26, height: 26 }} aria-hidden="true">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6h12M4 10h12M4 14h12" /><circle cx="8" cy="6" r="1.6" fill="currentColor" /><circle cx="13" cy="10" r="1.6" fill="currentColor" /><circle cx="7" cy="14" r="1.6" fill="currentColor" /></svg>
-              </span>
-              <span>Practice settings<small>Goal, routine, range</small></span>
-            </button>
-          </li>
+          {shown.length === 0 && <li className={cx(pages.sxNone, "sx-none")}>No settings match.</li>}
         </ul>
       </nav>
       <section className={cx(pages.sxMain, "sx-main")} aria-label={cur?.title}>

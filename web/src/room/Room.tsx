@@ -178,6 +178,10 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
         const scale = catScale(f);
         st.style.setProperty('--cat-scale-x', String(scale.x)); st.style.setProperty('--cat-scale-y', String(scale.y));
         st.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${v.s})`; st.style.setProperty("--inv", String(1 / v.s));
+        // Only while flying: a lasting will-change keeps Chromium's raster from the zoomed-in screen,
+        // too big for its tile memory once back in the room, so parts of the painting stayed black.
+        const willChange = c.flying ? "transform" : "";
+        if (st.style.willChange !== willChange) st.style.willChange = willChange;
         // Settled: the camera has landed in the room. The floating widgets wait for it.
         const settled = !c.inside && !c.flying;
         if (st.classList.contains("settled") !== settled) st.classList.toggle("settled", settled);
