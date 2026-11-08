@@ -9,6 +9,7 @@ import { practice } from "../ui/practice";
 import { cx } from "../ui/cx";
 import { ChapterVideo } from "./Voice";
 import { CourseNav, CourseRecorder, OptionalCourseRecorder } from "./CourseRecording";
+import { friendlyDate } from "../cardText";
 
 const primary = `btn ${shared.btn} ${shared["btn-primary"]}`;
 const secondary = `btn ${shared.btn} ${shared["btn-secondary"]}`;
@@ -213,7 +214,7 @@ function DailyCards({ course, texts, first, onBusy }: { course: string; texts: T
     <header className="mb-8"><h1 className={heading}>Today's cards</h1><p className="text-ink-2">Read, try it in your own time, then choose how it felt.</p></header>
     {error && <div className="mb-6"><p role="alert">{error}</p><button className={secondary} disabled={busy || recording} onClick={() => failedRating ? void rate(failedRating) : setAttempt(n => n + 1)}>Try again</button></div>}
     {!deck ? !error && <p role="status">Finding your cards…</p>
-      : !current ? <div role="status"><h2 className="text-lg font-semibold">{deck.all_done || deck.items.some(item => item.done_today) ? "That's today's cards" : "No cards for today"}</h2><p className="text-ink-2">{deck.message || (deck.next_due ? `Your next cards are due ${deck.next_due}.` : "You can explore a chapter any time.")}</p><a className={secondary} href={`#${practicePath(course)}`}>Back to the course</a></div>
+      : !current ? <div role="status"><h2 className="text-lg font-semibold">{deck.all_done || deck.items.some(item => item.done_today) ? "That's today's cards" : "No cards for today"}</h2><p className="text-ink-2">{deck.message || (deck.next_due ? `Your next cards come back ${friendlyDate(deck.next_due, deck.local_date)}.` : "You can explore a chapter any time.")}</p><a className={secondary} href={`#${practicePath(course)}`}>Back to the course</a></div>
       : <article>
         <p className="text-sm text-ink-2">{current.card.deck_title} · {remaining.length} {remaining.length === 1 ? "card" : "cards"} to go</p>
         <div className="my-6 text-xl leading-relaxed"><Markdown src={current.card.front} course={course} chapters={chapters} headingOffset={1} /></div>

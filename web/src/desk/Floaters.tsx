@@ -256,7 +256,7 @@ function NewsWidget() {
     document.addEventListener("keydown", esc);
     return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
   }, [open]);
-  const date = new Date(`${CURRENT.date}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+  const date = new Date(`${CURRENT.date}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
   return (
     <div className={[`fl-news${open ? " open" : ""}`, roomStyles["fl-news"]].join(" ")} ref={box}>
       <button className={["fl-news-head", roomStyles["fl-news-head"]].join(" ")} onClick={toggle} aria-expanded={open} aria-controls="fl-news-list">
@@ -301,7 +301,7 @@ function FlashcardsWidget({ texts, course }: { texts: Texts; course: string }) {
         <span className={["fl-cards-body", roomStyles["fl-cards-body"]].join(" ")}>
           <b>{level.title}</b>
           <span className={["fl-cards-segs", roomStyles["fl-cards-segs"]].join(" ")}>{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : undefined} />)}</span>
-          <small>{got === total ? "Done · go again any time" : got ? `${got} of ${total} cards` : `${total} cards · start`}</small>
+          <small>{got === total ? "Done · go again any time" : got ? `${got} of ${total} cards` : `${total} cards to go through`}</small>
         </span>
       </span>
     </button>

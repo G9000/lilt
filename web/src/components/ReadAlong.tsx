@@ -45,6 +45,7 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
     });
     return () => {
       tr.stop();
+      setCur(-1);
       // The saved file runs PRE_ROLL_S behind the live mic (the recorder's delay line), so word times
       // move by that much to line up with the measured contour.
       startsCb.current?.(f.starts().map((x) => (x === null ? null : x + PRE_ROLL_S)));

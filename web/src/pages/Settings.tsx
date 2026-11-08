@@ -15,8 +15,32 @@ import { CURRENT } from "../release";
 import { BackupSettings } from "../components/BackupSettings";
 import { StorageSettings } from "../components/StorageSettings";
 import { openSettings } from "../desk/SettingsSheet";
+import { computerZone, zoneCity, zoneGroups, zoneLabel, zoneNow } from "../timezone";
 
 const ZONES = [...new Set(["UTC", ...Intl.supportedValuesOf("timeZone")])];
+
+/** The time zone by place and offset, the time there now, and this computer's zone a click away. */
+function TimeZoneChoice({ value, onChange }: { value: string; onChange: (zone: string) => void }) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const id = window.setInterval(() => setNow(new Date()), 20_000); return () => window.clearInterval(id); }, []);
+  const groups = useMemo(() => zoneGroups(ZONES.includes(value) ? ZONES : [value, ...ZONES], new Date()), [value]);
+  const here = computerZone();
+  return (
+    <>
+      <Row label="Time zone" htmlFor="tz" help="Your practice day starts at midnight here, and reminders keep its clock.">
+        <select id="tz" value={value} onChange={(e) => onChange(e.target.value)}>
+          {groups.map((g) => <optgroup key={g.region} label={g.region}>{g.zones.map((z) => <option key={z.id} value={z.id}>{z.label}</option>)}</optgroup>)}
+        </select>
+      </Row>
+      <Row label="Time there now"><span className="tabular-nums">{zoneNow(value, now)}</span></Row>
+      {here && here !== value && ZONES.includes(here) && (
+        <Row label="This computer" help={`${zoneLabel(here, now)}. Worth switching if you've moved or you're away for a while.`}>
+          <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={() => onChange(here)}>Use {zoneCity(here)}</button>
+        </Row>
+      )}
+    </>
+  );
+}
 
 /** Auto (follow the computer), light or dark, kept in step with the menu bar's button. */
 function ThemeChoice() {
@@ -92,7 +116,7 @@ function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number
 /** A labelled row: the label (and a line of help) on the left, the control on the right. */
 export function Row({ label, help, htmlFor, children, stack }: { label: string; help?: ReactNode; htmlFor?: string; children?: ReactNode; stack?: boolean }) {
   return (
-    <div className={cx(cx(pages.sxRow, `sx-row${stack ? " stack" : ""}`), shared["stack"])}>
+    <div className={cx(cx(pages.sxRow, `sx-row${stack ? " stack" : ""}`), stack && shared["stack"])}>
       <div className={cx(pages.sxRowL, "sx-row-l")}>
         {htmlFor ? <label htmlFor={htmlFor}>{label}</label> : <span className={cx(pages.sxLabel, "sx-label")}>{label}</span>}
         {help && <p className={cx(pages.sxHelp, "sx-help")}>{help}</p>}
@@ -179,7 +203,6 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
     return t ? PANES.filter((x) => `${x.title} ${x.words}`.toLowerCase().includes(t)) : PANES;
   }, [q]);
   const cur = PANES.find((x) => x.id === pane) ?? null;
-  const zones = p ? (ZONES.includes(p.timezone) ? ZONES : [p.timezone, ...ZONES]) : ZONES;
   const toPractice = () => { onClose?.(); window.location.hash = "#/studio/settings"; };
 
   const content = (id: PaneId): ReactNode => {
@@ -219,9 +242,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
     if (!p) return <p className={cx(pages.sxNote, "sx-note")}>Loading…</p>;
     return (
       <div className={cx(pages.sxGroup, "sx-group")}>
-        <Row label="Time zone" htmlFor="tz" help="Sets when your practice day starts and when reminders come.">
-          <select id="tz" value={p.timezone} onChange={(e) => edit({ ...p, timezone: e.target.value })}>{zones.map((z) => <option key={z}>{z}</option>)}</select>
-        </Row>
+        <TimeZoneChoice value={p.timezone} onChange={(timezone) => edit({ ...p, timezone })} />
       </div>
     );
   };

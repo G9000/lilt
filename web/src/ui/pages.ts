@@ -737,8 +737,8 @@ export const pages = {
     `[&_span]:[background-position:70%_30%] [&_span]:[background-size:420%_auto] ` +
     `[&_span]:[transition:transform_0.35s_var(--ease)] [&:hover_span]:[transform:scale(1.04)] ` +
     `[@media(prefers-reduced-motion:_reduce)]:[&_span]:transition-none`,
-  phMeta: `grid min-w-0 pt-0 pr-[2px] pb-0 pl-[2px] [&_b]:text-[13px] [&_b]:font-semibold [&_b]:whitespace-nowrap ` +
-    `[&_b]:overflow-hidden [&_b]:text-ellipsis [&_small]:text-[11.5px] [&_small]:text-ink-3`,
+  phMeta: `grid min-w-0 pt-0 pr-[2px] pb-0 pl-[2px] [&_b]:text-[13px] [&_b]:font-semibold [&_b]:line-clamp-2 ` +
+    `[&_b]:[line-height:1.3] [&_b]:[overflow-wrap:anywhere] [&_small]:text-[11.5px] [&_small]:text-ink-3`,
   phTools: `absolute top-[8px] right-[8px] flex gap-y-[6px] gap-x-[6px] opacity-[0] [transition:opacity_0.15s_ease] ` +
     `[@media(hover:_none)]:opacity-[1] [&_button]:w-[30px] [&_button]:h-[30px] [&_button]:min-h-0 [&_button]:pt-0 ` +
     `[&_button]:pr-0 [&_button]:pb-0 [&_button]:pl-0 [&_button]:grid [&_button]:place-items-center ` +

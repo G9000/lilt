@@ -217,7 +217,8 @@ export function App() {
       </Room>
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>
         <RoomTop inbox={inbox} courseTitle={courseTitle} />
-        <CardStack key={course} course={course} deck={deck} onStart={(id) => go(dailyPath(course, id))} />
+        <CardStack key={course} course={course} deck={deck} needsStart={course === DEFAULT_COURSE && needsStart}
+          onStart={(id) => go(course === DEFAULT_COURSE && needsStart ? "/studio/start" : dailyPath(course, id))} />
       </div>
       <Desktop section={section} page={page && <Deferred resetKey={path}>{page}</Deferred>} inside={inside} instant={instant} theme={theme}
         onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox}

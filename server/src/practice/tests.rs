@@ -87,7 +87,12 @@ fn queue_ids(app: &App) -> Vec<(String, String, bool)> {
 fn card_intervals_grow_and_stay_bounded() {
     let new = CardState::default();
     assert_eq!(cards::next_interval(&new, "again").0, 0);
-    assert_eq!(cards::next_interval(&new, "good").0, 1);
+    assert_eq!(cards::next_interval(&new, "hard").0, 1);
+    assert_eq!(
+        cards::next_interval(&new, "good").0,
+        2,
+        "good waits longer than hard"
+    );
     assert_eq!(cards::next_interval(&new, "easy").0, 4);
     let review = CardState {
         reps: 2,

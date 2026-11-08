@@ -871,7 +871,10 @@ settings and separate the qualities you want with commas, such as `soft, bright`
 goals, timezones and plans are kept. Choose your timezone in Settings → Date & time; UTC is a
 neutral starting value, not an estimate of your location. The Docker container clock also uses UTC.
 The timezone picker lists the zones supported by your browser, plus UTC and your saved zone,
-including an older saved name. Opening Settings does not change your timezone automatically.
+including an older saved name. Each is shown by its place and offset, such as Kuala Lumpur (GMT+8),
+grouped by region, and the pane shows the time there now. When your computer is set to a different
+zone, a This computer row offers to switch to it in one click; opening Settings never changes your
+timezone by itself.
 Lilt stores UTC timestamps alongside local dates.
 
 **Models:** the optional in-app coach selects from the connected ChatGPT account's model list.

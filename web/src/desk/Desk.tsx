@@ -17,6 +17,7 @@ import { InboxButton, InboxState } from "./Inbox";
 import { PICTURES } from "./pictures";
 import { pinnedPicture, pinPicture, shufflePicture, usePhotos, visiblePictures } from "./photos";
 import { SettingsButton } from "./SettingsSheet";
+import { friendlyDate } from "../cardText";
 import { CoursesIcon, FlashcardsIcon, LeaveIcon, PhotosIcon, Mark, RecordingsIcon, StudioIcon, TodayIcon, YarnIcon } from "./icons";
 
 /**
@@ -171,7 +172,7 @@ function TodayWidget({ deck, reload, course, courseTitle, needsStart }: { deck: 
         ) : done ? (
           <>
             <div className={["ds-t-row", roomStyles["ds-t-row"]].join(" ")}><span className={["ds-t-num", roomStyles["ds-t-num"]].join(" ")}>{deck.all_done ? "Done" : "No cards"}</span><span className={["ds-t-min", roomStyles["ds-t-min"]].join(" ")}>for today</span></div>
-            <p className={["ds-t-msg", roomStyles["ds-t-msg"]].join(" ")}>{deck.next_due ? `Next review: ${deck.next_due}.` : "You can explore a chapter whenever you like."}</p>
+            <p className={["ds-t-msg", roomStyles["ds-t-msg"]].join(" ")}>{deck.next_due ? `Your next cards come back ${friendlyDate(deck.next_due, deck.local_date)}.` : "You can explore a chapter whenever you like."}</p>
           </>
         ) : (
           <>

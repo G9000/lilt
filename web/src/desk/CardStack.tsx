@@ -3,6 +3,7 @@ import { animate, AnimatePresence, motion, type PanInfo, useDragControls, useMot
 import { useEffect, useRef, useState } from "react";
 import { Deck, DeckItem } from "../api";
 import { DEFAULT_COURSE } from "../courseIds";
+import { cardHint } from "../cardText";
 import { setSpot, useLayoutStore } from "./Floaters";
 
 /**
@@ -23,7 +24,11 @@ const rest = (d: number) => ({
 });
 const SPRING = { type: "spring", stiffness: 320, damping: 28, mass: 0.9 } as const;
 
-export function CardStack({ deck, onStart, course = DEFAULT_COURSE }: { deck: Deck | null; onStart: (cardId: string | null) => void; course?: string }) {
+export function CardStack({ deck, onStart, course = DEFAULT_COURSE, needsStart = false }: {
+  deck: Deck | null; onStart: (cardId: string | null) => void; course?: string;
+  /** No takes yet: the top card's way in is your starting voice (the room routes it there). */
+  needsStart?: boolean;
+}) {
   const items = deck ? deck.items.filter((i) => !i.done_today) : [];
   const ids = items.map((i) => i.card.id).join(",");
   const [order, setOrder] = useState<string[]>([]);
@@ -89,14 +94,14 @@ export function CardStack({ deck, onStart, course = DEFAULT_COURSE }: { deck: De
       <div className={["cs-cards", roomStyles["cs-cards"]].join(" ")}>
         {!deck || empty || deck.paused ? (
           <StaticCard title={!deck ? "Getting your cards…" : deck.paused ? "Resting today" : done ? "All done" : "No cards due today"}
-            sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : done ? "The lights are on. Nice work." : "Explore a chapter whenever you like."} onStart={() => onStart(null)} />
+            sub={!deck ? "" : deck.paused ? "Cards that hurt stay paused" : done ? "The lights are on. That's today's cards." : "Explore a chapter whenever you like."} onStart={() => onStart(null)} />
         ) : (
           <AnimatePresence initial>
             {pile.slice(0, 4).map((id, d) => {
               const it = byId.get(id)!, i = items.indexOf(it);
               return (
                 <StackCard key={id} item={it} depth={d} index={i} count={n} voice={course === DEFAULT_COURSE}
-                  first={i === 0} delay={dealt ? 0 : 0.3 + (Math.min(n, 4) - 1 - d) * 0.12} onSwipe={cycle} onStart={() => onStart(id)} />
+                  first={i === 0} delay={dealt ? 0 : 0.3 + (Math.min(n, 4) - 1 - d) * 0.12} onSwipe={cycle} onStart={() => onStart(id)} dayOne={needsStart} />
               );
             })}
           </AnimatePresence>
@@ -114,10 +119,12 @@ export function CardStack({ deck, onStart, course = DEFAULT_COURSE }: { deck: De
   );
 }
 
-function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart, voice }: {
+function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart, voice, dayOne = false }: {
   item: DeckItem; depth: number; index: number; count: number; first: boolean; delay: number;
   onSwipe: (dir: 1 | -1) => void; onStart: () => void;
   voice: boolean;
+  /** Before your first take, the way in is your Day 1, not this card. */
+  dayOne?: boolean;
 }) {
   const top = depth === 0;
   const x = useMotionValue(0);
@@ -178,10 +185,10 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart, 
             <span className={[`cs-chip${first ? " next" : ""}`, roomStyles["cs-chip"]].join(" ")}>{first ? "Up next" : KIND[item.kind]}</span></div>
           <div className={["cs-kind", roomStyles["cs-kind"]].join(" ")}>{item.card.deck_title} · {voice ? SUB[item.card.kind] ?? item.card.kind : "Practice"}</div>
           <div className={["cs-phrase", roomStyles["cs-phrase"]].join(" ")}>{item.card.front}</div>
-          {item.card.hint && <div className={["cs-hint", roomStyles["cs-hint"]].join(" ")}>{item.card.hint}</div>}
+          {item.card.hint && <div className={["cs-hint", roomStyles["cs-hint"]].join(" ")}>{cardHint(item.card.hint)}</div>}
           <div className={["cs-foot", roomStyles["cs-foot"]].join(" ")}>
             <span className={["cs-count", roomStyles["cs-count"]].join(" ")}><b>{index + 1}</b> of {count}{voice ? `, about ${count} minute${count === 1 ? "" : "s"}` : " · at your own pace"}</span>
-            <span className={["cs-go", roomStyles["cs-go"]].join(" ")} aria-hidden="true">Start <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
+            <span className={["cs-go", roomStyles["cs-go"]].join(" ")} aria-hidden="true">{dayOne ? "Day 1 first" : "Start"} <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
           </div>
         </div>
       </div>

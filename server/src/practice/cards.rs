@@ -317,7 +317,8 @@ pub fn next_interval(st: &CardState, rating: &str) -> (i64, f64) {
         return match rating {
             "again" => (0, ease),
             "hard" => (1, ease - 0.15),
-            "good" => (1, ease),
+            // Good waits a day longer than Hard, so the two choices mean something on a new card.
+            "good" => (2, ease),
             _ => (4, ease + 0.15),
         };
     }

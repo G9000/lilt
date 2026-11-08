@@ -420,8 +420,9 @@ export const practice = {
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:bg-fill ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:text-ink ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:[background-image:none]`,
-  "ve-here": `[.ve_&]:h-[30px] [.ve_&]:pl-[40px] [.ve_&]:text-[13px] [.ve_&]:mb-[1px] [.ve_&]:font-normal [.ve_&.on]:text-ink ` +
-    `[.ve_&.on]:font-medium`,
+  // Chapter titles come from the course's Markdown, so a long one wraps rather than losing its end.
+  "ve-here": `[.ve_&]:h-auto! [.ve_&]:min-h-[30px] [.ve_&]:py-[5px]! [.ve_&]:pl-[40px] [.ve_&]:text-[13px] [.ve_&]:mb-[1px] ` +
+    `[.ve_&]:font-normal [.ve_&.on]:text-ink [.ve_&.on]:font-medium [&_.t]:whitespace-normal! [&_.t]:[line-height:1.35]`,
   "ve-placerow": `flex items-center rounded-[8px] mb-[2px] [transition:background-color_0.12s_ease] ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[&:hover]:bg-fill [&:has(>_.ve-home[aria-current="page"])]:bg-fill-2 ` +
     `[&_>_.ve-home]:[flex:1] [&_>_.ve-home]:min-w-0 [&_>_.ve-home]:mb-0! [&_>_.ve-home]:bg-transparent!`,

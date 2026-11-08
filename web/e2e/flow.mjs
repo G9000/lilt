@@ -96,7 +96,7 @@ async function main() {
     // The warm-up and the reference come once a day, so the third card (a new one) shows all four.
     if (i === 2) {
       const prev = await page.locator(".vc-rate button").allInnerTexts();
-      check("Rating buttons show when each card comes back", prev.length === 4 && /tomorrow/.test(prev[2]), prev.map((x) => x.replace(/\n/g, " ")).join(" | "));
+      check("Rating buttons show when each card comes back", prev.length === 4 && /tomorrow/.test(prev[1]) && /2 days/.test(prev[2]), prev.map((x) => x.replace(/\n/g, " ")).join(" | "));
       await snap("00b-rate");
     }
     // Keys 1–4 rate like Anki: 1 = again, 3 = good.

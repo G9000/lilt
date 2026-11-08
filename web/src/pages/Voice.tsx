@@ -13,6 +13,7 @@ import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 import { RemixBox } from "../components/RemixBox";
 import { REMIX_AVAILABLE } from "../remix";
+import { cardHint, friendlyDate } from "../cardText";
 
 /** The course Practice shows. */
 const COURSE = DEFAULT_COURSE;
@@ -49,13 +50,7 @@ import { nextUp } from "../nextUp";
 const RATINGS: { r: Rating; label: string; face: string }[] = [
   { r: "again", label: "Again", face: "😣" }, { r: "hard", label: "Hard", face: "😕" }, { r: "good", label: "Good", face: "🙂" }, { r: "easy", label: "Easy", face: "😌" },
 ];
-/** A card's hint away from its chapter: "Your check-in: …" only means something there. */
-const cardHint = (h: string) => { const t = h.replace(/^your check-in:\s*/i, ""); return t.charAt(0).toUpperCase() + t.slice(1); };
 const deckName = (it: DeckItem) => (it.card.kind === "reference" ? "Reference" : it.card.deck_title);
-const friendlyDate = (d: string, today: string) => {
-  const days = Math.round((Date.parse(d) - Date.parse(today)) / 86400000);
-  return days <= 1 ? "tomorrow" : `in ${days} days`;
-};
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
 /* ---------------------------------------------------------------- layout: sidebar and split sizes */
@@ -1932,7 +1927,6 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               return (
                 <li key={`q-${j}-${it.card.id}`} ref={curRef} tabIndex={-1} aria-label={`Current card: ${it.card.front}`} className={cx(pages.veItem, cx("ve-item on sd-current", practice["ve-item"], practice["sd-current"]))}>
                   <DeckCat mode={catMode} say={recOn ? catSay : null} />
-                  <div className={cx("sd-card-top", practice["sd-card-top"])}><span>Card {doneCount + 1} of {total}</span></div>
                   <p className={cx("ve-kind", practice["ve-kind"])}>{it.card.kind === "reference" ? deckName(it) : <a href={`#/studio/${it.card.level_id}`} onClick={(e) => e.stopPropagation()} title={`Open ${deckName(it)}: how this chapter works`}>{deckName(it)}</a>}{kindTag(it) && <span className={cx("ve-tag next", practice["ve-tag"])}>{kindTag(it)}</span>}
                     {it.eyes_off && <span className={cx("ve-tag", practice["ve-tag"])}>Eyes off</span>}
                     {!chosen && k === 0 && phase.k === "say" && <span className={cx("ve-tag start", practice["ve-tag"])}>Start here</span>}</p>
