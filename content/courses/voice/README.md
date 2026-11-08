@@ -64,8 +64,8 @@ weight or resonance technique. No clinician has reviewed the content or pacing.
 
 The general route and listening-resource list are on `index.md`. The 3 November review checked
 the accessible ASHA and NHS Fife guidance and the YouTube resource metadata. It is an editorial
-review, not clinician approval or a full review of the video content. The NHS Lothian PDF was
-unavailable during that check. The course now avoids fixed weekly pitch increases, held swallowing
+review, not clinician approval or a full review of the video content. NHS Lothian's guides could
+not load then; see 8 November. The course now avoids fixed weekly pitch increases, held swallowing
 positions, props in the mouth, and treating creak or a falling pitch as proof of heavier weight.
 Chapter/text ids and check-in words were kept stable. Edition 3 is unchanged so personal copies
 can review these corrections piece by piece instead of replacing the whole course.
@@ -81,6 +81,17 @@ thin, clear edges) and teaches one route: hear "HEY" against "aww", borrow a lig
 slide up until the sound thins and carry it back down, then words, with "light, not breathy" as its
 own step. It never treats creak or a falling pitch as proof of heavier weight. Ids and the check-in
 words are unchanged.
+
+On 8 November both NHS Lothian guides ("What is it?" and "Where to start", February 2026) loaded,
+and the six chapters that credit them (Start here, Warm-ups, Pitch, Vocal weight, Intonation and
+Real life) were read against them. Like the 3 November review, this was an AI editorial check, not
+clinical review. No chapter contradicted the guides; four were brought closer to them. Start
+here calls five to ten minutes a good visit rather than "plenty", since Lothian suggests at least
+that much a day. Warm-ups asks for a clear, easy sound and to stop if it feels pushed. Vocal weight
+no longer says weight is "much of" what listeners hear, only that a thinner voice tends to be heard
+as higher. Real life gets closer to the person, or away from the noise, before raising the voice.
+Lothian sends lasting hoarseness to a GP after six weeks; the course keeps its sooner three weeks,
+from the NHS Greater Glasgow and Clyde guidance it cites. Ids and the check-in words are unchanged.
 
 Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
 review by a voice-specialist speech and language therapist; and real-user checks of comfort,
