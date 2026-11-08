@@ -19,21 +19,30 @@ The room in November 2026, shown with demo practice data.
   practice, then return to the session from that course's recordings.
 - **Record, listen, compare in the voice course.** Each take is measured and described in plain words, with one thing to
   try next. Put it beside your first take, or see every take of a text on one line.
-- **Remix with your AI.** Connected AI apps can edit courses through MCP, with changes you can undo.
-  The in-app Remix chat is coming soon.
+- **AI only if you want it.** Lilt works fully without any AI. If you choose to, you can connect an
+  AI app to help edit courses. See [AI is optional](#ai-is-optional).
 
 | Practise a text, then compare with last time | One text over time |
 | --- | --- |
 | ![A text with your take, a suggestion and two takes side by side](docs/images/chapter.webp) | ![Every take of one text on a line, any two side by side](docs/images/history.webp) |
 
+## Download
+
+**Windows:** download `Lilt-0.1.0-x64-setup.exe` from the
+[latest release](https://github.com/G9000/lilt/releases/latest), run it, and open **Lilt** from Start.
+It installs for your account only and includes everything it needs. The installer isn't code-signed
+yet, so Windows may say "Windows protected your PC": choose **More info**, then **Run anyway**.
+
+**Mac:** a signed Mac app is coming in a later release. Until then you can build it yourself (below).
+
 ## Quick start
 
-**Windows app:** run `powershell -NoProfile -ExecutionPolicy Bypass -File desktop/build.ps1`,
+**Windows app from source:** run `powershell -NoProfile -ExecutionPolicy Bypass -File desktop/build.ps1`,
 then open the installer in `desktop/dist` and launch **Lilt** from Start.
 The installed app includes the server and Python helper. See [the desktop app](docs/guide.md#the-desktop-app)
 for build requirements and Windows setup.
 
-**Mac app:** build `Lilt.dmg` with `desktop/build.sh`, open it and drag Lilt to Applications. It
+**Mac app from source:** build `Lilt.dmg` with `desktop/build.sh`, open it and drag Lilt to Applications. It
 needs nothing else installed. See [the Mac app](docs/guide.md#the-mac-app) for the first open.
 
 From the repo, on macOS, with Rust, [Bun 1.4.2](https://bun.sh/), Node 22.18+ and
@@ -51,6 +60,34 @@ docker compose up -d --build
 
 Then open <http://127.0.0.1:7878>. The first run builds everything; later runs start straight away.
 Data lives in `~/Lilt/data` (Docker: `./lilt-data`), and Lilt only listens on your own computer.
+
+## AI is optional
+
+You never need AI to use Lilt. Reading, cards, recording, reflecting and every other part of
+practice work on your own computer with no AI and no account. In the voice course, your takes are
+measured by Praat, a long-standing speech-analysis program running locally, not by an AI.
+
+AI is off until you connect it yourself:
+
+- **Connect your AI** (Settings) lets an AI app you already use, like Claude or ChatGPT, read and
+  edit your courses through MCP. Nothing connects unless you add it, and **Disconnect** ends it.
+- **The AI coach** (Settings → AI connections → ChatGPT) is a chat you can sign in to if you like.
+  It never hears your recordings.
+
+If you do connect one, what it reads goes to that AI company, so the [guide](docs/guide.md#mcp-connecting-your-agent)
+lists exactly what is shared. If you don't, nothing about your practice leaves your computer.
+
+## About the artwork, and who makes Lilt
+
+Lilt is a one-person project with no budget. All of the artwork (the room, its
+objects and the cat) was made with an AI image generator, because hiring an illustrator isn't
+possible right now. The code was also written with help from AI coding tools. We'd rather tell you
+than have you find out.
+
+**If you're an artist and would like to help,** we'd love that. Redrawing the room, the cat or any
+single object would mean a lot, and you'd be credited by name. Open an
+[issue](https://github.com/G9000/lilt/issues) to say hello. Notes on how the room artwork was made,
+including the prompts, are in [web/public/room/CREDITS.md](web/public/room/CREDITS.md).
 
 ## Development
 
