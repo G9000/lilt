@@ -28,7 +28,7 @@ The room in November 2026, shown with demo practice data.
 
 ## Download
 
-**Windows:** download `Lilt-0.1.0-x64-setup.exe` from the
+**Windows:** download the `Lilt-…-x64-setup.exe` installer from the
 [latest release](https://github.com/G9000/lilt/releases/latest), run it, and open **Lilt** from Start.
 It installs for your account only and includes everything it needs. The installer isn't code-signed
 yet, so Windows may say "Windows protected your PC": choose **More info**, then **Run anyway**.
