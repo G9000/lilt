@@ -166,6 +166,78 @@ export function placePitch(hz: number, r: PitchRef): string {
   return relation ? `${Math.round(hz)} Hz sits ${zone}, ${relation}.` : `${Math.round(hz)} Hz sits ${zone}.`;
 }
 
+/** The three stretches of the scale a voiced frame can sit in, split at the overlap's edges. */
+export interface BandShares { lower: number; overlap: number; higher: number }
+
+/**
+ * How the voiced take spread across the scale (0..1 each): below the overlap (toward the average man),
+ * in it, or above it (toward the average woman). Counted over the frames with a pitch, so a take that
+ * kept dropping shows it even when its middle didn't move. None with too little voice to say.
+ */
+export function bandShares(pts: InsightInput["pts"], r: PitchRef): BandShares | null {
+  if (voicedSeconds(pts) < MIN_VOICED_S) return null;
+  const voiced = pts.filter((p) => p.hz).map((p) => p.hz as number);
+  const n = voiced.length;
+  const lower = voiced.filter((hz) => hz < r.overlap_low).length, higher = voiced.filter((hz) => hz > r.overlap_high).length;
+  return { lower: lower / n, overlap: (n - lower - higher) / n, higher: higher / n };
+}
+
+/** Where the voiced take spent its time on the scale, in words: the biggest stretch first, then the rest. */
+export function describeBandShares(s: BandShares): string {
+  const name = { higher: "above the overlap, toward the average woman", overlap: "in the overlap", lower: "below the overlap, toward the average man" };
+  const short = { higher: "higher", overlap: "in the overlap", lower: "lower" };
+  const order = (Object.keys(name) as (keyof BandShares)[]).sort((a, b) => s[b] - s[a]);
+  const [top, second, third] = order;
+  const said = `${aboutHowMuch(s[top])} of what you voiced sat ${name[top]}`;
+  if (s[top] > 0.85) return `${said}.`;
+  const rest = s[third] < 0.05 || s[second] >= s[third] * 3 ? `mostly ${short[second]}` : `partly ${short[second]}, partly ${short[third]}`;
+  return `${said}; the rest was ${rest}.`;
+}
+
+/** Chapter kinds whose texts are spoken, so their middle pitch is your speaking voice (not a hum or a glide). */
+const SPEECH_KINDS = ["automatic", "phrases", "sentences", "passage", "prompt"];
+export const isSpeechKind = (kind: string | undefined) => !!kind && SPEECH_KINDS.includes(kind);
+
+/**
+ * Where your speaking voice usually sits: the middle of the middles of your spoken takes (hums and
+ * glides left out by the caller), so one odd take can't move it. None under three takes.
+ */
+export function usualPitch(medians: number[]): number | null {
+  const xs = medians.filter((x) => x > 0).sort((a, b) => a - b);
+  if (xs.length < 3) return null;
+  const m = xs.length >> 1;
+  return xs.length % 2 ? xs[m] : Math.sqrt(xs[m - 1] * xs[m]);
+}
+
+/** Quality flags that make a pitch reading unreliable, with what to say about it. */
+export function pitchCaveat(flags: string[]): string | null {
+  if (flags.includes("suspected_tracking_errors")) return "Some of this take's pitch jumped by about an octave, which can be a misreading, so its place on the scale may be off.";
+  if (flags.includes("insufficient_voiced")) return "There wasn't much voice in this take, so its place on the scale is a rough one.";
+  if (flags.includes("clipping") || flags.includes("low_signal")) return "The recording was very loud or very quiet, so its place on the scale may be off.";
+  return null;
+}
+
+/**
+ * How far apart the average man's and woman's resonance sit, in semitones of √(F2·F3): 1776 Hz and 2078 Hz,
+ * from Peterson & Barney's (1952) 33 men and 28 women, ten vowels each, as Praat's built-in table holds them.
+ * Lilt's own F2/F3 readings sit about 1.5 st higher than that table for both a male and a female voice
+ * (analysis/EVALUATION.md), so only the gap is used, never the averages themselves.
+ */
+export const RESONANCE_GAP_ST = 2.7;
+
+/**
+ * A resonance change set against the man-to-woman gap, so a semitone means something: "about a third
+ * of the gap". None for a change Lilt words as about the same (under half a semitone).
+ */
+export function describeResonanceGap(st: number): string | null {
+  const a = Math.abs(st);
+  if (a < 0.5) return null;
+  const share = a / RESONANCE_GAP_ST;
+  const words: [number, string][] = [[1 / 4, "about a quarter of"], [1 / 3, "about a third of"], [1 / 2, "about half"], [2 / 3, "about two thirds of"], [3 / 4, "about three quarters of"], [1, "about the whole of"]];
+  const size = share > 1.15 ? "more than" : words.reduce((x, y) => (Math.abs(y[0] - share) < Math.abs(x[0] - share) ? y : x))[1];
+  return `For scale, that's ${size} the usual gap between the average man's and woman's resonance (about ${RESONANCE_GAP_ST} semitones).`;
+}
+
 /**
  * A resonance change in words: `st` is how far F2/F3 moved since `than` (a take of the same text), in
  * semitones, positive brighter. Under 0.5 st is about the same; 0.5–1 st is "a little", because

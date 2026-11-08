@@ -1,7 +1,7 @@
 // node --test src/insight.test.ts  (Node 22+ strips the types)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { describeRangeShare, describeResonance, describeTake, endDropSt, placePitch, shareInRange, takeStyle } from "./insight.ts";
+import { bandShares, describeBandShares, describeRangeShare, describeResonance, describeResonanceGap, describeTake, endDropSt, isSpeechKind, pitchCaveat, placePitch, shareInRange, takeStyle, usualPitch } from "./insight.ts";
 
 const line = (hz: (i: number) => number, n = 100) => Array.from({ length: n }, (_, i) => ({ t: i / 50, hz: hz(i) }));
 
@@ -80,6 +80,39 @@ test("a pitch is placed in words and semitones, never a percentage", () => {
   assert.match(placePitch(115, REF), /within the average man's range, about 4 semitones below the overlap/);
   assert.match(placePitch(240, REF), /above the average woman's range, about 6\.5 semitones above the overlap/);
   assert.doesNotMatch(placePitch(172, REF), /%/);
+});
+
+test("a take's time on the scale is split at the overlap and counted over voiced frames only", () => {
+  const pts = line((i) => (i < 70 ? 200 : i < 90 ? 155 : i < 100 ? 120 : null as unknown as number), 150);
+  const s = bandShares(pts, REF)!;
+  assert.equal(s.higher, 0.7); assert.equal(s.overlap, 0.2); assert.ok(Math.abs(s.lower - 0.1) < 1e-9);
+  assert.equal(describeBandShares(s), "About two thirds of what you voiced sat above the overlap, toward the average woman; the rest was partly in the overlap, partly lower.");
+  assert.equal(describeBandShares({ lower: 0.05, overlap: 0.25, higher: 0.7 }), "About two thirds of what you voiced sat above the overlap, toward the average woman; the rest was mostly in the overlap.");
+  assert.equal(describeBandShares({ lower: 0.05, overlap: 0.05, higher: 0.9 }), "Most of what you voiced sat above the overlap, toward the average woman.");
+  assert.match(describeBandShares({ lower: 0.5, overlap: 0.3, higher: 0.2 }), /^About half of what you voiced sat below the overlap, toward the average man; the rest was partly in the overlap, partly higher\.$/);
+  assert.equal(bandShares(line((i) => (i < 20 ? 200 : null as unknown as number)), REF), null, "under a second of voice says nothing");
+});
+
+test("your usual pitch is the middle of your spoken takes, and needs three", () => {
+  assert.equal(usualPitch([180, 190]), null);
+  assert.equal(usualPitch([180, 120, 190]), 180);
+  assert.equal(Math.round(usualPitch([160, 170, 180, 190])!), 175);
+  assert.ok(isSpeechKind("phrases") && isSpeechKind("passage"));
+  assert.ok(!isSpeechKind("hum") && !isSpeechKind("voice") && !isSpeechKind(undefined));
+});
+
+test("a shaky reading says so instead of placing you confidently", () => {
+  assert.match(pitchCaveat(["suspected_tracking_errors"])!, /octave/);
+  assert.match(pitchCaveat(["insufficient_voiced"])!, /rough/);
+  assert.equal(pitchCaveat([]), null);
+});
+
+test("a resonance change is set against the man-to-woman gap, and never the averages", () => {
+  assert.equal(describeResonanceGap(0.3), null);
+  assert.equal(describeResonanceGap(0.9), "For scale, that's about a third of the usual gap between the average man's and woman's resonance (about 2.7 semitones).");
+  assert.match(describeResonanceGap(-1.4)!, /about half the usual gap/);
+  assert.match(describeResonanceGap(2.6)!, /about the whole of the usual gap/);
+  assert.match(describeResonanceGap(3.5)!, /more than the usual gap/);
 });
 
 test("resonance in words: about the same, a little, or plainly, never a score", () => {

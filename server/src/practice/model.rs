@@ -32,16 +32,20 @@ pub struct Profile {
     /// cool-down closing them. An empty string turns both off.
     #[serde(default = "default_warmup")]
     pub warmup_card: String,
-    /// Show where each take sits on the average man/woman pitch scale. Off until the learner turns it
-    /// on: fixed population bands can hurt, and your own range is what matters. A profile without the
-    /// field reads as off; one that saved `true` keeps it.
-    #[serde(default)]
+    /// Show where each take sits on the average man/woman pitch scale. On unless the learner turns it
+    /// off (in Practice settings or under the scale): knowing where your voice sits is often the point.
+    /// A profile without the field reads as on; one that saved `false` keeps it off.
+    #[serde(default = "default_pitch_scale")]
     pub show_pitch_scale: bool,
     pub updated_utc: String,
 }
 
 fn default_new_cards() -> u32 {
     2
+}
+
+fn default_pitch_scale() -> bool {
+    true
 }
 
 fn default_warmup() -> String {
@@ -77,7 +81,7 @@ impl Default for Profile {
             room_note: None,
             room_note_2: None,
             warmup_card: default_warmup(),
-            show_pitch_scale: false,
+            show_pitch_scale: true,
             updated_utc: crate::util::now_utc(),
         }
     }
@@ -106,16 +110,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn pitch_scale_is_opt_in_and_a_saved_choice_is_kept() {
-        assert!(!Profile::default().show_pitch_scale);
+    fn pitch_scale_is_on_by_default_and_a_saved_choice_is_kept() {
+        assert!(Profile::default().show_pitch_scale);
         let mut saved = serde_json::to_value(Profile::default()).unwrap();
-        // An older profile that never had the setting: off.
+        // A profile that never had the setting: on.
         saved.as_object_mut().unwrap().remove("show_pitch_scale");
         let missing: Profile = serde_json::from_value(saved.clone()).unwrap();
-        assert!(!missing.show_pitch_scale);
-        // Someone who saved it on keeps it on.
-        saved["show_pitch_scale"] = true.into();
+        assert!(missing.show_pitch_scale);
+        // Someone who turned it off keeps it off.
+        saved["show_pitch_scale"] = false.into();
         let kept: Profile = serde_json::from_value(saved).unwrap();
-        assert!(kept.show_pitch_scale);
+        assert!(!kept.show_pitch_scale);
     }
 }

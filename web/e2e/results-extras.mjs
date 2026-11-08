@@ -1,6 +1,6 @@
 // End-to-end test of what a take's results add and what the mic check hears, with Chrome's fake
 // microphone: time in your range (in the results and the folded summary), the man/woman pitch scale
-// off on a fresh data folder and on once turned on in Practice settings, and the mic check's quiet
+// on from a fresh data folder, hidden from under it and back on from Practice settings, and the mic check's quiet
 // moment and background-sound note. Run it against a fresh data folder.
 //
 // Usage: LILT_URL=http://127.0.0.1:7979 [SHOTS=/tmp/shots] [QUIET_MIC=quiet.wav NOISY_MIC=noisy.wav] node e2e/results-extras.mjs
@@ -60,11 +60,11 @@ async function openDetails(page) {
 async function main() {
   const CARD = "text.warmup.hum-to-hello";
   const fresh = await api("/api/profile");
-  check("a fresh profile has the pitch scale off", fresh.show_pitch_scale === false, String(fresh.show_pitch_scale));
+  check("a fresh profile has the pitch scale on", fresh.show_pitch_scale === true, String(fresh.show_pitch_scale));
   // The fake mic sits around 140–195 Hz, so this range holds some of it, not all.
   await api("/api/profile", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...fresh, comfort_range_hz: [150, 175] }) });
 
-  // 1. Time in your range, with the scale off.
+  // 1. Time in your range, with the scale on from the start.
   {
     const { browser, page, errors } = await launch(wav);
     const summary = await takeOfCard(page, CARD);
@@ -76,16 +76,22 @@ async function main() {
     const colour = await page.locator(".tr-share").evaluate((el) => getComputedStyle(el).color);
     const ink2 = await page.locator(".tr-share").evaluate((el) => getComputedStyle(el).getPropertyValue("--ink-2").trim());
     check("the share is in plain ink, not a pass/fail colour", !!colour && !/rgb\((22, 147, 106|255, 66, 85)\)/.test(colour), `${colour} (ink-2 ${ink2})`);
-    await page.waitForTimeout(800); // the scale loads its reference after the result
-    check("the pitch scale is hidden on a fresh data folder", (await page.locator(".pscale").count()) === 0);
+    await page.locator(".pscale").waitFor({ timeout: 10000 }).then(() => check("the pitch scale shows on a fresh data folder", true), () => check("the pitch scale shows on a fresh data folder", false));
+    const spread = await page.locator(".pscale .pscale-say").first().innerText().catch(() => "");
+    check("the scale says how the take spread across it", /of what you voiced sat (above the overlap|in the overlap|below the overlap)/.test(spread), spread);
     await page.locator(".prc.ve-result").scrollIntoViewIfNeeded();
     await snap(page, "results-in-range-light");
 
-    // 2. Turned on in Practice settings, it shows straight away, and after a reload.
+    // 2. Hide this scale turns it off and keeps that; ticking it in Practice settings brings it back.
+    await page.locator(".pscale-hide").click();
+    check("Hide this scale hides it at once", (await page.locator(".pscale").count()) === 0);
+    let hidden = false;
+    for (let i = 0; i < 20 && !hidden; i++) { hidden = (await api("/api/profile")).show_pitch_scale === false; if (!hidden) await page.waitForTimeout(250); }
+    check("hiding saves show_pitch_scale: false", hidden);
     await page.goto(`${BASE}/#/studio/settings`);
     const box = page.locator("#pscale");
     await box.waitFor({ timeout: 10000 });
-    check("Settings shows the pitch scale unticked", !(await box.isChecked()));
+    check("Settings shows the pitch scale unticked after hiding", !(await box.isChecked()));
     await box.scrollIntoViewIfNeeded();
     await snap(page, "settings-pitch-scale-off-light");
     await box.check();
@@ -96,7 +102,7 @@ async function main() {
     check("ticking it saves show_pitch_scale: true, even leaving at once", saved);
     await takeOfCard(page, CARD);
     await openDetails(page);
-    await page.locator(".pscale").waitFor({ timeout: 10000 }).then(() => check("the pitch scale shows once turned on", true), () => check("the pitch scale shows once turned on", false));
+    await page.locator(".pscale").waitFor({ timeout: 10000 }).then(() => check("the pitch scale shows once turned back on", true), () => check("the pitch scale shows once turned back on", false));
     await page.reload();
     await takeOfCard(page, CARD);
     await openDetails(page);

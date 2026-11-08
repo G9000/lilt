@@ -130,10 +130,26 @@ Since lilt-analysis/4 formants are read on the loud voiced frames only (within 1
 
 Both methods under-read a formant change on running speech by about a quarter to a half semitone, more than on steady vowels; a change Lilt calls "a little" may be a clear one. A pitch-only change barely moves the reading, so raising pitch alone is not reported as brighter resonance.
 
+## Resonance against population averages: checked, not shown
+
+To place a voice's resonance against the average man and woman, Lilt would need population F2/F3 measured the way it measures them. The nearest published reference is Peterson & Barney (1952), ten vowels in /hVd/ words from 33 men and 28 women, as held by Praat's `Create formant table (Peterson & Barney 1952)`. The per-speaker geometric mean of √(F2·F3), then across speakers: men 1776 Hz (SD 0.70 st), women 2078 Hz (SD 0.72 st), 2.72 st apart.
+
+Windows' built-in voices (Microsoft David, male; Microsoft Zira, female; SAPI 5, 44.1 kHz) read three course passages, the Day 1 sentence and the ten /hVd/ words themselves, through `analyze()` (9 November 2026). √(F2·F3) of the medians, against those references:
+
+| Voice | Material | √(F2·F3) | vs average man | vs average woman |
+|---|---|---|---|---|
+| David | course passages and sentences (4) | 1872–1949 Hz | +0.9 to +1.6 st | -1.8 to -1.1 st |
+| David | the ten /hVd/ words (4 takes) | 1919–1928 Hz | +1.3 to +1.4 st | -1.4 to -1.3 st |
+| Zira | course passages and sentences (4) | 2219–2320 Hz | +3.9 to +4.6 st | +1.1 to +1.9 st |
+| Zira | the ten /hVd/ words (4 takes) | 2305–2317 Hz | +4.5 to +4.6 st | +1.8 to +1.9 st |
+
+The two voices sit about 2.9 st apart, close to the 2.7 st between the reference averages, but both read about 1.5 st higher than the reference, even on the same words. That offset (from the fixed 5500 Hz ceiling, the 1952 hand measurements, the recordings, or all three) is about half the man–woman gap, so an absolute placement would put a typical male voice in the middle. Lilt therefore never places resonance against the averages. It uses only the gap: a change between two takes of the same text is set against the 2.7 st between the average man and woman ("about a third of the usual gap"). Raising David's pitch to 200 Hz with formants kept moved √(F2·F3) by -0.4 st or less; Zira's to 120 Hz by -0.1 st.
+
 ## What is not evaluated
 
 - Natural speech with independent reference contours (the evaluation asset that is missing). Until it exists, measurements stay descriptive only.
 - Real browser recordings (Chrome/Firefox WebM, Safari MP4) from real microphones; only PyAV encodes were decoded.
 - Noisy, reverberant or low-SNR voiced speech; breathy, creaky or very high voices; voices near the 60 or 700 Hz limits.
 - Formants on natural speech, nasal or breathy voices, pitches above 300 Hz, or real microphones and rooms (whose frequency response can tilt F2/F3).
-- Any link between these measures and perceived femininity or lightness. None is claimed: a resonance comparison only says whether F2 and F3 moved up or down between two takes of the same text.
+- Any link between these measures and perceived femininity or lightness. None is claimed: a resonance comparison only says whether F2 and F3 moved up or down between two takes of the same text, set against the size of the average man–woman gap for scale.
+- Absolute resonance against population averages on natural voices: two synthetic voices read about 1.5 st above Peterson & Barney (above), so it isn't shown.

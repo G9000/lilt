@@ -1093,7 +1093,12 @@ export const practice = {
     `[.prc_&]:mb-[20px]`,
   "pscale": `mt-[0] mr-[0] mb-[16px] ml-[0] [&_figcaption]:mt-[12px] [&_figcaption]:text-[14px] ` +
     `[&_figcaption]:[line-height:1.5] [&_figcaption]:text-ink [&_figcaption_span]:block ` +
-    `[&_figcaption_span]:mt-[2px] [&_figcaption_span]:text-[12px] [&_figcaption_span]:text-ink-3`,
+    `[&_figcaption_span]:mt-[2px] [&_figcaption_span]:text-[12px] [&_figcaption_span]:text-ink-3 ` +
+    `[&_.pscale-say]:block [&_.pscale-say]:mt-[4px] [&_.pscale-say]:text-ink-2 ` +
+    `[&_.pscale-hide]:mt-[6px] [&_.pscale-hide]:p-[0] [&_.pscale-hide]:border-0 [&_.pscale-hide]:bg-transparent ` +
+    `[&_.pscale-hide]:[background-image:none] [&_.pscale-hide]:text-[12px] [&_.pscale-hide]:text-ink-3 ` +
+    `[&_.pscale-hide]:underline [&_.pscale-hide]:[text-underline-offset:2px] [&_.pscale-hide]:cursor-pointer ` +
+    `[&_.pscale-hide:hover]:text-ink-2`,
   "pscale-track": `relative h-[14px] rounded-[99px] bg-fill [background-image:none] [&_>_span]:absolute [&_>_span]:[top:0] ` +
     `[&_>_span]:[bottom:0] [&_>_span]:rounded-[99px] ` +
     `[&_.men]:[background-color:color-mix(in_srgb,_var(--ink)_14%,_transparent)] [&_.men]:[background-image:none] ` +
@@ -1106,7 +1111,10 @@ export const practice = {
     `[&_.you]:absolute [&_.you]:[top:50%] [&_.you]:w-[16px] [&_.you]:h-[16px] [&_.you]:mt-[-8px] [&_.you]:mr-[0] ` +
     `[&_.you]:mb-[0] [&_.you]:ml-[-8px] [&_.you]:[border-radius:50%] [&_.you]:bg-accent ` +
     `[&_.you]:[background-image:none] ` +
-    `[&_.you]:[box-shadow:0_0_0_3px_var(--ve-card),_0_2px_6px_rgba(var(--accent-rgb),_0.45)]`,
+    `[&_.you]:[box-shadow:0_0_0_3px_var(--ve-card),_0_2px_6px_rgba(var(--accent-rgb),_0.45)] ` +
+    `[&_.usual]:absolute [&_.usual]:[top:50%] [&_.usual]:w-[12px] [&_.usual]:h-[12px] [&_.usual]:mt-[-6px] ` +
+    `[&_.usual]:ml-[-6px] [&_.usual]:[border-radius:50%] [&_.usual]:[background-color:var(--ve-card,_var(--panel))] ` +
+    `[&_.usual]:[background-image:none] [&_.usual]:[box-shadow:inset_0_0_0_2px_color-mix(in_srgb,_var(--ink)_55%,_transparent)]`,
   "pscale-labels": `relative h-[34px] mt-[8px] [&_span]:absolute [&_span]:[transform:translateX(-50%)] [&_span]:grid ` +
     `[&_span]:[justify-items:center] [&_span]:text-[12px] [&_span]:font-medium [&_span]:text-ink-2 ` +
     `[&_span]:whitespace-nowrap [&_small]:text-[12px] [&_small]:font-normal [&_small]:text-ink-3 ` +

@@ -2,7 +2,8 @@ import { cx } from "../ui/cx";
 import { practice } from "../ui/practice";
 import { useEffect, useState } from "react";
 import { api, Comparison, PitchReference, Take } from "../api";
-import { CardKind, describeRangeShare, describeResonance, describeTake, placePitch, shareInRange, takeStyle } from "../insight";
+import { bandShares, CardKind, describeBandShares, describeRangeShare, describeResonance, describeResonanceGap, describeTake, isSpeechKind, pitchCaveat, placePitch, shareInRange, takeStyle, usualPitch } from "../insight";
+import { parseTextId } from "../courseIds";
 import { noteName } from "../pitch";
 import { contourPoints, PianoRoll, PitchPoint } from "./PianoRoll";
 import { useTakeAudio } from "./takeAudio";
@@ -28,31 +29,57 @@ function InsightNote({ analysis, band, card }: { analysis: any; band: [number, n
   return <div className={cx("prc-insight", practice["prc-insight"])}><p className="n">{said.note}</p><p className="c"><b>Try</b> {said.cue}</p></div>;
 }
 
-let reference: Promise<PitchReference | null> | null = null;
-const pitchReference = () => (reference ??= api.texts().then((t) => t.pitch_reference ?? null, () => null));
-// Whether you want the man/woman scale at all (Practice settings): off unless you turned it on, since
-// fixed population bands can hurt and your own range is what matters. A change there shows straight away.
+// The voice course's texts, once: the population reference and which chapters are spoken.
+let course: Promise<{ ref: PitchReference | null; speech: Set<string> }> | null = null;
+const voiceCourse = () => (course ??= api.texts().then(
+  (t) => ({ ref: t.pitch_reference ?? null, speech: new Set(t.levels.filter((l) => isSpeechKind(l.kind)).map((l) => l.id)) }),
+  () => ({ ref: null, speech: new Set<string>() })));
+// Whether you want the man/woman scale (Practice settings, or Hide under it): on unless you turned it off.
+// A change shows straight away.
 let wantScale: Promise<boolean> | null = null;
-const scaleWanted = () => (wantScale ??= api.profile().then((p) => p.show_pitch_scale === true, () => false));
+const scaleWanted = () => (wantScale ??= api.profile().then((p) => p.show_pitch_scale !== false, () => true));
 window.addEventListener("lilt:pitch-scale", (e) => { wantScale = Promise.resolve((e as CustomEvent<boolean>).detail); });
+
+/** Turn the scale off from under it, keeping the rest of the profile as it is. */
+async function hideScale() {
+  window.dispatchEvent(new CustomEvent("lilt:pitch-scale", { detail: false }));
+  const p = await api.profile().catch(() => null);
+  if (p) await api.saveProfile({ ...p, show_pitch_scale: false }).catch(() => undefined);
+}
+
+/** Where your spoken takes of the last week usually sit, from their saved middles; null under three. */
+async function usualThisWeek(speech: Set<string>): Promise<number | null> {
+  const h = await api.history({ days: 7 }).catch(() => null);
+  if (!h) return null;
+  const medians = h.takes.filter((t) => speech.has(parseTextId(t.prompt_id)?.chapter ?? "")).map((t) => t.analysis_summary?.f0_median_hz ?? 0);
+  return usualPitch(medians);
+}
 
 /**
  * Where your middle pitch sits against the average man's and woman's speaking voices, on a scale, with one
- * sentence in semitones. Descriptive only: no percentages, no score. The numbers come from
- * content/courses/voice/_pitch.md.
+ * sentence in semitones, how the take spread across it, and a hollow mark where your spoken takes of the
+ * last week usually sit. Descriptive only: no score. The numbers come from content/courses/voice/_pitch.md.
  */
-export function PitchScale({ median, note = true }: { median: number; note?: boolean }) {
+export function PitchScale({ median, pts, flags = [], note = true }: { median: number; pts?: PitchPoint[]; flags?: string[]; note?: boolean }) {
   const [ref, setRef] = useState<PitchReference | null>(null);
   const [want, setWant] = useState<boolean | null>(null);
+  const [usual, setUsual] = useState<number | null>(null);
   useEffect(() => {
     let live = true, changed = false;
     const update = (e: Event) => { changed = true; setWant((e as CustomEvent<boolean>).detail); };
     window.addEventListener("lilt:pitch-scale", update);
-    void pitchReference().then((value) => { if (live) setRef(value); });
+    void voiceCourse().then(async (c) => {
+      if (!live) return;
+      setRef(c.ref);
+      const u = await usualThisWeek(c.speech);
+      if (live) setUsual(u);
+    });
     void scaleWanted().then((value) => { if (live && !changed) setWant(value); });
     return () => { live = false; window.removeEventListener("lilt:pitch-scale", update); };
   }, []);
   if (!ref || !want) return null;
+  const shares = pts ? bandShares(pts, ref) : null;
+  const caveat = pitchCaveat(flags);
   const LO = 80, HI = 280, at = (hz: number) => Math.max(0, Math.min(100, (Math.log(hz / LO) / Math.log(HI / LO)) * 100));
   const band = (lo: number, hi: number) => ({ left: `${at(lo)}%`, width: `${at(hi) - at(lo)}%` });
   const men: [number, number] = [ref.men_mean - ref.men_sd, ref.men_mean + ref.men_sd], women: [number, number] = [ref.women_mean - ref.women_sd, ref.women_mean + ref.women_sd];
@@ -64,6 +91,7 @@ export function PitchScale({ median, note = true }: { median: number; note?: boo
         <span className="women" style={band(...women)} />
         <i className="avg" style={{ left: `${at(ref.men_mean)}%` }} />
         <i className="avg" style={{ left: `${at(ref.women_mean)}%` }} />
+        {usual && <i className="usual" style={{ left: `${at(usual)}%` }} title={`Your spoken takes this week usually sit around ${Math.round(usual)} Hz`} />}
         <b className="you" style={{ left: `${at(median)}%` }} />
       </div>
       <div className={cx("pscale-labels", practice["pscale-labels"])} aria-hidden="true">
@@ -73,7 +101,11 @@ export function PitchScale({ median, note = true }: { median: number; note?: boo
       </div>
       <figcaption>
         {placePitch(median, ref)}
+        {shares && <span className="pscale-say">{describeBandShares(shares)}</span>}
+        {usual && <span className="pscale-say">Your spoken takes this week usually sit around {Math.round(usual)} Hz (the hollow mark).</span>}
+        {caveat && <span className="pscale-say">{caveat}</span>}
         {note && <span title={ref.source}>Population references, not targets or a gender test. Pitch, resonance and voice quality work together. Averages from Leung et al. (2022), reading aloud.</span>}
+        <button type="button" className="pscale-hide" onClick={() => void hideScale()}>Hide this scale</button>
       </figcaption>
     </figure>
   );
@@ -129,6 +161,7 @@ function ResonanceForTake({ take }: { take: Take }) {
           </div>
           <div className={cx("rz-labels", practice["rz-labels"])} aria-hidden="true"><span>Darker</span><span>First take</span><span>Brighter</span></div>
           <p className={cx("rz-say", practice["rz-say"])}>{describeResonance(r.first, "your first take of this text")}{r.last !== null && <> {describeResonance(r.last, "last time")}</>}</p>
+          {describeResonanceGap(r.first) && <p className={cx("rz-foot", practice["rz-foot"])}>{describeResonanceGap(r.first)}</p>}
         </>
       )}
       {r.k === "start" && <p className={cx("rz-say", practice["rz-say"])}>Measured. This take is your starting point for this text; later takes are compared with it.{r.unmeasured && " Your earlier takes were recorded before Lilt measured resonance: measure them again in Recordings to compare them too."}</p>}
@@ -153,7 +186,7 @@ function InsightForTake({ take, band, card }: { take: Take; band: [number, numbe
     return () => { live = false; };
   }, [take.id, ready]);
   const median: number | null = analysis?.measures?.f0_median_hz?.value ?? null;
-  return analysis ? <><InsightNote analysis={analysis} band={band} card={card} />{median && <PitchScale median={median} />}</> : null;
+  return analysis ? <><InsightNote analysis={analysis} band={band} card={card} />{median && <PitchScale median={median} pts={contourPoints(analysis)} flags={(analysis?.quality_flags ?? []).map((f: { code: string }) => f.code)} />}</> : null;
 }
 
 const fmtHz = (hz: number | null | undefined) => (hz ? `${Math.round(hz)} Hz` : "–");
@@ -237,7 +270,7 @@ function ResultForTake({ take: initial, band, card, onMeasured, onUseRange }: {
           {/* Your pitch: the number once, where it sits, then the other facts in one quiet line. */}
           <section className={cx("tr-pitch", practice["tr-pitch"])} aria-label="Your pitch">
             <p className={cx("tr-head", practice["tr-head"])}>Your middle pitch <b>{fmtHz(median)}</b><span>{noteName(median)}</span></p>
-            <PitchScale median={median} note={false} />
+            <PitchScale median={median} pts={pts} flags={flags.map((f) => f.code)} note={false} />
             {inRange && <p className={cx("tr-share", practice["tr-share"])}>{inRange}</p>}
             <p className={cx("tr-facts", practice["tr-facts"])}>
               {p10 && p90 && <span title="Where most of this take sat (10th to 90th percentile)">Most of this take <b>{Math.round(p10)}–{Math.round(p90)} Hz</b></span>}

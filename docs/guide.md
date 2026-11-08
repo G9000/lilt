@@ -372,10 +372,16 @@ Monitor uploads and playback have an isolated check with locally generated media
      questions (how happy you are with it, whether it sounds like you, how much effort it took),
      kept with the take.
    - **The pitch scale** after each take places it against the average man's and woman's speaking
-     pitch, measured from the overlap between them. It's off unless you turn it on in Practice
-     settings ("Pitch scale after each take"): population averages aren't targets, and your own
-     range is what matters. A profile that already had it on keeps it. When a take sits above your
-     saved range, Lilt suggests moving the range up instead of telling you to come down.
+     pitch, measured from the overlap between them. It also says how the take spread across the
+     scale ("About two thirds of what you voiced sat above the overlap, toward the average woman;
+     the rest was mostly in the overlap"), counting only the moments with a pitch. Once you have three
+     spoken takes in the last seven days (phrases, sentences, passages and prompts, not hums or
+     glides), a hollow mark shows where your speaking voice usually sits: the middle of those takes'
+     middles. If the analysis suspects octave jumps, found little voice, or the recording was very
+     loud or quiet, the scale says its place may be off. It's on unless you turn it off: **Hide this
+     scale** under it, or untick "Pitch scale after each take" in Practice settings. These are
+     population averages, not targets or a gender test. When a take sits above your saved range,
+     Lilt suggests moving the range up instead of telling you to come down.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.
@@ -462,6 +468,10 @@ Monitor uploads and playback have an isolated check with locally generated media
    - A take lists the players first, then one plain suggestion, then **I like this one** and your
      note. **More about this take** holds the resonance comparison, **Use this take's range as my
      comfortable range** and **Detailed comparison**; in the Resonance chapter it starts open.
+     The resonance comparison sets a change against the usual gap between the average man's and
+     woman's resonance, about 2.7 semitones ("about a third of the usual gap"). It never places your
+     resonance against those averages: Lilt's readings sit about 1.5 semitones above the published
+     ones even for a typical voice, so that would mislead (see `analysis/EVALUATION.md`).
    - A chapter's check-in text shows **Then and now** once you've recorded it on two different days:
      your first take and your latest, side by side on one pitch scale, with how many days apart they
      are. On a fresh take, **Leave a note for next time** saves one cue (like "easy start"); the next
