@@ -83,7 +83,7 @@ function SoundsChoice() {
   );
 }
 
-type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy" | "backups" | "updates" | "storage";
+type PaneId = "appearance" | "ai" | "notifications" | "time" | "privacy" | "backups" | "updates" | "storage" | "about";
 
 /** Each pane: its sidebar icon and words to search by. */
 const PANES: { id: PaneId; title: string; words: string; glyph: ReactNode }[] = [
@@ -103,7 +103,28 @@ const PANES: { id: PaneId; title: string; words: string; glyph: ReactNode }[] = 
     glyph: <><path d="M4 8h12v8H4zM3 4h14v4H3zM8 11h4" /></> },
   { id: "storage", title: "Storage", words: "storage space size disk files folder recordings photos backups reset delete erase fresh",
     glyph: <><path d="M5 4h10l2 8v4H3v-4zM3 12h14M6 14h.01M9 14h.01" /></> },
+  { id: "about", title: "About Lilt", words: "about version credits artwork art artist illustrator illustration drawing ai generated who made solo developer github help contribute",
+    glyph: <><circle cx="10" cy="10" r="6.5" /><path d="M10 9.2v4M10 6.6h.01" /></> },
 ];
+
+const ISSUES = "https://github.com/G9000/lilt/issues";
+
+/** Who makes Lilt and how: one person, AI-generated artwork said plainly, and an open door for artists. */
+function About({ onAI }: { onAI: () => void }) {
+  return (
+    <div className={cx(pages.sxGroup, "sx-group")}>
+      <Row label="Version"><span>Lilt {CURRENT.version}</span></Row>
+      <Row label="Made by one person" help="Lilt is a one-person project with no budget, made to be a calm, private place to practise." />
+      <Row label="The artwork" help="The room, its objects and the cat were made with an AI image generator, because hiring an illustrator isn't possible right now. The code was written with help from AI coding tools too." />
+      <Row label="Artists welcome" help="If you'd like to redraw the room, the cat or any single object, we'd love that, and you'd be credited by name." stack>
+        <a className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} href={ISSUES} target="_blank" rel="noreferrer">Say hello on GitHub<span className={cx("sr-only", shared["sr-only"])}> (opens in a new tab)</span></a>
+      </Row>
+      <Row label="AI is optional" help="Everything in Lilt works without AI or an account. AI connections stay off until you add one yourself." stack>
+        <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={onAI}>AI connections</button>
+      </Row>
+    </div>
+  );
+}
 
 function Tile({ pane, size = 26 }: { pane: (typeof PANES)[number]; size?: number }) {
   return (
@@ -218,6 +239,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
     if (id === "updates") return <AppUpdates />;
     if (id === "backups") return <BackupSettings />;
     if (id === "storage") return <StorageSettings />;
+    if (id === "about") return <About onAI={() => setPane("ai")} />;
     if (id === "privacy") return (
       <>
         <Callout kind="ok"><p>Recording, saving, playback and local analysis run on this computer. Connecting ChatGPT sends nothing by itself; when Lilt's AI features arrive in Practice, they will say what goes to OpenAI before anything is sent.</p></Callout>
@@ -294,13 +316,14 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
 
 const HERO: Record<PaneId, string> = {
   appearance: "How Lilt looks and sounds: light or dark, how big the text is, and soft paper sounds.",
-  ai: "Let an AI assistant read your practice, write reviews, and rewrite your own copy of the chapters. Lilt's original chapters stay as they are, and every change can be undone.",
+  ai: "Optional: Lilt works fully without AI. If you'd like, let an AI assistant read your practice, write reviews, and rewrite your own copy of the chapters. Lilt's original chapters stay as they are, and every change can be undone.",
   notifications: "How Lilt can get your attention while it's open.",
   time: "The time zone your practice days and reminders follow.",
   privacy: "Practice stays on this computer unless you connect an AI app.",
   updates: "Keep your installed copy of Lilt up to date when you’re ready.",
   backups: "Keep a copy of your practice, or bring it back when you need it.",
   storage: "See how much space your saved practice uses and where it lives.",
+  about: "Who makes Lilt, and how it was made.",
 };
 
 /**

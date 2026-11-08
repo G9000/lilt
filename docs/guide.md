@@ -889,6 +889,13 @@ zone, a This computer row offers to switch to it in one click; opening Settings 
 timezone by itself.
 Lilt stores UTC timestamps alongside local dates.
 
+**Settings → About Lilt** shows the version you're running and says plainly how Lilt is made: it's a
+one-person project with no budget, the room's artwork (the room, its objects and the cat) was made
+with an AI image generator, and the code was written with help from AI coding tools. It invites
+artists to redraw any of it, credited by name, through [GitHub issues](https://github.com/G9000/lilt/issues),
+and repeats that AI is optional, with a button to AI connections. The prompts behind the room
+artwork are in `web/public/room/CREDITS.md`.
+
 **Models:** the optional in-app coach selects from the connected ChatGPT account's model list.
 Deterministic practice analysis does not use a cloud model.
 

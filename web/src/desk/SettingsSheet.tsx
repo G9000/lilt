@@ -7,7 +7,7 @@ import { Icon } from "../components/bits";
 const SettingsPage = lazy(() => import("../pages/Settings").then(m => ({ default: m.SettingsPage })));
 type Pane = Parameters<typeof SettingsComponent>[0]["start"];
 
-/** Open Settings over the room or the desk, optionally at one pane ("ai" for AI connections). */
+/** Open Settings over the room or the desk, optionally at one pane ("ai" for AI connections, "about" for About Lilt). */
 export function openSettings(pane?: Pane) {
   window.dispatchEvent(new CustomEvent("lilt:settings", { detail: pane ?? null }));
 }
