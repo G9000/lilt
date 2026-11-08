@@ -18,6 +18,15 @@ another page, and with **Done** on phones, so no one has to aim for the 12px red
 
 ## The world
 
+**Hold to change artwork.** Painted objects share the cat's 650ms hold and 10px movement
+cancellation. A short click opens the mug's timer, music controls, Photos from the camera,
+Practice from the microphone, or the iced coffee's support link. Holding opens their artwork
+choices without also triggering that action on release. The chair, plant and monitor frames
+use hold for their choices; Enter/Space can open these artwork-only pickers. Monitor screen
+clicks still enter the desk. Make it yours, room shortcuts and explicit Change mug/Change player
+controls remain available for keyboard and phone use. Blur, Escape, cancellation and leaving
+the room cancel a pending hold. Existing whole-object outlines remain unchanged.
+
 **Your companion** in Make it yours opens a compact cat picker: the original black-and-white
 cat, dilute grey-and-white tuxedo, ginger tabby, Siamese and fluffy white. Each is one connected
 painted cutout in the existing curled pose and room light. A 4.8-second breath accompanies a slow
@@ -50,7 +59,7 @@ Saved choices, retry, storage feedback and dismissal focus follow the existing p
 First reveal waits for decoded saved artwork and monitor content, or explicit failure fallback;
 later swaps never hide the room. No timer stands in for readiness.
 
-**Your chair** opens a compact 360px picker when clicked, with Mesh & pink throw,
+**Your chair** opens a compact 360px picker when held, with Mesh & pink throw,
 Cream upholstered, Sage padded and Walnut & cane choices. A Chair shortcut serves narrow
 screens. The original painting remains the default; replacements use stationary cutouts,
 matching room light and repaired desk/floor artwork. Players stay behind the chosen chair,
@@ -63,7 +72,7 @@ arm openings and the foreground bed boundary. The outline changes with the shown
 stays hidden while its picker is open. Reduced motion removes its opacity transition.
 
 **Weekly plant** is the painted floor plant beside the drawers, with shaded ficus, monstera,
-fern and jade artwork. Clicking it opens a light/dark picker; Plants in the room shortcuts
+fern and jade artwork. Holding it opens a light/dark picker; Plants in the room shortcuts
 opens it on smaller screens. The pot stays anchored while the canopy subtly grows with this
 week's practice days. Zero days says “A new week.” There is no floating tile. Choices stay in
 browser storage; Reset layout leaves the plant alone. The art follows the room's lighting,

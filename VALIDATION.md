@@ -1,5 +1,12 @@
 # Lilt: validation report
 
+## 9 November 2026: Hold to change room artwork
+
+The cat's hold interaction now covers the other painted objects. Mouse/touch cancellation,
+keyboard actions, modal release suppression and existing room/media regressions passed in
+isolated Chrome. Required web/server/Python/desktop checks passed; see
+[artwork-hold validation](docs/validation/2026-11-09-room-artwork-hold.md).
+
 ## 8 November 2026: Reset all data
 
 Typed confirmation, server deletion/recovery, stale-tab protection and browser cleanup passed

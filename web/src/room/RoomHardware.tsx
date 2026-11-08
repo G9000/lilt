@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useArtworkHold } from './useArtworkHold';
 import { roomStyles } from '../desk/roomStyles';
 import { W, H, MAIN_SCREEN, SIDE_SCREEN } from './scene';
 import { hardwareChoices, finishName, hardwareBox, hardwareImage, hardwareMask, hardwareTitle, openHardware, type Finish, type Hardware } from './hardware';
@@ -38,6 +39,7 @@ function HardwareObject({ kind, inside, onEnter, onMainChange }: { kind: Hardwar
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null), target = useRef<HTMLButtonElement>(null), opener = useRef<HTMLElement | null>(null);
   const title = useId(), hitId = useId();
+  const hold = useArtworkHold({ onHold: () => openHardware(kind), onClick: kind === 'microphone' ? onEnter : undefined, disabled: inside || open });
   const [left, top, width, height] = hardwareBox[kind];
   const model = shown && isMonitorModel(shown) ? shown : null;
   const placement = model ? { left: 0, top: 0, width: MODEL_BOX[2], height: MODEL_BOX[3], transformOrigin: '0 0', transform: modelTransform(kind === 'side-frame') } : { left, top, width, height, transform: 'none' };
@@ -61,10 +63,10 @@ function HardwareObject({ kind, inside, onEnter, onMainChange }: { kind: Hardwar
       {shown !== 'black' && <div className="room-hardware-finish h-full w-full"><HardwareSprite kind={kind} finish={shown} /></div>}
       <HardwareOutline kind={kind} finish={shown} />
     </div>}
-    <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label={`Choose ${hardwareTitle[kind].toLowerCase()}`} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!shown}
+    <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label={kind === 'microphone' ? 'Open Practice' : `Choose ${hardwareTitle[kind].toLowerCase()}`} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!shown}
       className={`room-hardware-target room-${kind}-target ${kind === 'microphone' ? 'room-microphone' : ''} pointer-events-auto ${roomStyles['room-object']}`}
-      style={{ ...placement, clipPath: model ? `url(#${hitId})` : `path(evenodd, '${HARDWARE_OUTLINES[kind]}')` }} onClick={() => openHardware(kind)} onPointerDown={event => event.stopPropagation()} onPointerMove={event => event.stopPropagation()}>
-      <span>{hardwareTitle[kind]}</span>
+      style={{ ...placement, clipPath: model ? `url(#${hitId})` : `path(evenodd, '${HARDWARE_OUTLINES[kind]}')` }} {...hold} title="Hold to change artwork">
+      <span>{kind === 'microphone' ? 'Practice · Hold to change microphone' : `${hardwareTitle[kind]} · Hold to change`}</span>
     </button>
     {open && !inside && createPortal(<dialog ref={dialog} aria-labelledby={title} onCancel={event => { event.preventDefault(); close(); }}
       onClick={event => { if (event.target === event.currentTarget) close(); }} onPointerDown={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}

@@ -4,6 +4,7 @@ import { CHAIRS, chairImage } from './chair';
 import { chooseChair, retryChairArt, useChair } from './chairState';
 import { ChairOutline } from './ChairOutline';
 import { CHAIR_OUTLINES } from './chairOutlinePaths';
+import { useArtworkHold } from './useArtworkHold';
 
 export const openChairPicker = () => window.dispatchEvent(new Event('lilt:chair'));
 
@@ -13,6 +14,7 @@ export function ChairPicker({ inside }: { inside: boolean }) {
   const [hovered, setHovered] = useState(false), [focused, setFocused] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null), target = useRef<HTMLButtonElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
+  const hold = useArtworkHold({ onHold: openChairPicker, disabled: inside || open });
   const close = () => {
     dialog.current?.close(); setOpen(false);
     const opener = returnFocus.current;
@@ -35,8 +37,8 @@ export function ChairPicker({ inside }: { inside: boolean }) {
       <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label="Choose your chair" aria-haspopup="dialog" aria-expanded={open}
         className="room-chair-target pointer-events-auto absolute inset-0 h-full w-full cursor-pointer border-0 bg-transparent p-0 shadow-none outline-none hover:bg-transparent focus-visible:outline-none active:transform-none!"
         style={{ clipPath: `path(evenodd, "${CHAIR_OUTLINES[shown]}")` }}
-        onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-        onPointerDown={e => e.stopPropagation()} onPointerMove={e => e.stopPropagation()} onClick={openChairPicker} />
+        {...hold} title="Hold to choose your chair"
+        onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} onFocus={() => setFocused(true)} onBlur={() => { setFocused(false); hold.onBlur(); }} />
       <ChairOutline chair={shown} visible={!inside && !open && (hovered || focused)} />
     </div>
     {open && !inside && createPortal(<dialog ref={dialog} aria-labelledby="chair-picker-title" onCancel={e => { e.preventDefault(); close(); }}

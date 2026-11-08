@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.1.0",
     date: "2026-11-09",
     items: [
+      { title: "Hold to make it yours", body: "Like the cat, your mug, plant, chair, player, camera, iced coffee, microphone and monitor frames now open their artwork choices on a hold. Short clicks keep everyday actions close: tea, music, Photos and Practice. Make it yours and the small picker controls are still there." },
       { title: "Welcome to Lilt", body: "A quiet room for learning at your own pace. Read a course, practise a little each day and come back to what you've learned. Everything stays on your own computer." },
       { title: "Courses you can read and practise", body: "Open a course to read its chapters, go through them as flashcards and practise its texts. Each course keeps its own progress.", to: "/courses" },
       { title: "Today's cards", body: "A few cards a day, one at a time, coming back when it's a good moment to revisit them. Go through as many as feel right.", to: "/deck" },

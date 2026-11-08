@@ -31,7 +31,7 @@ try {
     const crop = { x: stage.x + 1130 * scale, y: stage.y + 440 * scale, width: 255 * scale, height: 178 * scale };
     for (const [kind, title, names, ids] of groups) {
       const target = page.locator(`.room-${kind}-target`), outline = page.locator(`.room-${kind}-outline`), dialog = page.getByRole('dialog', { name: title });
-      await target.focus(); await page.keyboard.press('Enter'); await dialog.waitFor();
+      await target.click({ delay: 750, ...(kind === 'camera' ? { position: { x: 50, y: 15 } } : {}) }); await dialog.waitFor();
       for (let i = 0; i < ids.length; i++) {
         const id = `${kind}-${ids[i]}`;
         await dialog.getByRole('button', { name: names[i], exact: true }).click(); await chosen(kind, id);
@@ -47,7 +47,7 @@ try {
         const bottom = await art.evaluate(el => parseFloat(el.style.top) + parseFloat(el.style.height));
         assert.ok(Math.abs(bottom - (kind === 'coffee' ? 574 : 590)) < .01, 'stable tabletop baseline');
         if (shots) await page.screenshot({ path: path.join(shots, `${id}-${colorScheme}.png`), clip: crop });
-        await target.click(kind === 'camera' ? { position: { x: 50, y: 15 } } : {});
+        await target.click({ delay: 750, ...(kind === 'camera' ? { position: { x: 50, y: 15 } } : {}) });
       }
       if (shots) await dialog.screenshot({ path: path.join(shots, `${kind}-picker-${colorScheme}.png`) });
       await page.keyboard.press('Escape');
@@ -72,22 +72,22 @@ try {
     assert.deepEqual(await page.screenshot({ clip: screenClip }), screenBefore, 'the desk repair stays beneath the chosen monitor picture');
     await page.locator('.room-coffee-clear').evaluate(el => { el.style.visibility = ''; });
     await page.evaluate(async () => { const { setRoomAppearance } = await import('/src/room/appearance.ts'); await setRoomAppearance({ decor: 'original' }); });
-    await page.locator('.room-camera-target').click({ position: { x: 50, y: 15 } });
+    await page.locator('.room-camera-target').click({ delay: 750, position: { x: 50, y: 15 } });
     await page.getByRole('dialog').getByRole('link', { name: 'Open Photos' }).click();
     await page.waitForFunction(() => location.hash === '#/photos');
     await page.goto(server.resolvedUrls.local[0]); await chosen('coffee', 'coffee-strawberry');
-    await page.locator('.room-coffee-target').click();
-    const support = page.getByRole('link', { name: 'Buy me a coffee', exact: true });
+    await page.locator('.room-coffee-target').click({ delay: 750 });
+    const support = page.getByRole('dialog').getByRole('link', { name: 'Buy me a coffee', exact: true });
     assert.equal(await support.getAttribute('target'), '_blank'); assert.match(await support.getAttribute('rel'), /noopener/);
     await support.click(); await page.waitForFunction(() => window.supportOpened.length === 1);
     assert.deepEqual(await page.evaluate(() => window.supportOpened), ['https://buymeacoffee.com/animaos']);
     // Use a same-origin surrogate to exercise native modifier-click without a remote tab.
     const supportFixture = new URL('__support-fixture', server.resolvedUrls.local[0]).href;
     await context.route('**/__support-fixture', route => route.fulfill({ contentType: 'text/html', body: '<title>Local support fixture</title>' }));
-    await page.locator('.room-coffee-target').click();
-    await page.getByRole('link', { name: 'Buy me a coffee', exact: true }).evaluate((link, href) => { link.href = href; }, supportFixture);
+    await page.locator('.room-coffee-target').click({ delay: 750 });
+    await page.getByRole('dialog').getByRole('link', { name: 'Buy me a coffee', exact: true }).evaluate((link, href) => { link.href = href; }, supportFixture);
     const popupPromise = context.waitForEvent('page');
-    await page.getByRole('link', { name: 'Buy me a coffee', exact: true }).click({ modifiers: ['Control'] });
+    await page.getByRole('dialog').getByRole('link', { name: 'Buy me a coffee', exact: true }).click({ modifiers: ['Control'] });
     const popup = await popupPromise; await popup.waitForURL(supportFixture);
     assert.equal(popup.url(), supportFixture); await popup.close();
     assert.equal(await page.evaluate(() => window.supportOpened.length), 1, 'modifier-click does not schedule a second opening');
@@ -110,7 +110,7 @@ try {
     await chosen('coffee', 'coffee-matcha'); await chosen('camera', 'camera-black'); await other.close();
     // A fresh document ensures the failed request cannot use an already-decoded image.
     await page.route('**/room/props/camera-sage.png', route => route.abort()); await page.reload(); await chosen('camera', 'camera-black');
-    await page.locator('.room-camera-target').click({ position: { x: 50, y: 15 } }); await page.getByRole('button', { name: 'Sage compact', exact: true }).click();
+    await page.locator('.room-camera-target').click({ delay: 750, position: { x: 50, y: 15 } }); await page.getByRole('button', { name: 'Sage compact', exact: true }).click();
     await page.getByText(/Couldn't load this camera/).waitFor(); await chosen('camera', 'camera-black');
     await page.unroute('**/room/props/camera-sage.png'); await page.getByRole('button', { name: 'Try again', exact: true }).click(); await chosen('camera', 'camera-sage');
     await page.keyboard.press('Escape');
@@ -119,7 +119,7 @@ try {
     let release, reached; const requested = new Promise(resolve => { reached = resolve; });
     const gate = new Promise(resolve => { release = resolve; });
     await page.route('**/room/props/camera-silver.png', async route => { reached(); await gate; await route.fulfill({ path: fileURLToPath(new URL('../public/room/props/camera-silver.png', import.meta.url)) }); });
-    await page.locator('.room-camera-target').click({ position: { x: 50, y: 15 } }); await requested;
+    await page.locator('.room-camera-target').click({ delay: 750, position: { x: 50, y: 15 } }); await requested;
     await page.getByRole('button', { name: 'Silver film', exact: true }).click();
     await page.getByRole('button', { name: 'Cream instant', exact: true }).click(); await chosen('camera', 'camera-instant');
     release(); await page.unroute('**/room/props/camera-silver.png');
@@ -130,19 +130,19 @@ try {
     await page.keyboard.press('Escape');
     // No half-painted replacement appears when an initial background layer is missing.
     await page.route('**/room/props/clear-sunset.png', route => route.abort()); await page.reload();
-    await page.locator('.room-coffee-target').click(); await page.getByText(/Couldn't load this drink/).waitFor();
+    await page.locator('.room-coffee-target').click({ delay: 750 }); await page.getByText(/Couldn't load this drink/).waitFor();
     assert.equal(await page.locator('.room-coffee-art, .room-camera-art, .room-coffee-clear, .room-camera-clear').count(), 0);
     assert.equal(await page.locator('.room-coffee-target').getAttribute('data-outlined'), 'false');
     await page.unroute('**/room/props/clear-sunset.png'); await page.getByRole('button', { name: 'Try again', exact: true }).click();
     await chosen('coffee', 'coffee-matcha'); await page.keyboard.press('Escape');
-    await page.locator('.room-camera-target').click({ position: { x: 50, y: 15 } });
+    await page.locator('.room-camera-target').click({ delay: 750, position: { x: 50, y: 15 } });
     await page.getByRole('button', { name: 'Try again', exact: true }).click(); await chosen('camera', 'camera-instant');
     // A picker opened from the artwork restores the visible shortcut after a resize.
     await page.setViewportSize({ width: 390, height: 844 }); await page.keyboard.press('Escape');
     assert.equal(await page.locator('.room-camera-shortcut').evaluate(el => el === document.activeElement), true);
     await page.setViewportSize({ width: 1440, height: 950 });
     await page.evaluate(() => { location.hash = '/desk'; });
-    await page.waitForFunction(() => document.querySelector('.room-camera-target').disabled);
+    await page.waitForFunction(() => document.querySelector('.room-camera-target').getAttribute('aria-disabled') === 'true');
     assert.deepEqual(errors, []); assert.deepEqual(writes, []);
     console.log(`PASS ${colorScheme}: eight choices, fixed placement, outlines, four lights, Photos/support actions, saved choices, keyboard/phone, cross-tab sync, failed/stale loads and storage fallback.`);
     await context.close();

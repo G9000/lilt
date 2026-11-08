@@ -24,9 +24,9 @@ try {
   const clip = (x, y, width, height) => ({ x: stage.x + x * scale, y: stage.y + y * scale, width: width * scale, height: height * scale });
   for (const [kind, title] of groups) {
     const target = page.locator(`.room-${kind}-target`), outline = page.locator(`.room-${kind}-outline`);
-    await target.click({ position: kind === 'microphone' ? { x: 190, y: 110 } : kind === 'main-frame' ? { x: 100, y: 10 } : { x: 110, y: 10 } });
+    await target.click({ delay: 750, position: kind === 'microphone' ? { x: 190, y: 110 } : kind === 'main-frame' ? { x: 100, y: 10 } : { x: 110, y: 10 } });
     await page.getByRole('dialog', { name: title, exact: true }).waitFor(); await page.keyboard.press('Escape');
-    await target.focus(); await page.keyboard.press('Enter');
+    await target.focus(); if (kind === 'microphone') await target.click({ delay: 750, position: { x: 190, y: 110 } }); else await page.keyboard.press('Enter');
     const dialog = page.getByRole('dialog', { name: title, exact: true }); await dialog.waitFor();
     const choices = kind === 'microphone' ? finishes : [['retro', 'Cream retro'], ['rounded', 'Sage rounded'], ['studio', 'Silver studio'], ...finishes];
     for (const [finish, label] of choices) {
@@ -46,12 +46,12 @@ try {
             const stage = document.querySelector('.room-stage').getBoundingClientRect(), scale = stage.width / 1672;
             return { x: stage.x + p.x / p.w * scale, y: stage.y + p.y / p.w * scale };
           }, { kind, source });
-          await page.mouse.click(point.x, point.y); await dialog.waitFor();
+          await page.mouse.click(point.x, point.y, { delay: 750 }); await dialog.waitFor();
           assert.equal(await page.locator('.room').evaluate(el => el.classList.contains('inside')), false, 'thick bezel opens picker instead of entering the screen');
           await page.keyboard.press('Escape');
         }
       }
-      await page.keyboard.press('Enter');
+      if (kind === 'microphone') await target.click({ delay: 750, position: { x: 190, y: 110 } }); else await page.keyboard.press('Enter');
     }
     if (shots) await dialog.screenshot({ path: path.join(shots, `${kind}-picker.png`) });
     await page.keyboard.press('Escape');
@@ -82,7 +82,7 @@ try {
   // Failure retains the last composition, and retry can recover.
   const failedUrl = '**/room/hardware/microphone-sage.png';
   await page.route(failedUrl, route => route.abort());
-  await page.locator('.room-microphone-target').click({ position: { x: 190, y: 110 } });
+  await page.locator('.room-microphone-target').click({ delay: 750, position: { x: 190, y: 110 } });
   await page.getByRole('button', { name: 'Soft sage', exact: true }).click();
   await page.getByRole('button', { name: 'Try again', exact: true }).waitFor(); await chosen('microphone', 'silver');
   await page.unroute(failedUrl); await page.getByRole('button', { name: 'Try again', exact: true }).click(); await chosen('microphone', 'sage');
@@ -110,7 +110,7 @@ try {
   await page.getByText("Your choice changed here, but this browser couldn't save it for next time.", { exact: true }).waitFor();
   await page.evaluate(() => window.restoreHardwareStorage()); await page.keyboard.press('Escape');
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.locator('.room-microphone-target').click({ position: { x: 190, y: 110 } });
+  await page.locator('.room-microphone-target').click({ delay: 750, position: { x: 190, y: 110 } });
   if (shots) await page.getByRole('dialog', { name: 'Microphone', exact: true }).screenshot({ path: path.join(shots, 'microphone-picker-dark.png') });
   await page.keyboard.press('Escape');
   // Phone pickers stay in Make it yours; Practice remains a direct shortcut.
@@ -126,7 +126,7 @@ try {
     }
   }
   await page.setViewportSize({ width: 1600, height: 950 });
-  await page.locator('.room-microphone-target').click({ position: { x: 190, y: 110 } }); await page.getByRole('button', { name: 'Open Practice', exact: true }).click();
+  await page.locator('.room-microphone-target').click({ delay: 750, position: { x: 190, y: 110 } }); await page.getByRole('dialog').getByRole('button', { name: 'Open Practice', exact: true }).click();
   await page.waitForFunction(() => document.querySelector('.room')?.classList.contains('inside'));
   await page.goto(server.resolvedUrls.local[0]); await ready(); await page.locator('.room-hit').click();
   await page.waitForFunction(() => document.querySelector('.room')?.classList.contains('inside'));

@@ -27,6 +27,18 @@ try {
     const open = async () => { await music.waitFor({ state: 'attached' }); if (!(await music.isVisible())) await target.click(); await music.waitFor({ state: 'visible' }); if (!(await picker.evaluate(el => el.open))) await picker.locator('summary').click(); };
     const close = async () => { await music.getByRole('button', { name: 'Close Music', exact: true }).click(); await music.waitFor({ state: 'hidden' }); await target.waitFor(); };
     await chosen('cassette');
+    await target.click(); await music.waitFor({ state: 'visible' });
+    assert.equal(await picker.evaluate(el => el.open), false, 'a short click keeps artwork choices collapsed');
+    await close();
+    const targetBox = await target.boundingBox();
+    await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2);
+    await page.mouse.down(); await page.waitForTimeout(700);
+    assert.equal(await music.isVisible(), true, 'holding opens music before release');
+    assert.equal(await picker.evaluate(el => el.open), true, 'holding expands artwork choices');
+    await page.mouse.up();
+    assert.equal(await music.isVisible(), true, 'the release click leaves the held-open dialog visible');
+    assert.equal(await music.getByRole('button', { name: 'Play lo-fi radio', exact: true }).count(), 1, 'holding never starts playback');
+    await close();
     assert.equal(await page.locator('.room-chair-foreground').count(), 1, 'the chair has a foreground layer above the players');
     assert.equal(await art.getAttribute('data-playing'), 'false');
     for (const [name, id] of [['Cream cassette','cassette'], ['Sage boombox','boombox'], ['Walnut radio','radio'], ['Record player','turntable']]) {

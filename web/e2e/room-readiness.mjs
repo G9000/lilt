@@ -83,7 +83,7 @@ try {
   await page.reload({ waitUntil: 'domcontentloaded' });
   await visible();
   assert.equal(await page.locator('.room-plant-art').count(), 0);
-  await page.getByRole('button', { name: /Choose your plant/ }).click();
+  await page.getByRole('button', { name: /Choose your plant/ }).click({ delay: 750 });
   await page.getByText("Couldn't load this plant.", { exact: false }).waitFor();
   await page.unroute('**/room/plants/fern.png');
   await page.getByRole('button', { name: 'Try again', exact: true }).click();

@@ -36,11 +36,11 @@ try {
     assert.equal(await page.locator('.ds-plant').count(), 0, 'floating tile is gone');
     assert.equal(await target.evaluate(el => !!el.closest('.fl')), false);
     assert.match(await target.getAttribute('aria-label'), /A new week/);
-    await target.click();
+    await target.click({ delay: 750 });
     for (const [name, id] of [['Ficus','sprout'], ['Monstera','monstera'], ['Fern','fern'], ['Jade plant','succulent']]) {
       await dialog.getByRole('button', { name, exact: true }).click(); await chosen(id);
       await dialog.getByRole('button', { name: 'Done', exact: true }).click();
-      await shot(`room-${id}`); await target.click();
+      await shot(`room-${id}`); await target.click({ delay: 750 });
     }
     if (shots) await dialog.screenshot({ path: path.join(shots, `picker-${colorScheme}.png`) });
     await page.keyboard.press('Escape');

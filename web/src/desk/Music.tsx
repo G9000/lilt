@@ -84,7 +84,7 @@ export function MusicWindow() {
       <div className="music-spotify min-w-0" hidden={music.source !== 'spotify'}>
         {music.visited && <SpotifyContent selected={music.source === 'spotify'} />}
       </div>
-      <PlayerPicker />
+      {music.open && <PlayerPicker initialExpanded={music.artwork} />}
     </div>
   </dialog>, document.body);
 }

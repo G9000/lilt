@@ -6,6 +6,7 @@ import { PROP_BOUNDS } from './propBounds';
 import { PROP_CHOICES, PROP_REPAIR, propImage, propPlacement, type PropKind, type PropDesign } from './roomPropOptions';
 import { type RoomPropState } from './useRoomProp';
 import { ObjectOutline } from './ObjectOutline';
+import { useArtworkHold } from './useArtworkHold';
 
 export const openRoomProp = (kind: PropKind) => window.dispatchEvent(new Event(`lilt:${kind}`));
 
@@ -31,9 +32,11 @@ export function RoomPropBackdrop({ kind, shown }: { kind: PropKind; shown: PropD
 export function RoomProp({ kind, state, inside, onCoffee }: { kind: PropKind; state: RoomPropState; inside: boolean; onCoffee?: (event: MouseEvent<HTMLAnchorElement>) => void }) {
   const { selected, shown, failed, unsaved, choose, retry } = state;
   const [open, setOpen] = useState(false);
-  const dialog = useRef<HTMLDialogElement>(null), target = useRef<HTMLButtonElement>(null), opener = useRef<HTMLElement | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null), target = useRef<HTMLAnchorElement>(null), opener = useRef<HTMLElement | null>(null);
   const titleId = useId(), shadowId = useId();
   const title = kind === 'coffee' ? 'Choose your drink' : 'Choose your camera';
+  const hold = useArtworkHold({ onHold: () => openRoomProp(kind), disabled: inside || open,
+    onClick: event => { if (kind === 'coffee') onCoffee?.(event as MouseEvent<HTMLAnchorElement>); } });
   const close = () => {
     dialog.current?.close(); setOpen(false);
     const visible = (element: HTMLElement | null): element is HTMLElement => !!element?.isConnected && !!element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
@@ -59,12 +62,13 @@ export function RoomProp({ kind, state, inside, onCoffee }: { kind: PropKind; st
       <div className="relative h-full w-full"><PropSprite design={shown} /></div>
       <ObjectOutline kind={kind}><PropSprite design={shown} /></ObjectOutline>
     </div>}
-    <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label={title} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!shown}
+    <a ref={target} href={kind === 'coffee' ? COFFEE_URL : '#/photos'} target={kind === 'coffee' ? '_blank' : undefined} rel={kind === 'coffee' ? 'noopener noreferrer' : undefined}
+      aria-disabled={inside} tabIndex={inside ? -1 : 0} aria-label={kind === 'coffee' ? 'Buy me a coffee' : 'Open Photos'} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!shown}
       className={`room-${kind}-target pointer-events-auto ${roomStyles['room-object']}`}
       style={{ left: repair.left + repair.width / 2, top: repair.top + repair.height / 2, width: repair.width, height: repair.height }}
-      onClick={() => openRoomProp(kind)} onPointerDown={e => e.stopPropagation()} onPointerMove={e => e.stopPropagation()}>
-      <span>{kind === 'coffee' ? 'Choose drink' : 'Camera · Photos'}</span>
-    </button>
+      {...hold} title={kind === 'coffee' ? 'Click for Buy me a coffee · Hold to change drink' : 'Click for Photos · Hold to change camera'}>
+      <span>{kind === 'coffee' ? 'Buy me a coffee · Hold to change drink' : 'Photos · Hold to change camera'}</span>
+    </a>
     {open && !inside && createPortal(<dialog ref={dialog} aria-labelledby={titleId} onCancel={e => { e.preventDefault(); close(); }}
       onClick={e => { if (e.target === e.currentTarget) close(); }} onPointerDown={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}
       className="m-auto max-h-[calc(100dvh-32px)] w-[360px] max-w-[calc(100vw-24px)] overflow-auto rounded-[22px] border border-[var(--hair)] bg-[var(--win)] p-0 text-[var(--ink)] shadow-2xl backdrop:bg-black/20 backdrop:backdrop-blur-sm">

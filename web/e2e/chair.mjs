@@ -21,7 +21,7 @@ try {
   const shown = async id => page.waitForFunction(id => id === 'original'
     ? !document.querySelector('.room-chair-art') && !document.querySelector('.room-chair-clear')
     : document.querySelector('.room-chair-art')?.dataset.chair === id, id);
-  const open = async () => { await page.locator('.room-chair-target').click(); await picker.waitFor(); };
+  const open = async () => { await page.locator('.room-chair-target').click({ delay: 750 }); await picker.waitFor(); };
   const select = async (name, id) => { await picker.getByRole('button', { name, exact: true }).click(); await shown(id); };
   const setLight = async light => {
     await page.evaluate(async light => { const { setRoomAppearance } = await import('/src/room/appearance.ts'); await setRoomAppearance({ light }); }, light);

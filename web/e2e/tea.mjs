@@ -40,12 +40,22 @@ try {
     const dialog = page.getByRole('dialog', { name: 'Tea break', exact: true });
     await dialog.waitFor();
     assert.equal(await dialog.getByRole('checkbox').isChecked(), false);
+    assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).isVisible(), false, 'a short click opens the timer with mug choices folded away');
+    await dialog.locator('summary', { hasText: 'Change mug' }).click();
     assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).getAttribute('aria-pressed'), 'true');
+    await page.keyboard.press('Escape');
+    const mugBox = await mug.boundingBox();
+    await page.mouse.move(mugBox.x + mugBox.width / 2, mugBox.y + mugBox.height / 2);
+    await page.mouse.down(); await page.waitForTimeout(700);
+    assert.equal(await dialog.isVisible(), true, 'holding opens the mug choices before release');
+    assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).isVisible(), true);
+    await page.mouse.up();
+    assert.equal(await dialog.isVisible(), true, 'the release click leaves the held-open mug picker visible');
     for (const [name, id] of [['Cream stoneware','cream'], ['Sage cup','sage'], ['Blue stripes','blue'], ['Sleepy cat','cat']]) {
       await dialog.getByRole('button', { name, exact: true }).click();
       await chosen(id);
       await page.keyboard.press('Escape'); await page.mouse.move(1400, 900); await mug.evaluate(el => el.blur());
-      await shot(`mug-${id}`); await mug.click();
+      await shot(`mug-${id}`); await mug.click(); await dialog.locator('summary', { hasText: 'Change mug' }).click();
     }
     if (shots) await page.screenshot({ path: path.join(shots, `tea-picker-${colorScheme}.png`) });
     await dialog.getByRole('button', { name: '3 min', exact: true }).click();
@@ -76,6 +86,9 @@ try {
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('lilt.room.tea')).endsAt), null);
     await mug.focus(); await page.keyboard.press('Enter');
     await dialog.waitFor();
+    assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).isVisible(), false, 'keyboard entry opens the timer');
+    await dialog.locator('summary', { hasText: 'Change mug' }).focus(); await page.keyboard.press('Enter');
+    assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).isVisible(), true, 'keyboard users can expand the mug choices');
     await page.keyboard.press('Escape');
     await dialog.waitFor({ state: 'detached' });
     assert.equal(await mug.evaluate(el => el === document.activeElement), true);
@@ -87,6 +100,9 @@ try {
     await page.waitForTimeout(600);
     const shortcut = page.getByRole('button', { name: 'Tea', exact: true });
     await shortcut.click(); await dialog.waitFor();
+    assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).isVisible(), false);
+    await dialog.locator('summary', { hasText: 'Change mug' }).click();
+    assert.equal(await dialog.getByRole('button', { name: 'Cream stoneware' }).isVisible(), true, 'the phone shortcut keeps explicit mug choices reachable');
     const box = await dialog.boundingBox();
     assert.ok(box.x >= 0 && box.y >= 0 && box.x + box.width <= 800 && box.y + box.height <= 600);
     if (shots) await page.screenshot({ path: path.join(shots, `tea-small-${colorScheme}.png`) });
@@ -144,6 +160,7 @@ try {
     await page.locator('.room-stage.settled').waitFor();
     await mug.click();
     await dialog.getByRole('checkbox').uncheck();
+    await dialog.locator('summary', { hasText: 'Change mug' }).click();
     // Storage denial still allows a local break and explains that it cannot survive reload.
     await page.evaluate(() => { Storage.prototype.setItem = () => { throw new Error('Unavailable'); }; });
     await dialog.getByRole('button', { name: 'Blue stripes', exact: true }).click();
@@ -173,6 +190,7 @@ try {
     // Reload clears the storage-denial shim and decoded-image cache before simulating missing art.
     await page.route('**/room/mugs/blue.png', route => route.abort());
     await page.reload(); await chosen('sage'); await mug.click();
+    await dialog.locator('summary', { hasText: 'Change mug' }).click();
     await dialog.getByRole('button', { name: 'Blue stripes', exact: true }).click();
     await dialog.getByText(/Couldn't load this mug/).waitFor();
     assert.equal(await art.getAttribute('data-mug'), 'sage');

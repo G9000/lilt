@@ -69,11 +69,10 @@ try {
   await page.getByRole('button',{name:/Sit down at the computer/}).click();
   assert.equal(await page.evaluate(()=>window.entered),1,'computer hit target remains aligned');
   await page.setViewportSize({width:1440,height:950});
-  await page.getByRole('button',{name:'Choose microphone',exact:true}).click({position:{x:190,y:110}});
-  await page.getByRole('button',{name:'Open Practice',exact:true}).click();
+  await page.locator('.room-microphone-target').click({position:{x:190,y:110}});
   assert.equal(await page.evaluate(()=>window.entered),2,'microphone uses the existing Practice entry');
-  await page.getByRole('button',{name:'Choose your camera',exact:true}).click();
-  assert.equal(await page.getByRole('link',{name:'Open Photos',exact:true}).getAttribute('href'),'#/photos');
+  await page.locator('.room-camera-target').click({delay:750});
+  assert.equal(await page.getByRole('dialog').getByRole('link',{name:'Open Photos',exact:true}).getAttribute('href'),'#/photos');
   await page.keyboard.press('Escape');
   for(const name of ['Daylight','Morning','Sunset','Night']) {
     await page.getByRole('button',{name:'Make it yours',exact:true}).click();
@@ -125,12 +124,10 @@ try {
   await home.setViewportSize({width:1440,height:844});
   await home.goto(server.resolvedUrls.local[0]);
   assert.equal(await home.locator('.fl-radio').count(),0,'painted player replaces floating radio');
-  await home.getByRole('button',{name:'Choose your camera',exact:true}).click();
-  await home.getByRole('link',{name:'Open Photos',exact:true}).click();
+  await home.locator('.room-camera-target').click();
   await home.waitForFunction(()=>location.hash==='#/photos');
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
-  await home.getByRole('button',{name:'Choose microphone',exact:true}).click({position:{x:190,y:110}});
-  await home.getByRole('button',{name:'Open Practice',exact:true}).click();
+  await home.locator('.room-microphone-target').click({position:{x:190,y:110}});
   await home.waitForFunction(()=>location.hash.startsWith('#/deck'));
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.setViewportSize({width:1024,height:1366});

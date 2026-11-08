@@ -46,7 +46,7 @@ try {
     }, id);
     assert.ok(points.arm, `${id}: an exposed arm exists`);
     await move(points.arm.x, points.arm.y); await visible(true);
-    await page.mouse.click(position(points.arm.x, points.arm.y).x, position(points.arm.x, points.arm.y).y);
+    await page.mouse.click(position(points.arm.x, points.arm.y).x, position(points.arm.x, points.arm.y).y, { delay: 750 });
     await page.getByRole('dialog', { name: 'Choose your chair' }).waitFor(); await visible(false);
     await page.keyboard.press('Escape'); await visible(true);
     await target.evaluate(el => el.blur());

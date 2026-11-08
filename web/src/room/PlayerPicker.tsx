@@ -1,9 +1,11 @@
 import { PLAYERS, playerImage } from './player';
 import { choosePlayer, retryPlayerArt, usePlayer } from './playerState';
+import { useState } from 'react';
 
-export function PlayerPicker() {
+export function PlayerPicker({ initialExpanded = false }: { initialExpanded?: boolean }) {
+  const [expanded, setExpanded] = useState(initialExpanded);
   const { selected, shown, failed, unsaved } = usePlayer();
-  return <details className="room-player-picker mt-4 border-t border-[var(--hair)] pt-2">
+  return <details className="room-player-picker mt-4 border-t border-[var(--hair)] pt-2" open={expanded} onToggle={event => setExpanded(event.currentTarget.open)}>
     <summary className="min-h-11 cursor-pointer rounded-lg px-2 py-3 text-sm text-[var(--ink-2)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]">
       Change player <span className="ml-2 text-[var(--ink)]">{PLAYERS.find(player => player.id === selected)!.name}</span>
     </summary>

@@ -10,7 +10,7 @@ const emptySpotify: SpotifyPlayback = { title: "Spotify", art: null, playing: fa
 const readSource = (): Source => {
   try { return localStorage.getItem("lilt.radio.source") === "spotify" ? "spotify" : "lofi"; } catch { return "lofi"; }
 };
-let state = { source: readSource(), visited: false, open: false, spotify: emptySpotify };
+let state = { source: readSource(), visited: false, open: false, artwork: false, spotify: emptySpotify };
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach(listener => listener());
 const subscribe = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; };
@@ -30,11 +30,13 @@ export function spotifySelected() { return state.source === "spotify"; }
 
 let opener: HTMLElement | null = null;
 let focusFrame = 0;
-export function openMusic() {
+export function openMusic() { showMusic(false); }
+export function openMusicArtwork() { showMusic(true); }
+function showMusic(artwork: boolean) {
   window.cancelAnimationFrame(focusFrame);
   if (state.open) return;
   opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-  state = { ...state, open: true, visited: true }; emit();
+  state = { ...state, open: true, visited: true, artwork }; emit();
 }
 export function closeMusic() {
   if (!state.open) return;

@@ -4,6 +4,7 @@ import { MUGS, TEA_KEY, readTea, remainingTea, teaTime, type Tea } from './tea';
 import { playSound, prepareSound } from '../sounds';
 import { roomStyles } from '../desk/roomStyles';
 import { PaintedMug, TeaMug, useMugArtwork } from './MugArt';
+import { useArtworkHold } from './useArtworkHold';
 
 export const openTeaBreak = () => window.dispatchEvent(new Event('lilt:tea'));
 
@@ -20,6 +21,7 @@ export function TeaBreak({ inside }: { inside: boolean }) {
   const [tea, setTea] = useState(loadTea);
   const [now, setNow] = useState(Date.now);
   const [open, setOpen] = useState(false);
+  const [mugChoices, setMugChoices] = useState(false);
   const [unsaved, setUnsaved] = useState(false);
   const [clink, setClink] = useState(clinkOn);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -30,9 +32,10 @@ export function TeaBreak({ inside }: { inside: boolean }) {
   const finished = remaining === 0;
   const previous = useRef(remaining);
   const status = finished ? "Whenever you're ready." : running ? 'Enjoy your tea.' : 'A little time for yourself.';
-  const openPicker = () => {
-    if (!inside) { returnFocus.current = document.activeElement as HTMLElement; setNow(Date.now()); setOpen(true); }
+  const openPicker = (artwork = false) => {
+    if (!inside) { returnFocus.current = document.activeElement as HTMLElement; setNow(Date.now()); setMugChoices(artwork); setOpen(true); }
   };
+  const mugHold = useArtworkHold({ onHold: () => openPicker(true), onClick: () => openPicker(), disabled: inside });
 
   const save = (patch: Partial<Tea>) => {
     const next = { ...tea, ...patch };
@@ -63,8 +66,9 @@ export function TeaBreak({ inside }: { inside: boolean }) {
   }, [remaining, clink, inside, now, tea.endsAt]);
   useEffect(() => { if (inside) setOpen(false); }, [inside]);
   useEffect(() => {
-    window.addEventListener('lilt:tea', openPicker);
-    return () => window.removeEventListener('lilt:tea', openPicker);
+    const show = () => openPicker();
+    window.addEventListener('lilt:tea', show);
+    return () => window.removeEventListener('lilt:tea', show);
   }, [inside]);
   useEffect(() => {
     if (open) dialog.current?.showModal();
@@ -78,8 +82,8 @@ export function TeaBreak({ inside }: { inside: boolean }) {
       data-outlined={!!shown}
       style={{ left: 848, top: 509, width: 66, height: 60 }}
       aria-label="Tea break" aria-haspopup="dialog" aria-expanded={open} disabled={inside}
-      onPointerDown={e => e.stopPropagation()} onPointerMove={e => e.stopPropagation()} onClick={openPicker}>
-      <span>Tea break{running ? ` · ${teaTime(remaining)}` : finished ? " · Whenever you're ready." : ''}</span>
+      {...mugHold} title="Click for a tea break · Hold to change mug">
+      <span>Tea break{running ? ` · ${teaTime(remaining)}` : finished ? " · Whenever you're ready." : ''} · Hold to change mug</span>
     </button>
     <span role="status" className="sr-only">{finished ? "Tea break finished. Whenever you're ready." : ''}</span>
     {open && createPortal(<dialog ref={dialog} aria-labelledby="tea-title" onCancel={e => { e.preventDefault(); close(); }}
@@ -91,10 +95,13 @@ export function TeaBreak({ inside }: { inside: boolean }) {
         <div className="mx-auto w-32"><TeaMug mug={tea.mug} steaming={running} /></div>
         <p className="m-0 text-center text-sm text-[var(--ink-2)]">{status}</p>
         {running && <p className="my-2 text-center text-2xl tabular-nums" role="timer" aria-live="off">{teaTime(remaining)}</p>}
-        <fieldset className="mt-5"><legend className="text-sm">Choose your mug</legend>
-          <div className="grid grid-cols-4 gap-2">{MUGS.map(mug => <button type="button" key={mug.id} className={`${choice} px-1! py-1!`} aria-label={mug.label} aria-pressed={tea.mug === mug.id} title={mug.label} onClick={() => save({ mug: mug.id })}><TeaMug mug={mug.id} /></button>)}</div>
-          <p className="mb-0 mt-2 text-center text-xs text-[var(--ink-2)]">{MUGS.find(m => m.id === tea.mug)!.label}</p>
-        </fieldset>
+        <details className="mt-5" open={mugChoices} onToggle={event => setMugChoices(event.currentTarget.open)}>
+          <summary className="min-h-11 cursor-pointer rounded-lg px-2 py-3 text-sm text-[var(--ink-2)] focus-visible:outline-2 focus-visible:outline-[var(--accent)]">Change mug</summary>
+          <fieldset><legend className="sr-only">Choose your mug</legend>
+            <div className="grid grid-cols-4 gap-2">{MUGS.map(mug => <button type="button" key={mug.id} className={`${choice} px-1! py-1!`} aria-label={mug.label} aria-pressed={tea.mug === mug.id} title={mug.label} onClick={() => save({ mug: mug.id })}><TeaMug mug={mug.id} /></button>)}</div>
+            <p className="mb-0 mt-2 text-center text-xs text-[var(--ink-2)]">{MUGS.find(m => m.id === tea.mug)!.label}</p>
+          </fieldset>
+        </details>
         {failed ? <p role="status" className="mb-0 mt-3 text-xs text-[var(--ink-2)]">Couldn't load this mug. Your previous cup is still here. <button type="button" onClick={retry} className="underline">Try again</button></p>
           : shown !== tea.mug && <p role="status" className="mb-0 mt-3 text-xs text-[var(--ink-2)]">Getting your mug ready…</p>}
         {!running && <fieldset className="mt-5"><legend className="text-sm">A little pause</legend><div className="grid grid-cols-3 gap-2">

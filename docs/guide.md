@@ -153,18 +153,24 @@ controls, and the existing Spotify option. The small dialog stays over your curr
 opening Music doesn't enter the computer or start playback. Close it, press Escape or click outside;
 music continues. The CD spins during playback and rests when paused, while the mic is on,
 when closed or hidden, and with reduced motion. **Change player** changes only the room's
-boombox, radio or record-player artwork; the CD controls stay the same.
+boombox, radio or record-player artwork; the CD controls stay the same. Hold the painted player
+to open those choices directly; a short click keeps them folded away.
 The compact player in the top bar shows your selection and play/pause; click
-the artwork or title to reopen Music, including when paused. Click the camera to choose Classic black,
-Silver film, Cream instant or Sage compact, or use **Open Photos** inside its compact picker.
-Click the microphone to choose Original black, Warm cream, Soft sage or Brushed silver; **Open Practice**
-inside its picker uses the same next-card/Start here entry as the computer. Both monitor frames have
+the artwork or title to reopen Music, including when paused. Click the camera for Photos; hold it
+to choose Classic black, Silver film, Cream instant or Sage compact.
+Click the microphone for Practice; hold it to choose Original black, Warm cream, Soft sage or
+Brushed silver. Practice uses the same next-card/Start here entry as the computer. Both monitor frames have
 independent choices: **Cream retro** has a chunky shell and little buttons, **Sage rounded** has
 soft corners and an oval base, and **Silver studio** has a broad lower bezel and aluminium stand.
-The four original finishes are still available. Click a frame or stand, or open **Make it yours → Desk finishes**.
+The four original finishes are still available. Hold a frame or stand, or open **Make it yours → Desk finishes**.
 Your screen pictures stay in place behind the chosen bezel, and clicking the main screen still enters the computer.
 Hover or focus outlines the whole microphone assembly or monitor frame and stand. Choices stay in
 this browser, survive Reset layout, and keep the previous artwork if a new finish cannot load.
+
+Hold for about two-thirds of a second, like the cat. Releasing after the picker opens does not
+also trigger the object's usual action. Moving away, pressing Escape or leaving the window
+cancels a pending hold. **Make it yours** and the room shortcuts remain available; Enter or
+Space opens the chair, plant and monitor-frame pickers when those targets have keyboard focus.
 The room waits for your saved artwork before first appearing, so refresh no longer flashes the
 original objects before replacing them. Later design changes keep the current room visible.
 On phones, use **Make it yours → Desk finishes** for these pickers.
@@ -215,9 +221,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      in the painting (in this browser). Today's cards move too: drag the small grip under the pile
      (swiping the cards still flips through them). **Reset layout** in the menu bar puts
      everything back and stays available after resetting (a reset-arrow icon on phones).
-     **Tea break** opens from the painted mug on the desk, left of the keyboard. Click it to choose
-     shaded cream stoneware, sage, blue stripes or sleepy cat, then start a **3, 5 or 10 minute**
-     break. The cup stays in its painted spot and follows the room's light. Faint curls of steam
+     **Tea break** opens from the painted mug on the desk, left of the keyboard. Click it to start
+     a **3, 5 or 10 minute** break. Hold it, or open **Change mug** in the controls, to choose shaded
+     cream stoneware, sage, blue stripes or sleepy cat. The cup stays in its painted spot and follows the room's light. Faint curls of steam
      drift from the idle cup; they grow fuller while the timer runs, rising and fading gently.
      When it ends, the steam settles and the controls and hover/focus cue quietly say
      “Whenever you're ready.” **End break** clears the timer whenever you like. An optional soft
@@ -232,7 +238,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      Hover or keyboard-focus the mug, plant or music player to see a pale-blue outline around
      its current design, like the chair. The plant's outline follows its growing leaves; the
      player stays behind the chair. The outline hides while the object's controls are open.
-     Click the **painted floor plant beside the drawers** to choose **Ficus, Monstera, Fern or Jade plant**.
+     Hold the **painted floor plant beside the drawers** to choose **Ficus, Monstera, Fern or Jade plant**.
      Its shaded artwork is part of the room, follows the room's lighting, and subtly grows with
      each day you practise. The pot stays fixed; a fresh week says **A new week** in the picker.
      Your choice stays in this browser (`lilt.room.plant`), including after Reset layout, and
@@ -273,7 +279,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      its picker describes the week's practice days, with "A new week" rather than a zero.
      Music opens from the painted player.
    - **Your chair:** hover or focus the chair to see an outline around its visible shape,
-     just like the monitor. Click the chair, or **Chair** in the room shortcuts on smaller
+     just like the monitor. Hold the chair, or click **Chair** in the room shortcuts on smaller
      screens, to choose **Mesh & pink throw**, **Cream upholstered**, **Sage padded** or
      **Walnut & cane**. Each stays planted in the room, follows its light and sits in front of
      the music player. Your choice stays in this browser and survives Reset layout. Escape,
@@ -301,12 +307,12 @@ Monitor uploads and playback have an isolated check with locally generated media
      downloaded or sent anywhere. The current mood shows in the menu
      bar and on the room. **It pauses itself whenever the microphone is on** (recording or live
      pitch), so music never reaches a take or a pitch reading, then picks up again.
-   - **The iced coffee** opens a compact picker for **Iced latte, Cold brew, Iced matcha or Strawberry milk**.
+   - Hold **the iced coffee** for a compact picker of **Iced latte, Cold brew, Iced matcha or Strawberry milk**.
      The drink and camera have the same pale-blue hover/focus outline as the other painted objects.
      Choices save in this browser (`lilt.room.coffee` and `lilt.room.camera`) and survive Reset layout.
      Loading failures keep the previous artwork with **Try again**; unavailable storage explains
      that the choice could not be saved. Escape, Done or clicking outside closes each picker.
-     **Buy me a coffee** inside the drink picker sends hearts up from the glass, has the cat say
+     A short click on the glass, or **Buy me a coffee** inside its picker, sends hearts up from the glass, has the cat say
      thank you and opens the support page in a new tab. Choosing a drink never opens the link.
      The link retains ⌘/Ctrl-click behaviour; its destination is `COFFEE_URL` in `web/src/room/scene.ts`.
    - The artwork lives in `web/public/room/` (four `room-*-v3.webp` lights and the complete

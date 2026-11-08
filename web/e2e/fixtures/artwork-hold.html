@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><base href="/"><title>Artwork hold fixture</title></head>
+<body><div id="root"></div><script type="module">
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { useArtworkHold } from '/src/room/useArtworkHold.ts';
+window.actions = { primary: 0, held: 0, artwork: 0, bubbled: 0, documentClicks: 0 };
+document.addEventListener('click', () => window.actions.documentClicks++);
+function Fixture() {
+  const dialog = React.useRef(null);
+  const primary = useArtworkHold({
+    onClick: () => window.actions.primary++,
+    onHold: () => { window.actions.held++; dialog.current.showModal(); },
+  });
+  const artwork = useArtworkHold({onHold: () => window.actions.artwork++});
+  const link = useArtworkHold({onClick: () => window.actions.primary++, onHold: () => window.actions.held++});
+  return React.createElement('main', {onClick: () => window.actions.bubbled++},
+    React.createElement('button', {id: 'primary', style: {width: 220, height: 100}, ...primary}, 'Primary action'),
+    React.createElement('button', {id: 'artwork', style: {width: 220, height: 100}, ...artwork}, 'Artwork only'),
+    React.createElement('a', {id: 'link', href: '#photos', style: {display: 'block', width: 220, height: 100}, ...link}, 'Open Photos'),
+    React.createElement('dialog', {ref: dialog, style: {position: 'fixed', inset: 0, width: '90vw', height: '80vh'}},
+      React.createElement('button', {onClick: () => dialog.current.close()}, 'Close artwork')),
+  );
+}
+createRoot(document.getElementById('root')).render(React.createElement(React.StrictMode, null, React.createElement(Fixture)));
+</script></body></html>
