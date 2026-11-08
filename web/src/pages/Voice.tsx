@@ -527,26 +527,37 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
                 ? <span className={cx("ve-mix-tag new", practice["ve-mix-tag"])}>{texts.edition.updates} new</span>
                 : texts.edition.mine ? <span className={cx("ve-mix-tag", practice["ve-mix-tag"])}>{texts.edition.changes}</span> : null)
               : undefined)}
-            {p.id === "chapters" && here && (
-              <>
-                <button className={cx("ve-home ve-here", practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${here.id}`)} disabled={locked} aria-current={itemId ? undefined : "page"}>
-                  <span className="t">{here.title}</span>
-                </button>
-                <ul className={cx("ve-files", practice["ve-files"])} aria-label={`Texts in ${here.title}`}>
-                  {here.items.map((it) => {
-                    const done = practised.has(textId(COURSE, here.id, it.id));
-                    return (
-                      <li key={it.id}>
-                        <button className={cx(`ve-file${done ? " done" : ""}`, practice["ve-file"])} onClick={() => go(`/studio/${here.id}/${it.id}`)} disabled={locked}
-                          aria-current={itemId === it.id ? "page" : undefined} title={it.text}>
-                          <span className="t">{textLabel(it.text, it.id)}</span>{done && <Tick className={cx("ve-tick", practice["ve-tick"])} />}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </>
-            )}
+            {/* On the Chapters page or in a chapter, every chapter is listed by part; the one you're
+                in opens to its texts (a tick once practised). */}
+            {p.id === "chapters" && texts && (here || current === "chapters") && byPart(texts.levels).map((g, gi) => (
+              <Fragment key={`${gi}-${g.part ?? ""}`}>
+                {g.part && <p className={cx("ve-chpart", practice["ve-chpart"])}>{g.part}</p>}
+                {g.levels.map((l) => (
+                  <Fragment key={l.id}>
+                    <button className={cx(`ve-home ve-here${l.id === current ? " on" : ""}`, practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${l.id}`)} disabled={locked}
+                      aria-current={l.id === current && !itemId ? "page" : undefined}>
+                      <span className="t">{l.title}</span>
+                      {chapterDone(l, practised) && <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />}
+                    </button>
+                    {l.id === current && (
+                      <ul className={cx("ve-files", practice["ve-files"])} aria-label={`Texts in ${l.title}`}>
+                        {l.items.map((it) => {
+                          const done = practised.has(textId(COURSE, l.id, it.id));
+                          return (
+                            <li key={it.id}>
+                              <button className={cx(`ve-file${done ? " done" : ""}`, practice["ve-file"])} onClick={() => go(`/studio/${l.id}/${it.id}`)} disabled={locked}
+                                aria-current={itemId === it.id ? "page" : undefined} title={it.text}>
+                                <span className="t">{textLabel(it.text, it.id)}</span>{done && <Tick className={cx("ve-tick", practice["ve-tick"])} />}
+                              </button>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </Fragment>
+                ))}
+              </Fragment>
+            ))}
           </Fragment>
         ))}
         <div className="flex-1" />

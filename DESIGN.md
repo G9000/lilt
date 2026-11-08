@@ -292,8 +292,10 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   340px, whatever the split. These sizes are kept in
   this browser. The sidebar (224px by default) lists places in 38px rows with 17px icons: Home,
   Today (with how many cards are left), Chapters, Recordings, Studio and Mixtape, and Practice
-  settings at the foot. The chapter you're in shows indented under Chapters, with its texts below it
-  as short 13px rows on a hairline guide (a tick once practised, the open one highlighted).
+  settings at the foot. On the Chapters page and in a chapter, every chapter is listed indented
+  under Chapters, by part (12px part names in sentence case), with a small medal once complete;
+  the one you're in is semibold and opens to its texts as short 13px rows on a hairline guide (a
+  tick once practised, the open one highlighted). Elsewhere the list stays folded away.
   Choosing a text there or in the chapter keeps the URL (`#/studio/<chapter>/<text>`) in step. Links at the bottom carry the desk's app icons
   (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document

@@ -420,7 +420,9 @@ export const practice = {
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:bg-fill ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:text-ink ` +
     `[@media_(hover:_hover)_and_(pointer:_fine)]:[.ve_&:hover:not([aria-current])]:[background-image:none]`,
-  "ve-here": `[.ve_&]:h-[32px] [.ve_&]:pl-[42px] [.ve_&]:text-[13px] [.ve_&]:mb-[4px]`,
+  "ve-here": `[.ve_&]:h-[30px] [.ve_&]:pl-[40px] [.ve_&]:text-[13px] [.ve_&]:mb-[1px] [.ve_&.on]:text-ink ` +
+    `[.ve_&.on]:font-semibold`,
+  "ve-chpart": `mt-[10px] mb-[2px] pl-[40px] text-[12px] font-semibold text-ink-3`,
   "ve-home-ic": `[flex:none] w-[22px] grid place-items-center [&_svg]:w-[17px] [&_svg]:h-[17px]`,
   "ve-tree": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [.ve-home_+_&]:mt-[8px]`,
   "ve-files": `list-none mt-[0] mr-[0] mb-[6px] ml-[30px] pt-[0] pr-[0] pb-[0] pl-[6px] [.ve-side-scroll_>_&]:[min-width:0] [border-left-width:1px] ` +

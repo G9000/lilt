@@ -283,8 +283,9 @@ async function main() {
   await page.getByRole("button", { name: "Use this take's range as my comfortable range" }).click();
   await page.getByText(/Your range is now \d+–\d+ Hz/).waitFor();
   check("A take's range can become the comfortable range", true);
-  // The sidebar names the chapter you're in, under Chapters.
-  check("The sidebar shows the chapter you're in", (await page.locator(".ve-side .ve-here").innerText()).trim() === "Everyday phrases");
+  // In a chapter, the sidebar lists every chapter under Chapters, the one you're in open to its texts.
+  check("The sidebar lists the chapters, the one you're in open", (await page.locator(".ve-side .ve-here").count()) >= 13 &&
+    (await page.locator(".ve-side .ve-here.on").innerText()).trim() === "Everyday phrases" && (await page.locator(".ve-side .ve-files .ve-file").count()) === 7);
   await snap("14-studio-result");
   await page.goto(`${BASE}/#/studio/free`);
   await page.getByRole("button", { name: "Show my pitch live" }).click();
