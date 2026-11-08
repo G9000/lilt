@@ -389,9 +389,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      your direction is offered as your new range ("move your range down to match it" when going
      lower), the other way gets a gentle way back and never a push ("Never press down"), and still
      open offers to widen the range either way. Day 1 says which way you'll move the range later.
-     Nothing is measured differently, and the pitch scale is the same for everyone. The chapters are
-     written for a lighter voice; Start here says which ones help in any direction, and that a
-     lower-voice path isn't written yet.
+     Nothing is measured differently, and the pitch scale is the same for everyone. The main
+     chapters are written for a lighter voice; going lower has its own part, **Going lower**, and
+     Start here says which chapters help in any direction and points there.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.
@@ -551,7 +551,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
      work in either style of play.
      <kbd>Esc</kbd> closes it.
-8. **Texts** has 137 texts across 17 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
+8. **Texts** has 177 texts across 22 chapters. Chapters 14–16 are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). The last five are **Going lower**, also outside Today, for a deeper, darker, fuller voice: a start on breath, care and what testosterone does to the voice (with a monthly reading to hear the change), then pitch (an easy spot above the bottom of your range, never pushed down), resonance (a bigger, looser space: a silent open-throat breath, humming while chewing or yawning, yawn into words), vocal weight (full and clear, never pressed, creaky or shouted, and kept as pitch rises) and emphasis (leaning on words with loudness, length and pauses rather than big jumps up, without going flat). Start here and the course guide point there; the sources are NHS Lothian's "Testosterone and voice" and "Where to start", ASHA, the London Gender Identity Clinic's transmasculine group and studies of voice on testosterone. Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, being heard (carrying a light voice through noise without pushing), and real life. Each chapter explains the technique in a few numbered steps (how to
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,

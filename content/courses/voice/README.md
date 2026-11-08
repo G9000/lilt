@@ -31,17 +31,17 @@ with its own `course.md`.
   Courses (version 2 is when chapters began naming their own `exercises:`), so the two differ.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
+- `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. `17-going-lower.md` … `21-lower-emphasis.md` are the Going lower part (`part: Going lower`, `today: false`): a start on breath, care and testosterone, then pitch, resonance, vocal weight and emphasis for a deeper, darker, fuller voice, for people who set Which way to Lower. They come after the Extras only because the Extras' file names stay as they are. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
   name sets the order (and the order Today's cards open in). `13-being-heard.md` and
   `13-real-life.md` share a number and sort by name, so Being heard comes first. Leave the names as
   they are: Updates would offer a renamed file to personal copies as a separate removal and
   addition, and taking only one of them leaves a copy with two chapters of the same id. Renumber
-  them only in a new edition. To add a chapter, add a file like `17-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
+  them only in a new edition. To add a chapter, add a file like `22-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
   compared with your first take of the same vowel.
 
 ## How a lesson teaches
 
-The chapters come in three parts: **Get ready** (setup and warm-ups), **The skills** (pitch,
+The main chapters come in three parts: **Get ready** (setup and warm-ups), **The skills** (pitch,
 resonance, vocal weight, articulation and intonation, one at a time) and **Bring it together**
 (automatic speech, everyday phrases, reading, your own words, laughs and little sounds, being
 heard, real life).
@@ -98,6 +98,18 @@ no longer says weight is "much of" what listeners hear, only that a thinner voic
 as higher. Real life gets closer to the person, or away from the noise, before raising the voice.
 Lothian sends lasting hoarseness to a GP after six weeks; the course keeps its sooner three weeks,
 from the NHS Greater Glasgow and Clyde guidance it cites. Ids and the check-in words are unchanged.
+
+On 9 November the Going lower part was added for a deeper, darker, fuller voice, from NHS
+Lothian's "Testosterone and voice" and "Where to start" (2026), ASHA's practice portal, the London
+Gender Identity Clinic's transmasculine group evaluation (Mills, Stoneham and Davies 2019) and
+study abstracts on the voice on testosterone (Nygren et al. 2016; Irwig, Childs and Hancock 2017;
+Hancock, Childs and Irwig 2017; Ziegler et al. 2018; Azul et al. 2017). It follows the same rules:
+never push the pitch down, press on the throat or hold the voice box down; creak, pressed voice and
+shouting are never "fuller"; and emphasis through loudness and pacing is a tendency, never a rule
+against a moving melody. Like the rest, it is an AI editorial piece, not clinician approval. No
+Trans Care BC voice page could be found to check against, and the chapters have no video yet. The
+Today deck doesn't follow Which way, so these chapters are `today: false` and are opened from
+Start here, the course guide and the Going lower chapter.
 
 Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
 review by a voice-specialist speech and language therapist; and real-user checks of comfort,

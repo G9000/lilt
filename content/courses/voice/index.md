@@ -30,8 +30,11 @@ chart is optional; you do not need to choose a target number before making your 
 ## Your route to a lighter voice
 
 This is a general guide for anyone exploring a lighter, brighter voice that still sounds like them.
-If you're taking your voice lower, or haven't decided, [Start here](#/studio/start-here) says
-which chapters still help and how to set Lilt to your direction.
+If you're taking your voice lower, [Going lower](#/studio/going-lower) is your route instead: a
+short start on breath, care and what testosterone does to the voice, then pitch, resonance, vocal
+weight and emphasis for a deeper, darker, fuller voice. If you haven't decided,
+[Start here](#/studio/start-here) says which chapters help in any direction and how to set Lilt
+to your direction.
 There is no single sound to copy. Start with a sound you would enjoy using, in your own
 accent and language. You can adapt the English practice phrases to words you actually say.
 
@@ -87,6 +90,9 @@ and hear the change for yourself instead of guessing.
   a recipe, a weather report, a job interview…), [Stories](#/studio/stories) told a minute-long part
   at a time, and short [Articles](#/studio/articles) about bees, octopuses, the sky and your own
   voice. They stay out of Today's cards.
+- **[Going lower](#/studio/going-lower)**, for a deeper, darker or fuller voice: a start on
+  breath, care and testosterone, then pitch, resonance, vocal weight and emphasis, one dial each.
+  These chapters stay out of Today's cards too; open them whenever you like.
 - **Check-ins**: one text per chapter, same words every visit, so you can hear how it changes over time.
 - **Free recording**: just talk. You'll get your pitch line back.
 - **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your
@@ -225,7 +231,7 @@ The exercise instructions are written in Lilt's own words, from ideas in the gui
 can read the originals. The listening questions, early greeting cards and suggested daily loop are
 Lilt's teaching choices; they have not been validated as a training programme. The chapter video
 cards link to their named creators' demonstrations; their audio is not copied into Lilt.
-Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, and the chapters that credit NHS Lothian were checked against both of its guides on 8 November 2026. Both were editorial checks by an AI, not clinical review, and not every resource below was re-reviewed.
+Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, and the chapters that credit NHS Lothian were checked against both of its guides on 8 November 2026. Both were editorial checks by an AI, not clinical review, and not every resource below was re-reviewed. The Going lower chapters were written on 9 November 2026 from NHS Lothian's guides, ASHA's page and the study abstracts below, read the same way; no clinician has reviewed them, and no Trans Care BC page on voice could be found to check against.
 
 - NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
   (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"
@@ -258,6 +264,26 @@ Pitch, resonance, articulation, intonation and goal-setting guidance was checked
   [ENT referral guidance for hoarseness](https://www.rightdecisions.scot.nhs.uk/ggc-primary-care/ear-nose-and-throat-ent/ear-nose-and-throat-ent-referral-guidance/throat-conditions/hoarseness).
 - How a straw helps: Ingo Titze, [straw phonation](https://www.vocology.utah.edu/_resources/documents/intro_a_video_straw_phonation_titze.pdf)
   (National Center for Voice and Speech).
+- For the Going lower chapters: NHS Lothian, [Testosterone and voice](https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Testosterone-and-voice.pdf)
+  (February 2026): what testosterone changes and what it doesn't, how long the change takes,
+  the voice breaks and tiredness common while it happens, recording the same reading each month,
+  tension release for a darker resonance, and keeping a fuller voice when pitch rises. Its "Where
+  to start" guide above adds never forcing your pitch low, opening the throat with a silent
+  breath, humming while changing the mouth's space, and emphasis through loudness and pacing.
+- ASHA's page above, on voice masculinisation: practice can lower a voice without hormones,
+  testosterone's effect varies and leaves melody and loudness unchanged, and some people keep
+  speaking higher than their changed voice allows.
+- Mills, Stoneham and Davies (2019), [Toward a protocol for transmasculine voice](https://pmc.ncbi.nlm.nih.gov/articles/PMC6528553/),
+  Transgender Health 4(1): the London Gender Identity Clinic's group, with breath support, binding
+  and posture, jaw and tongue release, low humming, chest tapping, yawn-talk, loudness,
+  intonation and projection.
+- Testosterone and the voice over time: Nygren et al. (2016), [a longitudinal study of 50 people](https://pubmed.ncbi.nlm.nih.gov/26678122/);
+  Irwig, Childs and Hancock (2017), [timing over twelve months](https://pubmed.ncbi.nlm.nih.gov/27643399/);
+  Hancock, Childs and Irwig (2017), [Make no assumptions](https://pubmed.ncbi.nlm.nih.gov/28892815/);
+  and Ziegler, Henke, Wiedrick and Helou (2018), [a meta-analysis](https://doi.org/10.1080/15532739.2017.1411857)
+  in the International Journal of Transgenderism. Azul, Nygren, Södersten and Neuschaefer-Rube (2017),
+  [a review of voice function](https://pubmed.ncbi.nlm.nih.gov/27318608/), found the evidence on
+  vocal tiredness and control limited and mixed.
 - Community coaching for larynx height, brightness-only slides and vocal weight: the
   [TransVoice wiki](https://totalchaos05.github.io/TransVoice-Wiki/wiki/pages/resonance/). Community
   material, not clinical guidance.
