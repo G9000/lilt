@@ -153,16 +153,17 @@ export function App() {
     void api.deck(course).then((deck) => { if (!ignore) setDeckResult({ course, deck }); }, () => { if (!ignore) setDeckResult(null); });
     return () => { ignore = true; };
   }, [inside, path, course, deckRevision]);
-  // Until you've recorded your "before", sitting down opens Start here (mic setup and baseline), not Today.
+  // Until your first take, sitting down opens Find your starting voice (your Day 1), not Today; Home
+  // and the desk's Today widget offer the same first step.
   const [needsStart, setNeedsStart] = useState(false);
   useEffect(() => {
     let ignore = false;
     setNeedsStart(false);
-    if (course === DEFAULT_COURSE) void api.history({ prompt_id: "text.start-here.baseline-read", days: 3650 }).then((h) => { if (!ignore) setNeedsStart(h.takes.length === 0); }, () => {});
+    if (course === DEFAULT_COURSE) void api.history({ days: 3650 }).then((h) => { if (!ignore) setNeedsStart(h.takes.length === 0); }, () => {});
     return () => { ignore = true; };
   }, [inside, course]);
   const sitDown = useRef(() => go("/deck"));
-  sitDown.current = () => go(course === DEFAULT_COURSE && needsStart ? "/studio/start-here" : dailyPath(course));
+  sitDown.current = () => go(course === DEFAULT_COURSE && needsStart ? "/studio/start" : dailyPath(course));
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
@@ -220,7 +221,7 @@ export function App() {
       </div>
       <Desktop section={section} page={page && <Deferred resetKey={path}>{page}</Deferred>} inside={inside} instant={instant} theme={theme}
         onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox}
-        course={course} courseTitle={courseTitle} deck={deck} reloadDeck={() => refreshDeck((n) => n + 1)} />
+        course={course} courseTitle={courseTitle} deck={deck} reloadDeck={() => refreshDeck((n) => n + 1)} needsStart={course === DEFAULT_COURSE && needsStart} />
       <NotificationCenter inbox={inbox} />
       <SettingsSheet />
     </MicProvider>

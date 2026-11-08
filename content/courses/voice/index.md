@@ -35,7 +35,9 @@ accent and language. You can adapt the English practice phrases to words you act
   [warm-up](#/studio/warmup) and the hum-to-hello greeting. You do not need to finish every drill.
 - **Learn to hear a change.** Explore [resonance](#/studio/resonance), [vocal weight](#/studio/weight)
   and [pitch](#/studio/pitch), one at a time. Watch a demonstration, try a small contrast, and
-  listen back. You can visit these in the order that makes sense to you.
+  listen back. Record the same line twice, once as usual and once with the change, then open
+  **Detailed comparison** under the newer take to hear them side by side. Hearing the difference
+  comes before making it reliably. You can visit these in the order that makes sense to you.
 - **Combine what works.** Bring one comfortable change into a greeting. Add a second only when
   you can repeat the first without bracing or running out of breath. Higher or brighter is not
   automatically better.

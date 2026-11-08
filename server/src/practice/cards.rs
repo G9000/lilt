@@ -487,14 +487,24 @@ pub fn today_queue_for_course(app: &App, course: &Course) -> Result<Value> {
         .filter(|(id, s)| !daily(id) && s.introduced_date.as_deref() == Some(today.as_str()))
         .count();
 
-    // Which stages are open: stage 1 always; each next one once the previous is mostly learned.
+    // Which stages are open: stage 1 always; each next one once the previous is mostly learned here
+    // or recorded in its chapter. The deck follows the chapters too: one you've practised in is open.
+    let practised: std::collections::BTreeSet<String> = app
+        .all_takes()
+        .into_iter()
+        .filter(|t| t.course == course.id)
+        .map(|t| t.prompt_id)
+        .collect();
     let max_stage = cards.iter().map(|c| c.stage).max().unwrap_or(1);
     let mut open_stage = 1;
     for s in 1..max_stage {
         let in_stage: Vec<&Card> = cards.iter().filter(|c| c.stage == s).collect();
         let learned = in_stage
             .iter()
-            .filter(|c| state.get(&c.id).map(|x| x.learned()).unwrap_or(false))
+            .filter(|c| {
+                state.get(&c.id).map(|x| x.learned()).unwrap_or(false)
+                    || practised.contains(&c.prompt_id)
+            })
             .count();
         if !in_stage.is_empty() && learned as f64 / in_stage.len() as f64 >= UNLOCK_SHARE {
             open_stage = s + 1;
@@ -502,6 +512,13 @@ pub fn today_queue_for_course(app: &App, course: &Course) -> Result<Value> {
             break;
         }
     }
+    let furthest = cards
+        .iter()
+        .filter(|c| c.stage > 0 && practised.contains(&c.prompt_id))
+        .map(|c| c.stage)
+        .max()
+        .unwrap_or(1);
+    let open_stage = open_stage.max(furthest).min(max_stage.max(1));
 
     // The chapter the newest open stage belongs to, so a "new stage" note can name it and open it.
     let open_chapter = cards

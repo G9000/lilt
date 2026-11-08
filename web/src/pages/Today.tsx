@@ -49,7 +49,6 @@ export function TodayPage({ recovered }: { recovered: number }) {
   };
 
   const ex = t.exercise;
-  const p = t.participation;
   const dayName = new Date(t.local_date + "T00:00:00Z").toLocaleDateString("en", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
   const pointer = t.latest_review?.active_pointer;
 
@@ -132,7 +131,7 @@ export function TodayPage({ recovered }: { recovered: number }) {
         {state !== "done" && state !== "paused" && t.cue && <p className={cx("vlede", practice["vlede"])}>{t.cue.text}</p>}
         {state === "done" && <p className={cx("vlede", practice["vlede"])}>Anything more today is a bonus, never a requirement.</p>}
         <p className={cx("vcap", practice["vcap"])}>
-          {dayName}{p.days_this_week > 0 ? `. You've practised ${p.days_this_week} day${p.days_this_week === 1 ? "" : "s"} this week` : ""}. About {t.session_minutes} minutes, nothing is graded.
+          {dayName}. About {t.session_minutes} minutes, nothing is graded.
         </p>
         {t.reminder.due && state !== "done" && <p className={cx("vreminder", practice["vreminder"])}><i aria-hidden="true" />Reminder for {t.reminder.time}. A short session or a check-in both count.</p>}
       </header>

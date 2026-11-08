@@ -162,8 +162,9 @@ function Viewer({ pictures, picture, pinned, onGo, onClose, onDelete }: {
       if (e.key === "ArrowRight") step(1);
       if (e.key === "ArrowLeft") step(-1);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // First, before the desk's Escape (which would close the whole window).
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
   });
   return (
     <div className={cx(pages.phViewer, "ph-viewer")} role="dialog" aria-label={picture.name} onClick={onClose}>

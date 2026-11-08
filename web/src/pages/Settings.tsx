@@ -114,9 +114,11 @@ export function useProfileDraft() {
   const latest = useRef<Profile | null>(null);
   const save = useCallback((next: Profile) => {
     // Keep writes in edit order, including the final draft flushed when leaving.
-    profileSaves = profileSaves.then(() => api.saveProfile(next)).then(() => {
+    profileSaves = profileSaves.then(() => api.saveProfile(next)).then((stored) => {
       if (latest.current !== next) return;
       dirty.current = false;
+      // Numbers the server keeps in range show as kept, not as typed.
+      setP((cur) => cur && { ...cur, session_minutes: stored.session_minutes, comparison_window_days: stored.comparison_window_days });
       setSaved("saved");
       setErr(null);
     }, (e) => {

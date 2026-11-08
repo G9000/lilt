@@ -44,11 +44,11 @@ async function main() {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
 
-  // A first visit: sitting down (Enter in the room) opens Start here, not Today.
+  // A first visit: sitting down (Enter in the room) opens Find your starting voice, not Today.
   await page.goto(`${BASE}/#/`);
   await page.waitForTimeout(1500);
   await page.keyboard.press("Enter");
-  await page.waitForURL(/#\/studio\/start-here/, { timeout: 8000 }).then(() => check("a first visit sits down at Start here", true), () => check("a first visit sits down at Start here", false, page.url()));
+  await page.waitForURL(/#\/studio\/start$/, { timeout: 8000 }).then(() => check("a first visit sits down at Find your starting voice", true), () => check("a first visit sits down at Find your starting voice", false, page.url()));
 
   // Today opens with the warm-up and closes with the cool-down.
   await page.goto(`${BASE}/#/deck`);

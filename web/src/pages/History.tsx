@@ -68,7 +68,7 @@ export function HistoryPage() {
     <div className="rl">
       <header className={cx("rl-head", practice["rl-head"])}>
         <h1>Recordings</h1>
-        <a className={cx("rl-export", practice["rl-export"])} href="/api/export" download>{Icon.download}Export all</a>
+        {!!takes?.length && <a className={cx("rl-export", practice["rl-export"])} href="/api/export" download>{Icon.download}Export all</a>}
         <p>Every take stays on this computer. Play any of them to hear how far you've come.</p>
       </header>
       {takes && takes.length === 0 && <p className={cx("rl-empty", practice["rl-empty"])}>Nothing here yet. Your takes appear here as soon as you record one.</p>}
@@ -79,7 +79,7 @@ export function HistoryPage() {
         </section>
       ))}
       {takes && takes.length > 0 && <button className={cx("rl-more", practice["rl-more"])} onClick={() => setDays((d) => d + 365)}>Show older</button>}
-      <p className={cx("rl-foot", practice["rl-foot"])}>Measurements improve now and then. <button className={cx("rl-link", practice["rl-link"])} onClick={() => void remeasure()}>Measure older takes again</button> with the latest analysis; the earlier results are kept.</p>
+      {!!takes?.length && <p className={cx("rl-foot", practice["rl-foot"])}>Measurements improve now and then. <button className={cx("rl-link", practice["rl-link"])} onClick={() => void remeasure()}>Measure older takes again</button> with the latest analysis; the earlier results are kept.</p>}
       <p className={cx("rl-foot", practice["rl-foot"])}>Everything lives in Lilt's data folder as ordinary audio and JSON files, and <a href="/api/export" download>the export</a> is a full copy. Deleting a recording removes it from Lilt only; copies you've exported or backed up elsewhere stay where they are.</p>
       <Toast text={toast} />
     </div>

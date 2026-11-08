@@ -141,6 +141,37 @@ fn first_deck_is_reference_plus_new_cards_from_first_stage() {
 }
 
 #[test]
+fn a_chapter_practised_in_opens_its_stage_in_the_deck() {
+    let (_d, app) = app();
+    let all = cards::all_cards(&app);
+    let pitch = all
+        .iter()
+        .find(|c| c.prompt_id == "text.pitch.mm-hm")
+        .expect("pitch has an mm-hm card");
+    assert!(pitch.stage > 1, "pitch comes after the first stage");
+    let q = cards::today_queue(&app).unwrap();
+    assert_eq!(q["open_stage"], 1, "a new deck starts at the first stage");
+    let s = recordings::deck_session(&app).unwrap();
+    new_take(
+        &app,
+        &s.id,
+        T {
+            prompt: "text.pitch.mm-hm",
+            exercise: None,
+            ..T::default()
+        },
+        "audio/wav",
+    );
+    let q = cards::today_queue(&app).unwrap();
+    assert_eq!(
+        q["open_stage"].as_u64().unwrap() as usize,
+        pitch.stage,
+        "practising Pitch in its chapter opens Pitch in Today's deck"
+    );
+    assert_eq!(q["open_chapter"]["id"], "pitch");
+}
+
+#[test]
 fn rating_schedules_card_is_idempotent_and_again_returns_today() {
     let (_d, app) = app();
     let s = recordings::deck_session(&app).unwrap();

@@ -107,7 +107,7 @@ async fn put_profile(State(app): State<Shared>, Json(mut p): Json<Profile>) -> R
         && (!(60.0..=700.0).contains(&lo) || !(60.0..=700.0).contains(&hi) || lo >= hi)
     {
         return Err(anyhow::anyhow!(
-            "comfortable range must be two values between 60 and 700 Hz, low before high"
+            "Your comfortable range needs a low and a high between 60 and 700 Hz, with the low one first."
         )
         .into());
     }

@@ -236,16 +236,6 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
 
 /* ---------------------------------------------------------------- sidebar */
 
-/** The chapter-complete medal: a coral disc with a white star. */
-function Medal({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 16 16" aria-hidden="true">
-      <circle cx="8" cy="8" r="8" fill="var(--accent)" />
-      <circle cx="8" cy="8" r="6.4" fill="none" stroke="#fff" strokeOpacity=".35" strokeWidth=".8" />
-      <path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill="#fff" transform="translate(3.6 3.7) scale(.55)" />
-    </svg>
-  );
-}
 /** Voice care keeps its heart; every other tip is a numbered step. */
 const HEART = "M8 13.5S2.5 10.2 2.5 6.3A2.8 2.8 0 018 4.7a2.8 2.8 0 015.5 1.6C13.5 10.2 8 13.5 8 13.5z";
 
@@ -543,7 +533,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
       <button className={cx(`ve-home ve-here${l.id === current ? " on" : ""}`, practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${l.id}`)} disabled={locked}
         aria-current={l.id === current && !itemId ? "page" : undefined}>
         <span className="t">{l.title}</span>
-        {chapterDone(l, practised) && <Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />}
+        {chapterDone(l, practised) && <Tick className={cx("ve-tick", practice["ve-tick"])} />}
       </button>
       {l.id === current && (
         <ul className={cx("ve-files", practice["ve-files"])} aria-label={`Texts in ${l.title}`}>
@@ -1002,7 +992,7 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
         <header className={cx("ve-head ve-greet", practice["ve-head"], practice["ve-greet"])}><h1>{greeting()}</h1><p>{today}</p></header>
         {/* The start card is for someone new: no takes and no range yet. Anyone who has practised
             sees their practice, with a gentle nudge if their comfortable range isn't set. */}
-        {!band && history.length === 0 ? <StartCard /> : <YourPractice history={history} band={band} texts={texts} next={<>
+        {history.length === 0 ? <StartCard /> : <YourPractice history={history} band={band} texts={texts} next={<>
           <NextStep deck={deck} texts={texts} practised={practised} />
           {!band && <p className={cx("ve-small", practice["ve-small"])}>No comfortable range yet. <a href="#/studio/start">Find your starting voice</a> to set one, and it shows behind your pitch lines.</p>}
         </>} />}
@@ -1028,7 +1018,7 @@ function gridOf(levels: TextLevel[], practised: Set<string>, nextId: string | un
               <span className="n">{l.level}</span>
               <b>{l.title}</b>
               {!compact && l.subtitle && <small>{l.subtitle}</small>}
-              <span className="m">{d >= n ? <><Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />Practised</> : isNext ? "Next up" : `${n} texts`}</span>
+              <span className="m">{d >= n ? <><Tick className={cx("ve-tick", practice["ve-tick"])} />Every text practised</> : isNext ? "Next up" : `${n} texts`}</span>
             </a>
           </li>
         );
@@ -1296,7 +1286,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
   const complete = chapterDone(level, practised);
   const wasComplete = useRef(complete);
   const fresh = complete && !wasComplete.current;
-  useEffect(() => { if (fresh) setToast(`Chapter complete: ${level.title}`); }, [fresh]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (fresh) setToast(`You've practised every text in ${level.title}`); }, [fresh]); // eslint-disable-line react-hooks/exhaustive-deps
   const band = profile.comfort_range_hz ?? null;
   const item = sel >= 0 ? level.items[sel] : null;
   const promptId = item ? textId(COURSE, level.id, item.id) : FREE.prompt_id;
@@ -1418,12 +1408,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
               Remix
               </button>
             </div>}
-            {complete && (
-              <div className={cx(`ve-award${fresh ? " fresh" : ""}`, practice["ve-award"])} role={fresh ? "status" : undefined}>
-                <Medal className={cx("ve-award-medal", practice["ve-award-medal"])} />
-                <div><b>Chapter complete</b><span>You've practised all {n} texts in {level.title}. Come back to any of them whenever you like.</span></div>
-              </div>
-            )}
+            {complete && <p className={cx("ve-small", practice["ve-small"])} role={fresh ? "status" : undefined}>You've practised every text here. Come back to any of them whenever you like.</p>}
           </header>
           <div className={cx("ve-tabs", practice["ve-tabs"])} role="tablist" aria-label="Chapter">
             <button role="tab" id={`tab-learn-${level.id}`} aria-selected={tab === "learn"} aria-controls={`panel-${level.id}`} disabled={recording} onClick={() => setTab("learn")}>Learn</button>

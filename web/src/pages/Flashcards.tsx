@@ -109,7 +109,7 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
         <ChapterMenu course={course} texts={texts} level={level} locked={recording} />
         <div className={cx("fc-progress", practice["fc-progress"])} aria-label={`${got} of ${total} cards done`}>
           <span className={cx("fc-segs", practice["fc-segs"])} aria-hidden="true">{cards.map((c) => <i key={c.id} className={run.got.includes(c.id) ? "on" : c.id === top?.id ? "now" : undefined} />)}</span>
-          <span className={cx("fc-count", practice["fc-count"])}><b>{got}</b> of {total}</span>
+          <span className={cx("fc-count", practice["fc-count"])} title="Cards gone through this time. Your takes stay in Recordings."><b>{got}</b> of {total} this time</span>
         </div>
         <a className={cx("fc-full", practice["fc-full"])} href={full} aria-disabled={recording} onClick={event => { if (recording) event.preventDefault(); }}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5h4a2 2 0 012 2v8a1.5 1.5 0 00-1.5-1.5H2zM14 3.5h-4a2 2 0 00-2 2v8a1.5 1.5 0 011.5-1.5H14z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>

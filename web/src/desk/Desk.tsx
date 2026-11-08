@@ -53,10 +53,12 @@ function useNow(ms = 15000) {
 
 type Theme = "light" | "dark";
 
-export function Desktop({ section, page, inside, instant, theme, onTheme, recovered, inbox, course, courseTitle, deck, reloadDeck }: {
+export function Desktop({ section, page, inside, instant, theme, onTheme, recovered, inbox, course, courseTitle, deck, reloadDeck, needsStart = false }: {
   section: string; page: ReactNode | null; inside: boolean; instant: boolean;
   theme: Theme; onTheme: () => void; recovered: number; inbox: InboxState;
   course: string; courseTitle?: string; deck: Deck | null; reloadDeck: () => void;
+  /** No takes yet: today's first step is your starting voice. */
+  needsStart?: boolean;
 }) {
   const now = useNow();
   const light = currentLight();
@@ -73,6 +75,8 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
       if ((e.target as HTMLElement | null)?.closest?.("input, textarea, select, [contenteditable]")) return;
+      // A dialog inside the window (a photo viewer) closes first.
+      if (document.querySelector('.ds-win [role="dialog"]')) return;
       go("/desk");
     };
     window.addEventListener("keydown", onKey);
@@ -107,7 +111,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
       </header>
 
       <section className={cx(["ds-widgets ds-boot", roomStyles["ds-widgets"], roomStyles["ds-boot"]].join(" "), practice["ds-widgets"])} aria-label="Widgets">
-        <TodayWidget deck={deck} reload={reloadDeck} course={course} courseTitle={courseTitle} />
+        <TodayWidget deck={deck} reload={reloadDeck} course={course} courseTitle={courseTitle} needsStart={needsStart} />
       </section>
 
       {win && (
@@ -153,12 +157,10 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
 
 const KIND: Record<string, string> = { warmup: "warm-up", daily: "daily", before_after: "reference", new: "new", review: "review", again: "again", cooldown: "cool-down" };
 
-function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null; reload: () => void; course: string; courseTitle?: string }) {
+function TodayWidget({ deck, reload, course, courseTitle, needsStart }: { deck: Deck | null; reload: () => void; course: string; courseTitle?: string; needsStart: boolean }) {
   const left = deck ? deck.items.filter((i) => !i.done_today) : [];
   const done = !!deck && (deck.all_done || left.length === 0);
   const minutes = Math.max(1, left.length);
-  const stages = deck?.stages ?? deck?.open_stage ?? 1;
-  const learned = deck?.total_cards ? (deck.learned ?? 0) / deck.total_cards : 0;
   return (
     <article className={cx(["ds-w ds-today", roomStyles["ds-w"], roomStyles["ds-today"]].join(" "), practice["ds-w"])} aria-label="Today's practice">
       <div className={["ds-t-body", roomStyles["ds-t-body"]].join(" ")}>
@@ -185,8 +187,11 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
         <div className={["ds-t-foot", roomStyles["ds-t-foot"]].join(" ")}>
           {deck?.paused ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
             : done ? <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => go(practicePath(course))}>Open Practice</button>
+            : needsStart ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go("/studio/start")}>Find your starting voice</button>
             : <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(dailyPath(course))} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
-          <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>Stage {deck?.open_stage ?? 1} of {stages}<span className={["ds-t-bar", roomStyles["ds-t-bar"]].join(" ")}><i style={{ width: `${Math.max(4, learned * 100)}%` }} /></span></span>
+          {/* Named as a chapter, like everywhere else: where today's new cards come from. */}
+          {needsStart && !deck?.paused ? <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>Your Day 1 comes first</span>
+            : deck?.open_chapter && <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>New cards from {deck.open_chapter.title}</span>}
         </div>
       </div>
     </article>

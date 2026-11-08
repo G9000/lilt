@@ -250,8 +250,11 @@ Monitor uploads and playback have an isolated check with locally generated media
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Flashcards**,
    **Yarn** (a voice game), **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
-   (or the door in the dock) walks you back out to the room. Until you've recorded your "before",
-   sitting down opens Start here instead of Today.
+   (or the door in the dock) walks you back out to the room. Until your first take, sitting down
+   opens **Find your starting voice** instead of Today: one count in your everyday voice, your Day 1,
+   which can also set your comfortable range. Home's "First time here?" card and the desk's Today
+   widget offer the same first step, and then point you to Start here. Once you're under way, the
+   widget names the chapter today's new cards come from.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
      with your clock. Birds cross the windows by day; stars and city lights come out at night. The
      cat sleeps on the bed and breathes; when you arrive it says hello, and tapping
@@ -364,8 +367,9 @@ Monitor uploads and playback have an isolated check with locally generated media
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.
-   - New stages (m-words, phrases, sentences…) open once most cards in the stage before feel
-     comfortable (rated Good or Easy twice in a row).
+   - New cards come chapter by chapter. The next chapter's cards open once most of the one before
+     feel comfortable (rated Good or Easy twice in a row) or you've recorded most of its texts in
+     Practice, and any chapter you've practised in is open, so Today keeps up with where you are.
    - **It hurt or felt strained** pauses that card and your plan until you choose to resume.
    - **Live pitch while recording,** below the card's prompt: the waveform with your
      pitch line over it and your comfortable range as a band, plus the current Hz and note, middle
@@ -416,7 +420,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    leaving just the chapter you're in, and this browser remembers your choice. **Home** greets
    you, offers one next step and shows the next four chapters as tiles. **Chapters**
    (`#/studio/chapters`) has the course's cover, then the **Course guide**, then every chapter as a
-   tile with its subtitle (the next one outlined, a medal once you've practised them all). **Next
+   tile with its subtitle (the next one outlined, a quiet tick and "Every text practised" once
+   you've practised them all; inside the chapter, one plain line says so). **Next
    up** is where you left off: the furthest chapter you've practised in, until about half its texts
    are practised, then the one after it, so skipping a text never pins a chapter as next. Home's
    "First time here?" card shows only before your first take; after that, Home shows your practice
@@ -468,7 +473,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      progress. Other courses use the same chapter cards with optional recording; their progress stays
      separate in this browser. **Full chapter** opens the selected course at that text;
      <kbd>Esc</kbd> closes Flashcards. Flashcards is apart from Today: nothing
-     is rated or scheduled, and where you are in each chapter is kept in this browser.
+     is rated or scheduled, and where you are in each chapter is kept in this browser. Its counter
+     reads "3 of 16 this time": the cards gone through on this pass, not your takes, which stay in
+     Recordings and Practice.
      If saved progress is damaged, Lilt keeps the readable card entries and starts fresh for
      anything it cannot read. Duplicate saved entries do not repeat a card.
    - **Yarn** (`#/yarn`, in the dock, or the Ball of yarn card on the desk in the room) is a calm
@@ -512,9 +519,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
      work in either style of play.
      <kbd>Esc</kbd> closes it.
-8. **Texts** has 131 texts across 16 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
+8. **Texts** has 137 texts across 17 chapters. The last three are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
-   little sounds, and real life. Each chapter explains the technique in a few numbered steps (how to
+   little sounds, being heard (carrying a light voice through noise without pushing), and real life. Each chapter explains the technique in a few numbered steps (how to
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,
    available in a fresh Today deck on day one. The four setup texts stay outside Today's cards.
 
@@ -548,6 +555,7 @@ Monitor uploads and playback have an isolated check with locally generated media
 
 12. **Progress** shows each skill in the task where it was practised, never an overall score.
    **Recordings** (the old History page) has playback, favourites, notes, deletion and export.
+   Export all and Measure older takes again appear once there's a take to export or measure.
 
 If you report strain, pain or new hoarseness, the activity is paused and never made harder. If
 it persists or keeps coming back, see a voice professional.
