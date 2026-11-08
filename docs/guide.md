@@ -382,6 +382,9 @@ Monitor uploads and playback have an isolated check with locally generated media
      pitch and your rating. The numbers describe the recording and never set a rating.
    - The original guided session with coaching feedback is still there: **Guided session with
      feedback** on the Today widget, at `#/guided`, with **Start today** or **Quick check-in**.
+     Once today's session is done it says so, how many recordings you saved, and what's next once
+     (under Today's feedback); **Open Practice** is a quiet button, since anything more is a bonus.
+     The Today widget on the desk offers the same quiet **Open Practice** when its cards are done.
 3. A session runs through these steps:
    - microphone check, then a reference phrase (counting 1–10). The check opens with two seconds of
      quiet to hear the room, then asks for a few words. If background sound is within about 20 dB
@@ -454,7 +457,8 @@ Monitor uploads and playback have an isolated check with locally generated media
      the how-to, its video (from YouTube, so it needs an internet connection; offline the card
      says so), then each text. The chapter's name at the top is a menu of every chapter
      with how far through each you are. Swipe right (or <kbd>→</kbd>, or Got it beside the card) when
-     you've got a card, left (<kbd>←</kbd>, Again) to see it again at the back of the pile; Undo puts
+     you've got a card, left (<kbd>←</kbd>, Again) to see it again at the back of the pile. Both are
+     plain ink, since neither is right or wrong; Undo puts
      the last one back. **A text's card won't swipe until you've recorded it** with Practice's
      recorder, docked below with the live pitch line: then your take is on the card to play, with
      its pitch details, and it swipes. **Tips** on a text's card opens the chapter's steps right
@@ -722,9 +726,11 @@ Markdown uses compact paragraph and heading spacing, quiet bordered quotes, scro
 and code blocks, and a separate footnote area. The voice chapter's comfort note spans the reading
 column, with a smaller gap above it and less space at the bottom of the page.
 
-Course homes, chapters, guides, practice texts and course details share a centered 1280px maximum
-column, including other courses and their guided practice and recordings pages. Introductions
-and Markdown fill the same reading width. Today's practice uses this centered width too.
+Practice, course homes, chapters, guides, practice texts and other courses' guided practice and
+recordings pages share one centred 960px column; introductions and Markdown wrap at a reading
+width inside it. **Practice texts** (`#/texts`) has Course home above its title, the course note
+at a reading width (on a phone, its first lines, where it says to stop if anything strains, with
+**Read it all**), and a chapter filter that wraps to show every chapter, scrolling only on a phone. Today's practice uses this centered width too.
 Voice exercises stay on the plain reading surface in compact rows, separated by thin rules.
 Selecting one moves the recorder
 below its text, without adding a panel around it.

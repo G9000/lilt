@@ -95,7 +95,7 @@ try {
     await page.goto(`${base}#/learn/drawing/today`);
     await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course daily practice', 880);
     await page.goto(`${base}#/texts?course=drawing`);
-    await checkColumn(page.locator('.tx'), width, 'Practice texts');
+    await checkColumn(page.locator('.tx'), width, 'Practice texts', 960);
     if (!process.env.LILT_UI_BUILD) {
       for (const route of ['guided', 'recordings']) {
         await page.goto(`${base}#/learn/drawing/${route}`);

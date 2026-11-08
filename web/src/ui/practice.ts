@@ -392,9 +392,9 @@ export const practice = {
     `[@media_(max-width:_700px)]:[.ve_.sd-controls_&.idle]:[row-gap:12px] [.fc-ve_&]:mt-[0]! [.fc-ve_&]:mr-[0] ` +
     `[.fc-ve_&]:mb-[0]! [.fc-ve_&]:ml-[0] [.fc-ve_&.idle]:justify-center ` +
     `[.fc-ve_&.idle]:[grid-template-columns:auto_auto]`,
-  "ve-side-scroll": `[flex:1] min-h-0 overflow-auto pt-[6px] pr-[8px] pb-[12px] pl-[8px] flex flex-col [scrollbar-width:thin] ` +
-    `[&_>_*]:[flex-shrink:0] [&_>_*]:[min-width:calc(var(--ve-side-open,_272px)_-_16px)] ` +
-    `[&_>_h6]:[min-width:calc(var(--ve-side-open,_272px)_-_36px)]`,
+  "ve-side-scroll": `[flex:1] min-h-0 overflow-y-auto overflow-x-hidden pt-[6px] pr-[8px] pb-[12px] pl-[8px] flex flex-col [scrollbar-width:thin] ` +
+    `[&_>_*]:[flex-shrink:0] [&_>_*]:[min-width:calc(var(--ve-side-open,_272px)_-_17px)] ` +
+    `[&_>_h6]:[min-width:calc(var(--ve-side-open,_272px)_-_37px)]`,
   "ve-part": `[.ve-side_h6&]:mt-[1px] [.ve-side_h6&]:mr-[0] [.ve-side_h6&]:mb-[0] [.ve-side_h6&]:ml-[0] ` +
     `[.ve-side_.ve-tree_+_h6&]:mt-[14px] [.ve_&_button]:w-full [.ve_&_button]:h-[26px] [.ve_&_button]:min-h-0 ` +
     `[.ve_&_button]:flex [.ve_&_button]:items-center [.ve_&_button]:justify-start [.ve_&_button]:[row-gap:6px] ` +
@@ -1589,8 +1589,8 @@ export const practice = {
     `[border-left-color:currentColor] rounded-[12px] [background-color:rgba(15,_15,_22,_0.45)] ` +
     `[background-image:none] not-italic [font-weight:800] text-[18px] [line-height:1.1] font-sans ` +
     `[letter-spacing:0.08em] uppercase pointer-events-none [backdrop-filter:blur(6px)] ` +
-    `[-webkit-backdrop-filter:blur(6px)] [&.got]:[left:22px] [&.got]:[color:#5be0a0] [&.got]:[rotate:-10deg] ` +
-    `[&.again]:[right:22px] [&.again]:[color:var(--accent-dark-ink)] [&.again]:[rotate:10deg]`,
+    `[-webkit-backdrop-filter:blur(6px)] [&.got]:[left:22px] [&.got]:[color:#fff] [&.got]:[rotate:-10deg] ` +
+    `[&.again]:[right:22px] [&.again]:[color:#fff] [&.again]:[rotate:10deg]`,
   "fc-take": `grid [row-gap:4px] [column-gap:4px] pt-[12px] pr-[14px] pb-[12px] pl-[14px] rounded-[16px] bg-fill ` +
     `[background-image:none]`,
   "fc-tips": `[border-top-width:1px] [border-top-style:solid] [border-top-color:var(--hair)] pt-[8px] [margin-top:auto] ` +
@@ -1620,14 +1620,9 @@ export const practice = {
   "fc-side-ic": `w-[64px] h-[64px] grid place-items-center [border-radius:50%] bg-panel [background-image:none] ` +
     `[box-shadow:0_0_0_1px_var(--hair),_0_14px_30px_-14px_rgba(0,_0,_0,_0.45)] ` +
     `[transition:transform_0.18s_var(--ease),_background-color_0.2s_ease,_color_0.2s_ease] [&_svg]:w-[26px] ` +
-    `[&_svg]:h-[26px] [.fc-side.got_&]:text-ok [.fc-side.again_&]:text-accent-ink ` +
+    `[&_svg]:h-[26px] text-ink ` +
     `[.fc-side:hover:not(:disabled):not([aria-disabled="true"])_&]:[transform:translateY(-2px)_scale(1.04)] ` +
-    `[.fc-side.got:hover:not(:disabled):not([aria-disabled="true"])_&]:bg-ok ` +
-    `[.fc-side.got:hover:not(:disabled):not([aria-disabled="true"])_&]:[background-image:none] ` +
-    `[.fc-side.got:hover:not(:disabled):not([aria-disabled="true"])_&]:[color:#fff] ` +
-    `[.fc-side.again:hover:not(:disabled):not([aria-disabled="true"])_&]:bg-accent ` +
-    `[.fc-side.again:hover:not(:disabled):not([aria-disabled="true"])_&]:[background-image:none] ` +
-    `[.fc-side.again:hover:not(:disabled):not([aria-disabled="true"])_&]:text-accent-on ` +
+    `[.fc-side:hover:not(:disabled):not([aria-disabled="true"])_&]:bg-fill-2 ` +
     `[.fc-side:active:not(:disabled)_&]:[transform:scale(0.95)] [@media_(max-width:_860px)]:w-[54px] ` +
     `[@media_(max-width:_860px)]:h-[54px] [@media_(prefers-reduced-motion:_reduce)]:[transition:none]`,
   "fc-undo": `absolute [left:50%] [bottom:calc(100%_+_12px)] [z-index:10] [translate:-50%_0] inline-flex items-center ` +

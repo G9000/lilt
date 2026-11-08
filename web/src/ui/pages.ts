@@ -1,15 +1,21 @@
 /** Static page recipes. Marker classes remain for accessibility, interaction and browser checks. */
 export const pages = {
-  tx: `w-full max-w-[var(--content-width)] mx-auto [container-type:inline-size]`,
+  tx: `w-full max-w-[960px] mx-auto [container-type:inline-size]`,
   txLoading: `mt-0 mr-0 mb-0 ml-0 pt-[48px] pr-0 pb-[48px] pl-0 text-center text-[13px] text-ink-3`,
   txHead: `mt-[10px] mr-0 mb-[22px] ml-0 [&_h1]:text-[28px] [&_h1]:leading-[1.15] [&_h1]:tracking-[-0.035em] [&_h1]:mt-0 ` +
     `[&_h1]:mr-0 [&_h1]:mb-[8px] [&_h1]:ml-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
-    `[&_p]:text-ink-2`,
+    `[&_p]:text-ink-2 [&_p]:max-w-[68ch] [&_p]:text-pretty ` +
+    `[@media(max-width:_700px)]:[&_p:not(.open)]:[display:-webkit-box] [@media(max-width:_700px)]:[&_p:not(.open)]:[-webkit-box-orient:vertical] ` +
+    `[@media(max-width:_700px)]:[&_p:not(.open)]:[-webkit-line-clamp:4] [@media(max-width:_700px)]:[&_p:not(.open)]:overflow-hidden`,
+  txBack: `inline-flex items-center gap-[5px] min-h-[32px] mb-[6px] text-[13px] font-medium text-ink-2 no-underline hover:text-ink`,
+  txMore: `hidden [@media(max-width:_700px)]:inline mt-[6px] p-0 min-h-0 border-0 bg-transparent text-[13px] font-medium ` +
+    `text-ink underline [text-underline-offset:3px] [text-decoration-color:var(--line-strong)]`,
   txFoot: `mt-[32px] mr-0 mb-0 ml-0 text-pretty text-[13px] text-ink-3 [&_a]:text-ink-2 [&_a]:no-underline ` +
     `[&_a:hover]:text-ink [&_a:hover]:underline [&_a:hover]:decoration-[currentColor]`,
   txCredit: `[&_a]:text-ink-2 [&_a]:no-underline [&_a:hover]:text-ink [&_a:hover]:underline ` +
     `[&_a:hover]:decoration-[currentColor] mt-[8px] mr-0 mb-0 ml-0 text-[12px] text-ink-3`,
-  txLevels: `[&.tx-levels]:flex w-full ` +
+  txLevels: `[&.tx-levels]:flex w-full [@media(min-width:_701px)]:[&.tx-levels]:flex-wrap ` +
+    `[@media(min-width:_701px)]:[mask-image:none]! [@media(min-width:_701px)]:[animation:none]! ` +
     `[mask-image:linear-gradient(to_right,_transparent,_#000_var(--tx-l),_#000_calc(100%_-_var(--tx-r)),_transparent)] ` +
     `[&.tx-levels_button]:text-[13px] [@supports(animation-timeline:_scroll())]:[animation:tx-edges_linear_both] ` +
     `[@supports(animation-timeline:_scroll())]:[animation-timeline:scroll(self_inline)] [&_+_.tx-level]:mt-[22px]`,

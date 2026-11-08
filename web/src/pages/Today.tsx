@@ -88,9 +88,10 @@ export function TodayPage({ recovered }: { recovered: number }) {
     );
     if (state === "done") return (
       <div className={cx("vplan-note", practice["vplan-note"])}>
-        <h2>Nice work</h2>
+        <h2>Today's session is saved</h2>
         <p>You saved {doneFull!.take_count} recording{doneFull!.take_count === 1 ? "" : "s"} today.</p>
-        <p>Next time: {pointer?.next_action?.summary.replace(/^./, (c) => c.toLowerCase()) ?? "same exercise, gently."}</p>
+        {/* Today's feedback below says what's next when there is a pointer; this only fills in. */}
+        {!pointer?.next_action && <p>Next time: the same exercise, gently.</p>}
       </div>
     );
     return (
@@ -117,7 +118,7 @@ export function TodayPage({ recovered }: { recovered: number }) {
     else if (state === "done") go("/studio");
     else void start("full");
   };
-  const pressLabel = { ready: "Start today", checked_in: "Start today", in_progress: "Continue today's session", done: "Free practice", paused: "I feel fine, resume gently" }[state];
+  const pressLabel = { ready: "Start today", checked_in: "Start today", in_progress: "Continue today's session", done: "Open Practice", paused: "I feel fine, resume gently" }[state];
   const pressHint = { ready: "Start", checked_in: "Start", in_progress: "Continue", done: "Practise more", paused: "I'm ready" }[state];
 
   return (
@@ -136,7 +137,7 @@ export function TodayPage({ recovered }: { recovered: number }) {
         {t.reminder.due && state !== "done" && <p className={cx("vreminder", practice["vreminder"])}><i aria-hidden="true" />Reminder for {t.reminder.time}. A short session or a check-in both count.</p>}
       </header>
 
-      <Device3D screen={screenFor()} onPress={press} pressLabel={pressLabel} pressHint={pressHint} led={state === "in_progress"} busy={busy} />
+      <Device3D screen={screenFor()} onPress={press} pressLabel={pressLabel} pressHint={pressHint} led={state === "in_progress"} busy={busy} quiet={state === "done"} />
 
       <nav className={cx("vlinks", practice["vlinks"])} aria-label="More">
         {state !== "in_progress" && <button className={cx("textlink", shared["textlink"])} onClick={() => void start("check_in")} disabled={busy} aria-label="Quick check-in (1 min)">Quick check-in</button>}

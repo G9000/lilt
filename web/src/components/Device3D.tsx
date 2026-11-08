@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 
 /** Today's plan: what the session holds, then one primary action.
  *  (The name is historical; it used to be a hardware-style device.) */
-export function Device3D({ screen, onPress, pressLabel, led = false, busy = false }: {
+export function Device3D({ screen, onPress, pressLabel, led = false, busy = false, quiet = false }: {
   screen: ReactNode;
   onPress: () => void;
   pressLabel: string;
@@ -14,11 +14,13 @@ export function Device3D({ screen, onPress, pressLabel, led = false, busy = fals
   /** Something is under way (a session in progress). */
   led?: boolean;
   busy?: boolean;
+  /** The press is an extra, not the next step (more practice after today is done). */
+  quiet?: boolean;
 }) {
   return (
     <div className={cx(`vplan${led ? " is-live" : ""}`, practice["vplan"])}>
       <div className="vplan-body">{screen}</div>
-      <button className={cx(cx("btn-primary vgo", shared["btn-primary"]), practice["vgo"])} onClick={onPress} disabled={busy} aria-busy={busy || undefined}>
+      <button className={cx(cx(quiet ? "btn-secondary vgo" : "btn-primary vgo", shared[quiet ? "btn-secondary" : "btn-primary"]), practice["vgo"])} onClick={onPress} disabled={busy} aria-busy={busy || undefined}>
         {pressLabel}
       </button>
     </div>

@@ -32,7 +32,7 @@ export const WINDOWS: Record<string, { title: string; width: number; full?: bool
   review: { title: "Feedback", width: 760 },
   compare: { title: "Compare", width: 820 },
   studio: { title: "Practice", width: 1120, full: true },
-  texts: { title: "Practice texts", width: 1280 },
+  texts: { title: "Practice texts", width: 1040 },
   flashcards: { title: "Flashcards", width: 1120, full: true },
   photos: { title: "Photos", width: 960 },
   yarn: { title: "Yarn", width: 1120, full: true },
@@ -184,7 +184,7 @@ function TodayWidget({ deck, reload, course, courseTitle }: { deck: Deck | null;
         <a className={["ds-t-link", roomStyles["ds-t-link"]].join(" ")} href={`#${guidedPath(course)}`}>{course === DEFAULT_COURSE ? "Guided session with feedback" : "Guided practice"}</a>
         <div className={["ds-t-foot", roomStyles["ds-t-foot"]].join(" ")}>
           {deck?.paused ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
-            : done ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(practicePath(course))}>Free practice</button>
+            : done ? <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => go(practicePath(course))}>Open Practice</button>
             : <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(dailyPath(course))} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
           <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>Stage {deck?.open_stage ?? 1} of {stages}<span className={["ds-t-bar", roomStyles["ds-t-bar"]].join(" ")}><i style={{ width: `${Math.max(4, learned * 100)}%` }} /></span></span>
         </div>

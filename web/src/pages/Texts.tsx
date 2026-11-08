@@ -20,6 +20,8 @@ function CourseTexts({ course }: { course: string }) {
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [open, setOpen] = useState<string>("all");
+  // On a phone the course note shows its first lines (where it says to stop if anything strains) until opened.
+  const [noteOpen, setNoteOpen] = useState(false);
   useEffect(() => {
     let ignore = false;
     setError(null);
@@ -40,9 +42,12 @@ function CourseTexts({ course }: { course: string }) {
   return (
     <div className={cx(pages.tx, "tx")}>
       <header className={cx(pages.txHead, "tx-head")}>
+        <a className={cx(pages.txBack, "tx-back")} href={`#${practicePath(course)}`}><span aria-hidden="true">‹</span>Course home</a>
         <h1>{course === DEFAULT_COURSE ? "Start small, build up" : "Practice texts"}</h1>
-        <a href={`#${practicePath(course)}`}>Course home</a>
-        <p>{texts.note}</p>
+        {texts.note && <>
+          <p className={noteOpen ? "open" : ""}>{texts.note}</p>
+          {!noteOpen && <button type="button" className={cx(pages.txMore, "tx-more")} onClick={() => setNoteOpen(true)}>Read it all</button>}
+        </>}
       </header>
 
       <div className={cx(cx(pages.txLevels, "segmented tx-levels"), shared["segmented"])} role="group" aria-label="Level filter">
