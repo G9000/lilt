@@ -9,9 +9,10 @@ surface rather than glass over the room, and Today's card is plain white (`#2222
 page. Fewer boxes: a suggestion after a take is a sentence, not a tinted card; resonance sits
 under **More about this take** rather than in a box inside the take. Practice's frame is a guided
 app: the sidebar is a short list of places (no file tree), Home greets you with one next step and
-chapter tiles, a Chapters page holds every chapter as a tile with the cover and guide, a chapter
-splits into **Learn** and **Practise** tabs (a segmented control), and Today is one card in a
-760px column without the stacked-paper edges. Placeholders for
+the next four chapters as tiles, a Chapters page holds every chapter as a tile with the cover and
+guide, a chapter splits into **Learn** and **Practise** tabs (a segmented control), and Today is
+one card without the stacked-paper edges. Every Practice page shares one centred 960px column.
+In the room, widgets and cues wait for the painting, so nothing floats on an empty dark room. Placeholders for
 unfinished features (Remix) stay hidden until they work. Windows close with Escape, when you go to
 another page, and with **Done** on phones, so no one has to aim for the 12px red light.
 
@@ -225,7 +226,7 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   (today ringed), and **Then and now** (your first and latest take of the same text, the reference line first, with how far
   apart they are). The two takes sit flat on the panel, each pitch chart in a `--fill` well, both on one shared scale, with one
   caption under the pair.
-  **Today** opens **Your daily deck** with one active stationery card: ivory paper in light mode,
+  **Today** (titled Today, with "Your daily deck: 5 cards" or how many are left under it) opens with one active stationery card: ivory paper in light mode,
   charcoal in dark, subtle grain and two decorative paper edges. The card position sits above
   the exercise, and the room's cat (92px) dozes on the card's top edge: it
   breathes faster and shows one small paper bubble while recording, and a pink heart rises once
@@ -266,8 +267,8 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   Recordings, until it can be trusted. While Practice fills the screen, the desk's widgets are hidden
   so nothing shows through the glass.
   **Home** (`#/studio`, the dock's Chapters app) opens with a time-of-day greeting and the date
-  under it, then your practice (the next step first) and the chapters as tiles by part with an
-  "All chapters" link. **Chapters** (`#/studio/chapters`) shows the course cover as a rounded
+  under it, then your practice (the next step first) and the next four chapters as tiles (from the
+  one up next) with an "All chapters" link. **Chapters** (`#/studio/chapters`) shows the course cover as a rounded
   picture, then the owner's complete Markdown introduction in the expandable **Course guide**
   (above the chapters, since it introduces them), preserving references and code blocks across
   sections, then every chapter as a tile. The
@@ -463,10 +464,11 @@ section headings 18px, body 15px, controls 14px and captions 13px. Help text use
 Weights are 400, 500, 600 and 700 (200 and 300 for big live numbers). The reading serif keeps its
 own sizes. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
 
-Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Reading pages use a centered 1280px column with
-18–40px responsive side padding; running text inside it (chapter intros, tips, hints, notes) stops
-at about 68 characters, while players, charts and videos use the full column. Today's practice
-uses a narrower 880px column, one card at a time. Reading
+Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Every Practice page (Home, Chapters, a chapter,
+Today, Recordings, Studio, Practice settings, Mixtape) uses one centred 960px column with 18–40px
+responsive side padding, so nothing jumps when you switch pages; running text inside it (chapter
+intros, tips, hints, notes) stops at about 68 characters, while players, charts and videos use the
+full column. Reading
 surfaces are opaque `--page` so room artwork does not compete with the text. Course Home's
 shortcuts are quiet links, and its guide is a disclosure between hairlines.
 

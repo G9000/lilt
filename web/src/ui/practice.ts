@@ -286,7 +286,7 @@ export const practice = {
     `[&_>_summary]:pl-[0] [&_>_summary]:[font-size:var(--type-body)] [&_>_summary]:font-semibold ` +
     `[&_>_summary_span]:[margin-inline-start:auto] [&_>_summary_span]:text-ink-2 [&_>_summary_span]:text-[13px] ` +
     `[&_>_summary_span]:font-normal [&_>_.md]:pt-[8px] [&_>_.md]:pr-[0] [&_>_.md]:pb-[24px] [&_>_.md]:pl-[0]`,
-  "ve": `[--read:"Newsreader_Variable",_Georgia,_serif] [--ve-paper:#fff] [--ve-card:rgba(255,_255,_255,_0.72)] ` +
+  "ve": `[--content-width:960px] [--read:"Newsreader_Variable",_Georgia,_serif] [--ve-paper:#fff] [--ve-card:rgba(255,_255,_255,_0.72)] ` +
     `[--ve-mk:rgba(0,_0,_0,_0.3)] [--ve-glass:rgba(250,_250,_250,_0.6)] ` +
     `[--ve-glass-hi:rgba(250,_250,_250,_0.82)] [--ve-blur:blur(40px)_saturate(1.8)] ` +
     `[--ve-glass-side:#f3f3f3] [flex:1] min-w-0 min-h-0 grid ` +
@@ -429,6 +429,8 @@ export const practice = {
     `[.ve_&]:rounded-[6px] [.ve_&]:text-ink-3 [.ve-placerow:hover_&]:text-ink [.ve_&:focus-visible]:text-ink ` +
     `[&_svg]:w-[12px] [&_svg]:h-[12px] [&_svg]:[transition:transform_0.18s_var(--ease)] [&.open_svg]:[transform:rotate(90deg)] ` +
     `[@media_(prefers-reduced-motion:_reduce)]:[&_svg]:[transition:none]`,
+  "ve-chlist": `relative [.ve-side-scroll_>_&]:[min-width:0] max-h-[max(180px,_calc(100dvh_-_430px))] overflow-y-auto ` +
+    `[scrollbar-width:thin] [overscroll-behavior:contain] mb-[2px]`,
   "ve-chpart": `mt-[12px] mb-[2px] pl-[40px] text-[12px] font-medium text-ink-3`,
   "ve-home-ic": `[flex:none] w-[22px] grid place-items-center [&_svg]:w-[17px] [&_svg]:h-[17px]`,
   "ve-tree": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [.ve-home_+_&]:mt-[8px]`,
@@ -1356,7 +1358,7 @@ export const practice = {
     `[:root[data-theme="dark"]_.ve_&]:[--sd-paper:#222222] [:root[data-theme="dark"]_.ve_&]:[--sd-edge:#2f2f2f] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-line:#c4c4c4] [:root[data-theme="dark"]_.ve_&]:[--sd-sage:#849680] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-clay:#ce9578]`,
-  "sd-deck": `[.ve_&]:max-w-[760px] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
+  "sd-deck": `[.ve_&]:max-w-[var(--content-width)] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
     `[.ve_&]:pb-[64px] [.ve_&]:[padding-left:var(--page-padding)] [@media_(max-width:_700px)]:[.ve_&]:pt-[24px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pr-[18px] [@media_(max-width:_700px)]:[.ve_&]:pb-[50px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pl-[18px]`,

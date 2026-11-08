@@ -158,6 +158,8 @@ try {
   const phone = await touch.newPage();
   await phone.goto(`${base}/#/`);
   await phone.locator(".room-stage.settled").waitFor();
+  // The room's widgets and cues wait for the painting, so nothing floats on an empty room.
+  await phone.locator('.room[data-ready="true"]').waitFor();
   assert.ok(await phone.getByText("Tap the screen", { exact: true }).isVisible());
   if (shots) await phone.screenshot({ path: path.join(shots, "room-invitation-mobile.png") });
   await phone.locator(".room-hit").tap();

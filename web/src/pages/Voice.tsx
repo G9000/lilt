@@ -520,6 +520,11 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
     try { localStorage.setItem(CHAPTER_LIST_KEY, o ? "closed" : "open"); } catch { /* private window: the choice just isn't kept */ }
     return !o;
   });
+  // The chapter list scrolls on its own; keep the chapter you're in within view.
+  useEffect(() => {
+    const list = document.getElementById("ve-chlist"), row = list?.querySelector<HTMLElement>(".ve-here.on");
+    if (list && row && (row.offsetTop < list.scrollTop || row.offsetTop + row.offsetHeight > list.scrollTop + list.clientHeight)) list.scrollTop = row.offsetTop - 8;
+  }, [current, listOpen, texts]);
   const chapterRows = (levels: TextLevel[]) => levels.map((l) => (
     <Fragment key={l.id}>
       <button className={cx(`ve-home ve-here${l.id === current ? " on" : ""}`, practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${l.id}`)} disabled={locked}
@@ -572,7 +577,7 @@ function Sidebar({ texts, deck, practised, current, itemId, locked }: {
             {/* On the Chapters page or in a chapter, every chapter is listed by part; the one you're
                 in opens to its texts (a tick once practised). Folded, only the one you're in stays. */}
             {p.id === "chapters" && texts && listable && (
-              <div id="ve-chlist">
+              <div id="ve-chlist" className={cx("ve-chlist", practice["ve-chlist"])}>
                 {listOpen
                   ? byPart(texts.levels).map((g, gi) => (
                     <Fragment key={`${gi}-${g.part ?? ""}`}>
@@ -984,37 +989,49 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
         {!band ? <StartCard /> : <YourPractice history={history} band={band} next={<NextStep deck={deck} texts={texts} practised={practised} />} />}
         <section className={cx("ve-home-chapters", practice["ve-home-chapters"])} aria-label="Chapters">
           <div className={cx("ve-sec-h", practice["ve-sec-h"])}><h2>Chapters</h2><a href="#/studio/chapters">All chapters</a></div>
-          <ChapterGrid texts={texts} practised={practised} compact />
+          <ChapterGrid texts={texts} practised={practised} compact upNext />
         </section>
       </article>
     </div>
   );
 }
 
+/** A grid of chapter tiles: number, title, subtitle (unless compact), and Next up or a medal. */
+function gridOf(levels: TextLevel[], practised: Set<string>, nextId: string | undefined, compact: boolean) {
+  return (
+    <ul className={cx("ve-cgrid", practice["ve-cgrid"])}>
+      {levels.map((l) => {
+        const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
+        const isNext = l.id === nextId;
+        return (
+          <li key={l.id}>
+            <a href={`#/studio/${l.id}`} className={cx(`ve-ctile${isNext ? " next" : ""}`, practice["ve-ctile"])}>
+              <span className="n">{l.level}</span>
+              <b>{l.title}</b>
+              {!compact && l.subtitle && <small>{l.subtitle}</small>}
+              <span className="m">{d >= n ? <><Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />Practised</> : isNext ? "Next up" : `${n} texts`}</span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 /** The chapters as tiles, grouped by part of the course. */
-function ChapterGrid({ texts, practised, compact = false }: { texts: Texts; practised: Set<string>; compact?: boolean }) {
+function ChapterGrid({ texts, practised, compact = false, upNext = false }: { texts: Texts; practised: Set<string>; compact?: boolean; upNext?: boolean }) {
   const next = nextChapter(texts, practised);
+  // On Home, just the chapter that's next and the three after it; every chapter is on Chapters.
+  if (upNext) {
+    const from = Math.max(0, texts.levels.findIndex((l) => l.id === next?.id));
+    return <div className={cx("ve-cparts", practice["ve-cparts"])}>{gridOf(texts.levels.slice(from, from + 4), practised, next?.id, compact)}</div>;
+  }
   return (
     <div className={cx("ve-cparts", practice["ve-cparts"])} id="voice-chapters">
       {byPart(texts.levels).map((g, gi) => (
         <section key={`${gi}-${g.part ?? ""}`} aria-label={g.part ?? "Chapters"}>
           {g.part && <h3 className={cx("ve-cpart-h", practice["ve-cpart-h"])}>{g.part}</h3>}
-          <ul className={cx("ve-cgrid", practice["ve-cgrid"])}>
-            {g.levels.map((l) => {
-              const n = l.items.length, d = l.items.filter((it) => practised.has(textId(COURSE, l.id, it.id))).length;
-              const isNext = l.id === next?.id;
-              return (
-                <li key={l.id}>
-                  <a href={`#/studio/${l.id}`} className={cx(`ve-ctile${isNext ? " next" : ""}`, practice["ve-ctile"])}>
-                    <span className="n">{l.level}</span>
-                    <b>{l.title}</b>
-                    {!compact && l.subtitle && <small>{l.subtitle}</small>}
-                    <span className="m">{d >= n ? <><Medal className={cx("ve-medal-s", practice["ve-medal-s"])} />Practised</> : isNext ? "Next up" : `${n} texts`}</span>
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
+          {gridOf(g.levels, practised, next?.id, compact)}
         </section>
       ))}
     </div>
@@ -1380,7 +1397,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
           </header>
           <div className={cx("ve-tabs", practice["ve-tabs"])} role="tablist" aria-label="Chapter">
             <button role="tab" id={`tab-learn-${level.id}`} aria-selected={tab === "learn"} aria-controls={`panel-${level.id}`} disabled={recording} onClick={() => setTab("learn")}>Learn</button>
-            <button role="tab" id={`tab-practise-${level.id}`} aria-selected={tab === "practise"} aria-controls={`panel-${level.id}`} disabled={recording} onClick={() => setTab("practise")}>Practise<span>{n} texts</span></button>
+            <button role="tab" id={`tab-practise-${level.id}`} aria-selected={tab === "practise"} aria-controls={`panel-${level.id}`} aria-label={`Practise, ${n} texts`} disabled={recording} onClick={() => setTab("practise")}>Practise<span>{n} texts</span></button>
           </div>
           <div id={`panel-${level.id}`} role="tabpanel" aria-labelledby={`tab-${tab}-${level.id}`}>
           {tab === "learn" ? <ChapterIntro key={level.id} level={level} onPractise={practise} /> : <>
@@ -1814,9 +1831,9 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
           <header className={cx("ve-head sd-heading", practice["ve-head"], practice["sd-heading"])}>
             {phase.k === "end" ? <h1 tabIndex={-1} ref={titleRef}>That's today's deck</h1>
               : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}>Let's stop here</h1>
-              : <h1>Your daily deck</h1>}
+              : <h1>Today</h1>}
             <p className={cx("ve-subtitle", practice["ve-subtitle"])}>{date}</p>
-            <p className={cx("ve-meta", practice["ve-meta"])}><DonePile n={doneCount} />{phase.k === "hurt" ? "Paused" : `${doneCount} of ${total} done`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
+            <p className={cx("ve-meta", practice["ve-meta"])}><DonePile n={doneCount} />{phase.k === "hurt" ? "Paused" : doneCount === 0 ? `Your daily deck: ${total} cards` : doneCount >= total ? `All ${total} cards said` : `${total - doneCount} of ${total} cards left`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
           </header>
           {phase.k === "hurt" ? (
             <>

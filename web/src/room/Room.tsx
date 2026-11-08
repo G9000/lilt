@@ -279,7 +279,9 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
   // so this class name never changes and React never resets it.
   const settledAtStart = useRef(!inside).current;
   return (
-    <div className={[`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`, roomStyles["room"]].join(" ")} aria-hidden={inside}>
+    // Until the painting can show, nothing floats on the empty room: widgets and the monitor's
+    // outline wait for it, so a slow first load never shows them on black.
+    <div className={[`room${inside ? " inside" : ""}${hover ? " hovering" : ""}`, roomStyles["room"], "[&[data-ready=false]_.room-stage_>_*:not(.room-paint)]:invisible"].join(" ")} aria-hidden={inside} data-ready={ready}>
       <div className={settledAtStart ? ["room-stage settled", roomStyles["room-stage"]].join(" ") : ["room-stage", roomStyles["room-stage"]].join(" ")} ref={stage} style={{ width: W, height: H }}>
         <div className={["room-paint", roomStyles["room-paint"]].join(" ")} data-light={appearance.light} ref={paintRef} data-ready={ready} style={{ visibility: ready ? 'visible' : 'hidden' }}>
         {LIGHTS.map((l) => (

@@ -122,7 +122,7 @@ async function main() {
   await page.getByRole("button", { name: "It hurts or feels strained" }).click();
   await page.getByRole("heading", { name: "Let's stop here" }).waitFor({ timeout: 8000 });
   await page.getByRole("button", { name: "I feel fine, resume" }).click();
-  await page.getByRole("heading", { name: "Your daily deck" }).waitFor({ timeout: 8000 });
+  await page.getByRole("heading", { name: "Today", exact: true }).waitFor({ timeout: 8000 });
   check("after it hurt, Resume brings the cards back", (await page.locator(".ve-item.on").count()) === 1);
 
   check("no page errors", errors.length === 0, errors.join(" | "));
