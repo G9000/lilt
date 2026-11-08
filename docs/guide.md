@@ -403,7 +403,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    is taken into account next time.
 7. **Chapters** are free practice, in the same Practice page. Practice's sidebar is a short list
    of places: Home, Today (with how many cards are left), Chapters, Recordings, Studio and Mixtape,
-   with Practice settings at the foot; the chapter you're in shows under Chapters. **Home** greets
+   with Practice settings at the foot; the chapter you're in shows under Chapters with its texts
+   (a tick once practised), so you can jump to any of them. **Home** greets
    you, offers one next step and shows the chapters as tiles by part. **Chapters**
    (`#/studio/chapters`) has the course's cover, every chapter as a tile with its subtitle (the
    next one outlined, a medal once you've practised them all) and the **Course guide**. A chapter

@@ -8,7 +8,7 @@ import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
 import { DEFAULT_COURSE, textId } from "../courses";
-import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, sameLabel } from "../chapters";
+import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, sameLabel, textLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
 import { RemixBox } from "../components/RemixBox";
@@ -196,7 +196,7 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <RemixPanel />
-      <Sidebar texts={texts} deck={deck} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} locked={recording} />
+      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
       <div className={cx(`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "mixtape" || doc === "settings" ? " solo" : ""}`, practice["ve-doc"])} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
@@ -501,9 +501,12 @@ function ProgressSoon() {
 
 /**
  * The sidebar: a short list of places, not the whole course. The chapter you're in shows under
- * Chapters, so you always know where you are; every chapter is on the Chapters page.
+ * Chapters with its texts (a tick once practised), so you always know where you are and can jump
+ * to any text; every chapter is on the Chapters page.
  */
-function Sidebar({ texts, deck, current, locked }: { texts: Texts | null; deck: Deck | null; current: string; locked: boolean }) {
+function Sidebar({ texts, deck, practised, current, itemId, locked }: {
+  texts: Texts | null; deck: Deck | null; practised: Set<string>; current: string; itemId?: string; locked: boolean;
+}) {
   const left = deck ? deck.items.filter((i) => !i.done_today).length : 0;
   const total = deck?.items.length ?? 0;
   const here = texts?.levels.find((l) => l.id === current);
@@ -525,9 +528,24 @@ function Sidebar({ texts, deck, current, locked }: { texts: Texts | null; deck: 
                 : texts.edition.mine ? <span className={cx("ve-mix-tag", practice["ve-mix-tag"])}>{texts.edition.changes}</span> : null)
               : undefined)}
             {p.id === "chapters" && here && (
-              <button className={cx("ve-home ve-here", practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${here.id}`)} disabled={locked} aria-current="page">
-                <span className="t">{here.title}</span>
-              </button>
+              <>
+                <button className={cx("ve-home ve-here", practice["ve-home"], practice["ve-here"])} onClick={() => go(`/studio/${here.id}`)} disabled={locked} aria-current={itemId ? undefined : "page"}>
+                  <span className="t">{here.title}</span>
+                </button>
+                <ul className={cx("ve-files", practice["ve-files"])} aria-label={`Texts in ${here.title}`}>
+                  {here.items.map((it) => {
+                    const done = practised.has(textId(COURSE, here.id, it.id));
+                    return (
+                      <li key={it.id}>
+                        <button className={cx(`ve-file${done ? " done" : ""}`, practice["ve-file"])} onClick={() => go(`/studio/${here.id}/${it.id}`)} disabled={locked}
+                          aria-current={itemId === it.id ? "page" : undefined} title={it.text}>
+                          <span className="t">{textLabel(it.text, it.id)}</span>{done && <Tick className={cx("ve-tick", practice["ve-tick"])} />}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
             )}
           </Fragment>
         ))}

@@ -423,7 +423,7 @@ export const practice = {
   "ve-here": `[.ve_&]:h-[32px] [.ve_&]:pl-[42px] [.ve_&]:text-[13px] [.ve_&]:mb-[4px]`,
   "ve-home-ic": `[flex:none] w-[22px] grid place-items-center [&_svg]:w-[17px] [&_svg]:h-[17px]`,
   "ve-tree": `list-none mt-[0] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [.ve-home_+_&]:mt-[8px]`,
-  "ve-files": `list-none mt-[1px] mr-[0] mb-[4px] ml-[18px] pt-[0] pr-[0] pb-[0] pl-[7px] [border-left-width:1px] ` +
+  "ve-files": `list-none mt-[0] mr-[0] mb-[6px] ml-[30px] pt-[0] pr-[0] pb-[0] pl-[6px] [.ve-side-scroll_>_&]:[min-width:0] [border-left-width:1px] ` +
     `[border-left-style:solid] [border-left-color:var(--hair)]`,
   "ve-doc": `[&.solo]:[grid-template-columns:minmax(0,_1fr)] min-w-0 min-h-0 grid [grid-template-rows:auto_minmax(0,_1fr)] ` +
     `relative`,
