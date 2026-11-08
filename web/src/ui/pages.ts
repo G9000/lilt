@@ -204,6 +204,10 @@ export const pages = {
     `[&.stack_.segmented_button]:[flex:1_1_0] [&.stack_.segmented_button]:min-w-0 ` +
     `[&.stack_.segmented_button]:pt-[4px] [&.stack_.segmented_button]:pr-[6px] [&.stack_.segmented_button]:pb-[4px] ` +
     `[&.stack_.segmented_button]:pl-[6px] [&_select]:w-[240px] [&_select]:max-w-full [&_textarea]:min-h-[84px] ` +
+    // The native arrow sits almost against the edge; a thin chevron in ink gets the same room as the text.
+    `[&_select]:appearance-none [&_select]:pr-[40px] [&_select]:bg-no-repeat [&_select]:[background-size:5px_5px] ` +
+    `[&_select]:[background-position:right_20px_center,right_15px_center] ` +
+    `[&_select]:[background-image:linear-gradient(45deg,transparent_calc(50%_-_0.75px),var(--ink-2)_calc(50%_-_0.75px),var(--ink-2)_calc(50%_+_0.75px),transparent_calc(50%_+_0.75px)),linear-gradient(135deg,transparent_calc(50%_-_0.75px),var(--ink-2)_calc(50%_-_0.75px),var(--ink-2)_calc(50%_+_0.75px),transparent_calc(50%_+_0.75px))] ` +
     `[&_input[type=time]]:w-[140px]`,
   sxRowL: `min-w-0 [flex:1_1_220px] [&_label]:block [&_label]:mt-0 [&_label]:mr-0 [&_label]:mb-0 [&_label]:ml-0 ` +
     `[&_label]:font-medium [&_label]:text-ink`,
