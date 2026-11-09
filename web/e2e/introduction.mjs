@@ -87,6 +87,12 @@ try {
     assert.ok(Math.abs(size.offset) <= 1, 'column is centered like the chapters');
     assert.ok(Math.abs(size.content - size.inner) <= 1, 'no extra narrow wrapper inside the chapter column');
     assert.equal(size.overflow, false, 'no horizontal overflow');
+    const narrowed = await locator.locator('.md').evaluateAll(nodes => nodes.flatMap(md =>
+      [...md.querySelectorAll(':scope > p, :scope > ul, :scope > ol')].flatMap(el => {
+        const parent = md.getBoundingClientRect(), box = el.getBoundingClientRect();
+        return Math.abs(box.right - parent.right) > 1 ? [{ tag: el.tagName, width: box.width, available: parent.width }] : [];
+      })));
+    assert.deepEqual(narrowed, [], 'actual prose and lists align with the shared content edge');
   };
   await matchesChapterWidth(welcome());
   assert.equal(await page.evaluate(() => window.micRequests), 0, 'Home does not open a granted microphone');
@@ -94,6 +100,8 @@ try {
   await page.setViewportSize({ width: 1920, height: 1080 });
   await matchesChapterWidth(welcome());
   await snapshot('home-wide.png');
+  await welcome().locator('.md > p').last().scrollIntoViewIfNeeded();
+  await snapshot('home-bottom-wide.png');
   await page.setViewportSize({ width: 1440, height: 950 });
   await welcome().getByRole('heading', { name: 'Why this exists', exact: true }).scrollIntoViewIfNeeded();
   await snapshot('home-story-full.png');

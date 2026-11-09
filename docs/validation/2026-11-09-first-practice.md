@@ -72,3 +72,17 @@ and start/skip controls remain visible, without an additional introduction wrapp
 - Typecheck and all 224 unit tests passed. Production build passed to
   `.tmp/introduction-standard-width-web` with the existing large-chunk advisory.
 - Inspected the wide Home screenshot. No owner app/data, installer or production output changes.
+
+## Screenshot follow-up: inner text widths
+
+The previous checks covered the outer column but missed independent character-count caps.
+A new actual-prose regression reproduced Home paragraphs at 721px within an 880px content
+column. The chapter-step regression separately reproduced text ending 164px before its row.
+Removed the shared Markdown 68ch cap, the numbered-step body cap and the chapter-lede cap.
+The centered outer column still governs reading width. Text fills its parent, including the
+space remaining after chapter numbers; all original writing is retained.
+
+Introduction and course-reading browser suites passed actual text-edge checks at phone and
+1440/1920px desktop sizes in light/dark. Shared Markdown stress checks passed at five widths,
+two themes and two text sizes. Typecheck, 224 unit tests and scratch production build passed
+(existing chunk-size advisory). Inspected corrected Home-bottom and dark chapter-step screenshots.

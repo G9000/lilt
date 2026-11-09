@@ -143,6 +143,18 @@ try {
     await page.screenshot({ path: path.join(shots, `voice-chapter-${width}-${theme}.png`) });
     await page.locator('.ve-item').nth(1).click();
     assert.equal(await page.locator('.ve-item.on .readtext').textContent(), voiceItems[1].text);
+    await page.getByRole('tab', { name: /^Learn/ }).click();
+    const stepWidths = await page.locator('.ci-tips > li').evaluateAll(rows => rows.map(row => {
+      const body = row.querySelector(':scope > div'), prose = body.querySelector('.md p');
+      return { row: row.getBoundingClientRect().right, body: body.getBoundingClientRect().right,
+        prose: prose?.getBoundingClientRect().right };
+    }));
+    assert.ok(stepWidths.length > 0, 'checks real chapter instructions');
+    for (const edges of stepWidths) {
+      assert.ok(Math.abs(edges.row - edges.body) <= 1, `step body uses remaining row width: ${JSON.stringify(edges)}`);
+      if (edges.prose) assert.ok(Math.abs(edges.row - edges.prose) <= 1, 'step prose aligns with the row edge');
+    }
+    await page.screenshot({ path: path.join(shots, `voice-learn-${width}-${theme}.png`) });
     await page.goto(`${base}#/studio`);
     await checkColumn(page.locator('.ve-home-col'), width, 'Voice course home', 880);
     await page.goto(`${base}#/studio/chapters`);

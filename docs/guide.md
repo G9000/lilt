@@ -774,7 +774,7 @@ Sitting down at the room's computer opens the selected course's Home. Home expla
 private place for self-directed learning, with an introduction before daily cards. The voice
 course shows its complete existing introduction, including the creator story, current progress,
 practice guidance, examples, care notes and sources. The full guide is also available on Chapters.
-Home and the first-practice walkthrough use the same centered 960px column and page padding as chapters.
+Home and the first-practice walkthrough use the same centered 960px column and page padding as chapters. Paragraphs and lists follow that column too; numbered chapter instructions use the remaining width after their number.
 Start/skip controls stay above the full introduction so you can begin without scrolling through it.
 
 **Your first practice** opens four short steps: how practice works, getting comfortable, one

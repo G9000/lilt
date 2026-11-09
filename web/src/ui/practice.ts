@@ -658,8 +658,8 @@ export const practice = {
     `[.ve_&.warn]:[max-width:none] [.ve_&.warn_b]:block [.ve_&.warn_b]:mt-[0] [.ve_&.warn_b]:mr-[0] ` +
     `[.ve_&.warn_b]:mb-[3px] [.ve_&.warn_b]:ml-[0]`,
   "ci": `mt-[0] mr-[0] mb-[32px] ml-[0]`,
-  "ci-lede": `[--md-body-size:19px] w-full [max-width:min(62ch,_680px)] text-ink`,
-  "ci-tips": `list-none mt-[16px] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [&_>_li]:grid [&_>_li_>_div]:[max-width:68ch] ` +
+  "ci-lede": `[--md-body-size:19px] w-full text-ink`,
+  "ci-tips": `list-none mt-[16px] mr-[0] mb-[0] ml-[0] pt-[0] pr-[0] pb-[0] pl-[0] [&_>_li]:grid [&_>_li_>_div]:min-w-0 ` +
     `[&_>_li]:[grid-template-columns:28px_minmax(0,_1fr)] [&_>_li]:[row-gap:12px] [&_>_li]:[column-gap:12px] ` +
     `[&_>_li]:[align-items:start] [&_>_li]:pt-[16px] [&_>_li]:pr-[0] [&_>_li]:pb-[16px] [&_>_li]:pl-[0] ` +
     `[&_>_li]:[border-top-width:1px] [&_>_li]:[border-top-style:solid] [&_>_li]:[border-top-color:var(--hair)] ` +

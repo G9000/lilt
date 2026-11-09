@@ -492,7 +492,7 @@ shortcuts are quiet links, and its guide is a disclosure between hairlines.
 The chapter comfort footer uses the full reading width, with 24px above its divider and 16px
 inside it. Course lists use rows between hairlines; course detail pages lead with linked chapters
 before copy management. Markdown reads like a quiet modern page (`web/src/ui/markdown.ts`):
-16px body at a 1.7 line height, prose stopping at about 68 characters, headings in semibold with
+16px body at a 1.7 line height, prose following the containing column, headings in semibold with
 more room above (2.2em before an h2) than below, and links in ink with a soft accent underline that
 turns accent on hover. Quotes are a 1px hairline on the left, tables are plain rows with a stronger
 rule under the header (no zebra), and pictures are framed with a hairline and soft shadow at the
@@ -558,3 +558,8 @@ introduction, not an extracted creator-story section. Its start/skip controls st
 Home and the first-practice walkthrough use the same centered 960px column and page padding as
 chapters. Do not add a second width cap to the introduction wrapper or override shared Markdown
 reading widths. The complete guide remains visible within the standard chapter layout.
+
+**Consistent text edges (9 November).** The centered 960px course column controls reading width.
+Markdown paragraphs and lists use that column; chapter ledes and numbered step bodies have no
+separate character-count cap. Step text fills the space after its number, ending at the same
+right edge as its divider. Test actual prose edges, not only the outer Markdown wrapper.
