@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, writeFileSync, rmSync, mkdirSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { generateKeyPairSync, sign, createHash } from 'node:crypto'
-import { checkEnvironment, checkVersions, createManifest, writeArtifact, validateArchiveEntries } from './release.mjs'
+import { checkEnvironment, checkVersions, createManifest, createWindowsManifest, writeArtifact, validateArchiveEntries } from './release.mjs'
 
 const version = '0.2.1'
 const { publicKey, privateKey } = generateKeyPairSync('ed25519')
@@ -103,4 +103,39 @@ test('archive completeness rejects missing runtime and paths outside the app', (
   assert.doesNotThrow(() => validateArchiveEntries(paths))
   assert.throws(() => validateArchiveEntries(paths.filter(p => !p.includes('/python/'))), /python/)
   assert.throws(() => validateArchiveEntries([...paths, '../escape']), /outside/)
+})
+
+function signed(bytes, file, signedVersion = version) {
+  const sig = sign(null, createHash('blake2b512').update(bytes).digest(), privateKey)
+  const comment = `timestamp:1	file:${file}	version:${signedVersion}`
+  const global = sign(null, Buffer.concat([sig, Buffer.from(comment)]), privateKey)
+  return Buffer.from(`untrusted comment: signature
+${Buffer.concat([Buffer.from('ED'), keyId, sig]).toString('base64')}
+trusted comment: ${comment}
+${global.toString('base64')}
+`).toString('base64')
+}
+function windowsFixture(t, signedVersion = version) {
+  const dir = mkdtempSync(join(tmpdir(), 'lilt-release-win-'))
+  t.after(() => rmSync(dir, { recursive: true, force: true }))
+  const name = `Lilt-${version}-x64-setup.exe`
+  const bytes = Buffer.from('fixture NSIS installer')
+  writeFileSync(join(dir, name), bytes)
+  writeFileSync(join(dir, `${name}.sig`), signed(bytes, name, signedVersion))
+  return dir
+}
+test('the Windows feed points at the verified installer of this version', t => {
+  const manifest = createWindowsManifest(windowsFixture(t), version, 'A quiet update.', publicText)
+  assert.equal(manifest.version, version)
+  assert.deepEqual(Object.keys(manifest.platforms), ['windows-x86_64'])
+  assert.equal(manifest.platforms['windows-x86_64'].url, `https://github.com/G9000/lilt/releases/download/v${version}/Lilt-${version}-x64-setup.exe`)
+})
+test('the Windows feed refuses a changed installer, a missing signature or another signed version', t => {
+  const changed = windowsFixture(t)
+  writeFileSync(join(changed, `Lilt-${version}-x64-setup.exe`), 'tampered')
+  assert.throws(() => createWindowsManifest(changed, version, '', publicText), /signature/)
+  const unsigned = windowsFixture(t)
+  rmSync(join(unsigned, `Lilt-${version}-x64-setup.exe.sig`))
+  assert.throws(() => createWindowsManifest(unsigned, version, '', publicText), /ENOENT|Missing/)
+  assert.throws(() => createWindowsManifest(windowsFixture(t, '0.0.9'), version, '', publicText), /version/)
 })

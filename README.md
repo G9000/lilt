@@ -126,6 +126,7 @@ Keep test recordings in a scratch data folder on another port, as described in [
 ## Good to know
 
 - **Private by default.** Takes are ordinary audio and JSON files; Recordings → Export all makes a full copy.
+  The desktop app asks GitHub for a newer version when it opens; nothing about your practice is sent.
 - **Back up your practice.** Settings → Backup & restore creates a backup ZIP and lets you preview
   one before restoring it. Lilt keeps a safety copy before replacing your practice data.
 - **Describes, never diagnoses.** Lilt isn't a clinical tool and doesn't score you.

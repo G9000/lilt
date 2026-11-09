@@ -7,7 +7,7 @@
     },
     "web": {
       "name": "lilt-web",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "dependencies": {
         "@fontsource-variable/caveat": "5.2.8",
         "@fontsource-variable/geist": "5.2.8",

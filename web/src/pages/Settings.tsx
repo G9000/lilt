@@ -202,9 +202,10 @@ function AppUpdates() {
         <Row label="Update status" help={<span role="status">{updateStatus(status)}</span>} stack>
           <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={openAppUpdates}>Open app updates</button>
         </Row>
+        <Row label="How updates work" help="When Lilt opens, it asks GitHub whether there's a newer version. Nothing about your practice is sent. Downloading and installing only happen when you choose, after your takes are saved." />
       </> : <>
         <Row label="Web version"><span>{CURRENT.version}</span></Row>
-        <Row label="App updates" help="App updates are available in the installed Mac app." />
+        <Row label="App updates" help="The installed Mac and Windows apps can update themselves." />
       </>}
     </div>
   );
@@ -246,6 +247,7 @@ export function SettingsPage({ start, onClose }: { start?: PaneId | null; onClos
       <>
         <Callout kind="ok"><p>Recording, saving, playback and local analysis run on this computer. Connecting ChatGPT sends nothing by itself; when Lilt's AI features arrive in Practice, they will say what goes to OpenAI before anything is sent.</p></Callout>
         <p className={cx(pages.sxNote, "sx-note")}>If you connect an AI app (such as Claude or ChatGPT) to Lilt, whatever it reads (session details, measurements, notes, and audio clips if it asks for them) goes to that app's provider under its own terms.</p>
+        <p className={cx(pages.sxNote, "sx-note")}>The desktop app asks GitHub for a newer version when it opens, which shares your internet address with GitHub but nothing about your practice. Updates download only when you choose.</p>
       </>
     );
     if (id === "notifications") return (

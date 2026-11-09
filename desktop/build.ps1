@@ -1,6 +1,14 @@
-# Local, unsigned Windows installer. Run from any directory with PowerShell 5.1 or newer.
+# Windows installer. Run from any directory with PowerShell 5.1 or newer.
+# A plain build is local and has no updater. -Release builds the updater's public key into the app,
+# signs the finished installer for the updater and writes latest.json beside it. It needs
+# LILT_UPDATER_PUBLIC_KEY (the .pub file's contents) and TAURI_SIGNING_PRIVATE_KEY_PATH (or
+# TAURI_SIGNING_PRIVATE_KEY); TAURI_SIGNING_PRIVATE_KEY_PASSWORD only for an encrypted key.
+# -NotesFile is the plain-text note the update window shows. See docs/desktop-releases.md.
 [CmdletBinding()]
-param()
+param(
+    [switch]$Release,
+    [string]$NotesFile
+)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -76,11 +84,21 @@ foreach ($name in $environmentNames) {
     $savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process')
 }
 
+if ($Release) {
+    if (-not $savedEnvironment['LILT_UPDATER_PUBLIC_KEY']) { throw 'A release build needs LILT_UPDATER_PUBLIC_KEY (the contents of the updater .pub file).' }
+    if (-not $savedEnvironment['TAURI_SIGNING_PRIVATE_KEY'] -and -not $savedEnvironment['TAURI_SIGNING_PRIVATE_KEY_PATH']) {
+        throw 'A release build needs TAURI_SIGNING_PRIVATE_KEY_PATH (or TAURI_SIGNING_PRIVATE_KEY) for the updater key.'
+    }
+    if ($NotesFile -and -not (Test-Path -LiteralPath $NotesFile -PathType Leaf)) { throw "Release notes file not found: $NotesFile" }
+}
+
 Push-Location $desktopRoot
 try {
     foreach ($name in @('LILT_UPDATER_PUBLIC_KEY', 'TAURI_SIGNING_PRIVATE_KEY', 'TAURI_SIGNING_PRIVATE_KEY_PATH', 'TAURI_SIGNING_PRIVATE_KEY_PASSWORD', 'TAURI_CONFIG', 'PYTHONHOME', 'PYTHONPATH')) {
         [Environment]::SetEnvironmentVariable($name, $null, 'Process')
     }
+    # Only the public key reaches the compiler; the private key is used once, to sign the finished installer.
+    if ($Release) { $env:LILT_UPDATER_PUBLIC_KEY = $savedEnvironment['LILT_UPDATER_PUBLIC_KEY'] }
     $env:CARGO_TARGET_DIR = $buildRoot
     $env:UV_PYTHON_INSTALL_DIR = Assert-BuildPath (Join-Path $buildRoot 'python')
     $env:UV_CACHE_DIR = Assert-BuildPath (Join-Path $buildRoot 'uv-cache')
@@ -133,7 +151,7 @@ try {
     $env:PYTHONPATH = $analysisOutput
     Invoke-Checked $bundledPython @('-s', '-c', 'import lilt_analysis, parselmouth, av, numpy; import struct; assert struct.calcsize(''P'') == 8')
 
-    Write-Host '==> Windows installer (local, unsigned)'
+    Write-Host $(if ($Release) { '==> Windows installer (release, updater-signed)' } else { '==> Windows installer (local, no updater)' })
     $bundleOutput = Assert-BuildPath (Join-Path $buildRoot "$targetTriple/release/bundle/nsis")
     # A failed build must never publish an old installer as the new result.
     Reset-BuildDirectory $bundleOutput
@@ -145,6 +163,22 @@ try {
     New-Item -ItemType Directory -Path $outputRoot -Force | Out-Null
     $destination = Assert-BuildPath (Join-Path $outputRoot "Lilt-$version-x64-setup.exe")
     Copy-Item -LiteralPath $installer -Destination $destination -Force
+    if ($Release) {
+        Write-Host '==> Updater signature and latest.json'
+        $signature = Assert-BuildPath "$destination.sig"
+        if (Test-Path -LiteralPath $signature) { Remove-Item -LiteralPath $signature -Force }
+        # One argument even when empty: PowerShell 5.1 drops a bare empty argument, and an unencrypted key has no password.
+        $signArgs = @('x', $tauriCli, 'signer', 'sign', '--app-version', $version, "--password=$([string]$savedEnvironment['TAURI_SIGNING_PRIVATE_KEY_PASSWORD'])")
+        if ($savedEnvironment['TAURI_SIGNING_PRIVATE_KEY_PATH']) { $signArgs += @('--private-key-path', $savedEnvironment['TAURI_SIGNING_PRIVATE_KEY_PATH']) }
+        else { $signArgs += @('--private-key', $savedEnvironment['TAURI_SIGNING_PRIVATE_KEY']) }
+        Invoke-Checked 'bun' ($signArgs + @($destination))
+        $notes = if ($NotesFile) { (Resolve-Path -LiteralPath $NotesFile).Path } else {
+            $empty = Assert-BuildPath (Join-Path $buildRoot 'release-notes.txt'); Set-Content -LiteralPath $empty -Value '' -NoNewline -Encoding utf8; $empty
+        }
+        Invoke-Checked 'node' @('scripts/release.mjs', 'windows-manifest', $outputRoot, $version, $notes)
+        Write-Host "Signed: $signature"
+        Write-Host "Feed: $(Join-Path $outputRoot 'latest.json')"
+    }
     Write-Host "Done: $destination"
 } finally {
     Pop-Location

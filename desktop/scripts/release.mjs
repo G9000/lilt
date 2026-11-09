@@ -78,6 +78,18 @@ export function createManifest(dir, version, notes, publicText) {
   }
   return { version, notes, pub_date: new Date().toISOString(), platforms }
 }
+/**
+ * The Windows update feed: the signed NSIS installer, verified against the public key and its signed
+ * version, at its versioned release URL. The installer itself is the update; the app runs it quietly.
+ */
+export function createWindowsManifest(dir, version, notes, publicText) {
+  requireVersion(version)
+  const installer = `Lilt-${version}-x64-setup.exe`
+  for (const file of [installer, `${installer}.sig`]) nonemptyFile(join(dir, file))
+  const signature = read(join(dir, `${installer}.sig`)).trim()
+  verifySignature(join(dir, installer), signature, publicText, version)
+  return { version, notes, pub_date: new Date().toISOString(), platforms: { 'windows-x86_64': { signature, url: `${repository}/releases/download/v${version}/${installer}` } } }
+}
 export function validateArchiveEntries(entries) {
   const normalized = entries.map(entry => entry.replace(/^\.\//, '')).filter(Boolean)
   for (const entry of normalized) {
@@ -98,7 +110,11 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     else if (command === 'manifest') {
       const manifest = createManifest(args[0], args[1], read(args[2]), process.env.LILT_UPDATER_PUBLIC_KEY)
       writeFileSync(join(args[0], 'latest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
-    } else throw new Error('Usage: release.mjs preflight | version ROOT | artifact DIR ARCH VERSION | archive LIST | manifest DIR VERSION NOTES_FILE')
+    } else if (command === 'windows-manifest') {
+      const manifest = createWindowsManifest(args[0], args[1], read(args[2]), process.env.LILT_UPDATER_PUBLIC_KEY)
+      writeFileSync(join(args[0], 'latest.json'), `${JSON.stringify(manifest, null, 2)}
+`)
+    } else throw new Error('Usage: release.mjs preflight | version ROOT | artifact DIR ARCH VERSION | archive LIST | manifest DIR VERSION NOTES_FILE | windows-manifest DIR VERSION NOTES_FILE')
   } catch (error) {
     console.error(error.message)
     process.exitCode = 1

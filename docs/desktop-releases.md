@@ -1,4 +1,4 @@
-# Mac desktop releases
+# Desktop releases
 
 Lilt's Mac updates are complete app replacements: the desktop window, Rust server, web app,
 courses, Python and measuring libraries travel together. Recordings and preferences remain
@@ -172,3 +172,33 @@ stable release to test the owner's installed app. Keep results in `docs/validati
 
 Windows fixture and browser tests cannot establish any of those native Mac outcomes.
 The draft workflow is ready to configure; live distribution is not verified or enabled.
+
+## Windows releases
+
+Windows updates use the same Tauri updater key pair as the Mac (one public key for both feeds).
+The release build runs on the owner's Windows computer; there is no Windows workflow yet.
+
+1. The key pair lives outside the checkout, in `%USERPROFILE%\.lilt-release\lilt-updater.key`
+   and `lilt-updater.key.pub` (made on 9 November 2026 with `signer generate --ci`, unencrypted).
+   **Back up both files somewhere safe.** Installed apps trust only this public key: losing the
+   private key means existing installs can no longer update and need a manual install.
+2. Set the version as for the Mac, run the checks, and commit and push when the owner asks.
+3. Build with the key and a plain-text note for the update window:
+
+   ```powershell
+   $env:LILT_UPDATER_PUBLIC_KEY = (Get-Content -Raw "$env:USERPROFILE\.lilt-release\lilt-updater.key.pub").Trim()
+   $env:TAURI_SIGNING_PRIVATE_KEY_PATH = "$env:USERPROFILE\.lilt-release\lilt-updater.key"
+   powershell -NoProfile -ExecutionPolicy Bypass -File desktop/build.ps1 -Release -NotesFile notes.txt
+   ```
+
+   The build compiles the public key into the app, signs the finished installer with
+   `signer sign --app-version`, verifies the signature against the public key, and writes
+   `desktop/dist/Lilt-<version>-x64-setup.exe`, its `.sig` and `latest.json`.
+4. Smoke-test the installer (`desktop/scripts/windows-smoke.mjs`), then make a **draft** release
+   tagged `v<version>` with the installer and `latest.json` (the `.sig` is already inside
+   `latest.json`). The owner publishes it. Installed apps read
+   `releases/latest/download/latest.json`, so an update appears only once the release is published
+   and marked latest.
+
+When the Mac feed is published as well, both platforms must share one `latest.json`: merge the
+`darwin-*` and `windows-x86_64` entries before uploading.

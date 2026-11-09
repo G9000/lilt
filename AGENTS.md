@@ -53,7 +53,9 @@ be WSL's, which can't run `lilt.exe`: use Git Bash or PowerShell. Use forward or
 
 For the Windows desktop installer, run `powershell -NoProfile -ExecutionPolicy Bypass -File desktop/build.ps1`.
 It stages its own server/web/Python builds under `desktop/target` and `desktop/runtime`, then writes
-`desktop/dist/Lilt-<version>-x64-setup.exe`. Windows updates are manual; the Mac updater stays Mac-only.
+`desktop/dist/Lilt-<version>-x64-setup.exe`. With `-Release` (and the updater key, see
+[desktop releases](docs/desktop-releases.md#windows-releases)) it also writes the `.sig` and
+`latest.json` the in-app updater reads; a plain build has no updater.
 Native desktop tests must set `LILT_DATA_DIR` to a scratch folder, isolating data, logs and WebView storage.
 
 ## Never touch the owner's Lilt while testing

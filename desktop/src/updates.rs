@@ -11,8 +11,9 @@ use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder}
 use tauri_plugin_updater::{Update, UpdaterExt};
 
 const ENDPOINT: &str = "https://github.com/G9000/lilt/releases/latest/download/latest.json";
-// Only the Mac release feed currently publishes signed whole-app updates.
-pub const PUBLIC_KEY: Option<&str> = if cfg!(target_os = "macos") {
+// The Mac and Windows release feeds publish signed whole-app updates. A build without the key
+// (any local build) has no updater and says so.
+pub const PUBLIC_KEY: Option<&str> = if cfg!(any(target_os = "macos", windows)) {
     option_env!("LILT_UPDATER_PUBLIC_KEY")
 } else {
     None
@@ -316,8 +317,8 @@ impl Lifecycle for NativeLifecycle<'_> {
 pub async fn update_install(window: WebviewWindow, app: AppHandle) -> Result<Snapshot, String> {
     trusted(&window)?;
     let state = app.state::<Updates>();
-    if !cfg!(target_os = "macos") {
-        return Err("App installation is available in the packaged Mac app.".into());
+    if !cfg!(any(target_os = "macos", windows)) {
+        return Err("App installation is available in the packaged Mac and Windows apps.".into());
     }
     // An app attached to a separately started server must never stop that server.
     let (port, token) = crate::owned_server(&app)?;
@@ -361,8 +362,11 @@ mod tests {
     use super::*;
 
     #[test]
-    #[cfg(windows)]
-    fn windows_updates_remain_unconfigured() {
+    fn a_build_without_the_updater_key_stays_unconfigured() {
+        // Local and test builds never carry the release key, so they can't check or install.
+        if PUBLIC_KEY.is_some_and(|key| !key.trim().is_empty()) {
+            return;
+        }
         let updates = Updates::new("0.2.1");
         assert_eq!(updates.snapshot().phase, Phase::Unconfigured);
         assert!(updates.begin(Action::Check).is_err());

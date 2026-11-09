@@ -30,8 +30,14 @@ Scratch launches with `LILT_DATA_DIR` use another free port.
 
 Allow microphone access for desktop apps in Windows Settings if recording is blocked.
 Exports go to your Windows Downloads folder and can be revealed in File Explorer.
-Windows automatic updates are not configured yet: close Lilt and install a newer Windows
-installer to update. Your practice data stays separate from the app files.
+**Updates:** from 0.1.2, the released Windows app checks GitHub for a newer version each time it
+opens (and from File → Check for updates…). When one is ready, a notice appears; **Open app
+updates** in Settings shows it. Download, then Install once your takes are saved: Lilt stops its
+own server, runs the signed installer quietly and opens again. The updater accepts only a
+`Lilt-<version>-x64-setup.exe` from this repository's release of that version, signed with
+Lilt's updater key. Versions before 0.1.2 have no updater, so install 0.1.2 once by hand.
+Local builds (without `-Release`) say updates are not configured. Your practice data stays
+separate from the app files.
 
 ### Mac
 
