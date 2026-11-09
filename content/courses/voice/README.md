@@ -31,12 +31,12 @@ with its own `course.md`.
   Courses (version 2 is when chapters began naming their own `exercises:`), so the two differ.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-start-here.md` … `13-real-life.md`: one chapter each. `02-your-voice.md` is Looking after your voice: the voice care from across the course in one place (rest, water, warm-ups, how much is enough, the signs to stop, when to see someone), with a gentle check-in of plain questions. It has no `direction:`, so it's for every way, and stays out of Today (`today: false`), a page to read like Start here. Its name shares Warm-ups' number so it sorts straight after it without renaming any file. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. `17-going-lower.md` … `21-lower-emphasis.md` are the Going lower part (`part: Going lower`, `direction: lower`): a start on breath, care and testosterone, then pitch, resonance, vocal weight and emphasis for a deeper, darker, fuller voice, for people who set Which way to Lower. The start stays out of Today (`today: false`); with Which way set to Lower, the four skill chapters are Today's cards in place of the chapters marked `direction: higher` (Pitch, Resonance, Vocal weight, Articulation, Intonation, Laughs and little sounds and Being heard). They come after the Extras only because the Extras' file names stay as they are. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
+- `01-start-here.md` … `13-real-life.md`: one chapter each. `02-your-voice.md` is Looking after your voice: the voice care from across the course in one place (rest, water, warm-ups, how much is enough, the signs to stop, when to see someone), with a gentle check-in of plain questions. It has no `direction:`, so it's for every way, and stays out of Today (`today: false`), a page to read like Start here. Its name shares Warm-ups' number so it sorts straight after it without renaming any file. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. `17-going-lower.md` … `21-lower-emphasis.md` are the Going lower part (`part: Going lower`, `direction: lower`): a start on breath, care and testosterone, then pitch, resonance, vocal weight and emphasis for a deeper, darker, fuller voice, for people who set Which way to Lower. The start stays out of Today (`today: false`); with Which way set to Lower, the four skill chapters are Today's cards in place of the chapters marked `direction: higher` (Pitch, Resonance, Vocal weight, Articulation, Intonation, Laughs and little sounds and Being heard). They come after the Extras only because the Extras' file names stay as they are. `22-in-between.md` … `24-flex.md` are the In between part (`part: In between`, `direction: open`), for people who set Which way to Still open: a middle that feels like yours, mixing the dials, and moving lighter or fuller on purpose. All three are Today's cards for Still open, in place of the chapters for one way (`direction: higher` and `direction: lower`). A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
   name sets the order (and the order Today's cards open in). `13-being-heard.md` and
   `13-real-life.md` share a number and sort by name, so Being heard comes first. Leave the names as
   they are: Updates would offer a renamed file to personal copies as a separate removal and
   addition, and taking only one of them leaves a copy with two chapters of the same id. Renumber
-  them only in a new edition. To add a chapter, add a file like `22-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
+  them only in a new edition. To add a chapter, add a file like `25-singing.md`. In `04-resonance.md`, each take of a held vowel has its resonance (F2 and F3)
   compared with your first take of the same vowel.
 
 ## How a lesson teaches
@@ -112,6 +112,16 @@ that day Today's cards began to follow Which way: going lower, the four skill ch
 (`direction: lower`) take the place of those aiming lighter (`direction: higher`), straight after
 the warm-ups, and the start stays a page to read, like Start here.
 
+Also on 9 November the In between part was added for Still open: androgynous, nonbinary or
+undecided voices. It draws on both NHS Lothian guides, ASHA's practice portal (gender-neutral and
+flexible goals, citing Davies, Papp and Antoni 2015) and abstracts of Merritt (2023), Chadwick et
+al. (2023) and Povinelli, Zhu and Zhao (2025). The overlap band is described as a guide, never a
+target; no dial is pushed toward either end; and moving between voices is a choice, never a test.
+With Which way set to Still open, its three chapters (`direction: open`) are Today's cards straight
+after the warm-ups, in place of the chapters for one way. Like the rest, it is an AI editorial
+piece, not clinician approval, and its chapters have no video yet. Mixing the dials shows the
+darker–brighter strip, like both resonance chapters.
+
 Also on 9 November, Looking after your voice gathered the course's voice care into one chapter,
 from NHS Lothian's "Looking after your voice" leaflet (April 2026, adapted from NHS Fife), the NHS
 laryngitis page, NHS Greater Glasgow and Clyde's hoarseness guidance, NIDCD and ASHA's 2026 World
@@ -159,10 +169,11 @@ mmmmmmm
   - `exercises`: built-in exercises (from `content/exercises/`, by id, comma-separated) that join
     this chapter in Today.
   - `today: false`: keep this chapter's texts out of Today's cards (Start here uses it).
-  - `direction: higher` or `direction: lower`: a chapter for one way of changing the voice. Today's
-    cards use the chapters for the learner's Which way (unset and still open read as higher), and
-    the ones for the other way drop out; going lower, its chapters take the place of the first
-    higher one. A chapter without it is for any direction.
+  - `direction: higher`, `direction: lower` or `direction: open`: a chapter for one way of taking
+    the voice (open is Still open: in between, or not decided). Today's cards use the chapters for
+    the learner's Which way (unset reads as higher), and the ones for the other ways drop out;
+    going lower or still open, its chapters take the place of the first one that dropped. A
+    chapter without it is for any direction.
   - `video`, `video_title`, `video_by`: one YouTube video for the chapter (a link). Practice shows a
     card with YouTube's thumbnail and plays the video there; offline, the card says it needs an
     internet connection. `video_image: images/<file>` swaps in a picture of your own, which should

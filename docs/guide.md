@@ -391,12 +391,14 @@ Monitor uploads and playback have an isolated check with locally generated media
      open offers to widen the range either way. Day 1 says which way you'll move the range later.
      Nothing is measured differently, and the pitch scale is the same for everyone. The main
      chapters are written for a lighter voice; going lower has its own part, **Going lower**, and
-     Start here says which chapters help in any direction and points there. Going lower, Today's
-     cards come from Going lower's four skill chapters straight after the warm-ups, in place of
-     Pitch, Resonance, Vocal weight, Articulation, Intonation, Laughs and little sounds and Being
-     heard; higher, still open or unset, the deck is the course's own. A chapter says which way it's
-     for with `direction: higher` or `direction: lower`. Cards keep their progress by id, so
-     switching back and forth loses nothing: the other way's cards wait where you left them.
+     still open has **In between**, for androgynous, nonbinary or undecided voices. Start here says
+     which chapters help in any direction and points to both. Going lower, Today's cards come from
+     Going lower's four skill chapters straight after the warm-ups, in place of Pitch, Resonance,
+     Vocal weight, Articulation, Intonation, Laughs and little sounds and Being heard; still open,
+     they come from In between's three chapters in the same place, and the Going lower ones drop
+     out too. Higher or unset, the deck is the course's own. A chapter says which way it's for with
+     `direction: higher`, `direction: lower` or `direction: open`. Cards keep their progress by id,
+     so switching back and forth loses nothing: the other ways' cards wait where you left them.
    - Ratings are your own judgement. Pitch numbers never decide them.
    - The deck is capped at about your session length. Missed days never pile up into a backlog:
      overdue cards just wait their turn.
@@ -482,7 +484,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      of the overlap (F♯2, A♯2, D3). Still open: the average man, the middle of the overlap and the
      average woman. Each says where it comes from; they're for listening, not targets, and like
      your note they never play while the microphone listens (`web/src/refnotes.ts`).
-   - In **Resonance** and **Resonance, going darker**, while you record, a **darker–brighter strip** sits under the pitch line: the
+   - In **Resonance**, **Resonance, going darker** and **Mixing the dials**, while you record, a **darker–brighter strip** sits under the pitch line: the
      coral dot shows whether the sound is brighter or darker than when you started this take (its
      first second of sound is the tick in the middle), with one line in words. Silence and breaths
      leave it where it was. It reads where the sound's energy sits across the spectrum, so it works
@@ -567,7 +569,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
      work in either style of play.
      <kbd>Esc</kbd> closes it.
-8. **Texts** has 184 texts across 23 chapters. Chapters 15–17 are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). The last five are **Going lower**, for a deeper, darker, fuller voice: a start on breath, care and what testosterone does to the voice (with a monthly reading to hear the change), then pitch (an easy spot above the bottom of your range, never pushed down), resonance (a bigger, looser space: a silent open-throat breath, humming while chewing or yawning, yawn into words), vocal weight (full and clear, never pressed, creaky or shouted, and kept as pitch rises) and emphasis (leaning on words with loudness, length and pauses rather than big jumps up, without going flat). Its four skill chapters are Today's cards when Which way is Lower, in place of the chapters aiming lighter; its start stays outside Today, like Start here. Start here and the course guide point there; the sources are NHS Lothian's "Testosterone and voice" and "Where to start", ASHA, the London Gender Identity Clinic's transmasculine group and studies of voice on testosterone. Long passages show a title and a reading time: setup, warm-ups, looking after your voice, pitch, resonance, vocal weight,
+8. **Texts** has 205 texts across 26 chapters. Chapters 15–17 are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). The next five are **Going lower**, for a deeper, darker, fuller voice: a start on breath, care and what testosterone does to the voice (with a monthly reading to hear the change), then pitch (an easy spot above the bottom of your range, never pushed down), resonance (a bigger, looser space: a silent open-throat breath, humming while chewing or yawning, yawn into words), vocal weight (full and clear, never pressed, creaky or shouted, and kept as pitch rises) and emphasis (leaning on words with loudness, length and pauses rather than big jumps up, without going flat). Its four skill chapters are Today's cards when Which way is Lower, in place of the chapters aiming lighter; its start stays outside Today, like Start here. Start here and the course guide point there; the sources are NHS Lothian's "Testosterone and voice" and "Where to start", ASHA, the London Gender Identity Clinic's transmasculine group and studies of voice on testosterone. The three after that are **In between**, for a voice that isn't aiming at either end: finding a middle that feels like yours (the overlap as a guide, never a target), mixing the dials (pitch, resonance, weight and melody each set where you like them, with the darker–brighter strip while you record) and moving on purpose (lighter or fuller by situation, and back to home base). With Which way set to Still open they're Today's cards in place of the chapters for one way. The sources are both NHS Lothian guides, ASHA and studies of nonbinary voices and goals (Davies, Papp and Antoni 2015; Merritt 2023; Chadwick et al. 2023; Povinelli, Zhu and Zhao 2025). Long passages show a title and a reading time: setup, warm-ups, looking after your voice, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, being heard (carrying a light voice through noise without pushing), and real life. Each chapter explains the technique in a few numbered steps (how to
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,

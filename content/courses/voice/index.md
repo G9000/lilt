@@ -32,9 +32,11 @@ chart is optional; you do not need to choose a target number before making your 
 This is a general guide for anyone exploring a lighter, brighter voice that still sounds like them.
 If you're taking your voice lower, [Going lower](#/studio/going-lower) is your route instead: a
 short start on breath, care and what testosterone does to the voice, then pitch, resonance, vocal
-weight and emphasis for a deeper, darker, fuller voice. If you haven't decided,
-[Start here](#/studio/start-here) says which chapters help in any direction and how to set Lilt
-to your direction.
+weight and emphasis for a deeper, darker, fuller voice. For a voice somewhere in between,
+androgynous, nonbinary or still being explored, [In between](#/studio/in-between) is yours: a
+middle that feels like you, the dials mixed without aiming at either end, and moving lighter or
+fuller on purpose. If you haven't decided, [Start here](#/studio/start-here) says which chapters
+help in any direction and how to set Lilt to your direction.
 There is no single sound to copy. Start with a sound you would enjoy using, in your own
 accent and language. You can adapt the English practice phrases to words you actually say.
 
@@ -96,6 +98,10 @@ and hear the change for yourself instead of guessing.
   breath, care and testosterone, then pitch, resonance, vocal weight and emphasis, one dial each.
   With Which way set to Lower, its four skill chapters are Today's cards in place of the lighter
   ones; open them whenever you like too.
+- **[In between](#/studio/in-between)**, for a voice that isn't aiming at either end: finding a
+  middle that feels like yours, mixing pitch, resonance, weight and melody, and moving lighter or
+  fuller on purpose by situation. With Which way set to Still open, its three chapters are Today's
+  cards in place of the ones aiming one way.
 - **Check-ins**: one text per chapter, same words every visit, so you can hear how it changes over time.
 - **Free recording**: just talk. You'll get your pitch line back.
 - **The recorder** draws your pitch live with your comfy range behind it, and after a take shows your
@@ -236,7 +242,7 @@ The exercise instructions are written in Lilt's own words, from ideas in the gui
 can read the originals. The listening questions, early greeting cards and suggested daily loop are
 Lilt's teaching choices; they have not been validated as a training programme. The chapter video
 cards link to their named creators' demonstrations; their audio is not copied into Lilt.
-Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, and the chapters that credit NHS Lothian were checked against both of its guides on 8 November 2026. Both were editorial checks by an AI, not clinical review, and not every resource below was re-reviewed. The Going lower chapters were written on 9 November 2026 from NHS Lothian's guides, ASHA's page and the study abstracts below, read the same way; no clinician has reviewed them, and no Trans Care BC page on voice could be found to check against. Looking after your voice was written later that day from the voice care pages below, in the same way.
+Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, and the chapters that credit NHS Lothian were checked against both of its guides on 8 November 2026. Both were editorial checks by an AI, not clinical review, and not every resource below was re-reviewed. The Going lower chapters were written on 9 November 2026 from NHS Lothian's guides, ASHA's page and the study abstracts below, read the same way; no clinician has reviewed them, and no Trans Care BC page on voice could be found to check against. Looking after your voice was written later that day from the voice care pages below, in the same way. The In between chapters were written the same day from both NHS Lothian guides, ASHA's page and the nonbinary voice studies below, also read as an AI editorial check; no clinician has reviewed them either.
 
 - NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
   (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"
@@ -301,6 +307,24 @@ Pitch, resonance, articulation, intonation and goal-setting guidance was checked
   in the International Journal of Transgenderism. Azul, Nygren, Södersten and Neuschaefer-Rube (2017),
   [a review of voice function](https://pubmed.ncbi.nlm.nih.gov/27318608/), found the evidence on
   vocal tiredness and control limited and mixed.
+- For the In between chapters: ASHA's page above, on people who want a gender-neutral voice and
+  people who want to move between a more masculine and a more feminine voice by situation,
+  self-chosen goals that change, and practising for home, work, social life and the phone. It cites
+  Davies, Papp and Antoni (2015), [Voice and communication change for gender nonconforming individuals](https://doi.org/10.1080/15532739.2015.1075931),
+  International Journal of Transgenderism 16(3), for a gender-neutral speaking pitch of about
+  145–175 Hz, and warns against overemphasising pitch. NHS Lothian's "Where to start" adds that
+  pitch, resonance, voice quality and emphasis can each change on their own, humming on one note
+  while changing the mouth's space, noticing how one voice changes between situations, and goals
+  nobody else decides.
+- Merritt (2023), [Speech beyond the binary](https://doi.org/10.1121/10.0017642), JASA Express
+  Letters 3(3): listeners heard nonbinary speakers in a range between cisgender women and the
+  other groups, from more than one acoustic cue. Chadwick et al. (2023), [voice training outcomes for
+  non-binary individuals](https://doi.org/10.1016/j.jvoice.2023.08.005), Journal of Voice: a case
+  series of four people, each of whom moved toward a goal of their own, with how they felt about
+  their voice not always following the acoustic change. Povinelli, Zhu and Zhao (2025),
+  [Beyond the "Industry Standard"](https://doi.org/10.1145/3706598.3713430), CHI '25: voice goals
+  often start rough and are revisited along the way, and rigid end goals can stall practice.
+  Abstracts only; none sets a training method.
 - Community coaching for larynx height, brightness-only slides and vocal weight: the
   [TransVoice wiki](https://totalchaos05.github.io/TransVoice-Wiki/wiki/pages/resonance/). Community
   material, not clinical guidance.

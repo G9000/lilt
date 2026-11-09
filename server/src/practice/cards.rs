@@ -128,10 +128,10 @@ pub fn all_cards_for_course(app: &App, course: &Course) -> Result<Vec<Card>> {
     ))
 }
 
-/// The chapters for one way of changing the voice (`direction:` in a chapter): those for the other
-/// way drop out, and yours take the place of the first one that did, so going lower practises its
-/// own skills straight after the warm-ups. Chapters for any direction keep their order. Unset and
-/// "still open" read as higher, the course's own direction. Stages follow; card ids, and so their
+/// The chapters for one way of taking the voice (`direction:` in a chapter): those for the other
+/// ways drop out, and yours take the place of the first one that did, so going lower or still open
+/// practises its own skills straight after the warm-ups. Chapters for any direction keep their
+/// order. Unset reads as higher, the course's own direction. Stages follow; card ids, and so their
 /// state, don't change.
 fn for_direction(levels: Vec<Value>, way: &str) -> Vec<Value> {
     let other = |l: &Value| l["direction"].as_str().is_some_and(|d| d != way);
@@ -201,8 +201,12 @@ fn cards_from_texts(app: &App, course: &str, texts: Value) -> Vec<Card> {
         .filter(|l| l["draft"] != "true" && l["today"] != false)
         .collect();
     let levels = if voice {
-        let lower = app.profile().voice_direction == Some(VoiceDirection::Lower);
-        for_direction(levels, if lower { "lower" } else { "higher" })
+        let way = match app.profile().voice_direction {
+            Some(VoiceDirection::Lower) => "lower",
+            Some(VoiceDirection::Open) => "open",
+            Some(VoiceDirection::Higher) | None => "higher",
+        };
+        for_direction(levels, way)
     } else {
         levels
     };

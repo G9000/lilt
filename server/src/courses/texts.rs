@@ -183,14 +183,13 @@ pub(crate) fn chapter(src: &str, level: usize) -> Result<Value> {
         );
     }
     let today = text("today").as_deref() != Some("false");
-    // `direction: higher` or `lower`: a chapter for one way of changing the voice. Today's cards
-    // use the ones for the learner's Which way; a chapter without it is for any direction.
+    // `direction: higher`, `lower` or `open`: a chapter for one way of taking the voice. Today's
+    // cards use the ones for the learner's Which way; a chapter without it is for any direction.
     let direction = text("direction");
     if let Some(d) = &direction
-        && d != "higher"
-        && d != "lower"
+        && !["higher", "lower", "open"].contains(&d.as_str())
     {
-        bail!("direction `{d}` must be `higher` or `lower`");
+        bail!("direction `{d}` must be `higher`, `lower` or `open`");
     }
     // Present but empty means none; absent means the built-in table applies (older copies).
     if let Some(ex) = meta
@@ -413,6 +412,10 @@ mod tests {
             chapter(&src.replace("today: false", "direction: lower"), 1).unwrap()["direction"],
             "lower"
         );
+        assert_eq!(
+            chapter(&src.replace("today: false", "direction: open"), 1).unwrap()["direction"],
+            "open"
+        );
         let e = chapter(&src.replace("today: false", "direction: deeper"), 1)
             .unwrap_err()
             .to_string();
@@ -481,7 +484,7 @@ mod tests {
         let cover = t["home_cover"].as_str().unwrap();
         assert!(dir.join(cover).exists(), "cover {cover} is missing");
         let levels = t["levels"].as_array().unwrap();
-        assert_eq!(levels.len(), 23);
+        assert_eq!(levels.len(), 26);
         for (i, l) in levels.iter().enumerate() {
             assert_eq!(l["level"], i + 1);
             // Every chapter of the shipped course says what it trains, its part, and names its check-in.

@@ -13,6 +13,7 @@ export const RELEASES: Release[] = [
     version: "0.1.2",
     date: "2026-11-09",
     items: [
+      { title: "In between", body: "The voice course has a part for a voice somewhere in between: androgynous, nonbinary or still being explored. Find a middle that feels like yours, mix pitch, resonance, weight and melody without aiming at either end, and move lighter or fuller on purpose. With Which way set to Still open, Today's cards come from it, and your other cards keep their progress.", to: "/studio/in-between" },
       { title: "Looking after your voice", body: "The voice course has a chapter for voice care, whichever way you're going: warm-ups and cool-downs, how much practice is enough, water and rest, the early signs of a tired voice, and when to see a doctor or a speech and language therapist. It ends with a gentle check-in, starting with how your voice feels today, to answer out loud or in your head. Nothing is scored. It sits right after Warm-ups.", to: "/studio/your-voice" },
     ],
   },

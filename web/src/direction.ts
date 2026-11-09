@@ -8,7 +8,7 @@ import { api, VoiceDirection } from "./api";
 export const DIRECTIONS: { id: VoiceDirection; label: string; help: string }[] = [
   { id: "higher", label: "Higher", help: "A lighter, brighter voice. The voice course is written for this." },
   { id: "lower", label: "Lower", help: "A deeper, darker voice. Lilt won't nudge you upward." },
-  { id: "open", label: "Still open", help: "No direction yet: Lilt won't nudge you either way." },
+  { id: "open", label: "Still open", help: "In between, or not decided yet. Lilt won't nudge you either way." },
 ];
 
 export const directionOf = (d: VoiceDirection | null | undefined): VoiceDirection => d ?? "higher";

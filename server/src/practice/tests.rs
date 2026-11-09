@@ -602,7 +602,8 @@ fn deck_chapters(app: &App) -> Vec<String> {
 }
 
 /// Going lower, Today's cards come from the Going lower chapters in place of the ones aiming
-/// lighter, straight after the warm-ups. Higher, still open or unset, the deck is the course's own.
+/// lighter, straight after the warm-ups; still open, from the In between chapters. Higher or unset,
+/// the deck is the course's own.
 #[test]
 fn todays_cards_follow_which_way() {
     use crate::practice::model::VoiceDirection::*;
@@ -612,21 +613,18 @@ fn todays_cards_follow_which_way() {
         .as_array()
         .unwrap()
         .iter()
-        .filter(|l| l["today"] != false && l["direction"] != "lower")
+        .filter(|l| l["today"] != false && l["direction"] != "lower" && l["direction"] != "open")
         .map(|l| l["id"].as_str().unwrap().to_string())
         .collect();
     let unset = deck_chapters(&app);
     assert_eq!(unset, course, "unset: every chapter in course order");
     assert_eq!(unset[..2], ["warmup", "pitch"]);
     assert!(!unset.iter().any(|c| c.starts_with("lower-")));
-    for way in [Higher, Open] {
-        set_direction(&app, Some(way));
-        assert_eq!(
-            deck_chapters(&app),
-            unset,
-            "{way:?} keeps the course's deck"
-        );
+    for open in ["in-between", "blend", "flex"] {
+        assert!(!unset.iter().any(|c| c == open), "{open} is for still open");
     }
+    set_direction(&app, Some(Higher));
+    assert_eq!(deck_chapters(&app), unset, "higher keeps the course's deck");
 
     set_direction(&app, Some(Lower));
     let lower = deck_chapters(&app);
@@ -654,11 +652,65 @@ fn todays_cards_follow_which_way() {
     }
     // The Going lower start is read like Start here, not carded.
     assert!(!lower.iter().any(|c| c == "going-lower"));
+    assert!(
+        !lower
+            .iter()
+            .any(|c| ["in-between", "blend", "flex"].contains(&c.as_str()))
+    );
     let all = cards::all_cards(&app);
     let max = all.iter().map(|c| c.stage).max().unwrap();
     assert!(
         (1..=max).all(|s| all.iter().any(|c| c.stage == s)),
         "no empty stage"
+    );
+
+    set_direction(&app, Some(Open));
+    let open = deck_chapters(&app);
+    assert_eq!(
+        open[..5],
+        ["warmup", "in-between", "blend", "flex", "automatic"]
+    );
+    for one_way in [
+        "pitch",
+        "resonance",
+        "weight",
+        "articulation",
+        "intonation",
+        "little-sounds",
+        "being-heard",
+        "lower-pitch",
+        "lower-resonance",
+        "lower-weight",
+        "lower-emphasis",
+    ] {
+        assert!(!open.iter().any(|c| c == one_way), "{one_way} drops out");
+    }
+    // The shared chapters stay, in the course's order.
+    let shared: Vec<&String> = unset
+        .iter()
+        .filter(|c| {
+            ![
+                "pitch",
+                "resonance",
+                "weight",
+                "articulation",
+                "intonation",
+                "little-sounds",
+                "being-heard",
+            ]
+            .contains(&c.as_str())
+        })
+        .collect();
+    let open_shared: Vec<&String> = open
+        .iter()
+        .filter(|c| !["in-between", "blend", "flex"].contains(&c.as_str()))
+        .collect();
+    assert_eq!(open_shared, shared);
+    let all = cards::all_cards(&app);
+    let max = all.iter().map(|c| c.stage).max().unwrap();
+    assert!(
+        (1..=max).all(|s| all.iter().any(|c| c.stage == s)),
+        "no empty stage when still open"
     );
 }
 
@@ -707,6 +759,61 @@ fn switching_which_way_keeps_every_cards_state() {
     set_direction(&app, Some(Lower));
     assert_eq!(
         queue_ids(&app).iter().find(|q| q.0 == low).map(|q| q.2),
+        Some(true),
+        "and shows as done today"
+    );
+}
+
+/// Still open keeps every card's state the same way: the In between cards wait while you go one
+/// way, and the lighter and lower cards wait while you're still open.
+#[test]
+fn still_open_keeps_every_cards_state() {
+    use crate::practice::model::VoiceDirection::*;
+    let (_d, app) = app();
+    let (light, low, open) = (
+        "text.pitch.mm-hm",
+        "text.lower-pitch.low-count",
+        "text.in-between.this-is-me",
+    );
+    let mut state = BTreeMap::new();
+    for id in [light, low, open] {
+        state.insert(
+            id.to_string(),
+            CardState {
+                due: Some("2020-01-01".into()),
+                interval_days: 3,
+                ease: 2.5,
+                reps: 2,
+                good_streak: 2,
+                ..Default::default()
+            },
+        );
+    }
+    store::write_json(&app.paths.root.join("cards/state.json"), &state).unwrap();
+    let reviews = |app: &App| -> Vec<String> {
+        queue_ids(app)
+            .into_iter()
+            .filter(|q| q.1 == "review")
+            .map(|q| q.0)
+            .collect()
+    };
+    assert_eq!(reviews(&app), [light], "unset reads as higher");
+    set_direction(&app, Some(Lower));
+    assert_eq!(reviews(&app), [low], "the In between card waits");
+    set_direction(&app, Some(Open));
+    assert_eq!(reviews(&app), [open], "the lighter and lower cards wait");
+    rate(&app, open, None, "good");
+    set_direction(&app, Some(Higher));
+    assert_eq!(reviews(&app), [light]);
+    let kept = cards::load_state(&app);
+    assert_eq!((kept[light].reps, kept[low].reps), (2, 2));
+    assert_eq!(
+        kept[open].reps, 3,
+        "the In between card keeps its new rating"
+    );
+    set_direction(&app, Some(Open));
+    assert_eq!(
+        queue_ids(&app).iter().find(|q| q.0 == open).map(|q| q.2),
         Some(true),
         "and shows as done today"
     );

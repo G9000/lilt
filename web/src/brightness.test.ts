@@ -117,5 +117,6 @@ test("the words compare with the start, never judge", () => {
 test("the strip shows in both resonance chapters, going brighter or darker, and nowhere else", () => {
   assert.equal(isResonanceChapter("resonance"), true);
   assert.equal(isResonanceChapter("lower-resonance"), true);
-  for (const id of ["pitch", "lower-pitch", "warmup", "weight", "lower-weight"]) assert.equal(isResonanceChapter(id), false, id);
+  assert.equal(isResonanceChapter("blend"), true);
+  for (const id of ["pitch", "lower-pitch", "warmup", "weight", "lower-weight", "in-between", "flex"]) assert.equal(isResonanceChapter(id), false, id);
 });

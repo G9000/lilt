@@ -733,12 +733,12 @@ async fn a_blank_chapter_lands_in_your_mixtape() {
         serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
     assert_eq!(
         (v["chapter"].as_str(), v["file"].as_str()),
-        (Some("my-chapter-1"), Some("22-my-chapter-1.md"))
+        (Some("my-chapter-1"), Some("25-my-chapter-1.md"))
     );
     let res = router.oneshot(post()).await.unwrap();
     let v: serde_json::Value =
         serde_json::from_slice(&res.into_body().collect().await.unwrap().to_bytes()).unwrap();
-    assert_eq!(v["file"].as_str(), Some("23-my-chapter-2.md"));
+    assert_eq!(v["file"].as_str(), Some("26-my-chapter-2.md"));
     let t = crate::courses::syllabus::texts(&app);
     assert_eq!(
         t["levels"].as_array().unwrap().last().unwrap()["title"],

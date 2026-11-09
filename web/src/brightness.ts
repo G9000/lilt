@@ -6,8 +6,8 @@
 //
 // The maths is pure (tested in brightness.test.ts); `trackBrightness` at the end is the browser glue.
 
-/** The chapters that show the live darker–brighter strip and open each take's details: both resonance chapters. */
-export const isResonanceChapter = (levelId: string) => levelId === "resonance" || levelId === "lower-resonance";
+/** The chapters that show the live darker–brighter strip and open each take's details: both resonance chapters, and Mixing the dials. */
+export const isResonanceChapter = (levelId: string) => levelId === "resonance" || levelId === "lower-resonance" || levelId === "blend";
 
 export const LOW_HZ = 200, HIGH_HZ = 5000;
 /** How much voiced sound sets "where you started". */
