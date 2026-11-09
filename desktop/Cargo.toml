@@ -1,6 +1,6 @@
 [package]
 name = "lilt-desktop"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2024"
 description = "Lilt as a desktop app: a window around the Lilt server, which runs on your own computer"
 publish = false
