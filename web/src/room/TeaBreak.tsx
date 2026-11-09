@@ -82,9 +82,8 @@ export function TeaBreak({ inside }: { inside: boolean }) {
       data-outlined={!!shown}
       style={{ left: 848, top: 509, width: 66, height: 60 }}
       aria-label="Tea break" aria-haspopup="dialog" aria-expanded={open} disabled={inside}
-      {...mugHold} title="Click for a tea break · Hold to change mug">
-      <span>Tea break{running ? ` · ${teaTime(remaining)}` : finished ? " · Whenever you're ready." : ''} · Hold to change mug</span>
-    </button>
+      {...mugHold} data-room-tip={`Click for a tea break${running ? ` · ${teaTime(remaining)}` : finished ? " · Whenever you're ready." : ''} · Hold to change mug`}
+      data-room-keyboard-tip={`Enter for a tea break${running ? ` · ${teaTime(remaining)}` : finished ? " · Whenever you're ready." : ''} · Choose Change mug in the controls`} />
     <span role="status" className="sr-only">{finished ? "Tea break finished. Whenever you're ready." : ''}</span>
     {open && createPortal(<dialog ref={dialog} aria-labelledby="tea-title" onCancel={e => { e.preventDefault(); close(); }}
       onClick={e => { if (e.target === e.currentTarget) close(); }} onPointerDown={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}

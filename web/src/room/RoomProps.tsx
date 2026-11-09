@@ -66,9 +66,8 @@ export function RoomProp({ kind, state, inside, onCoffee }: { kind: PropKind; st
       aria-disabled={inside} tabIndex={inside ? -1 : 0} aria-label={kind === 'coffee' ? 'Buy me a coffee' : 'Open Photos'} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!shown}
       className={`room-${kind}-target pointer-events-auto ${roomStyles['room-object']}`}
       style={{ left: repair.left + repair.width / 2, top: repair.top + repair.height / 2, width: repair.width, height: repair.height }}
-      {...hold} title={kind === 'coffee' ? 'Click for Buy me a coffee · Hold to change drink' : 'Click for Photos · Hold to change camera'}>
-      <span>{kind === 'coffee' ? 'Buy me a coffee · Hold to change drink' : 'Photos · Hold to change camera'}</span>
-    </a>
+      {...hold} data-room-tip={kind === 'coffee' ? 'Click for Buy me a coffee · Hold to change drink' : 'Click for Photos · Hold to change camera'}
+      data-room-keyboard-tip={kind === 'coffee' ? 'Enter for Buy me a coffee (opens a new tab)' : 'Enter for Photos'} />
     {open && !inside && createPortal(<dialog ref={dialog} aria-labelledby={titleId} onCancel={e => { e.preventDefault(); close(); }}
       onClick={e => { if (e.target === e.currentTarget) close(); }} onPointerDown={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}
       className="m-auto max-h-[calc(100dvh-32px)] w-[360px] max-w-[calc(100vw-24px)] overflow-auto rounded-[22px] border border-[var(--hair)] bg-[var(--win)] p-0 text-[var(--ink)] shadow-2xl backdrop:bg-black/20 backdrop:backdrop-blur-sm">

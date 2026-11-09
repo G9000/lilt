@@ -61,7 +61,9 @@ try {
     await dialog.getByRole('button', { name: '3 min', exact: true }).click();
     await dialog.getByRole('button', { name: 'Start break', exact: true }).click();
     await dialog.waitFor({ state: 'detached' });
-    assert.match(await mug.innerText(), /Tea break · 3:00/);
+    await mug.hover();
+    await page.getByRole('tooltip').waitFor();
+    assert.match(await page.getByRole('tooltip').innerText(), /tea break · 3:00/);
     assert.equal(await art.locator('.tea-steam').getAttribute('data-steam'), 'brewing');
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('lilt.room.tea')));
     assert.equal(saved.mug, 'cat');
@@ -75,7 +77,9 @@ try {
     // A delayed interval must catch up to wall time, including time spent asleep.
     await page.clock.setFixedTime(saved.endsAt + 1000);
     await page.waitForTimeout(1200);
-    assert.match(await mug.innerText(), /Whenever you're ready/);
+    await mug.hover();
+    await page.getByRole('tooltip').waitFor();
+    assert.match(await page.getByRole('tooltip').innerText(), /Whenever you're ready/);
     assert.equal(await art.locator('.tea-steam').evaluate(el => getComputedStyle(el).opacity), '0');
     assert.equal(await art.locator('.tea-steam').getAttribute('data-steam'), 'settled');
     await mug.click();
@@ -117,9 +121,9 @@ try {
     await other.goto(server.resolvedUrls.local[0]);
     await other.evaluate(() => localStorage.setItem('lilt.room.tea', JSON.stringify({ mug: 'sage', minutes: 5, endsAt: Date.now() + 300000 })));
     await chosen('sage');
-    assert.match(await mug.innerText(), /Tea break ·/);
+    assert.match(await mug.getAttribute('data-room-tip'), /tea break ·/);
     await other.evaluate(() => localStorage.setItem('lilt.room.tea', JSON.stringify({ mug: 'sage', minutes: 5, endsAt: null })));
-    await page.waitForFunction(() => document.querySelector('.room-mug-target').textContent === 'Tea break');
+    await page.waitForFunction(() => document.querySelector('.room-mug-target').dataset.roomTip === 'Click for a tea break · Hold to change mug');
     await other.close();
     await page.bringToFront();
     // Audio synthesis is observable without relying on speakers in a headless browser.
@@ -166,7 +170,7 @@ try {
     await dialog.getByRole('button', { name: 'Blue stripes', exact: true }).click();
     assert.match(await dialog.innerText(), /couldn't save/);
     await dialog.getByRole('button', { name: 'Start break', exact: true }).click();
-    assert.match(await mug.innerText(), /Tea break · 5:00/);
+    assert.match(await mug.getAttribute('data-room-tip'), /tea break · 5:00/);
     await chosen('blue');
     for (const light of ['day', 'morning', 'sunset', 'night']) {
       await page.evaluate(async light => { const { setRoomAppearance } = await import('/src/room/appearance.ts'); await setRoomAppearance({ light }); }, light);

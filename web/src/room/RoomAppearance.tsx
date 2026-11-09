@@ -6,6 +6,7 @@ import { MonitorMedia, allowMonitorMotion, useMonitorIssue, useMonitorPaused } f
 import { AccentPicker } from '../components/AccentPicker';
 import { HARDWARE, hardwareTitle, openHardware } from './hardware';
 import { openCatPicker } from './catChoices';
+import { showRoomTips } from './RoomTips';
 
 const LIGHTS: { value: RoomAppearancePrefs["light"]; label: string }[] = [
   { value: "auto", label: "Follow the day" }, { value: "morning", label: "Morning" },
@@ -129,6 +130,8 @@ export function RoomAppearance() {
           </button>
         </div>
         <p id={`${id}-intro`} className={["room-appearance-intro", roomStyles["room-appearance-intro"]].join(" ")}>A little more you. Saved in this browser.</p>
+        <button type="button" className="mb-5 min-h-11 rounded-lg border border-[var(--hair)] bg-[var(--fill)] px-3 py-2 text-xs"
+          onClick={() => { setOpen(false); showRoomTips(); }}>Show room tips</button>
         <AccentPicker />
         <fieldset><legend>Your companion</legend><button type="button" aria-haspopup="dialog"
           className="min-h-11 rounded-lg border border-[var(--hair)] bg-[var(--fill)] px-3 py-2 text-xs"

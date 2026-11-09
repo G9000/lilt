@@ -16,9 +16,8 @@ export function RoomObjects({ inside, onEnter }: { inside: boolean; onEnter: () 
   return <>
     <button type="button" className={["room-object room-music", roomStyles["room-object"], roomStyles["room-music"]].join(" ")} aria-label="Open music player" tabIndex={inside ? -1 : 0}
       disabled={inside} aria-haspopup="dialog" aria-expanded={music.open} data-outlined={!!shown}
-      {...musicHold} title="Click for music · Hold to change player">
-      <span aria-hidden="true">Music · Hold to change player</span>
-    </button>
+      {...musicHold} data-room-tip="Click for music · Hold to change player"
+      data-room-keyboard-tip="Enter for music · Choose Change player in the controls" />
     {!inside && createPortal(
       <div className={["room-object-shortcuts", roomStyles["room-object-shortcuts"]].join(" ")} role="group" aria-label="Room shortcuts"
         onPointerDown={event => event.stopPropagation()} onPointerMove={event => event.stopPropagation()}>

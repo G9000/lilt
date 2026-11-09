@@ -1,5 +1,13 @@
 # Lilt: validation report
 
+## 9 November 2026: Room tips
+
+First-visit hints, hover/focus labels and Make it yours → Show room tips passed isolated Chrome
+checks for readiness, dismissal, replay, keyboard focus, Escape, clipped artwork, phone layout,
+camera transitions and unavailable storage. Existing hold, cat and tea suites passed. Web types,
+220 unit tests, scratch builds, server formatting/Clippy/144 tests, desktop formatting/Clippy and
+Python (47 passed, one skipped) passed. See [the room tips record](docs/validation/2026-11-09-room-tips.md).
+
 ## 9 November 2026: Pitch scale back on, resonance against the gap
 
 The man/woman pitch scale shows by default and can be hidden from under it or in Practice

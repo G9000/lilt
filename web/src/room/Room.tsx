@@ -22,6 +22,7 @@ import { RoomHardware } from './RoomHardware';
 import { type Finish } from './hardware';
 import { isMonitorModel, MODEL_CONTOURS } from './monitorModels';
 import { CatPicker } from './CatPicker';
+import { RoomTips } from './RoomTips';
 import { useRoomCat } from './useRoomCat';
 
 /**
@@ -329,6 +330,7 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
         {children}
       </div>
       <div className={["room-shade", roomStyles["room-shade"]].join(" ")} />
+      <RoomTips ready={ready} inside={inside} stage={stage} />
       {say && <div className={["room-bubble", roomStyles["room-bubble"]].join(" ")} ref={bubble}>{say}</div>}
     </div>
   );

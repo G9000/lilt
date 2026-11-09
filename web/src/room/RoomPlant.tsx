@@ -80,9 +80,7 @@ export function RoomPlant({ days, inside }: { days: number; inside: boolean }) {
     <button type="button" disabled={inside} aria-label={`Choose your plant. ${summary}`} aria-haspopup="dialog" aria-expanded={open}
       data-outlined={!!shown}
       className={['room-plant-target pointer-events-auto', roomStyles['room-object']].join(' ')} style={{ left: 382, top: 548, width: 132, height: 312 }}
-      {...hold} title="Hold to choose your plant">
-      <span>Hold to choose plant · {summary}</span>
-    </button>
+      {...hold} data-room-tip={`Hold to change plant · ${summary}`} data-room-keyboard-tip={`Enter to choose your plant · ${summary}`} />
     {open && createPortal(<dialog ref={dialog} aria-labelledby="plant-picker-title" onCancel={e => { e.preventDefault(); close(); }}
       onClick={e => { if (e.target === e.currentTarget) close(); }} onPointerDown={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}
       className="m-auto max-h-[calc(100dvh-32px)] w-[420px] max-w-[calc(100vw-24px)] overflow-auto rounded-[22px] border border-[var(--hair)] bg-[var(--win)] p-0 text-[var(--ink)] shadow-2xl backdrop:bg-black/20 backdrop:backdrop-blur-sm">

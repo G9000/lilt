@@ -37,7 +37,7 @@ export function ChairPicker({ inside }: { inside: boolean }) {
       <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label="Choose your chair" aria-haspopup="dialog" aria-expanded={open}
         className="room-chair-target pointer-events-auto absolute inset-0 h-full w-full cursor-pointer border-0 bg-transparent p-0 shadow-none outline-none hover:bg-transparent focus-visible:outline-none active:transform-none!"
         style={{ clipPath: `path(evenodd, "${CHAIR_OUTLINES[shown]}")` }}
-        {...hold} title="Hold to choose your chair"
+        {...hold} data-room-tip="Hold to change chair" data-room-keyboard-tip="Enter to choose your chair"
         onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} onFocus={() => setFocused(true)} onBlur={() => { setFocused(false); hold.onBlur(); }} />
       <ChairOutline chair={shown} visible={!inside && !open && (hovered || focused)} />
     </div>

@@ -65,9 +65,9 @@ function HardwareObject({ kind, inside, onEnter, onMainChange }: { kind: Hardwar
     </div>}
     <button ref={target} type="button" disabled={inside} tabIndex={inside ? -1 : 0} aria-label={kind === 'microphone' ? 'Open Practice' : `Choose ${hardwareTitle[kind].toLowerCase()}`} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!shown}
       className={`room-hardware-target room-${kind}-target ${kind === 'microphone' ? 'room-microphone' : ''} pointer-events-auto ${roomStyles['room-object']}`}
-      style={{ ...placement, clipPath: model ? `url(#${hitId})` : `path(evenodd, '${HARDWARE_OUTLINES[kind]}')` }} {...hold} title="Hold to change artwork">
-      <span>{kind === 'microphone' ? 'Practice · Hold to change microphone' : `${hardwareTitle[kind]} · Hold to change`}</span>
-    </button>
+      style={{ ...placement, clipPath: model ? `url(#${hitId})` : `path(evenodd, '${HARDWARE_OUTLINES[kind]}')` }} {...hold}
+      data-room-tip={kind === 'microphone' ? 'Click for Practice · Hold to change microphone' : `Hold to change ${hardwareTitle[kind].toLowerCase()}`}
+      data-room-keyboard-tip={kind === 'microphone' ? 'Enter for Practice · Change microphone in Make it yours' : `Enter to choose ${hardwareTitle[kind].toLowerCase()}`} />
     {open && !inside && createPortal(<dialog ref={dialog} aria-labelledby={title} onCancel={event => { event.preventDefault(); close(); }}
       onClick={event => { if (event.target === event.currentTarget) close(); }} onPointerDown={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}
       className="m-auto max-h-[calc(100dvh-32px)] w-[360px] max-w-[calc(100vw-24px)] overflow-auto rounded-[22px] border border-[var(--hair)] bg-[var(--win)] p-0 text-[var(--ink)] shadow-2xl backdrop:bg-black/20 backdrop:backdrop-blur-sm">

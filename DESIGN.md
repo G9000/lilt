@@ -18,6 +18,13 @@ another page, and with **Done** on phones, so no one has to aim for the 12px red
 
 ## The world
 
+**Room tips.** A compact first-visit hint explains click to use and hold to change artwork.
+It waits for the painting and camera, never takes focus on arrival, and stays dismissed in this
+browser after Got it or Escape. Make it yours → Show room tips brings it back. Hover and
+keyboard focus show one contextual label outside the painting's clipped silhouettes; Escape
+dismisses it. Keyboard labels describe the available keyboard action. Tips use the same quiet
+light/dark surfaces, fit narrow screens and leave the room usable without a guided tour.
+
 **Hold to change artwork.** Painted objects share the cat's 650ms hold and 10px movement
 cancellation. A short click opens the mug's timer, music controls, Photos from the camera,
 Practice from the microphone, or the iced coffee's support link. Holding opens their artwork

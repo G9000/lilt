@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><base href="/"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Room tips fixture</title></head>
+<body><div id="root"></div><script type="module">
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Room } from '/src/room/Room.tsx';
+import { RoomAppearance } from '/src/room/RoomAppearance.tsx';
+import { roomStyles } from '/src/desk/roomStyles.ts';
+import '/src/styles.css';
+window.entered = 0;
+function Fixture() {
+  const [inside, setInside] = useState(false);
+  const [mount, setMount] = useState(0);
+  window.setInside = setInside;
+  window.remountRoom = () => setMount(value => value + 1);
+  return React.createElement(React.Fragment, null,
+    React.createElement(Room, {key: mount, inside, onEnter: () => {window.entered++; setInside(true);}, cards: 0, done: false}),
+    !inside && React.createElement('header', {className: ['ds-roomtop', roomStyles['ds-bar'], roomStyles['ds-roomtop']].join(' ')}, React.createElement('span', null, 'Lilt'), React.createElement(RoomAppearance)));
+}
+createRoot(document.getElementById('root')).render(React.createElement(React.StrictMode, null, React.createElement(Fixture)));
+</script></body></html>

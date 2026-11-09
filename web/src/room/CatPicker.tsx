@@ -14,7 +14,6 @@ export function CatPicker({ inside, state, onPet, outlineCanvas }: { inside: boo
   const press = useRef<{ id: number; x: number; y: number; timer: number } | null>(null);
   const suppressClick = useRef(false);
   const title = useId();
-  const hint = useId();
   const stopPress = () => {
     if (press.current) window.clearTimeout(press.current.timer);
     press.current = null;
@@ -47,7 +46,8 @@ export function CatPicker({ inside, state, onPet, outlineCanvas }: { inside: boo
       transformOrigin: `50% ${CAT_BOX.h - 8}px`, transform: 'scale(var(--cat-scale-x, 1), var(--cat-scale-y, 1))' }}>
       <ObjectOutline kind="cat"><canvas ref={outlineCanvas} data-cat-source={state.image.src} width={CAT_SPRITE_WIDTH} height={CAT_SPRITE_HEIGHT} className="block h-full w-full" /></ObjectOutline>
     </div>}
-    <button type="button" disabled={inside || !state.image} tabIndex={inside ? -1 : 0} aria-label="Pet the cat" aria-describedby={hint} aria-haspopup="dialog" aria-expanded={open} data-outlined={!!state.image}
+    <button type="button" disabled={inside || !state.image} tabIndex={inside ? -1 : 0} aria-label="Pet the cat" aria-haspopup="dialog" aria-expanded={open} data-outlined={!!state.image}
+      data-room-tip="Click to pet · Hold to choose your cat" data-room-keyboard-tip="Enter to pet · Choose your cat in Make it yours"
       className={`room-cat-target pointer-events-auto select-none ${roomStyles['room-object']}`}
       style={{ left: CAT_BOX.x + CAT_BOX.w / 2, top: CAT_BOX.y + CAT_BOX.h / 2, width: CAT_BOX.w, height: CAT_BOX.h }}
       onClick={event => { if (event.detail === 0 || !suppressClick.current) onPet(); }}
@@ -68,9 +68,7 @@ export function CatPicker({ inside, state, onPet, outlineCanvas }: { inside: boo
       onPointerUp={event => { if (press.current?.id === event.pointerId) stopPress(); }}
       onPointerCancel={cancelPress} onLostPointerCapture={cancelPress} onBlur={cancelPress}
       onKeyDown={event => { if (event.key === 'Escape') cancelPress(); }}
-      onContextMenu={event => event.preventDefault()}>
-      <span id={hint}>Click to pet · Hold to choose</span>
-    </button>
+      onContextMenu={event => event.preventDefault()} />
     {open && !inside && createPortal(<dialog ref={dialog} aria-labelledby={title} onCancel={event => { event.preventDefault(); close(); }}
     onClickCapture={event => {
       // Touch release can target the newly opened modal instead of the captured cat.

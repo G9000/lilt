@@ -96,6 +96,12 @@ its own window; quitting stops the server.
 
 ## Using it
 
+**Finding your way around.** The first time you visit the room, a small hint explains how to
+click things to use them and hold to change their look. On a touch screen, tap instead of click;
+the room shortcuts keep the controls within reach. Choose **Got it** to dismiss the hint in this
+browser, or bring it back with **Make it yours → Show room tips**. Hover over an object or focus
+it with the keyboard for its action label. Escape dismisses a label or the room hint.
+
 **Make the room yours.** Choose **Make it yours** in the room's top bar. Follow the time of
 day or keep Morning, Daylight, Sunset or Night; slide Warmth toward cool or warm; switch the
 fairy lights on or off; and choose pictures independently for the main and side monitors. Automatic fairy lights
