@@ -14,6 +14,7 @@ export const RELEASES: Release[] = [
     date: "2026-11-10",
     items: [
       { title: "A lighter room", body: "Left sitting in the room, Lilt's window could slowly grow past a gigabyte of memory. The room now redraws only what moves, eases off while another window has focus, and rests while Lilt is hidden. It looks just the same." },
+      { title: "Room tips beside your cards", body: "The room's first-visit hint used to sit underneath Today's practice, hiding its text and Got it. It now steps beside your cards, or above them on a narrow window, wherever you've moved them." },
     ],
   },
   {

@@ -1,5 +1,6 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
+import { clearOfCards } from './tipPlacement';
 
 const SEEN_KEY = 'lilt.room.tips.dismissed';
 let dismissedThisVisit = false;
@@ -11,7 +12,6 @@ function dismissed() {
 }
 
 type Tip = { target: HTMLElement; keyboard: boolean };
-
 /** One label outside the painting, so clipped silhouettes never clip their explanation. */
 function RoomTooltip({ stage }: { stage: RefObject<HTMLDivElement> }) {
   const [tip, setTip] = useState<Tip | null>(null);
@@ -159,6 +159,33 @@ export function RoomTips({ ready, inside, stage }: { ready: boolean; inside: boo
     return () => { window.removeEventListener('lilt:room-tips', show); window.removeEventListener('storage', sync); };
   }, []);
   useEffect(() => { if (inside) setManual(false); }, [inside]);
+  // Today's cards share this corner and can be dragged, appear late or rescale with the window.
+  const [place, setPlace] = useState<CSSProperties | undefined>();
+  useLayoutEffect(() => {
+    if (!visible) return;
+    let frame = 0, watched: HTMLElement | null = null;
+    // Watches only the cards themselves: the room writes styles every frame, and measuring on each
+    // of those would cost what the room's loop saves.
+    const moves = new MutationObserver(() => soon());
+    const fit = () => {
+      const box = hint.current;
+      if (!box) return;
+      const stack = document.querySelector<HTMLElement>('.cs');
+      if (stack !== watched) { moves.disconnect(); watched = stack; if (stack) moves.observe(stack, { attributes: true, attributeFilter: ['style', 'class'] }); }
+      // The hint's own corner: bottom-6 right-6, or bottom-4 right-4 below 640px.
+      const corner = innerWidth < 640 ? 16 : 24;
+      const next = clearOfCards({ width: box.offsetWidth, height: box.offsetHeight, right: corner, bottom: corner },
+        stack?.getBoundingClientRect() ?? null, { width: innerWidth, height: innerHeight });
+      setPlace(current => current?.right === next?.right && current?.bottom === next?.bottom ? current : next ?? undefined);
+    };
+    const soon = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(fit); };
+    fit();
+    // New elements only (the cards arriving once today's deck loads), not every style write.
+    const arrivals = new MutationObserver(() => { if (document.querySelector('.cs') !== watched) soon(); });
+    arrivals.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('resize', soon);
+    return () => { cancelAnimationFrame(frame); moves.disconnect(); arrivals.disconnect(); window.removeEventListener('resize', soon); setPlace(undefined); };
+  }, [visible]);
   useEffect(() => { if (visible && manual) done.current?.focus(); }, [visible, manual, replay]);
   useEffect(() => {
     if (!visible) return;
@@ -172,7 +199,7 @@ export function RoomTips({ ready, inside, stage }: { ready: boolean; inside: boo
 
   return <>
     {active && <RoomTooltip stage={stage} />}
-    {visible && <aside ref={hint} aria-labelledby={title}
+    {visible && <aside ref={hint} aria-labelledby={title} style={place}
       className="room-tips pointer-events-auto fixed bottom-6 right-6 z-[6] w-[320px] max-w-[calc(100vw-32px)] rounded-2xl border border-[var(--hair)] bg-[var(--panel)] p-4 text-[var(--ink)] shadow-lg max-sm:bottom-4 max-sm:right-4">
       <h2 id={title} className="m-0 text-sm font-semibold">This room is yours.</h2>
       <p className="mb-3 mt-1 text-sm leading-relaxed text-[var(--ink-2)]"><span className="[@media_(pointer:coarse)]:hidden">Click</span><span className="hidden [@media_(pointer:coarse)]:inline">Tap</span> things to use them; hold to change their look.</p>
