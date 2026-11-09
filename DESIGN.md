@@ -555,6 +555,6 @@ existing completion/skip. Both themes, reduced motion and narrow layouts use the
 
 **Home introduction correction (9 November).** Home displays the complete editable course
 introduction, not an extracted creator-story section. Its start/skip controls stay near the top.
-Home and the first-practice walkthrough fill the available content pane with normal page padding;
-the additional 960px/68ch caps do not apply there. The full guide's Markdown fills that width too.
-Chapter and Today reading widths retain their existing layout.
+Home and the first-practice walkthrough use the same centered 960px column and page padding as
+chapters. Do not add a second width cap to the introduction wrapper or override shared Markdown
+reading widths. The complete guide remains visible within the standard chapter layout.

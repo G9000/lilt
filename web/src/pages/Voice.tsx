@@ -225,7 +225,7 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
           : doc === "chapters"
           ? texts && <ChaptersDoc texts={texts} practised={practised} onNewChapter={() => void newChapter()} />
           : doc === "welcome"
-          ? texts && <div className={cx("ve-page", practice["ve-page"], shared["ve-page"])}><div className={cx("ve-col", practice["ve-col"], "[&.ve-col]:max-w-none")}><FirstPractice course={COURSE} texts={texts} /></div></div>
+          ? texts && <div className={cx("ve-page", practice["ve-page"], shared["ve-page"])}><div className={cx("ve-col", practice["ve-col"])}><FirstPractice course={COURSE} texts={texts} /></div></div>
           : doc === "home"
           ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} />
           : doc === "start"
@@ -999,7 +999,7 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
   const today = new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
   return (
     <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
-      <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"], "[&.ve-col]:max-w-none")}>
+      <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
         <header className={cx("ve-head ve-greet", practice["ve-head"], practice["ve-greet"])}><h1>{greeting()}</h1><p>{today}</p></header>
         <HomeIntroduction course={COURSE} home={texts.home} />
         {/* The introduction stays available alongside existing practice. */}

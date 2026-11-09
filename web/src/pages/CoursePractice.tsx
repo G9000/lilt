@@ -47,7 +47,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
       if (locked && (event.target as HTMLElement).closest("a")) { event.preventDefault(); event.stopPropagation(); }
     }}>
       {/* The same centred 960px column as voice practice. */}
-      <div className={`mx-auto w-full ${!view || view === "welcome" ? "max-w-none" : "max-w-[960px]"} px-[18px] py-6 sm:px-10 sm:py-8`}>
+      <div className="mx-auto w-full max-w-[960px] px-[18px] py-6 sm:px-10 sm:py-8">
         <CourseNav course={course} title={data?.course.title} current={view === "today" ? "today" : !view && !chapter ? "home" : null} />
         {error ? <><p role="alert">{error}</p><button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button></>
           : !data ? <p role="status">Opening your course…</p>

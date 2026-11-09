@@ -24,5 +24,7 @@ Unit checks cover course isolation, corrupt/blocked storage, explicit skip/finis
 The initial implementation restored too little writing and imposed an extra narrow width.
 Home must render the complete existing course Markdown, without extracting a subsection or
 hiding it in a disclosure. Keep its wording, images, links and sources; place start/skip controls
-above it. Home and the first-practice walkthrough should fill the content pane with page padding,
-including the Markdown text. Test all original section headings and actual rendered widths.
+above it. The owner clarified that Home and the first-practice walkthrough must use the same
+centered width as the other chapters, rather than the whole content pane. Reuse the existing
+960px column and Markdown typography without an additional introduction wrapper cap. Test all
+original section headings and actual rendered widths.

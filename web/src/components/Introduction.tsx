@@ -20,7 +20,7 @@ export function IntroductionStorageNotice({ course }: { course: string }) {
 
 export function HomeIntroduction({ course, home = '', chapters }: { course: string; home?: string; chapters?: string[] }) {
   const state = useIntroduction(course);
-  return <section className="home-introduction mb-8 w-full min-w-0 [&_.md_:where(p,_ul,_ol,_blockquote,_h1,_h2,_h3,_h4,_h5,_h6,_.footnotes)]:max-w-none" aria-label="Welcome to Lilt">
+  return <section className="home-introduction mb-8 w-full min-w-0" aria-label="Welcome to Lilt">
     <h2 className="mb-3 text-[24px] font-semibold tracking-tight">A little room to learn</h2>
     <p className="mb-3 text-[17px] leading-relaxed">Lilt is a private place for self-directed learning. Read a little, try something, and return to it at your own pace. Your courses, recordings and reflections stay on your computer.</p>
     <p className="text-ink-2 leading-relaxed">There are no grades or streaks to keep up with. You can explore a chapter, follow a few daily cards, or stop whenever you have enough for today.</p>
@@ -53,7 +53,7 @@ export function FirstPractice({ course, texts }: { course: string; texts: Texts 
     // Keep the outcome visible even when storage is unavailable; leaving is always an explicit link.
     setStep(4);
   };
-  return <article className="first-practice w-full min-w-0 [&_.md_:where(p,_ul,_ol,_blockquote,_h1,_h2,_h3,_h4,_h5,_h6,_.footnotes)]:max-w-none">
+  return <article className="first-practice w-full min-w-0">
     <header className="mb-7">
       <p className="mb-2 text-sm text-ink-2">Your first practice{step < 4 ? ` · ${step + 1} of 4` : ''}</p>
       <h1 ref={heading} tabIndex={-1} className="text-title font-semibold tracking-tight outline-none">{step === 4 ? 'Whenever you’re ready' : titles[step]}</h1>

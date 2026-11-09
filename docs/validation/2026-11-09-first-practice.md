@@ -59,3 +59,16 @@ Markdown uses that width too. Start/skip controls remain above the writing.
   existing large-chunk advisory. No server, recording or analysis logic changed in this correction.
 - Inspected Home, full story, wide-screen, narrow/dark and breathing-step screenshots. Independent
   review approved the correction. The owner's app and production build were not overwritten.
+
+## Final correction: shared chapter width
+
+The owner clarified that Home should use the existing chapter width. The previous full-pane
+interpretation was incorrect. Removed Home/walkthrough width overrides and restored the shared
+centered 960px column, normal padding and standard Markdown typography. The full course writing
+and start/skip controls remain visible, without an additional introduction wrapper width cap.
+
+- Introduction and course-reading browser suites passed, checking shared column width, centering,
+  no extra wrapper cap, complete section headings, and responsive light/dark layouts.
+- Typecheck and all 224 unit tests passed. Production build passed to
+  `.tmp/introduction-standard-width-web` with the existing large-chunk advisory.
+- Inspected the wide Home screenshot. No owner app/data, installer or production output changes.

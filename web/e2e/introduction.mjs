@@ -71,29 +71,35 @@ try {
   for (const title of [...home.matchAll(/^## (.+)$/gm)].map(match => match[1].trim())) {
     assert.equal(await welcome().getByRole('heading', { name: title, exact: true }).count(), 1, `Home keeps ${title}`);
   }
-  const fillsContent = async locator => {
+  const matchesChapterWidth = async locator => {
     const size = await locator.evaluate(el => {
-      const parent = el.closest('.ve-page') ?? el.closest('main');
-      const box = el.getBoundingClientRect(), frame = parent.getBoundingClientRect();
-      return { width: box.width, available: frame.width, overflow: parent.scrollWidth > parent.clientWidth + 1 };
+      const column = el.closest('.ve-col');
+      const frame = column.closest('.ve-page');
+      const box = column.getBoundingClientRect(), available = frame.getBoundingClientRect();
+      const style = getComputedStyle(column);
+      return { width: box.width, available: available.width,
+        offset: (box.left + box.right - available.left - available.right) / 2,
+        content: el.getBoundingClientRect().width,
+        inner: box.width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight),
+        overflow: frame.scrollWidth > frame.clientWidth + 1 };
     });
-    assert.ok(size.available - size.width <= 82, `uses the full content area with page padding: ${JSON.stringify(size)}`);
+    assert.ok(Math.abs(size.width - Math.min(960, size.available)) <= 1, `uses the shared chapter column: ${JSON.stringify(size)}`);
+    assert.ok(Math.abs(size.offset) <= 1, 'column is centered like the chapters');
+    assert.ok(Math.abs(size.content - size.inner) <= 1, 'no extra narrow wrapper inside the chapter column');
     assert.equal(size.overflow, false, 'no horizontal overflow');
   };
-  await fillsContent(welcome());
-  assert.ok(await welcome().locator('.md > p').first().evaluate(el => el.getBoundingClientRect().width >= el.parentElement.getBoundingClientRect().width - 1), 'Markdown also fills the available width');
-  assert.match(await welcome().innerText(), /private place for self-directed learning/);
+  await matchesChapterWidth(welcome());
   assert.equal(await page.evaluate(() => window.micRequests), 0, 'Home does not open a granted microphone');
   await snapshot('home-light.png');
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await fillsContent(welcome());
+  await matchesChapterWidth(welcome());
   await snapshot('home-wide.png');
   await page.setViewportSize({ width: 1440, height: 950 });
   await welcome().getByRole('heading', { name: 'Why this exists', exact: true }).scrollIntoViewIfNeeded();
   await snapshot('home-story-full.png');
   await welcome().getByRole('link', { name: 'Your first practice', exact: true }).first().click();
   await heading('How practice works');
-  await fillsContent(page.locator('.first-practice'));
+  await matchesChapterWidth(page.locator('.first-practice'));
   await next();
   await heading('Settle in and breathe');
   assert.ok(await page.getByRole('button', { name: 'Continue', exact: true }).evaluate(el => el.getBoundingClientRect().height >= 40), 'Continue keeps the shared button size');
@@ -147,7 +153,7 @@ try {
   await page.evaluate(() => window.releasePermission());
   await page.waitForTimeout(100);
   assert.equal(await page.evaluate(() => window.micRequests), 0, `late permission is cancelled: ${JSON.stringify(await page.evaluate(() => window.lastMicRequest))}`);
-  await fillsContent(welcome());
+  await matchesChapterWidth(welcome());
   await snapshot('home-phone-dark.png');
 
   // Releasing a pending microphone must not let its result replace a later recording visit.
