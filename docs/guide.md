@@ -31,9 +31,14 @@ Scratch launches with `LILT_DATA_DIR` use another free port.
 Allow microphone access for desktop apps in Windows Settings if recording is blocked.
 Exports go to your Windows Downloads folder and can be revealed in File Explorer.
 **Updates:** from 0.1.2, the released Windows app checks GitHub for a newer version each time it
-opens (and from File → Check for updates…). When one is ready, a notice appears; **Open app
-updates** in Settings shows it. Download, then Install once your takes are saved: Lilt stops its
-own server, runs the signed installer quietly and opens again. The updater accepts only a
+opens (and from File → Check for updates…, which also opens Settings → Updates). From 0.1.4 it all
+happens in Lilt's own window, with no separate updates window: Settings → Updates shows the status
+and one button for the next step (**Check for updates**, **Download Lilt 0.1.4**, **Install and
+restart**), a progress bar while it downloads, the release notes, and in words why a step couldn't
+run. The notice in your notifications follows along (available, downloading with a percentage,
+ready to install) and opens Settings → Updates. Install waits until your takes are saved: Lilt
+stops its own server, runs the signed installer quietly and opens again. An app attached to a
+separately started Lilt (a server you ran yourself) won't install and says so. The updater accepts only a
 `Lilt-<version>-x64-setup.exe` from this repository's release of that version, signed with
 Lilt's updater key. Versions before 0.1.2 have no updater, so install 0.1.2 once by hand.
 Local builds (without `-Release`) say updates are not configured. Your practice data stays
@@ -55,16 +60,17 @@ its own window; quitting stops the server.
   open of a downloaded copy. Open it once, then System Settings → Privacy & Security → **Open
   Anyway**. After that it opens normally. (Signing and notarising with a Developer ID removes this.)
 - **Updates:** in a signed release build, open **Settings → Updates**, or **Check for updates…**
-  in the Mac menu. Settings shows your installed app version and current update status directly.
+  in the Mac menu. Settings shows your installed app version, the update status and the button for
+  the next step, as on Windows; there is no separate updates window.
   Lilt also checks quietly when it opens. An available version appears in **Notification Center**;
-  choose the notice to open Updates. Reading or clearing it is remembered in this browser for
+  choose the notice to open Settings → Updates. Reading or clearing it is remembered in this browser for
   that version, so another check or completed download does not make it unread again. A newer
   version gets its own notice. There is no sound, pop-up or system notification.
   Read the release notes, choose
-  **Download update**, then **Update and restart**. Downloads are verified before installation;
-  checks alone never install anything. Finish recording and saving first. If a take is still
-  saving, the download stays ready while you finish. Closing the update window leaves a
-  download running; reopen it to see its progress. A normal Quit waits during replacement.
+  **Download Lilt <version>**, then **Install and restart**. Downloads are verified before
+  installation; checks alone never install anything. Finish recording and saving first. If a take
+  is still saving, the download stays ready while you finish. Leaving Settings leaves a download
+  running; the notice shows its progress. A normal Quit waits during replacement.
   If an older unfinished take blocks an update, review it in **Recordings** and finish saving
   or remove it there. Restarting does not discard unfinished takes, even empty ones.
   The app, server, Python helper and bundled content update together; your data folder stays

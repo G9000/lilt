@@ -167,8 +167,8 @@ stable release to test the owner's installed app. Keep results in `docs/validati
   interrupted download can be retried without damaging the current app.
 - Try updating while recording and while saving. The take must finish; the downloaded
   update must remain available. New recordings must not begin during installation.
-- Test an independently started server, installation failure, server recovery, closing
-  the update window and quitting during replacement. Confirm no false success message.
+- Test an independently started server, installation failure, server recovery, leaving
+  Settings during a download and quitting during replacement. Confirm no false success message.
 
 Windows fixture and browser tests cannot establish any of those native Mac outcomes.
 The draft workflow is ready to configure; live distribution is not verified or enabled.
@@ -183,7 +183,7 @@ The release build runs on the owner's Windows computer; there is no Windows work
    **Back up both files somewhere safe.** Installed apps trust only this public key: losing the
    private key means existing installs can no longer update and need a manual install.
 2. Set the version as for the Mac, run the checks, and commit and push when the owner asks.
-3. Build with the key and a plain-text note for the update window:
+3. Build with the key and a plain-text note that Settings → Updates shows:
 
    ```powershell
    $env:LILT_UPDATER_PUBLIC_KEY = (Get-Content -Raw "$env:USERPROFILE\.lilt-release\lilt-updater.key.pub").Trim()

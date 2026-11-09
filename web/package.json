@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:desktop-styles": "tailwindcss -i ../desktop/styles/updates.css -o ../desktop/ui/updates.css --minify",
     "typecheck": "tsc -b --noEmit",
     "test": "node --test src/*.test.ts src/room/*.test.ts",
     "test:styles": "node e2e/tailwind.mjs",

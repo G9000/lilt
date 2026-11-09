@@ -365,6 +365,16 @@ fn unused(dir: &Path, name: &str) -> PathBuf {
         .unwrap()
 }
 
+/// The update step a `lilt://update/<step>` link asks for (`lilt://updates`, from older pages, checks).
+fn update_action(url: &tauri::Url) -> Option<&'static str> {
+    match url.as_str().trim_end_matches('/') {
+        "lilt://update/check" | "lilt://updates" => Some("check"),
+        "lilt://update/download" => Some("download"),
+        "lilt://update/install" => Some("install"),
+        _ => None,
+    }
+}
+
 fn window(app: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
     let handle = app.clone();
     let mut builder = WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()));
@@ -389,8 +399,9 @@ fn window(app: &tauri::AppHandle) -> tauri::Result<WebviewWindow> {
                 storage::open(&handle);
                 return false;
             }
-            if url.as_str() == "lilt://updates" || url.as_str() == "lilt://updates/" {
-                let _ = updates::open(&handle);
+            // Updates happen in this window: Settings and the notice ask for each step.
+            if let Some(action) = update_action(url) {
+                updates::request(&handle, action);
                 return false;
             }
             if signs_in_outside(url) {
@@ -460,15 +471,10 @@ fn main() {
             token: uuid::Uuid::new_v4().to_string(),
         })
         .manage(updates::Updates::new(env!("CARGO_PKG_VERSION")))
-        .invoke_handler(tauri::generate_handler![
-            updates::update_status,
-            updates::update_check,
-            updates::update_download,
-            updates::update_install
-        ])
         .on_menu_event(|app, event| {
             if event.id().as_ref() == "check-updates" {
-                let _ = updates::open(app);
+                update_notice::show_updates(app);
+                updates::request(app, "check");
             }
         })
         .setup(|app| {
@@ -524,7 +530,7 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("Lilt couldn't open its window");
     app.run(|app, event| {
-        // A hidden Updates window must not keep the Windows app and its server alive.
+        // Closing the window quits the Windows app and its server.
         #[cfg(windows)]
         if let RunEvent::WindowEvent {
             label,
@@ -626,5 +632,26 @@ mod server_lifecycle_tests {
         };
         assert_eq!(connection.stop().unwrap(), StopOutcome::AlreadyExited);
         assert!(external.wait().unwrap().success());
+    }
+}
+
+#[cfg(test)]
+mod update_link_tests {
+    use super::update_action;
+
+    #[test]
+    fn only_the_three_update_steps_are_links_and_older_pages_still_check() {
+        for (link, step) in [
+            ("lilt://update/check", Some("check")),
+            ("lilt://update/download/", Some("download")),
+            ("lilt://update/install", Some("install")),
+            ("lilt://updates", Some("check")),
+            ("lilt://update/delete", None),
+            ("lilt://update/install?version=9.9.9", None),
+            ("lilt://data-folder", None),
+            ("http://127.0.0.1:7878/update/install", None),
+        ] {
+            assert_eq!(update_action(&link.parse().unwrap()), step, "{link}");
+        }
     }
 }

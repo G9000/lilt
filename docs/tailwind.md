@@ -13,8 +13,6 @@ The native updater uses Tailwind's CLI to produce its bundled stylesheet.
 - `web/src/ui/` contains explicit shared, practice, page, Markdown and accent utility recipes.
 - `web/src/ui/desktop.ts` keeps the room's window chrome independent of deferred practice styles.
 - `web/src/desk/roomStyles.ts` contains the illustrated room, desktop, music and yarn recipes.
-- `desktop/styles/updates.css` is the native updater's theme input; `desktop/ui/updates.html`
-  contains its utilities. `desktop/ui/updates.css` is generated, not handwritten.
 
 Use utilities directly in new JSX. Extract repeated combinations into a named recipe or shared
 component. Compose complete class strings with `cx`; do not build a utility name from fragments.

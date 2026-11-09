@@ -7,7 +7,8 @@ import { DEFAULT_COURSE } from "../courseIds";
 import { dailyPath, practicePath } from "../courseNavigation";
 import { go } from "../App";
 import { updateNotice } from "../desktopUpdate";
-import { openAppUpdates, useDesktopUpdate } from "../useDesktopUpdate";
+import { useDesktopUpdate } from "../useDesktopUpdate";
+import { openSettings } from "./SettingsSheet";
 
 /**
  * The inbox: only things worth knowing, built from what Lilt already tracks. Never streaks,
@@ -75,7 +76,7 @@ export function useInbox(deck: Deck | null, recovered: number, course = DEFAULT_
     notes, unread, open, read,
     setOpen,
     toggle: () => setOpen((o) => { if (o) markRead(notes.map((n) => n.id)); return !o; }),
-    openNote: (n: Note) => { markRead([n.id]); setOpen(false); if (n.kind === "update") openAppUpdates(); else go(n.to); },
+    openNote: (n: Note) => { markRead([n.id]); setOpen(false); if (n.kind === "update") openSettings("updates"); else go(n.to); },
     clearAll: () => { const v = [...new Set([...cleared, ...notes.map((n) => n.id)])]; save(CLEARED, v); setCleared(v); markRead(notes.map((n) => n.id)); },
   };
 }

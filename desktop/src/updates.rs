@@ -1,4 +1,5 @@
-//! Signed whole-app updates, controlled only by the bundled update window.
+//! Signed whole-app updates. Lilt's own practice window asks for each step (check, download,
+//! install) through `lilt://update/…` links and shows the status the app publishes to it.
 
 use crate::update_lifecycle::{self, Lifecycle};
 use crate::update_notice::{self, Notice};
@@ -6,8 +7,7 @@ use crate::update_policy;
 use crate::update_state::{Action, Phase, Snapshot};
 use std::sync::{Mutex, OnceLock};
 use std::time::Duration;
-use tauri::webview::NewWindowResponse;
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager};
 use tauri_plugin_updater::{Update, UpdaterExt};
 
 const ENDPOINT: &str = "https://github.com/G9000/lilt/releases/latest/download/latest.json";
@@ -96,60 +96,29 @@ impl Updates {
     pub fn installing(&self) -> bool {
         self.snapshot().phase == Phase::Installing
     }
-}
 
-fn trusted(window: &WebviewWindow) -> Result<(), String> {
-    if window
-        .url()
-        .is_ok_and(|url| update_policy::trusted_page(window.label(), &url))
-    {
-        Ok(())
-    } else {
-        Err("Open Updates from Lilt's menu.".into())
+    /// Say why a step couldn't start, keeping where things stand.
+    fn note(&self, message: String) {
+        self.change(|state| state.error = Some(message));
     }
 }
 
-pub fn open(app: &AppHandle) -> tauri::Result<()> {
-    if let Some(window) = app.get_webview_window("updates") {
-        window.show()?;
-        return window.set_focus();
-    }
-    let mut builder =
-        WebviewWindowBuilder::new(app, "updates", WebviewUrl::App("updates.html".into()));
-    if let Some(data) = crate::webview_data() {
-        builder = builder.data_directory(data);
-    }
-    let window = builder
-        .title("Lilt updates")
-        .inner_size(500.0, 550.0)
-        .min_inner_size(360.0, 400.0)
-        .center()
-        .on_navigation(|url| update_policy::trusted_page("updates", url))
-        .on_new_window(|_, _| NewWindowResponse::Deny)
-        .build()?;
+/// A step Lilt's practice window asked for (`lilt://update/check`, `download` or `install`), run in
+/// the background. A step that can't run says why in the status the window shows.
+pub fn request(app: &AppHandle, action: &str) {
     let handle = app.clone();
-    window.on_window_event(move |event| {
-        if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-            // Keep native work alive even when this is the last visible window.
-            api.prevent_close();
-            if let Some(window) = handle.get_webview_window("updates") {
-                let _ = window.hide();
-            }
+    let action = action.to_string();
+    tauri::async_runtime::spawn(async move {
+        let result = match action.as_str() {
+            "check" => check(&handle).await,
+            "download" => download(&handle).await,
+            "install" => install(&handle).await,
+            _ => return,
+        };
+        if let Err(message) = result {
+            handle.state::<Updates>().note(message);
         }
     });
-    Ok(())
-}
-
-#[tauri::command]
-pub fn update_status(window: WebviewWindow, app: AppHandle) -> Result<Snapshot, String> {
-    trusted(&window)?;
-    Ok(app.state::<Updates>().snapshot())
-}
-
-#[tauri::command]
-pub async fn update_check(window: WebviewWindow, app: AppHandle) -> Result<Snapshot, String> {
-    trusted(&window)?;
-    check(&app).await
 }
 
 pub async fn check(app: &AppHandle) -> Result<Snapshot, String> {
@@ -193,9 +162,7 @@ pub async fn check(app: &AppHandle) -> Result<Snapshot, String> {
     Ok(state.snapshot())
 }
 
-#[tauri::command]
-pub async fn update_download(window: WebviewWindow, app: AppHandle) -> Result<Snapshot, String> {
-    trusted(&window)?;
+pub async fn download(app: &AppHandle) -> Result<Snapshot, String> {
     let state = app.state::<Updates>();
     let _operation = state.begin(Action::Download)?;
     let pending = state
@@ -313,15 +280,13 @@ impl Lifecycle for NativeLifecycle<'_> {
     }
 }
 
-#[tauri::command]
-pub async fn update_install(window: WebviewWindow, app: AppHandle) -> Result<Snapshot, String> {
-    trusted(&window)?;
+pub async fn install(app: &AppHandle) -> Result<Snapshot, String> {
     let state = app.state::<Updates>();
     if !cfg!(any(target_os = "macos", windows)) {
         return Err("App installation is available in the packaged Mac and Windows apps.".into());
     }
     // An app attached to a separately started server must never stop that server.
-    let (port, token) = crate::owned_server(&app)?;
+    let (port, token) = crate::owned_server(app)?;
     let _operation = state.begin(Action::Install)?;
     let pending = state
         .pending
@@ -335,7 +300,7 @@ pub async fn update_install(window: WebviewWindow, app: AppHandle) -> Result<Sna
         ));
     };
     let mut lifecycle = NativeLifecycle {
-        app: &app,
+        app,
         port,
         token,
         pending: Some(pending),

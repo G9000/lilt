@@ -10,6 +10,13 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: "0.1.4",
+    date: "2026-11-09",
+    items: [
+      { title: "Updates without a separate window", body: "Updating happens right in Lilt now. Settings → Updates shows one button for the next step, a progress bar while it downloads and the release notes, and the notice follows along. No more blank updates window that wouldn't close. If you're on 0.1.2 or 0.1.3, install 0.1.4 by hand once.", to: "/settings/updates" },
+    ],
+  },
+  {
     version: "0.1.3",
     date: "2026-11-09",
     items: [

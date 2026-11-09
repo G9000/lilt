@@ -9,8 +9,8 @@ import { AccentPicker } from '../components/AccentPicker';
 import { Callout } from "../components/bits";
 import { ConnectAI } from "../components/ConnectAI";
 import { playSound, setSounds, soundsOn } from "../sounds";
-import { isDesktop, openAppUpdates, useDesktopUpdate } from "../useDesktopUpdate";
-import { updateStatus } from "../desktopUpdate";
+import { isDesktop, requestUpdate, useDesktopUpdate } from "../useDesktopUpdate";
+import { nextUpdateStep, updateStatus } from "../desktopUpdate";
 import { CURRENT } from "../release";
 import { BackupSettings } from "../components/BackupSettings";
 import { DirectionChoice } from "../components/DirectionChoice";
@@ -195,14 +195,27 @@ export const savedLabel = (s: ReturnType<typeof useProfileDraft>["saved"]) => (s
 
 function AppUpdates() {
   const status = useDesktopUpdate();
+  const next = nextUpdateStep(status);
+  const said = updateStatus(status);
+  // A failed check already says so in its error; elsewhere the error follows what's on offer.
+  const help = status?.failed && status.error ? (status.phase === "idle" ? status.error : `${said} ${status.error}`) : said;
   return (
     <div className={cx(pages.sxGroup, "sx-group")}>
       {isDesktop() ? <>
         <Row label="Installed version"><span>{status?.current ?? "Reading app version…"}</span></Row>
-        <Row label="Update status" help={<span role="status">{updateStatus(status)}</span>} stack>
-          <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={openAppUpdates}>Open app updates</button>
+        <Row label="Update status" help={<span role="status">{help}</span>} stack>
+          {next && <button className={cx(cx(pages.sxBtn, "btn-secondary sx-btn"), shared["btn-secondary"])} onClick={() => requestUpdate(next.step)}>{next.label}</button>}
         </Row>
-        <Row label="How updates work" help="When Lilt opens, it asks GitHub whether there's a newer version. Nothing about your practice is sent. Downloading and installing only happen when you choose, after your takes are saved." />
+        {status?.phase === "downloading" && status.progress !== null && (
+          <div className={cx(pages.sxRow, "sx-row")}>
+            <div className="h-[8px] w-full rounded-[99px] bg-fill overflow-hidden" role="progressbar" aria-label="Download" aria-valuemin={0} aria-valuemax={100} aria-valuenow={status.progress}>
+              <div className="h-full rounded-[99px] bg-accent [transition:width_200ms_ease]" style={{ width: `${status.progress}%` }} />
+            </div>
+          </div>
+        )}
+        {status?.phase === "ready" && <Row label="Installing" help="Lilt waits until your takes are saved, then closes, installs the update and opens again. It takes a moment." />}
+        {status?.notes && status.version && <Row label={`What's new in Lilt ${status.version}`} help={<span className="[white-space:pre-wrap]">{status.notes}</span>} stack />}
+        <Row label="How updates work" help="When Lilt opens, it asks GitHub whether there's a newer version. Nothing about your practice is sent. Downloading and installing happen here, only when you choose." />
       </> : <>
         <Row label="Web version"><span>{CURRENT.version}</span></Row>
         <Row label="App updates" help="The installed Mac and Windows apps can update themselves." />

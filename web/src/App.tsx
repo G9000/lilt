@@ -140,7 +140,7 @@ export function App() {
     return () => { mq.removeEventListener("change", on); window.removeEventListener("focus", on); document.removeEventListener("visibilitychange", back); };
   }, [mode]);
   // A link to #/settings or #/settings/ai (where ChatGPT sign-in returns) opens Settings over the room.
-  useEffect(() => { if (seg[0] === "settings") { window.location.replace("#/"); openSettings(seg[1] === "ai" || seg[1] === "about" ? seg[1] : undefined); } }, [seg[0], seg[1]]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (seg[0] === "settings") { window.location.replace("#/"); openSettings(seg[1] === "ai" || seg[1] === "about" || seg[1] === "updates" ? seg[1] : undefined); } }, [seg[0], seg[1]]); // eslint-disable-line react-hooks/exhaustive-deps
   // Settings changes the theme too.
   useEffect(() => {
     const on = (e: Event) => setMode((e as CustomEvent<ThemeMode>).detail);

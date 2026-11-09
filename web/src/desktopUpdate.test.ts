@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parseDesktopUpdate, updateNotice, updateStatus, type DesktopUpdate } from "./desktopUpdate.ts";
+import { nextUpdateStep, parseDesktopUpdate, updateNotice, updateStatus, type DesktopUpdate } from "./desktopUpdate.ts";
 
-const current: DesktopUpdate = { current: "0.2.1", phase: "idle", version: null, failed: false };
+const current: DesktopUpdate = { current: "0.2.1", phase: "idle", version: null, failed: false, error: null, notes: null, progress: null };
 
 test("desktop status rejects malformed data instead of inventing an installed version", () => {
   for (const value of [undefined, null, [], "0.2.1", {}, { ...current, current: "" }, { ...current, current: 21 }, { ...current, phase: "unknown" }, { ...current, failed: "false" }, { ...current, version: {} }]) {
@@ -26,7 +26,7 @@ test("Settings describes waiting and every native phase without assuming an upda
   const expected = {
     idle: /not checked/i, checking: /checking/i, up_to_date: /up to date/i,
     available: /0\.2\.2 is available/i, downloading: /downloading Lilt 0\.2\.2/i,
-    ready: /0\.2\.2 is ready to install/i, installing: /updating Lilt/i,
+    ready: /0\.2\.2 is downloaded and ready to install/i, installing: /updating Lilt/i,
     unconfigured: /not configured/i,
   };
   for (const [phase, expression] of Object.entries(expected)) {
@@ -36,21 +36,42 @@ test("Settings describes waiting and every native phase without assuming an upda
   assert.doesNotMatch(updateStatus({ ...current, failed: true }), /up to date/i);
 });
 
-test("failed download or blocked installation still shows the available version", () => {
-  for (const phase of ["available", "ready"] as const) {
-    const status = updateStatus({ ...current, phase, version: "0.2.2", failed: true });
-    assert.match(status, /0\.2\.2/);
-    assert.match(status, /open app updates/i);
+test("older apps without error, notes or progress still read, and bad values are refused", () => {
+  const old = { current: "0.2.1", phase: "available", version: "0.2.2", failed: false };
+  assert.deepEqual(parseDesktopUpdate(old), { ...old, error: null, notes: null, progress: null });
+  for (const bad of [{ progress: 101 }, { progress: 2.5 }, { progress: "50" }, { notes: 7 }, { error: "x".repeat(1001) }]) {
+    assert.equal(parseDesktopUpdate({ ...old, ...bad }), null, JSON.stringify(bad));
   }
+  const full = parseDesktopUpdate({ ...old, phase: "downloading", failed: true, error: "Couldn't download.", notes: "A quiet update.", progress: 40 });
+  assert.deepEqual([full?.error, full?.notes, full?.progress], ["Couldn't download.", "A quiet update.", 40]);
+  assert.equal(parseDesktopUpdate({ ...old, phase: "idle", error: "stale", notes: "stale", progress: 40 })?.notes, null);
 });
 
-test("one notification identity survives repeated checks, downloading and readiness", () => {
+test("each state offers one next step, and none while a step runs", () => {
+  const step = (phase: DesktopUpdate["phase"], version: string | null = "0.2.2") => nextUpdateStep({ ...current, phase, version })?.step ?? null;
+  assert.equal(nextUpdateStep(null), null);
+  assert.deepEqual([step("idle"), step("up_to_date"), step("available"), step("ready")], ["check", "check", "download", "install"]);
+  for (const phase of ["checking", "downloading", "installing", "unconfigured"] as const) assert.equal(step(phase), null, phase);
+  assert.equal(nextUpdateStep({ ...current, phase: "available", version: "0.2.2" })?.label, "Download Lilt 0.2.2");
+  assert.equal(nextUpdateStep({ ...current, phase: "ready", version: "0.2.2" })?.label, "Install and restart");
+});
+
+test("download progress shows in the status and the notice", () => {
+  const s = { ...current, phase: "downloading" as const, version: "0.2.2", progress: 42 };
+  assert.match(updateStatus(s), /Downloading Lilt 0\.2\.2… 42%/);
+  assert.match(updateNotice(s)!.body, /^42% so far/);
+  assert.equal(updateNotice(s)!.title, "Downloading Lilt 0.2.2");
+});
+
+test("one notification identity follows the update from offer to install, and opens Settings", () => {
+  const titles: string[] = [];
   for (const phase of ["available", "downloading", "ready", "installing"] as const) {
     const notice = updateNotice({ ...current, phase, version: "0.2.2", failed: true });
     assert.equal(notice?.id, "app-update-0.2.2");
-    assert.equal(notice?.title, "Lilt 0.2.2 is available");
-    assert.equal(notice?.to, "lilt://updates");
+    assert.equal(notice?.to, "/settings/updates");
+    titles.push(notice!.title);
   }
+  assert.deepEqual(titles, ["Lilt 0.2.2 is available", "Downloading Lilt 0.2.2", "Lilt 0.2.2 is ready to install", "Updating Lilt"]);
   assert.notEqual(updateNotice({ ...current, phase: "available", version: "0.2.3" })?.id, "app-update-0.2.2");
 });
 

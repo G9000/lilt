@@ -32,7 +32,6 @@ fi
 
 echo "==> Web app"
 (cd "$ROOT" && bun install --frozen-lockfile)
-(cd "$ROOT/web" && bun run build:desktop-styles)
 (cd "$ROOT/web" && bunx vite build --outDir "$DESKTOP/target/web" --emptyOutDir)
 echo "==> Server"
 (cd "$ROOT/server" && cargo build --locked --release --target-dir "$DESKTOP/target/server")

@@ -1,5 +1,17 @@
 # Lilt: validation report
 
+## 9 November 2026: Updates inside Lilt, no separate window
+
+The separate updates window (blank and impossible to close on Windows) is gone. Settings → Updates
+and the notice now check, download and install through `lilt://update/<step>` links the main
+window's navigation handler runs. A release-mode scratch app (reporting 0.1.2, updater key built in,
+new web pages, its own data folder and port) found the published 0.1.3 at launch, showed its notes,
+downloaded it with progress from 4% to 98% in 25 steps, verified it and offered Install and
+restart; the notice followed (ready to install), and the window closed normally with X. Install was
+not run, since it would replace the owner's installed app. Web typecheck, 226 unit tests and the
+production build, `desktop-updates` 5/5, desktop formatting, release Clippy and 31 tests, and the
+release-script tests passed.
+
 ## 9 November 2026: Room tips
 
 First-visit hints, hover/focus labels and Make it yours → Show room tips passed isolated Chrome

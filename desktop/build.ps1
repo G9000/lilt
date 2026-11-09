@@ -119,10 +119,6 @@ try {
     Push-Location (Join-Path $repoRoot 'web')
     try {
         Invoke-Checked 'bun' @('run', 'typecheck')
-        $webPackage = Get-Content -LiteralPath 'package.json' -Raw | ConvertFrom-Json
-        if ($webPackage.scripts.PSObject.Properties.Name -contains 'build:desktop-styles') {
-            Invoke-Checked 'bun' @('run', 'build:desktop-styles')
-        }
         Invoke-Checked 'bun' @('x', 'vite', 'build', '--outDir', $webOutput, '--emptyOutDir')
     } finally { Pop-Location }
 
