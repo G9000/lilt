@@ -1,11 +1,12 @@
 @keyframes music-spin { to { transform: rotate(360deg); } }
 @keyframes player-spin { to { transform: rotate(360deg); } }
 @keyframes player-tuning { 0%, 100% { opacity: .13; } 50% { opacity: .28; } }
+/* On a wisp spanning the mug's 100-unit viewBox, 1% is one unit of the drawing. */
 @keyframes tea-steam {
-  0% { transform: translate(0, 3px) scale(.8, .75); opacity: 0; }
+  0% { transform: translate(0, 3%) scale(.8, .75); opacity: 0; }
   22% { opacity: .65; }
-  65% { transform: translate(3px, -7px) scale(1.1, 1.05); opacity: .45; }
-  100% { transform: translate(-2px, -17px) scale(1.2, 1.2); opacity: 0; }
+  65% { transform: translate(3%, -7%) scale(1.1, 1.05); opacity: .45; }
+  100% { transform: translate(-2%, -17%) scale(1.2, 1.2); opacity: 0; }
 }
 
 @keyframes room-appearance-enter { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }

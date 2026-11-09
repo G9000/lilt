@@ -161,6 +161,16 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
     let raf = 0, last = 0, lastLight = -1e9, lastHeart = 0;
     let lastChoice = appearanceRef.current.light;
     const f = frame.current;
+    // Every style write invalidates; the stage holds the whole room, so write only what changed.
+    // (Remembered rather than read back: the browser normalises what it returns.)
+    const written = new WeakMap<HTMLElement, Map<string, string>>();
+    const setStyle = (el: HTMLElement, name: string, value: string) => {
+      let seen = written.get(el);
+      if (!seen) written.set(el, seen = new Map());
+      if (seen.get(name) === value) return;
+      seen.set(name, value); el.style.setProperty(name, value);
+    };
+    let contour: HTMLElement | null = null;
     const place = (now: number) => {
       const c = cam.current, m = mouse.current;
       if (reduced && c.flying) { c.now = c.to; c.flying = false; }
@@ -172,13 +182,18 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
       m.sx += (m.x - m.sx) * 0.06; m.sy += (m.y - m.sy) * 0.06;
       const v = c.now, vw = window.innerWidth, vh = window.innerHeight;
       const drift = c.inside || c.flying || reduced ? 0 : 1;
-      const left = drift ? clamp(v.left - m.sx * 22, vw - W * v.s, 0) : v.left;
-      const top = drift ? clamp(v.top - m.sy * 12, Math.min(0, vh - H * v.s), 0) : v.top;
+      // Rounded, so a resting mouse (whose eased position creeps by fractions forever) writes nothing.
+      const left = Math.round((drift ? clamp(v.left - m.sx * 22, vw - W * v.s, 0) : v.left) * 100) / 100;
+      const top = Math.round((drift ? clamp(v.top - m.sy * 12, Math.min(0, vh - H * v.s), 0) : v.top) * 100) / 100;
       const st = stage.current;
       if (st) {
-        const scale = catScale(f);
-        st.style.setProperty('--cat-scale-x', String(scale.x)); st.style.setProperty('--cat-scale-y', String(scale.y));
-        st.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${v.s})`; st.style.setProperty("--inv", String(1 / v.s));
+        // The breathing goes on the cat's outline itself: set on the stage, it restyled the whole room every frame.
+        if (!contour?.isConnected) contour = st.querySelector<HTMLElement>('.room-cat-contour');
+        if (contour) {
+          const scale = catScale(f);
+          setStyle(contour, '--cat-scale-x', String(scale.x)); setStyle(contour, '--cat-scale-y', String(scale.y));
+        }
+        setStyle(st, 'transform', `translate3d(${left}px, ${top}px, 0) scale(${v.s})`); setStyle(st, '--inv', String(1 / v.s));
         // Only while flying: a lasting will-change keeps Chromium's raster from the zoomed-in screen,
         // too big for its tile memory once back in the room, so parts of the painting stayed black.
         const willChange = c.flying ? "transform" : "";
@@ -189,9 +204,9 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
       }
       const b = bubble.current;
       if (b) {
-        const x = left + CAT_SPOT.x * v.s, y = top + (CAT_SPOT.y - 30) * v.s;
-        b.style.left = `${x}px`; b.style.top = `${y}px`;
-        b.style.opacity = c.inside || c.flying || x < 60 || x > vw - 60 || y > vh - 40 ? "0" : "1";
+        const x = Math.round(left + CAT_SPOT.x * v.s), y = Math.round(top + (CAT_SPOT.y - 30) * v.s);
+        setStyle(b, 'left', `${x}px`); setStyle(b, 'top', `${y}px`);
+        setStyle(b, 'opacity', c.inside || c.flying || x < 60 || x > vw - 60 || y > vh - 40 ? "0" : "1");
       }
     };
     const step = (now: number) => {
@@ -227,8 +242,11 @@ function RoomScene({ inside, onEnter, cards, done, days = 0, children }: { insid
       window.addEventListener("resize", on);
       return () => { redraw.current = () => {}; window.clearInterval(id); listeners.delete(on); window.removeEventListener("resize", on); };
     }
+    // About 30 frames a second in the room; slower at the desk (the room is covered) or while
+    // another window has focus, and none at all while Lilt is hidden.
+    const gap = () => (cam.current.inside ? 500 : document.hasFocus() ? 33 : 66);
     const loop = (now: number) => {
-      if (cam.current.flying || now - last > (cam.current.inside ? 500 : 33)) step(now);
+      if (!document.hidden && (cam.current.flying || now - last > gap())) step(now);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);

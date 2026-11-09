@@ -10,6 +10,13 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: "0.1.5",
+    date: "2026-11-10",
+    items: [
+      { title: "A lighter room", body: "Left sitting in the room, Lilt's window could slowly grow past a gigabyte of memory. The room now redraws only what moves, eases off while another window has focus, and rests while Lilt is hidden. It looks just the same." },
+    ],
+  },
+  {
     version: "0.1.4",
     date: "2026-11-09",
     items: [

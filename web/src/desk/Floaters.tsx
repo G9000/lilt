@@ -359,7 +359,7 @@ export function RoomFloaters({ deck, inside, course = DEFAULT_COURSE }: { deck?:
     const check = () => {
       // While the camera is at the desk or flying, the widgets are hidden: measuring them then
       // would shove them around, and they'd visibly jump back as the room settles.
-      if (!box.current?.closest(".room-stage.settled")) return;
+      if (document.hidden || !box.current?.closest(".room-stage.settled")) return;
       const stack = document.querySelector(".cs")?.getBoundingClientRect();
       const vw = window.innerWidth, vh = window.innerHeight;
       // On squarer screens the room's shortcuts (Photos, Practice, Music) sit under the menu bar.
@@ -373,7 +373,8 @@ export function RoomFloaters({ deck, inside, course = DEFAULT_COURSE }: { deck?:
         const r = el.querySelector<HTMLElement>(".fl-nudge")!.getBoundingClientRect();
         // Being dragged or written on (the note): leave it where it is until you're done.
         if (el.classList.contains("dragging") || el.classList.contains("still")) { placed.push(r); return; }
-        el.classList.remove("off");
+        // `.off` only fades it, so the box measures the same either way; it's set once below, and
+        // only when it changes, since this runs five times a second.
         // the card slides inward (and below the menu bar) to stay fully on screen; measure where it
         // would be without the current slide, so nothing resets or flickers between checks
         const was = [parseFloat(el.style.getPropertyValue("--nudge")) || 0, parseFloat(el.style.getPropertyValue("--nudge-y")) || 0];

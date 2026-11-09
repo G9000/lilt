@@ -30,13 +30,18 @@ export function TeaMug({ mug, steaming = false, warm = false }: { mug: Mug; stea
   const rim = { cream: 26, sage: 32, blue: 29, cat: 32 }[mug];
   return <div className="relative aspect-square w-full" aria-hidden="true">
     <img src={mugImage(mug)} data-mug={mug} alt="" draggable={false} className="block h-full w-full select-none" />
-    <svg viewBox="0 0 100 100" data-steam={steaming ? 'brewing' : warm ? 'warm' : 'settled'}
-      className={`tea-steam pointer-events-none absolute inset-0 h-full w-full overflow-visible transition-opacity duration-[1800ms] motion-reduce:transition-none ${steaming ? 'opacity-75' : warm ? 'opacity-45' : 'opacity-0'}`}
-      fill="none" stroke="#fff4e6" strokeWidth="2" strokeLinecap="round" style={{ filter: 'blur(.4px)' }}>
-      {[35, 44, 53].map((x, i) => <path key={x} d={`M${x} ${rim}c-7-8 8-13 1-21s-4-10 0-14`}
-        className={active ? 'motion-safe:animate-[tea-steam_5s_ease-in-out_infinite]' : ''}
-        style={{ opacity: .65, transformBox: 'fill-box', transformOrigin: 'center bottom', animationDuration: `${(steaming ? 4.4 : 6) + i * .6}s`, animationDelay: `${-i * 1.8 - .8}s` }} />)}
-    </svg>
+    <div data-steam={steaming ? 'brewing' : warm ? 'warm' : 'settled'}
+      className={`tea-steam pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-[1800ms] motion-reduce:transition-none ${steaming ? 'opacity-75' : warm ? 'opacity-45' : 'opacity-0'}`}
+      style={{ filter: 'blur(.4px)' }}>
+      {/* Each wisp is its own <svg> so the browser can move it on the GPU; an animated <path>
+          restyled the page on every screen refresh for as long as the tea was warm. The wisp's
+          box is the mug's 100-unit square, so its origin sits at the foot of the path. */}
+      {[35, 44, 53].map((x, i) => <svg key={x} viewBox="0 0 100 100" fill="none" stroke="#fff4e6" strokeWidth="2" strokeLinecap="round"
+        className={`tea-wisp absolute inset-0 h-full w-full overflow-visible ${active ? 'motion-safe:animate-[tea-steam_5s_ease-in-out_infinite]' : ''}`}
+        style={{ opacity: .65, transformOrigin: `${x + 1}% ${rim}%`, animationDuration: `${(steaming ? 4.4 : 6) + i * .6}s`, animationDelay: `${-i * 1.8 - .8}s` }}>
+        <path d={`M${x} ${rim}c-7-8 8-13 1-21s-4-10 0-14`} />
+      </svg>)}
+    </div>
   </div>;
 }
 

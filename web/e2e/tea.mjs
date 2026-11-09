@@ -179,10 +179,10 @@ try {
       await mug.evaluate(el => el.blur()); await page.mouse.move(1400, 900); await shot(`tea-${light}`);
     }
     assert.equal(await page.locator('.room-mug-clear img').count(), 4);
-    assert.equal(await art.locator('.tea-steam path').first().evaluate(el => getComputedStyle(el).animationName), 'none');
+    assert.equal(await art.locator('.tea-steam .tea-wisp').first().evaluate(el => getComputedStyle(el).animationName), 'none');
     await page.emulateMedia({ reducedMotion: 'no-preference' });
-    assert.equal(await art.locator('.tea-steam path').first().evaluate(el => getComputedStyle(el).animationName), 'tea-steam');
-    const wisp = art.locator('.tea-steam path').first();
+    assert.equal(await art.locator('.tea-steam .tea-wisp').first().evaluate(el => getComputedStyle(el).animationName), 'tea-steam');
+    const wisp = art.locator('.tea-steam .tea-wisp').first();
     const firstTransform = await wisp.evaluate(el => getComputedStyle(el).transform);
     await page.waitForTimeout(450);
     assert.notEqual(await wisp.evaluate(el => getComputedStyle(el).transform), firstTransform, 'steam drifts over time');

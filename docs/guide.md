@@ -283,7 +283,9 @@ Monitor uploads and playback have an isolated check with locally generated media
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
      with your clock. Birds cross the windows by day; stars and city lights come out at night. The
      cat sleeps on the bed and breathes; when you arrive it says hello, and tapping
-     it gets a purr and hearts.
+     it gets a purr and hearts. The room animates at about 30 frames a second, at 15 while
+     another window has focus, and it stops while Lilt is hidden or minimised. At the desk it
+     barely runs. Reduced motion keeps it still.
    - **Lights on when you're done:** once today's cards are finished, the string lights along the
      beam light up one by one and the desk lamp glows warmer. It's a quiet "nice work", never a score.
    - **Menu bar and notifications:** the room and the desk share a macOS-style menu bar (Lilt, what's
@@ -1070,6 +1072,9 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/yarn.mjs /tmp/shots   # Yarn: 
   they're re-sent the next time Lilt opens. The server also recovers interrupted takes at startup and
   labels them "interrupted". Chunks re-sent after that are accepted if the saved take already holds
   them; anything the server turns away (a 4xx reply) fails at once rather than being retried for minutes.
+- **Lilt uses a lot of memory while idle:** up to 0.1.4, the room restyled itself on every frame,
+  so its window could climb past a gigabyte (several on big screens) just sitting in the room. That's
+  fixed in 0.1.5; in an older version, turning on reduced motion in your system settings stops it.
 - **Laptop was asleep:** nothing runs while it sleeps. Pending analysis catches up on wake, and
   you'll see at most one reminder, not a backlog.
 

@@ -1,5 +1,21 @@
 # Lilt: validation report
 
+## 10 November 2026: A lighter room
+
+Left idle in the room, the installed 0.1.4 app's WebView2 renderer grew from 323 MB to 1,026 MB of
+private memory in 2.5 minutes on a fresh scratch data folder, and was still rising. Through
+DevTools it did about 147 style recalculations and layouts a second (one per display frame, about
+110 ms of style work a second). A scratch copy of the same app with the new web build, also on a
+fresh data folder, stayed flat at 87–98 MB, with the GPU process at about 205 MB instead of 390 MB,
+while the room was visible, focused, fully loaded (37/37 pictures) and animating with no layouts.
+In that Chromium, any running CSS animation (even a plain test square) still restyles once a
+frame, but now only the few animated elements. The causes were the cat's breathing scale written
+on the whole stage, the stage transform and `--inv` rewritten every frame, the tea wisps animated
+as SVG paths (a layout each frame), and the widget check clearing `.off` five times a second. Web
+typecheck, 226 unit tests, a scratch production build, and `tea`, `object-outlines`, `room-cats`,
+`room-layout` and `sticky-note` passed. `room-appearance` stops at the painted microphone's click
+through to `#/deck` (line 131) both before and after this change.
+
 ## 9 November 2026: Updates inside Lilt, no separate window
 
 The separate updates window (blank and impossible to close on Windows) is gone. Settings → Updates
