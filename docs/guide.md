@@ -464,8 +464,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    listed under Chapters by part, and the one you're in opens to its texts (a tick once
    practised), so you can jump to any of them. The arrow beside Chapters folds the list away,
    leaving just the chapter you're in, and this browser remembers your choice. **Home** greets
-   you and explains what Lilt is before offering practice. The voice Home restores the original
-   **Why this exists** story from the course guide. **Your first practice** explains how to begin;
+   you and explains what Lilt is before offering practice. Home displays the complete course introduction, including the original
+   **Why this exists** story, **Where I’m at**, practice guidance and resources in the voice course. **Your first practice** explains how to begin;
    **Go to Today** skips it. The next four chapters remain available as tiles. **Chapters**
    (`#/studio/chapters`) has the course's cover, then the **Course guide**, then every chapter as a
    tile with its subtitle (the next one outlined, a quiet tick and "Every text practised" once
@@ -772,7 +772,10 @@ The existing export and manual folder-copy routes remain available:
 
 Sitting down at the room's computer opens the selected course's Home. Home explains Lilt as a
 private place for self-directed learning, with an introduction before daily cards. The voice
-course also shows its original creator story; the full guide remains on Chapters.
+course shows its complete existing introduction, including the creator story, current progress,
+practice guidance, examples, care notes and sources. The full guide is also available on Chapters.
+Home and the first-practice walkthrough fill the available content area, with normal page padding.
+Start/skip controls stay above the full introduction so you can begin without scrolling through it.
 
 **Your first practice** opens four short steps: how practice works, getting comfortable, one
 small attempt, and choosing what comes next. The voice introduction starts with unforced

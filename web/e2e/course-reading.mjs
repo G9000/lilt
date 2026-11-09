@@ -89,9 +89,8 @@ try {
     await page.screenshot({ path: path.join(shots, `course-chapter-${width}-${theme}.png`) });
     await page.goto(`${base}#/learn/drawing`);
     await page.getByRole('heading', { name: 'Drawing gently', exact: true }).waitFor();
-    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course home', 880);
-    await page.getByText('Course guide', { exact: true }).click();
-    await checkColumn(page.locator('details .md'), width, 'Other-course guide', 880);
+    await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course home', width - 80);
+    await checkColumn(page.locator('.home-introduction .md'), width, 'Other-course guide', width - 80);
     await page.goto(`${base}#/learn/drawing/today`);
     await checkColumn(page.getByRole('main', { name: 'Course practice' }).locator(':scope > div'), width, 'Other-course daily practice', 880);
     await page.goto(`${base}#/texts?course=drawing`);
@@ -145,7 +144,7 @@ try {
     await page.locator('.ve-item').nth(1).click();
     assert.equal(await page.locator('.ve-item.on .readtext').textContent(), voiceItems[1].text);
     await page.goto(`${base}#/studio`);
-    await checkColumn(page.locator('.ve-home-col'), width, 'Voice course home', 880);
+    await checkColumn(page.locator('.ve-home-col'), width, 'Voice course home', width - 80);
     await page.goto(`${base}#/studio/chapters`);
     await page.locator('.ve-course-guide > summary').click();
     await checkColumn(page.locator('.ve-course-guide .md'), width, 'Voice course guide', 880);

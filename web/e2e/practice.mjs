@@ -54,7 +54,7 @@ async function main() {
   check("Home introduces Lilt for a new visit", true);
 
   // First run: one take, then the range is offered and saved.
-  await page.getByRole("link", { name: "Your first practice", exact: true }).click();
+  await page.getByRole("link", { name: "Your first practice", exact: true }).first().click();
   await page.getByRole("button", { name: "Skip introduction", exact: true }).click();
   await page.getByRole("link", { name: "Make a starting recording", exact: true }).click();
   await page.getByRole("heading", { name: "Find your starting voice" }).waitFor();

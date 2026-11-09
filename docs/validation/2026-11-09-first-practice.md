@@ -39,3 +39,23 @@ The owner's running app, real practice data, port 7878 and production web output
 No physical microphone, native screen-reader speech or Safari acceptance was performed. No
 installer was rebuilt and nothing was pushed. Introduction choices are browser-local and are not
 part of practice backups.
+
+## Follow-up: complete writing and full width
+
+The owner reported that the new introduction looked too narrow and restored too little writing.
+The cause was an additional 68ch cap inside the 960px page, plus a helper that selected only
+**Why this exists**. Home now renders the complete existing course Markdown, including **Where
+I'm at**, **How it works**, daily-practice guidance, examples, care notes and sources. The helper
+was removed. Home and the walkthrough fill the content pane with normal page padding; the full
+Markdown uses that width too. Start/skip controls remain above the writing.
+
+- The browser regression first failed on the missing **Where I'm at** heading. It now checks
+  every second-level heading in the real course source, Home/walkthrough width, Markdown width,
+  wide-screen and phone layout, and the existing skip/replay/microphone scenarios. It passed.
+- `course-reading.mjs` passed across light/dark and 390/1440/1920px layouts after updating the
+  intentional Home width expectations. Chapter and Today width assertions remain unchanged.
+- Typecheck and all 224 remaining unit tests passed; the obsolete section-extraction test was
+  removed with its helper. Production build passed to `.tmp/introduction-width-web` with the
+  existing large-chunk advisory. No server, recording or analysis logic changed in this correction.
+- Inspected Home, full story, wide-screen, narrow/dark and breathing-step screenshots. Independent
+  review approved the correction. The owner's app and production build were not overwritten.

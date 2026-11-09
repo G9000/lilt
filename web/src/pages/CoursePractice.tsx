@@ -47,7 +47,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
       if (locked && (event.target as HTMLElement).closest("a")) { event.preventDefault(); event.stopPropagation(); }
     }}>
       {/* The same centred 960px column as voice practice. */}
-      <div className="mx-auto w-full max-w-[960px] px-[18px] py-6 sm:px-10 sm:py-8">
+      <div className={`mx-auto w-full ${!view || view === "welcome" ? "max-w-none" : "max-w-[960px]"} px-[18px] py-6 sm:px-10 sm:py-8`}>
         <CourseNav course={course} title={data?.course.title} current={view === "today" ? "today" : !view && !chapter ? "home" : null} />
         {error ? <><p role="alert">{error}</p><button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button></>
           : !data ? <p role="status">Opening your course…</p>
@@ -65,14 +65,13 @@ function CourseHome({ course, texts }: { course: Course; texts: Texts }) {
   const cover = texts.home_cover && picture(texts.home_cover, course.id);
   return <>
     <header className="mb-6"><h1 className={heading}>{course.title}</h1><p className="text-ink-2">{course.summary}</p></header>
-    <HomeIntroduction course={course.id} home={texts.home} />
+    <HomeIntroduction course={course.id} home={texts.home} chapters={texts.levels.map(level => level.id)} />
     {cover && <img className="mb-6 h-[clamp(140px,22vw,220px)] w-full rounded-[16px] object-cover shadow-[0_0_0_1px_var(--hair)]" src={cover} alt="Course cover" />}
     <div className="mb-6 flex flex-wrap gap-3">
       {texts.levels[0] && <a className={secondary} href={`#${practicePath(course.id, texts.levels[0].id)}`}>First chapter</a>}
       <a className={secondary} href={`#${guidedPath(course.id)}`}>Guided practice</a>
       <a className={secondary} href={`#${recordingsPath(course.id)}`}>Recordings</a>
     </div>
-    {texts.home && <details className="mb-6 border-y border-hair py-3 [&[open]>summary]:mb-4"><summary className="cursor-pointer font-medium">Course guide</summary><Markdown src={texts.home} course={course.id} chapters={texts.levels.map(l => l.id)} headingOffset={1} /></details>}
     {/* Chapters as tiles by part, the same as voice practice's Chapters page. */}
     <section aria-label="Course chapters">
       <h2 className="text-[20px] font-semibold tracking-[-0.02em]">The chapters</h2>

@@ -17,3 +17,12 @@ The owner approved restoring an introduction to Home and a skippable first-pract
 A small state module owns per-course introduction state; a shared component renders Home introduction/actions and the walkthrough. Voice and generic course pages use it. Routing and desk labels point newcomers at Home rather than a starting recording. Read the existing Markdown creator section rather than duplicating the story.
 
 Unit checks cover course isolation, corrupt/blocked storage, explicit skip/finish, step recovery and Markdown section extraction. Isolated Chrome covers actual room entry, original story, walkthrough, skip/reload/replay, direct Today links, non-voice content, no microphone activation, narrow/dark layout and focus. Update affected navigation suites, guide, design notes and release notes. Run repository checks with scratch output/data, preserving the owner's running app.
+
+
+## Owner correction, 9 November
+
+The initial implementation restored too little writing and imposed an extra narrow width.
+Home must render the complete existing course Markdown, without extracting a subsection or
+hiding it in a disclosure. Keep its wording, images, links and sources; place start/skip controls
+above it. Home and the first-practice walkthrough should fill the content pane with page padding,
+including the Markdown text. Test all original section headings and actual rendered widths.

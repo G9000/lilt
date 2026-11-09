@@ -551,3 +551,10 @@ recorder, timer, target or required task; Back, Skip introduction and Home remai
 Step changes focus the heading. The final step offers chapters, Today and optional recording.
 The remembered per-course choice never hides the Home explanation, and replay retains an
 existing completion/skip. Both themes, reduced motion and narrow layouts use the same surfaces.
+
+
+**Home introduction correction (9 November).** Home displays the complete editable course
+introduction, not an extracted creator-story section. Its start/skip controls stay near the top.
+Home and the first-practice walkthrough fill the available content pane with normal page padding;
+the additional 960px/68ch caps do not apply there. The full guide's Markdown fills that width too.
+Chapter and Today reading widths retain their existing layout.

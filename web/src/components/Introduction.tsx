@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Texts } from '../api';
 import { DEFAULT_COURSE } from '../courseIds';
 import { dailyPath, guidedPath, practicePath } from '../courseNavigation';
-import { creatorStory, introductionFinished } from '../introduction';
+import { introductionFinished } from '../introduction';
 import { saveIntroduction, useIntroduction, useIntroductionSaved } from '../useIntroduction';
 import { shared } from '../ui/shared';
 import { Markdown } from './Markdown';
@@ -18,19 +18,18 @@ export function IntroductionStorageNotice({ course }: { course: string }) {
   return saved ? null : <p className="my-4 text-ink-2" role="status">Your introduction choice lasts for this visit. Your browser couldn't save it for next time.</p>;
 }
 
-export function HomeIntroduction({ course, home = '' }: { course: string; home?: string }) {
+export function HomeIntroduction({ course, home = '', chapters }: { course: string; home?: string; chapters?: string[] }) {
   const state = useIntroduction(course);
-  const story = course === DEFAULT_COURSE ? creatorStory(home) : '';
-  return <section className="home-introduction mb-8 max-w-[68ch]" aria-label="Welcome to Lilt">
+  return <section className="home-introduction mb-8 w-full min-w-0 [&_.md_:where(p,_ul,_ol,_blockquote,_h1,_h2,_h3,_h4,_h5,_h6,_.footnotes)]:max-w-none" aria-label="Welcome to Lilt">
     <h2 className="mb-3 text-[24px] font-semibold tracking-tight">A little room to learn</h2>
     <p className="mb-3 text-[17px] leading-relaxed">Lilt is a private place for self-directed learning. Read a little, try something, and return to it at your own pace. Your courses, recordings and reflections stay on your computer.</p>
     <p className="text-ink-2 leading-relaxed">There are no grades or streaks to keep up with. You can explore a chapter, follow a few daily cards, or stop whenever you have enough for today.</p>
-    {story && <div className="mt-6 [&_img]:max-h-56 [&_img]:w-full [&_img]:object-cover"><Markdown src={story} course={course} /></div>}
     <div className={actions}>
       <a className={primary} href={`#${introductionPath(course)}`}>{introductionFinished(state) ? 'Read the introduction again' : state === 'new' ? 'Your first practice' : 'Continue your introduction'}</a>
       <a className={secondary} href={`#${dailyPath(course)}`} onClick={() => { if (!introductionFinished(state)) saveIntroduction(course, 'skipped'); }}>Go to Today</a>
     </div>
     <IntroductionStorageNotice course={course} />
+    {home && <div className="mt-8"><Markdown src={home} course={course} chapters={chapters} headingOffset={1} /></div>}
   </section>;
 }
 
@@ -54,7 +53,7 @@ export function FirstPractice({ course, texts }: { course: string; texts: Texts 
     // Keep the outcome visible even when storage is unavailable; leaving is always an explicit link.
     setStep(4);
   };
-  return <article className="first-practice max-w-[68ch]">
+  return <article className="first-practice w-full min-w-0 [&_.md_:where(p,_ul,_ol,_blockquote,_h1,_h2,_h3,_h4,_h5,_h6,_.footnotes)]:max-w-none">
     <header className="mb-7">
       <p className="mb-2 text-sm text-ink-2">Your first practice{step < 4 ? ` · ${step + 1} of 4` : ''}</p>
       <h1 ref={heading} tabIndex={-1} className="text-title font-semibold tracking-tight outline-none">{step === 4 ? 'Whenever you’re ready' : titles[step]}</h1>

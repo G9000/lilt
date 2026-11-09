@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createIntroductionStore, creatorStory } from './introduction.ts';
+import { createIntroductionStore } from './introduction.ts';
 
 function storage() {
   const values = new Map<string, string>();
@@ -36,9 +36,4 @@ test('blocked storage keeps choices in this visit and reports persistence failur
 test('invalid stored values fall back to the beginning', () => {
   const state = createIntroductionStore(() => ({ getItem: () => '999', setItem() {} }));
   assert.equal(state.read('voice'), 'new');
-});
-
-test('the creator story comes from the editable course text and stops at the next section', () => {
-  assert.equal(creatorStory('# Welcome\r\n\r\n## Why this exists\r\n\r\nMy original words.\r\n\r\n## Where I am\r\n\r\nMore.'), '## Why this exists\n\nMy original words.');
-  assert.equal(creatorStory('A course without that section.'), '');
 });

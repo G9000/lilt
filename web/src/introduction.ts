@@ -28,13 +28,3 @@ export function createIntroductionStore(storage: () => Storage) {
     },
   };
 }
-
-/** Keep the creator's words editable in the course, rather than copying them into the UI. */
-export function creatorStory(markdown: string): string {
-  const source = markdown.replace(/\r\n/g, '\n');
-  const start = source.search(/^## Why this exists\s*$/m);
-  if (start < 0) return '';
-  const rest = source.slice(start);
-  const end = rest.indexOf('\n## ');
-  return (end < 0 ? rest : rest.slice(0, end)).trim();
-}
