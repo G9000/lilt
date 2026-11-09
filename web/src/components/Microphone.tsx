@@ -24,6 +24,7 @@ export function MicProvider({ children }: { children: ReactNode }) {
   // pending, StrictMode's double effects) share one getUserMedia call and never orphan a stream.
   const current = useRef<MediaStream | null>(null);
   const pending = useRef<Promise<MediaStream | null> | null>(null);
+  const generation = useRef(0);
   const chosenId = useRef(deviceId);
   chosenId.current = deviceId;
 
@@ -32,11 +33,13 @@ export function MicProvider({ children }: { children: ReactNode }) {
       if (id === undefined) return pending.current;
       await pending.current;
     }
+    const requested = generation.current;
     const open = (async () => {
       try {
         const old = current.current;
         if (old) { closeDelayLine(old); old.getTracks().forEach((t) => t.stop()); current.current = null; }
         const s = await openMic(id ?? chosenId.current);
+        if (requested !== generation.current) { s.getTracks().forEach(t => t.stop()); return null; }
         current.current = s;
         delayedStream(s); // start the half-second pre-roll now, so the first take has it too
         setStream(s);
@@ -44,9 +47,11 @@ export function MicProvider({ children }: { children: ReactNode }) {
         const chosen = s.getAudioTracks()[0]?.getSettings().deviceId;
         if (chosen) { setDeviceId(chosen); try { localStorage.setItem("lilt.mic", chosen); } catch { /* ignore */ } }
         const all = await navigator.mediaDevices.enumerateDevices();
+        if (requested !== generation.current) return null;
         setDevices(all.filter((d) => d.kind === "audioinput"));
         return s;
       } catch (e: any) {
+        if (requested !== generation.current) return null;
         if (!current.current) setStream(null); // the old stream was already stopped above
         const name = e?.name;
         setError(
@@ -57,7 +62,7 @@ export function MicProvider({ children }: { children: ReactNode }) {
         );
         return current.current;
       } finally {
-        pending.current = null;
+        if (requested === generation.current) pending.current = null;
       }
     })();
     pending.current = open;
@@ -73,6 +78,9 @@ export function MicProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const release = useCallback(() => {
+    // A pending permission/device result belongs to the view that requested it.
+    generation.current++;
+    pending.current = null;
     const s = current.current;
     if (s) { closeDelayLine(s); s.getTracks().forEach((t) => t.stop()); }
     current.current = null;

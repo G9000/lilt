@@ -8,7 +8,7 @@ and use is quiet. Greys are neutral (no blue cast) in both themes, the Practice 
 surface rather than glass over the room, and Today's card is plain white (`#222222` in dark) on the
 page. Fewer boxes: a suggestion after a take is a sentence, not a tinted card; resonance sits
 under **More about this take** rather than in a box inside the take. Practice's frame is a guided
-app: the sidebar is a short list of places (no file tree), Home greets you with one next step and
+app: the sidebar is a short list of places (no file tree), Home introduces Lilt and the creator story before a skippable first practice, with
 the next four chapters as tiles, a Chapters page holds every chapter as a tile with the cover and
 guide, a chapter splits into **Learn** and **Practise** tabs (a segmented control), and Today is
 one card without the stacked-paper edges. Every Practice page shares one centred 960px column.
@@ -234,10 +234,11 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   text and recorder are split by hairlines; the sidebar is the most solid layer (about 90 % light
   neutral, less colour saturation) so the tree reads clearly in any light, even the night painting). It is laid out like a Markdown editor and fills the screen
   under the menu bar (the dock hides while it's open; the window's traffic lights sit at the top of
-  the sidebar, like a Mac app). **A new voice starts** at `#/studio/start`: read the reference line once in your everyday voice;
-  Lilt offers that take's range as your comfortable range and keeps it as Day 1. Under Home's welcome
-  and opening paragraph sits a quiet callout (a `--panel` surface with a hairline): "First time here?" with a
-  mic icon and a "Find my starting voice" primary button, only for someone new (no takes and no range yet); after, **your practice**, led by one **next step** (today's cards with a "Start today's cards"
+  the sidebar, like a Mac app). **Home** introduces Lilt and restores the voice course's creator story.
+  Your first practice opens a skippable introduction; Go to Today is always available.
+  A starting recording at `#/studio/start` is optional, and can set a comfortable range.
+  Existing **practice** appears below the introduction, led by one **next step** (today's cards
+  with a "Start today's cards"
   button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots
   (today ringed), and **Then and now** (your first and latest take of the same text, the reference line first, with how far
   apart they are). The two takes sit flat on the panel, each pitch chart in a `--fill` well, both on one shared scale, with one
@@ -541,3 +542,12 @@ everything has a `prefers-reduced-motion` fallback.
 Purple-to-blue gradients, gradient text, tracked capital labels or eyebrows above headings,
 monospace as decoration, hard offset shadows, coloured side stripes thicker than 1px,
 emoji or unicode glyphs as icons, cards inside cards, chunky 2px dark borders.
+
+
+**Home and first practice.** Entering the computer opens course Home. Plain reading text
+introduces Lilt; the voice course restores its creator story from the editable course guide.
+Your first practice and Go to Today are explicit choices. The four-step introduction has no
+recorder, timer, target or required task; Back, Skip introduction and Home remain available.
+Step changes focus the heading. The final step offers chapters, Today and optional recording.
+The remembered per-course choice never hides the Home explanation, and replay retains an
+existing completion/skip. Both themes, reduced motion and narrow layouts use the same surfaces.

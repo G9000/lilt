@@ -48,13 +48,15 @@ async function main() {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
 
-  // Home: a new voice is asked to start.
+  // Home: a new visit starts with an introduction.
   await page.goto(`${BASE}/#/studio`);
-  await page.locator(".ve-start-card").waitFor({ timeout: 15000 });
-  check("home shows the start card for a new voice", true);
+  await page.locator(".home-introduction").waitFor({ timeout: 15000 });
+  check("Home introduces Lilt for a new visit", true);
 
   // First run: one take, then the range is offered and saved.
-  await page.getByRole("button", { name: "Find my starting voice" }).click();
+  await page.getByRole("link", { name: "Your first practice", exact: true }).click();
+  await page.getByRole("button", { name: "Skip introduction", exact: true }).click();
+  await page.getByRole("link", { name: "Make a starting recording", exact: true }).click();
   await page.getByRole("heading", { name: "Find your starting voice" }).waitFor();
   await record(page, 3);
   await page.locator(".ve-start-done").waitFor({ timeout: 60000 });
@@ -65,13 +67,13 @@ async function main() {
   check("the comfortable range is saved", Array.isArray(profile.comfort_range_hz), JSON.stringify(profile.comfort_range_hz));
   await shot(page, "1-start");
 
-  // Home again: your practice instead of the start card.
+  // Home again: the introduction stays alongside your practice.
   check("after the range, Start here is offered next", await page.getByRole("button", { name: "Next: Start here" }).isVisible());
   await page.goto(`${BASE}/#/studio`);
   await page.locator(".ve-practice").waitFor({ timeout: 10000 });
   const days = await page.locator(".ve-days").innerText();
   check("home shows your practice", /1 day of practice this month/.test(days), days);
-  check("start card is gone once a range is set", (await page.locator(".ve-start-card").count()) === 0);
+  check("introduction remains after a starting recording", await page.locator(".home-introduction").isVisible());
   check("Home has no recorder: free talk lives in Studio", (await page.locator(".ve-dock").count()) === 0);
 
   // Free recording in Studio: the result shows in the page, under "Your take"; the recorder stays a small floating pill.

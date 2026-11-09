@@ -58,7 +58,7 @@ export function Desktop({ section, page, inside, instant, theme, onTheme, recove
   section: string; page: ReactNode | null; inside: boolean; instant: boolean;
   theme: Theme; onTheme: () => void; recovered: number; inbox: InboxState;
   course: string; courseTitle?: string; deck: Deck | null; reloadDeck: () => void;
-  /** No takes yet: today's first step is your starting voice. */
+  /** The introduction has not been completed or skipped in this browser. */
   needsStart?: boolean;
 }) {
   const now = useNow();
@@ -188,10 +188,10 @@ function TodayWidget({ deck, reload, course, courseTitle, needsStart }: { deck: 
         <div className={["ds-t-foot", roomStyles["ds-t-foot"]].join(" ")}>
           {deck?.paused ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => void api.resumePlan().then(reload)}>I feel fine, resume gently</button>
             : done ? <button className={cx("btn-secondary", shared["btn-secondary"])} onClick={() => go(practicePath(course))}>Open Practice</button>
-            : needsStart ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go("/studio/start")}>Find your starting voice</button>
+            : needsStart ? <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(practicePath(course))}>Welcome to Lilt</button>
             : <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go(dailyPath(course))} disabled={!deck}>{deck && left.length < deck.items.length ? "Continue" : "Start"}</button>}
           {/* Named as a chapter, like everywhere else: where today's new cards come from. */}
-          {needsStart && !deck?.paused ? <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>Your Day 1 comes first</span>
+          {needsStart && !deck?.paused ? <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>An introduction before you begin</span>
             : deck?.open_chapter && <span className={["ds-t-stage", roomStyles["ds-t-stage"]].join(" ")}>New cards from {deck.open_chapter.title}</span>}
         </div>
       </div>

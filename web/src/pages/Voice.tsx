@@ -42,6 +42,7 @@ import { nextUp } from "../nextUp";
 import { DirectionChoice } from "../components/DirectionChoice";
 import { ClipSaver } from "../components/ClipSaver";
 import { ReferenceNotes } from "../components/ReferenceNotes";
+import { HomeIntroduction, FirstPractice, IntroductionStorageNotice } from "../components/Introduction";
 import { cappedNote, limitNote, TAKE_MAX_S } from "../takeLimit";
 import { announceDirection, directionOf, DIRECTIONS } from "../direction";
 
@@ -126,7 +127,7 @@ const SidebarIcon = () => (
   <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.8" y="2.8" width="12.4" height="10.4" rx="2.2" fill="none" stroke="currentColor" strokeWidth="1.3" /><path d="M6 3v10" stroke="currentColor" strokeWidth="1.3" /></svg>
 );
 
-export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "chapters" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null;
+export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" | "welcome" | "start" | "updates" | "mixtape" | "settings" | "today" | "chapter" | "chapters" | "recordings" | "progress" | "free"; levelId?: string; itemId?: string; first?: string | null;
   /** Recordings narrowed to one text over time (`#/history?text=…`). */
   text?: string | null }) {
   const [texts, setTexts] = useState<Texts | null>(null);
@@ -143,14 +144,17 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
       setHistory(h.takes);
     }, (e: any) => setLoadErr(`Lilt couldn't load your practice: ${e.message}. Is the Lilt server running?`));
   }, []);
-  // If the microphone is already allowed, open it on arrival: the first take then starts at once,
-  // with its half-second pre-roll, instead of waiting for the mic to wake.
+  // Only warm a permitted microphone on a recording page, never on Home or the introduction.
   const micCtx = useMic();
+  const recordingPage = doc === "start" || doc === "today" || doc === "chapter" || doc === "free";
   useEffect(() => {
+    if (!recordingPage) { micCtx.release(); return; }
     if (micCtx.stream) return;
+    let cancelled = false;
     void navigator.permissions?.query({ name: "microphone" as PermissionName })
-      .then((p) => { if (p.state === "granted" && !micCtx.stream) void micCtx.request(); }, () => {});
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+      .then((p) => { if (!cancelled && p.state === "granted" && !micCtx.stream) void micCtx.request(); }, () => {});
+    return () => { cancelled = true; };
+  }, [recordingPage]); // eslint-disable-line react-hooks/exhaustive-deps
   // A remix or an undo changed the course: read it again.
   useEffect(() => {
     const on = () => void api.texts().then(setTexts);
@@ -197,7 +201,7 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
       {!layout.collapsed && <Resizer className="side" label="Sidebar width" onDrag={dragSide} onReset={() => setLayout((l) => ({ ...l, side: LAYOUT.side }))}
         onNudge={(d) => setLayout((l) => ({ ...l, side: clamp(l.side + d * 16, 200, 420) }))} />}
       <RemixPanel />
-      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : doc === "start" ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
+      <Sidebar texts={texts} deck={deck} practised={practised} current={doc === "chapter" ? level?.id ?? "" : (doc === "start" || doc === "welcome") ? "home" : doc === "updates" ? "mixtape" : doc} itemId={doc === "chapter" ? itemId : undefined} locked={recording} />
       <div className={cx(`ve-doc${doc === "recordings" || doc === "progress" || doc === "updates" || doc === "mixtape" || doc === "settings" ? " solo" : ""}`, practice["ve-doc"])} ref={docRef}>
         <Resizer className="split" label="Text and recorder split" onDrag={dragSplit} onReset={() => setLayout((l) => ({ ...l, split: LAYOUT.split }))}
           onNudge={(d) => setLayout((l) => ({ ...l, split: clamp(l.split + d * 0.03, 0.32, 0.72) }))} />
@@ -220,6 +224,8 @@ export function VoicePage({ doc, levelId, itemId, first, text }: { doc: "home" |
           ? profile && <StudioDoc band={profile.comfort_range_hz ?? null} onRecording={setRecording} onTake={(t) => setPractised((s) => new Set([...s, t.prompt_id]))} />
           : doc === "chapters"
           ? texts && <ChaptersDoc texts={texts} practised={practised} onNewChapter={() => void newChapter()} />
+          : doc === "welcome"
+          ? texts && <div className={cx("ve-page", practice["ve-page"], shared["ve-page"])}><div className={cx("ve-col", practice["ve-col"])}><FirstPractice course={COURSE} texts={texts} /></div></div>
           : doc === "home"
           ? texts && profile && <HomeDoc texts={texts} deck={deck} practised={practised} history={history} profile={profile} />
           : doc === "start"
@@ -984,7 +990,7 @@ function greeting(d = new Date()) {
 
 /**
  * The Practice home: a greeting, one clear next step, your practice so far, and the chapters as
- * tiles. The cover and the course guide live on the Chapters page.
+ * tiles. Home introduces Lilt; the full course guide also lives on Chapters.
  */
 function HomeDoc({ texts, deck, practised, history, profile }: {
   texts: Texts; deck: Deck | null; practised: Set<string>; history: Take[]; profile: Profile;
@@ -995,9 +1001,10 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
     <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
       <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
         <header className={cx("ve-head ve-greet", practice["ve-head"], practice["ve-greet"])}><h1>{greeting()}</h1><p>{today}</p></header>
-        {/* The start card is for someone new: no takes and no range yet. Anyone who has practised
-            sees their practice, with a gentle nudge if their comfortable range isn't set. */}
-        {history.length === 0 ? <StartCard /> : <YourPractice history={history} band={band} texts={texts} next={<>
+        <HomeIntroduction course={COURSE} home={texts.home} />
+        <p className="mb-8"><a href="#/studio/chapters">Read the full course guide and resources</a></p>
+        {/* The introduction stays available alongside existing practice. */}
+        {history.length > 0 && <YourPractice history={history} band={band} texts={texts} next={<>
           <NextStep deck={deck} texts={texts} practised={practised} />
           {!band && <p className={cx("ve-small", practice["ve-small"])}>No comfortable range yet. <a href="#/studio/start">Find your starting voice</a> to set one, and it shows behind your pitch lines.</p>}
         </>} />}
@@ -1103,18 +1110,6 @@ function StudioDoc({ band, onRecording, onTake }: { band: [number, number] | nul
 /* ---------------------------------------------------------------- first run, and your practice so far */
 
 const REF = { prompt_id: "ref.count-1-10", text: "One, two, three, four, five, six, seven, eight, nine, ten." };
-
-function StartCard() {
-  return (
-    <section className={cx("ve-start-card", practice["ve-start-card"])}>
-      <span className="ic" aria-hidden="true">
-        <svg viewBox="0 0 16 16"><rect x="5.5" y="1.8" width="5" height="8.4" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.4" /><path d="M3.3 7.6a4.7 4.7 0 009.4 0M8 12.3v2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
-      </span>
-      <p><b>First time here?</b> Record one line in your everyday voice. It becomes your starting point, so later you can hear how far you've come.</p>
-      <button className={cx("btn-primary", shared["btn-primary"])} onClick={() => go("/studio/start")}>Find my starting voice</button>
-    </section>
-  );
-}
 
 const dayKey = (t: Take) => t.local_date ?? t.created_utc.slice(0, 10);
 const shortDate = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "short" });
@@ -1916,6 +1911,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
               : phase.k === "hurt" ? <h1 tabIndex={-1} ref={titleRef}>Let's stop here</h1>
               : <h1>Today</h1>}
             <p className={cx("ve-subtitle", practice["ve-subtitle"])}>{date}</p>
+            <IntroductionStorageNotice course={COURSE} />
             <p className={cx("ve-meta", practice["ve-meta"])}><DonePile n={doneCount} />{phase.k === "hurt" ? "Paused" : doneCount === 0 ? `Your daily deck: ${total} cards` : doneCount >= total ? `All ${total} cards said` : `${total - doneCount} of ${total} cards left`}{deck.next_due && phase.k === "end" ? `, next ones come back ${friendlyDate(deck.next_due, deck.local_date)}` : ""}</p>
           </header>
           {phase.k === "hurt" ? (

@@ -61,14 +61,14 @@ async function main() {
   check("Arrow keys flip through the stack and back, warm-up first and the reference next",
     second !== first && /one, two, three/i.test(second) && nTop >= 2 && (await topText()) === first, `${first.slice(0, 20)} → ${second.slice(0, 20)}`);
   await snap("00-room");
-  // The first time you sit down, before any take, the computer opens Find your starting voice, and
+  // Sitting down opens Home and the introduction before practice, and
   // the desk's Today widget offers the same first step.
   await page.getByRole("button", { name: /^Sit down at the computer/ }).click();
-  await page.waitForFunction(() => location.hash === "#/studio/start", null, { timeout: 8000 });
-  await page.getByRole("heading", { name: "Find your starting voice" }).waitFor();
+  await page.waitForFunction(() => location.hash === "#/studio", null, { timeout: 8000 });
+  await page.getByRole("heading", { name: "A little room to learn" }).waitFor();
   await page.goto(`${BASE}/#/desk`);
-  await page.locator(".ds-today").getByRole("button", { name: "Find your starting voice" }).waitFor({ timeout: 8000 });
-  check("Before any take, sitting down and the desk both start with your starting voice", true);
+  await page.locator(".ds-today").getByRole("button", { name: "Welcome to Lilt" }).waitFor({ timeout: 8000 });
+  check("Sitting down opens Home and the desk offers an introduction", true);
   await page.goto(`${BASE}/#/deck`);
   await page.locator(".ve-item .readtext").first().waitFor();
   const deckList = (await (await fetch(`${BASE}/api/deck/today`)).json()).items.map((i) => i.card.front);

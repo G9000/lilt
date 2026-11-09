@@ -205,9 +205,8 @@ Monitor uploads and playback have an isolated check with locally generated media
      arrow, to practise that one first. The others stay in today's run. The stack deals in when
      the room opens, nudges once to show it can be swiped, and gets shorter as you finish cards.
      Each plain card shows the exercise, its hint (as on Today, without the chapter's "Your
-     check-in:") and a Start action; before your first take it reads **Day 1 first** and opens
-     Find your starting voice. Photos are not used as
-     practice-card covers; the smaller paper stack keeps the content easy to read.
+     check-in:") and a Start action. Before finishing or skipping the introduction, it reads
+     **Start here** and opens Home. Photos are not used as practice-card covers; the smaller paper stack keeps the content easy to read.
      Built with Motion (springs and drag).
    - **Floating in the room**, over spots in the painting: a
      clock in the window, a sticky note taped to the photo wall, and
@@ -264,17 +263,17 @@ Monitor uploads and playback have an isolated check with locally generated media
      Practice, Music, Plants and Tea shortcuts under the menu bar. A widget whose spot
      is cropped off a small screen steps aside; a phone keeps the stack and room shortcuts.
    - Or click the **computer** itself (it glows; point at it to see how many cards are waiting), or press
-     <kbd>Enter</kbd>: you sit down and **Practice opens straight away** on today's next card,
-     full screen, with chapters in a sidebar and one paper card to read. Record and listen below
-     the prompt. Open **Up next** to pick another card to practise first.
+     <kbd>Enter</kbd>: you sit down and the selected course's **Home** opens,
+     with an explanation of Lilt and a skippable introduction. **Go to Today** opens the daily
+     cards; **Up next** lets you choose which card to practise first.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Flashcards**,
    **Yarn** (a voice game), **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
-   (or the door in the dock) walks you back out to the room. Until your first take, sitting down
-   opens **Find your starting voice** instead of Today: one count in your everyday voice, your Day 1,
-   which can also set your comfortable range. Home's "First time here?" card and the desk's Today
-   widget offer the same first step, and then point you to Start here. Once you're under way, the
-   widget names the chapter today's new cards come from.
+   (or the door in the dock) walks you back out to the room. Sitting down opens the selected
+   course's **Home**, with an introduction to Lilt and a skippable first practice. A starting recording and comfortable range are optional.
+   The desk's Today widget offers **Welcome to Lilt** while the introduction is unfinished;
+   explicit Today links stay available. Once you finish or skip, the widget names the chapter
+   today's new cards come from.
    - **The room:** the painting comes in morning, day, sunset and night light and fades between them
      with your clock. Birds cross the windows by day; stars and city lights come out at night. The
      cat sleeps on the bed and breathes; when you arrive it says hello, and tapping
@@ -465,14 +464,15 @@ Monitor uploads and playback have an isolated check with locally generated media
    listed under Chapters by part, and the one you're in opens to its texts (a tick once
    practised), so you can jump to any of them. The arrow beside Chapters folds the list away,
    leaving just the chapter you're in, and this browser remembers your choice. **Home** greets
-   you, offers one next step and shows the next four chapters as tiles. **Chapters**
+   you and explains what Lilt is before offering practice. The voice Home restores the original
+   **Why this exists** story from the course guide. **Your first practice** explains how to begin;
+   **Go to Today** skips it. The next four chapters remain available as tiles. **Chapters**
    (`#/studio/chapters`) has the course's cover, then the **Course guide**, then every chapter as a
    tile with its subtitle (the next one outlined, a quiet tick and "Every text practised" once
    you've practised them all; inside the chapter, one plain line says so). **Next
    up** is where you left off: the furthest chapter you've practised in, until about half its texts
-   are practised, then the one after it, so skipping a text never pins a chapter as next. Home's
-   "First time here?" card shows only before your first take; after that, Home shows your practice
-   with a gentle line to set your comfortable range if you haven't. A chapter
+   are practised, then the one after it, so skipping a text never pins a chapter as next. Home
+   always keeps the introduction available, alongside your practice history when you have recorded. A comfortable range remains optional. A chapter
    has two tabs. **Learn** holds its opening, the video and each step, with **Start practising**
    at the end; **Practise** holds its texts, each in a reading serif with a hint under it. A
    chapter you haven't started opens on Learn; one you have, or a link to one of its texts, opens
@@ -767,6 +767,27 @@ The existing export and manual folder-copy routes remain available:
   measurements from the data folder. Reviews elsewhere that cite it are either kept and marked "evidence
   deleted" or deleted too; you choose. Exports and backups are separate copies that you must delete
   yourself.
+
+### Your first practice
+
+Sitting down at the room's computer opens the selected course's Home. Home explains Lilt as a
+private place for self-directed learning, with an introduction before daily cards. The voice
+course also shows its original creator story; the full guide remains on Chapters.
+
+**Your first practice** opens four short steps: how practice works, getting comfortable, one
+small attempt, and choosing what comes next. The voice introduction starts with unforced
+breathing and an optional hum-to-hello from the course, with a reminder to stop for strain.
+Other courses introduce their own first chapter without voice instructions. A starting recording
+is an optional next step, never a condition for continuing. Home and the introduction do not
+warm up the microphone.
+
+**Skip introduction** is available throughout. **Go to Today** on Home also skips an unfinished
+introduction. Steps and completed/skipped choices are saved separately for each course in this
+browser, independently of recordings. **Read the introduction again** starts a replay at the
+beginning; leaving replay midway retains the previous completed/skipped choice. If storage is
+blocked, walkthrough choices last for the visit and a message explains that limitation. Clearing
+browser data resets these choices; they are not included in practice backups. Direct Today,
+chapter and recording links remain available. No chapter has to be completed first.
 
 ## MCP (connecting your agent)
 

@@ -10,19 +10,16 @@ loud, at your own pace. Nobody's listening but you (and the cat, who is asleep).
 
 ## Your first visit
 
-You can start before reading the whole guide. One short recording is enough for today.
+Start on [Home](#/studio), where you can read what Lilt is and why it exists. Then choose
+[Your first practice](#/studio/welcome) for a short introduction: how practice works, settling
+in with an easy breath, one gentle hum-to-hello, and choosing what comes next. You can skip
+at any point and reopen the introduction from Home.
 
-1. **Find your starting voice.** Open [Find your starting voice](#/studio/start), press **Record**,
-   and allow microphone access if asked. Count to ten in your everyday voice, press **Stop**, then
-   play it back. If the words are hard to hear, move a little closer and try again. This count is
-   your Day 1.
-2. **Keep a "before", when you like.** In Start here, read [the "before" lines](#/studio/start-here/baseline-read)
-   without changing your voice. In about six weeks Lilt brings them back so you can hear the change;
-   you don't have to listen to them until you want to.
-3. **Try one small bridge.** If you feel ready, open [hum to hello](#/studio/warmup/hum-to-hello).
-   Read its hint, try it once, and notice whether the words feel as easy as the hum. Stop for strain.
-4. **Leave yourself one cue.** A few words such as "easy start" are enough for next time. You can
-   finish here, or return to [Today's practice](#/deck) when you want a few cards picked for you.
+You do not need to record to begin. If you would like a starting recording, open
+[Find your starting voice](#/studio/start), count to ten in your everyday voice, and save it
+when you are ready. The ["before" lines](#/studio/start-here/baseline-read) are there whenever
+you want them too. You can finish after one small attempt, explore a chapter, or open
+[Today's practice](#/deck) for a few cards picked for you.
 
 The chapter list is a shelf to explore, not a checklist to finish. A comfortable range on the
 chart is optional; you do not need to choose a target number before making your first recording.
@@ -83,8 +80,9 @@ and hear the change for yourself instead of guessing.
 
 - **Today** is a handful of cards. Say one, listen back, and tell Lilt how it felt. That decides
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
-- **[Find your starting voice](#/studio/start)** first: one count in your everyday voice, your Day 1.
-  Then [Start here](#/studio/start-here) sets up your corner and keeps your "before".
+- **[Your first practice](#/studio/welcome)** introduces the practice loop and one gentle attempt.
+  An optional [starting recording](#/studio/start) keeps a count in your everyday voice.
+  [Start here](#/studio/start-here) explains your setup and keeps your "before".
 - **Chapters** come in three parts. _Get ready_: setup, warm-ups and
   [looking after your voice](#/studio/your-voice). _The skills_: pitch,
   resonance, vocal weight, articulation and intonation, one at a time, each with an everyday phrase on

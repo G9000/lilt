@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api, type Course, type Deck, type Rating, type Take, type TextLevel, type Texts } from "../api";
 import { byPart, idLabel } from "../chapters";
 import { Markdown, picture } from "../components/Markdown";
-import { dailyPath, flashcardsPath, guidedPath, practicePath, recordingsPath, validCourseId } from "../courseNavigation";
+import { flashcardsPath, guidedPath, practicePath, recordingsPath, validCourseId } from "../courseNavigation";
 import { parseTextId, textId } from "../courseIds";
 import { shared } from "../ui/shared";
 import { practice } from "../ui/practice";
@@ -10,6 +10,7 @@ import { cx } from "../ui/cx";
 import { ChapterVideo } from "./Voice";
 import { CourseNav, CourseRecorder, OptionalCourseRecorder } from "./CourseRecording";
 import { friendlyDate } from "../cardText";
+import { HomeIntroduction, FirstPractice, IntroductionStorageNotice } from "../components/Introduction";
 
 const primary = `btn ${shared.btn} ${shared["btn-primary"]}`;
 const secondary = `btn ${shared.btn} ${shared["btn-secondary"]}`;
@@ -50,6 +51,7 @@ function CoursePractice({ course, view, chapter, item, first }: Props) {
         <CourseNav course={course} title={data?.course.title} current={view === "today" ? "today" : !view && !chapter ? "home" : null} />
         {error ? <><p role="alert">{error}</p><button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button></>
           : !data ? <p role="status">Opening your course…</p>
+          : view === "welcome" ? <FirstPractice course={course} texts={data.texts} />
           : view === "today" ? <DailyCards key={first ?? "today"} course={course} first={first} texts={data.texts} onBusy={setLocked} />
           : chapter ? level ? <CourseChapter key={level.id} course={course} level={level} texts={data.texts} item={item} onBusy={setLocked} />
             : <><h1 className={heading}>Chapter not found</h1><p>This chapter isn't in the course. Choose one from the course home.</p></>
@@ -63,9 +65,9 @@ function CourseHome({ course, texts }: { course: Course; texts: Texts }) {
   const cover = texts.home_cover && picture(texts.home_cover, course.id);
   return <>
     <header className="mb-6"><h1 className={heading}>{course.title}</h1><p className="text-ink-2">{course.summary}</p></header>
+    <HomeIntroduction course={course.id} home={texts.home} />
     {cover && <img className="mb-6 h-[clamp(140px,22vw,220px)] w-full rounded-[16px] object-cover shadow-[0_0_0_1px_var(--hair)]" src={cover} alt="Course cover" />}
     <div className="mb-6 flex flex-wrap gap-3">
-      <a className={primary} href={`#${dailyPath(course.id)}`}>Start today's cards</a>
       {texts.levels[0] && <a className={secondary} href={`#${practicePath(course.id, texts.levels[0].id)}`}>First chapter</a>}
       <a className={secondary} href={`#${guidedPath(course.id)}`}>Guided practice</a>
       <a className={secondary} href={`#${recordingsPath(course.id)}`}>Recordings</a>
@@ -211,6 +213,7 @@ function DailyCards({ course, texts, first, onBusy }: { course: string; texts: T
   const prompt = current && parseTextId(current.card.prompt_id);
   const chapters = texts.levels.map(l => l.id);
   return <section aria-label="Today's course cards" aria-busy={busy}>
+    <IntroductionStorageNotice course={course} />
     <header className="mb-8"><h1 className={heading}>Today's cards</h1><p className="text-ink-2">Read, try it in your own time, then choose how it felt.</p></header>
     {error && <div className="mb-6"><p role="alert">{error}</p><button className={secondary} disabled={busy || recording} onClick={() => failedRating ? void rate(failedRating) : setAttempt(n => n + 1)}>Try again</button></div>}
     {!deck ? !error && <p role="status">Finding your cards…</p>

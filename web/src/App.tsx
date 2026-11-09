@@ -6,6 +6,8 @@ import { lazy, ReactNode, useEffect, useRef, useState } from "react";
 import { Deferred } from "./components/Deferred";
 import { api, Course, Deck } from "./api";
 import { DEFAULT_COURSE } from "./courseIds";
+import { introductionFinished } from "./introduction";
+import { useIntroduction } from "./useIntroduction";
 import { dailyPath, guidedPath, practicePath, recordingsPath, rememberCourse, routeCourse, routeSegments, savedCourse } from "./courseNavigation";
 import { CardStack } from "./desk/CardStack";
 import { RoomFloaters } from "./desk/Floaters";
@@ -153,17 +155,10 @@ export function App() {
     void api.deck(course).then((deck) => { if (!ignore) setDeckResult({ course, deck }); }, () => { if (!ignore) setDeckResult(null); });
     return () => { ignore = true; };
   }, [inside, path, course, deckRevision]);
-  // Until your first take, sitting down opens Find your starting voice (your Day 1), not Today; Home
-  // and the desk's Today widget offer the same first step.
-  const [needsStart, setNeedsStart] = useState(false);
-  useEffect(() => {
-    let ignore = false;
-    setNeedsStart(false);
-    if (course === DEFAULT_COURSE) void api.history({ days: 3650 }).then((h) => { if (!ignore) setNeedsStart(h.takes.length === 0); }, () => {});
-    return () => { ignore = true; };
-  }, [inside, course]);
-  const sitDown = useRef(() => go("/deck"));
-  sitDown.current = () => go(course === DEFAULT_COURSE && needsStart ? "/studio/start" : dailyPath(course));
+  const needsStart = !introductionFinished(useIntroduction(course));
+  // The computer opens Home; Today remains an explicit shortcut.
+  const sitDown = useRef(() => go(practicePath(course)));
+  sitDown.current = () => go(practicePath(course));
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement;
@@ -189,7 +184,7 @@ export function App() {
     case "practice": page = <PracticePage sessionId={seg[1]} />; break;
     case "review": page = <FeedbackPage reviewId={seg[1]} />; break;
     case "compare": page = <ComparePage a={params.get("a") ?? ""} b={params.get("b") ?? ""} />; break;
-    case "studio": page = seg[1] === "start" ? <VoicePage doc="start" /> : seg[1] === "updates" ? <VoicePage doc="updates" /> : seg[1] === "mixtape" ? <VoicePage doc="mixtape" /> : seg[1] === "settings" ? <VoicePage doc="settings" /> : seg[1] === "free" ? <VoicePage doc="free" /> : seg[1] === "chapters" ? <VoicePage doc="chapters" /> : seg[1] ? <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} /> : <VoicePage doc="home" />; break;
+    case "studio": page = seg[1] === "welcome" ? <VoicePage doc="welcome" /> : seg[1] === "start" ? <VoicePage doc="start" /> : seg[1] === "updates" ? <VoicePage doc="updates" /> : seg[1] === "mixtape" ? <VoicePage doc="mixtape" /> : seg[1] === "settings" ? <VoicePage doc="settings" /> : seg[1] === "free" ? <VoicePage doc="free" /> : seg[1] === "chapters" ? <VoicePage doc="chapters" /> : seg[1] ? <VoicePage doc="chapter" levelId={seg[1]} itemId={seg[2]} /> : <VoicePage doc="home" />; break;
     case "flashcards": page = <FlashcardsPage key={course} course={course} chapter={seg[1]} />; break;
     case "photos": page = <PhotosPage />; break;
     case "yarn": page = <YarnPage />; break;
@@ -217,12 +212,12 @@ export function App() {
       </Room>
       <div className={inside ? "outside-leaving" : undefined} aria-hidden={inside} {...({ inert: inside ? "" : undefined } as object)}>
         <RoomTop inbox={inbox} courseTitle={courseTitle} />
-        <CardStack key={course} course={course} deck={deck} needsStart={course === DEFAULT_COURSE && needsStart}
-          onStart={(id) => go(course === DEFAULT_COURSE && needsStart ? "/studio/start" : dailyPath(course, id))} />
+        <CardStack key={course} course={course} deck={deck} needsStart={needsStart}
+          onStart={(id) => go(needsStart ? practicePath(course) : dailyPath(course, id))} />
       </div>
       <Desktop section={section} page={page && <Deferred resetKey={path}>{page}</Deferred>} inside={inside} instant={instant} theme={theme}
         onTheme={() => setMode(theme === "dark" ? "light" : "dark")} recovered={recovered} inbox={inbox}
-        course={course} courseTitle={courseTitle} deck={deck} reloadDeck={() => refreshDeck((n) => n + 1)} needsStart={course === DEFAULT_COURSE && needsStart} />
+        course={course} courseTitle={courseTitle} deck={deck} reloadDeck={() => refreshDeck((n) => n + 1)} needsStart={needsStart} />
       <NotificationCenter inbox={inbox} />
       <SettingsSheet />
     </MicProvider>

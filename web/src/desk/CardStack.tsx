@@ -26,7 +26,7 @@ const SPRING = { type: "spring", stiffness: 320, damping: 28, mass: 0.9 } as con
 
 export function CardStack({ deck, onStart, course = DEFAULT_COURSE, needsStart = false }: {
   deck: Deck | null; onStart: (cardId: string | null) => void; course?: string;
-  /** No takes yet: the top card's way in is your starting voice (the room routes it there). */
+  /** The introduction is still available as the first step (the room routes it to Home). */
   needsStart?: boolean;
 }) {
   const items = deck ? deck.items.filter((i) => !i.done_today) : [];
@@ -123,7 +123,7 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart, 
   item: DeckItem; depth: number; index: number; count: number; first: boolean; delay: number;
   onSwipe: (dir: 1 | -1) => void; onStart: () => void;
   voice: boolean;
-  /** Before your first take, the way in is your Day 1, not this card. */
+  /** Before finishing or skipping the introduction, this opens Home. */
   dayOne?: boolean;
 }) {
   const top = depth === 0;
@@ -188,7 +188,7 @@ function StackCard({ item, depth, index, count, first, delay, onSwipe, onStart, 
           {item.card.hint && <div className={["cs-hint", roomStyles["cs-hint"]].join(" ")}>{cardHint(item.card.hint)}</div>}
           <div className={["cs-foot", roomStyles["cs-foot"]].join(" ")}>
             <span className={["cs-count", roomStyles["cs-count"]].join(" ")}><b>{index + 1}</b> of {count}{voice ? `, about ${count} minute${count === 1 ? "" : "s"}` : " · at your own pace"}</span>
-            <span className={["cs-go", roomStyles["cs-go"]].join(" ")} aria-hidden="true">{dayOne ? "Day 1 first" : "Start"} <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
+            <span className={["cs-go", roomStyles["cs-go"]].join(" ")} aria-hidden="true">{dayOne ? "Start here" : "Start"} <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9h10M10 5l4 4-4 4" /></svg></span>
           </div>
         </div>
       </div>
