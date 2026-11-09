@@ -90,6 +90,7 @@ if ($Release) {
         throw 'A release build needs TAURI_SIGNING_PRIVATE_KEY_PATH (or TAURI_SIGNING_PRIVATE_KEY) for the updater key.'
     }
     if ($NotesFile -and -not (Test-Path -LiteralPath $NotesFile -PathType Leaf)) { throw "Release notes file not found: $NotesFile" }
+    if ($NotesFile) { $NotesFile = (Resolve-Path -LiteralPath $NotesFile).Path }
 }
 
 Push-Location $desktopRoot

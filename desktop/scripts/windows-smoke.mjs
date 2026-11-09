@@ -22,7 +22,10 @@ const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 try {
   await page.goto(`${base}/#/studio`);
-  await page.getByRole('button', { name: 'Find my starting voice' }).click();
+  await page.getByRole('link', { name: 'Your first practice', exact: true }).first().click();
+  await page.getByRole('heading', { name: 'How practice works', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Skip introduction', exact: true }).click();
+  await page.getByRole('link', { name: 'Make a starting recording', exact: true }).click();
   await page.getByRole('button', { name: 'Start recording' }).click();
   console.log('Recording from the synthetic microphone.');
   await page.getByRole('button', { name: 'Stop recording' }).waitFor();
