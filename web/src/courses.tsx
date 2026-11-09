@@ -6,7 +6,7 @@ import { cx } from "./ui/cx";
 import { ReactNode } from "react";
 import type { Course } from "./api";
 
-export { DEFAULT_COURSE, parseTextId, textId } from "./courseIds";
+export { CARE_CHAPTER, DEFAULT_COURSE, parseTextId, textId } from "./courseIds";
 import { practicePath } from "./courseNavigation";
 
 export interface Kind {

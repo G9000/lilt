@@ -7,7 +7,7 @@ import { api, Deck, DeckItem, Piece, Profile, Rating, Session, SyllabusChange, S
 import { go } from "../App";
 import { Markdown, picture } from "../components/Markdown";
 import { PracticeSettings } from "./Settings";
-import { DEFAULT_COURSE, textId } from "../courses";
+import { CARE_CHAPTER, DEFAULT_COURSE, textId } from "../courses";
 import { byPart, chapterSteps, howTo, isCare, isLong, passageTitle, readingTime, sameLabel, textLabel } from "../chapters";
 import { MixtapeSections, useMixtape } from "./Courses";
 import { openRemix, RemixPanel } from "../components/RemixPanel";
@@ -1722,6 +1722,17 @@ export function ListenBack({ src }: { src: string }) {
   );
 }
 
+/** A pointer to the voice care chapter after "It hurts", when your copy of the course has it. */
+function CareLink() {
+  const [has, setHas] = useState(false);
+  useEffect(() => {
+    let live = true;
+    void api.texts().then((t) => { if (live) setHas(t.levels.some((l) => l.id === CARE_CHAPTER)); }, () => {});
+    return () => { live = false; };
+  }, []);
+  return has ? <> <a href={`#/studio/${CARE_CHAPTER}`}>Looking after your voice</a> has more on resting, and when to see someone.</> : null;
+}
+
 function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
   first: string | null; band: [number, number] | null; onDeck: (d: Deck) => void; onRecording: (on: boolean) => void; onTake: (t: Take) => void;
   onUseRange: (lo: number, hi: number) => void;
@@ -1910,7 +1921,7 @@ function TodayDoc({ first, band, onDeck, onRecording, onTake, onUseRange }: {
           {phase.k === "hurt" ? (
             <>
               <blockquote className={cx("ve-how warn", practice["ve-how"])}><b>Rest your voice</b>
-                That card is paused and so is your plan. Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</blockquote>
+                That card is paused and so is your plan. Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.<CareLink /></blockquote>
               <div className={cx("ve-endbox", practice["ve-endbox"])}>
                 <p className={cx("ve-small", practice["ve-small"])}>When speaking feels easy again, pick up where you left off. The paused card comes back gently.</p>
                 <div className={cx("ve-rate-more", practice["ve-rate-more"])}>

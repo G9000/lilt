@@ -31,7 +31,7 @@ with its own `course.md`.
   Courses (version 2 is when chapters began naming their own `exercises:`), so the two differ.
 - `images/` and `audio/`: pictures for `index.md`, and example recordings for the texts.
 - `_template.md`: a chapter to copy (it isn't loaded itself).
-- `01-start-here.md` … `13-real-life.md`: one chapter each. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. `17-going-lower.md` … `21-lower-emphasis.md` are the Going lower part (`part: Going lower`, `direction: lower`): a start on breath, care and testosterone, then pitch, resonance, vocal weight and emphasis for a deeper, darker, fuller voice, for people who set Which way to Lower. The start stays out of Today (`today: false`); with Which way set to Lower, the four skill chapters are Today's cards in place of the chapters marked `direction: higher` (Pitch, Resonance, Vocal weight, Articulation, Intonation, Laughs and little sounds and Being heard). They come after the Extras only because the Extras' file names stay as they are. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
+- `01-start-here.md` … `13-real-life.md`: one chapter each. `02-your-voice.md` is Looking after your voice: the voice care from across the course in one place (rest, water, warm-ups, how much is enough, the signs to stop, when to see someone), with a gentle check-in of plain questions. It has no `direction:`, so it's for every way, and stays out of Today (`today: false`), a page to read like Start here. Its name shares Warm-ups' number so it sorts straight after it without renaming any file. `14-reading-room.md`, `15-stories.md` and `16-articles.md` are Extras shelves of longer passages (`part: Extras`, `today: false`), there to read whenever you want more. `17-going-lower.md` … `21-lower-emphasis.md` are the Going lower part (`part: Going lower`, `direction: lower`): a start on breath, care and testosterone, then pitch, resonance, vocal weight and emphasis for a deeper, darker, fuller voice, for people who set Which way to Lower. The start stays out of Today (`today: false`); with Which way set to Lower, the four skill chapters are Today's cards in place of the chapters marked `direction: higher` (Pitch, Resonance, Vocal weight, Articulation, Intonation, Laughs and little sounds and Being heard). They come after the Extras only because the Extras' file names stay as they are. A passage of about 40 words or more shows its id as a title (`night-bus-2` reads "Night bus, part 2") and a reading time. The number at the start of the file
   name sets the order (and the order Today's cards open in). `13-being-heard.md` and
   `13-real-life.md` share a number and sort by name, so Being heard comes first. Leave the names as
   they are: Updates would offer a renamed file to personal copies as a separate removal and
@@ -41,7 +41,7 @@ with its own `course.md`.
 
 ## How a lesson teaches
 
-The main chapters come in three parts: **Get ready** (setup and warm-ups), **The skills** (pitch,
+The main chapters come in three parts: **Get ready** (setup, warm-ups and looking after your voice), **The skills** (pitch,
 resonance, vocal weight, articulation and intonation, one at a time) and **Bring it together**
 (automatic speech, everyday phrases, reading, your own words, laughs and little sounds, being
 heard, real life).
@@ -111,6 +111,15 @@ Trans Care BC voice page could be found to check against, and the chapters have 
 that day Today's cards began to follow Which way: going lower, the four skill chapters
 (`direction: lower`) take the place of those aiming lighter (`direction: higher`), straight after
 the warm-ups, and the start stays a page to read, like Start here.
+
+Also on 9 November, Looking after your voice gathered the course's voice care into one chapter,
+from NHS Lothian's "Looking after your voice" leaflet (April 2026, adapted from NHS Fife), the NHS
+laryngitis page, NHS Greater Glasgow and Clyde's hoarseness guidance, NIDCD and ASHA's 2026 World
+Voice Day release. NHS Fife's own voice care page and the British Voice Association's leaflets
+could not be read that day, so nothing in it rests on them. The NHS page and ASHA suggest a GP visit
+when hoarseness hasn't improved after two weeks; the chapter says that, and keeps the course's
+three weeks as the point not to wait. Its check-in questions are Lilt's own, not a questionnaire,
+and nothing in them is scored. An AI editorial piece, like the rest.
 
 Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
 review by a voice-specialist speech and language therapist; and real-user checks of comfort,

@@ -40,6 +40,7 @@ accent and language. You can adapt the English practice phrases to words you act
 
 - **Start with ease.** [Set up and save a baseline](#/studio/start-here), then choose one
   [warm-up](#/studio/warmup) and the hum-to-hello greeting. You do not need to finish every drill.
+  [Looking after your voice](#/studio/your-voice) is there to read whenever you like.
 - **Learn to hear a change.** Explore [resonance](#/studio/resonance), [vocal weight](#/studio/weight)
   and [pitch](#/studio/pitch), one at a time. Watch a demonstration, try a small contrast, and
   listen back. Record the same line twice, once as usual and once with the change, then open
@@ -82,7 +83,8 @@ and hear the change for yourself instead of guessing.
   when it comes back: _Again_ in a few minutes, _Hard_, _Good_ or _Easy_ a little later each time.
 - **[Find your starting voice](#/studio/start)** first: one count in your everyday voice, your Day 1.
   Then [Start here](#/studio/start-here) sets up your corner and keeps your "before".
-- **Chapters** come in three parts. _Get ready_: setup and warm-ups. _The skills_: pitch,
+- **Chapters** come in three parts. _Get ready_: setup, warm-ups and
+  [looking after your voice](#/studio/your-voice). _The skills_: pitch,
   resonance, vocal weight, articulation and intonation, one at a time, each with an everyday phrase on
   the same visit. _Bring it together_: lists, phrases, reading, talking, laughs and little sounds,
   being heard, then real life. Stay until it feels easy; go back whenever. Not a speedrun.
@@ -177,6 +179,8 @@ phrase. Change one thing at a time, and keep comfort ahead of the result.
 
 It should never hurt. Stop if speaking hurts, feels strained or becomes hoarse, and rest instead
 of pushing through. If symptoms persist, keep returning, or concern you, ask for help; don't wait.
+[Looking after your voice](#/studio/your-voice) gathers all of this into one chapter, for any
+direction, with a gentle "How does your voice feel today?" check-in.
 
 - **See a GP or primary care doctor straight away** (in the US, ask for an ENT or laryngologist)
   for hoarseness that hasn't cleared in about three weeks, sudden voice loss, pain when you speak
@@ -232,7 +236,7 @@ The exercise instructions are written in Lilt's own words, from ideas in the gui
 can read the originals. The listening questions, early greeting cards and suggested daily loop are
 Lilt's teaching choices; they have not been validated as a training programme. The chapter video
 cards link to their named creators' demonstrations; their audio is not copied into Lilt.
-Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, and the chapters that credit NHS Lothian were checked against both of its guides on 8 November 2026. Both were editorial checks by an AI, not clinical review, and not every resource below was re-reviewed. The Going lower chapters were written on 9 November 2026 from NHS Lothian's guides, ASHA's page and the study abstracts below, read the same way; no clinician has reviewed them, and no Trans Care BC page on voice could be found to check against.
+Pitch, resonance, articulation, intonation and goal-setting guidance was checked against the accessible NHS Fife and ASHA pages on 3 November 2026, and the chapters that credit NHS Lothian were checked against both of its guides on 8 November 2026. Both were editorial checks by an AI, not clinical review, and not every resource below was re-reviewed. The Going lower chapters were written on 9 November 2026 from NHS Lothian's guides, ASHA's page and the study abstracts below, read the same way; no clinician has reviewed them, and no Trans Care BC page on voice could be found to check against. Looking after your voice was written later that day from the voice care pages below, in the same way.
 
 - NHS Fife Speech and Language Therapy, [Supporting you to find your authentic voice](https://www.nhsfife.org/services/all-services/speech-and-language-therapy/supporting-you-to-find-your-authentic-voice/)
   (November 2023): breathing, pitch, resonance, vocal cords, intonation and articulation "tuning in"
@@ -247,7 +251,19 @@ Pitch, resonance, articulation, intonation and goal-setting guidance was checked
   and [Where to start](https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Voice-and-Communication-Therapy-for-Trans-and-Non-binary-People-Where-to-start.pdf)
   (February 2026): voice care, breath and relaxation, warm-ups, what pitch, resonance, vocal weight
   and emphasis are, choosing your own goals, and taking new skills into everyday talk.
-- NIDCD, [Taking care of your voice](https://www.nidcd.nih.gov/health/taking-care-your-voice).
+- NIDCD, [Taking care of your voice](https://www.nidcd.nih.gov/health/taking-care-your-voice):
+  water and humid air, short voice rests, resting when ill, and the early signs of a tired voice.
+- For Looking after your voice: NHS Lothian, [Looking after your voice](https://policyonline.nhslothian.scot/wp-content/uploads/2026/05/Looking-after-your-voice-SLT-waiting-list.pdf)
+  (April 2026, adapted from NHS Fife): warm-ups and rest periods, drinks through the day, steam and
+  humid air, what to do instead of clearing your throat, not whispering with a cold, reflux,
+  medicines and inhalers, noise, smoke, and stress. The NHS page on
+  [laryngitis](https://www.nhs.uk/conditions/laryngitis/) (reviewed January 2024): seeing a GP if
+  it hasn't improved after two weeks or keeps coming back, not whispering, and getting help at once
+  for trouble breathing. ASHA's World Voice Day release,
+  [Losing your voice?](https://www.asha.org/news/2026/losing-your-voice-millions-experience-persistent-problems-each-year)
+  (April 2026): the warning signs, resting a tired voice and not talking over noise. NHS Lothian's
+  leaflet also points to the [British Voice Association](https://britishvoiceassociation.org.uk/free.htm)'s
+  free voice care leaflets, for more reading.
 - ASHA, [Gender affirming voice and communication](https://www.asha.org/practice-portal/professional-issues/gender-affirming-voice-and-communication/):
   self-chosen goals, listening to your own recordings and considering communication in everyday situations.
 - Research on what listeners use to hear a speaker's gender: Leung, Oates and Chan (2018),

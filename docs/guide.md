@@ -567,11 +567,21 @@ Monitor uploads and playback have an isolated check with locally generated media
      remembered in this browser. Humming and speaking, breathing breaks and the comfort stop
      work in either style of play.
      <kbd>Esc</kbd> closes it.
-8. **Texts** has 177 texts across 22 chapters. Chapters 14–16 are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). The last five are **Going lower**, for a deeper, darker, fuller voice: a start on breath, care and what testosterone does to the voice (with a monthly reading to hear the change), then pitch (an easy spot above the bottom of your range, never pushed down), resonance (a bigger, looser space: a silent open-throat breath, humming while chewing or yawning, yawn into words), vocal weight (full and clear, never pressed, creaky or shouted, and kept as pitch rises) and emphasis (leaning on words with loudness, length and pauses rather than big jumps up, without going flat). Its four skill chapters are Today's cards when Which way is Lower, in place of the chapters aiming lighter; its start stays outside Today, like Start here. Start here and the course guide point there; the sources are NHS Lothian's "Testosterone and voice" and "Where to start", ASHA, the London Gender Identity Clinic's transmasculine group and studies of voice on testosterone. Long passages show a title and a reading time: setup, warm-ups, pitch, resonance, vocal weight,
+8. **Texts** has 184 texts across 23 chapters. Chapters 15–17 are Extras, outside Today: the Reading room (fourteen minute-long passages), Stories (three short stories told in parts) and Articles (nine short non-fiction pieces). The last five are **Going lower**, for a deeper, darker, fuller voice: a start on breath, care and what testosterone does to the voice (with a monthly reading to hear the change), then pitch (an easy spot above the bottom of your range, never pushed down), resonance (a bigger, looser space: a silent open-throat breath, humming while chewing or yawning, yawn into words), vocal weight (full and clear, never pressed, creaky or shouted, and kept as pitch rises) and emphasis (leaning on words with loudness, length and pauses rather than big jumps up, without going flat). Its four skill chapters are Today's cards when Which way is Lower, in place of the chapters aiming lighter; its start stays outside Today, like Start here. Start here and the course guide point there; the sources are NHS Lothian's "Testosterone and voice" and "Where to start", ASHA, the London Gender Identity Clinic's transmasculine group and studies of voice on testosterone. Long passages show a title and a reading time: setup, warm-ups, looking after your voice, pitch, resonance, vocal weight,
    articulation, intonation, automatic speech, everyday phrases, reading, your own words, laughs and
    little sounds, being heard (carrying a light voice through noise without pushing), and real life. Each chapter explains the technique in a few numbered steps (how to
    find it, how to try it, how to use it in words, what to listen for), then the texts. The second warm-up card is a greeting,
    available in a fresh Today deck on day one. The four setup texts stay outside Today's cards.
+   **Looking after your voice** comes straight after Warm-ups (`02-your-voice.md`) and is for every
+   direction: the course's voice care in one place (easy in any direction, warm-ups and cool-downs,
+   short and often, water and humid air, swallowing instead of clearing, resting rather than
+   whispering, noise, reflux, medicines and smoke, the early signs of a tired voice, and when to
+   see a GP or a voice specialist), then a gentle check-in of plain questions such as "How does
+   your voice feel today?", answered out loud or in your head and never scored. It stays outside
+   Today, like Start here. Start here and the course guide link to it, and so does the rest page
+   after **It hurts or feels strained** in Today and in a voice chapter's flashcards, when your copy
+   of the course has it. The sources are NHS Lothian's "Looking after your voice" leaflet, the NHS
+   laryngitis page, NHS Greater Glasgow and Clyde's hoarseness guidance, NIDCD and ASHA.
 
    The Course guide starts with a short first visit: check the mic, save a starting recording,
    try hum-to-hello and keep one cue. Its listening prompts help you compare one quality at a time

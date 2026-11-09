@@ -7,7 +7,7 @@ import { api, Take, TextLevel, Texts } from "../api";
 import { go } from "../App";
 import { Markdown } from "../components/Markdown";
 import { byPart, chapterSteps, isCare, isLong } from "../chapters";
-import { DEFAULT_COURSE, textId } from "../courseIds";
+import { CARE_CHAPTER, DEFAULT_COURSE, textId } from "../courseIds";
 import { flashcardsPath, practicePath, validCourseId } from "../courseNavigation";
 import { chapterCards, EMPTY, Flashcard, loadRuns, pile, progress, Run, saveRun, swipe } from "../flashcards";
 import { Art, Illustration, wash } from "../components/Illustrations";
@@ -120,7 +120,7 @@ function ChapterDeck({ texts, level, band, course }: { texts: Texts; level: Text
       <main className={cx("fc-stage", practice["fc-stage"])}>
         {hurt ? (
           <EndCard art="tea" chip="Resting" title="Let's stop here"
-            body="Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.">
+            body={<>Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.{voice && texts.levels.some(l => l.id === CARE_CHAPTER) && <> <a href={`#${practicePath(course, CARE_CHAPTER)}`}>Looking after your voice</a> has more on resting, and when to see someone.</>}</>}>
             <button className={cx("fc-primary", practice["fc-primary"])} onClick={() => go("/")}>Back to the room</button>
             <button className={cx("fc-ghost", practice["fc-ghost"])} onClick={() => setHurt(false)}>I feel fine, carry on</button>
           </EndCard>

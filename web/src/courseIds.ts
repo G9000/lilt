@@ -3,6 +3,9 @@
 /** The default for older links and callers that do not name a course. */
 export const DEFAULT_COURSE = "voice";
 
+/** The voice course's "Looking after your voice" chapter, which "It hurts or feels strained" points to. */
+export const CARE_CHAPTER = "your-voice";
+
 /** A text's id for takes, cards and progress: the app's course keeps `text.<chapter>.<text>`; others are `<course>/text.<chapter>.<text>` (as on the server). */
 export const textId = (course: string, chapter: string, text: string) =>
   course === DEFAULT_COURSE ? `text.${chapter}.${text}` : `${course}/text.${chapter}.${text}`;

@@ -36,7 +36,7 @@ Hi, friend. Five minutes of setup and a few words in your everyday voice, and yo
 
 **Hard days.** Hearing your own recordings can sting, especially at first. You can rate a card by how it felt without listening back, and the Course guide on [All chapters](#/studio/chapters) has people to talk to.
 
-**Be gentle with your voice.** It should never hurt: stop and rest if it strains. When to see a doctor is at the end of every chapter, and in the Course guide on [All chapters](#/studio/chapters).
+**Be gentle with your voice.** It should never hurt: stop and rest if it strains. [Looking after your voice](#/studio/your-voice), after Warm-ups, has it all in one place, whichever way you're going: rest, water, warm-ups, how much is enough, the signs to stop and when to see a doctor. When to see a doctor is also at the end of every chapter.
 
 ## today
 

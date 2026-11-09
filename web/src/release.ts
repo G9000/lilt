@@ -10,6 +10,13 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: "0.1.2",
+    date: "2026-11-09",
+    items: [
+      { title: "Looking after your voice", body: "The voice course has a chapter for voice care, whichever way you're going: warm-ups and cool-downs, how much practice is enough, water and rest, the early signs of a tired voice, and when to see a doctor or a speech and language therapist. It ends with a gentle check-in, starting with how your voice feels today, to answer out loud or in your head. Nothing is scored. It sits right after Warm-ups.", to: "/studio/your-voice" },
+    ],
+  },
+  {
     version: "0.1.1",
     date: "2026-11-09",
     items: [
