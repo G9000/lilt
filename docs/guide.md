@@ -79,7 +79,8 @@ its own window; quitting stops the server.
   Browser users see the **Web version** and an explanation in Settings rather than an install button.
   Existing builds need one manual installation of the first updater-enabled signed release.
   Release credentials, the manual draft workflow and Mac acceptance checks are described in
-  [Desktop releases](desktop-releases.md). Live Mac distribution still needs that setup and testing.
+  [Desktop releases](desktop-releases.md). The 0.1.5 Mac app (Apple silicon only) is signed, notarized
+  and on the release page; its self-update has not yet been tried from one signed version to the next.
 - **Your data:** `~/Lilt/data`, the same folder `./lilt.sh` uses, so both share one desk. If a Lilt
   is already running on port 7878, the app opens that one instead of starting a second. Otherwise
   it runs on 7878, or any free port when 7878 is taken. With `LILT_DATA_DIR` set it always runs its

@@ -202,3 +202,9 @@ The release build runs on the owner's Windows computer; there is no Windows work
 
 When the Mac feed is published as well, both platforms must share one `latest.json`: merge the
 `darwin-*` and `windows-x86_64` entries before uploading.
+
+Lilt 0.1.5's Apple silicon Mac files were made by hand, not by the workflow: `desktop/build.sh --release`
+on the owner's Mac (Developer ID certificate in the login keychain, updater key copied from the Windows
+computer into `~/.lilt-release`), then the `.dmg`, `.app.tar.gz` and `.sig` were added to the existing
+`v0.1.5` release and `latest.json` was replaced with the Windows entry kept and a `darwin-aarch64`
+entry added (files first, `latest.json` last). There is no Intel build of 0.1.5.

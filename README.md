@@ -33,7 +33,10 @@ The room in November 2026, shown with demo practice data.
 It installs for your account only and includes everything it needs. The installer isn't code-signed
 yet, so Windows may say "Windows protected your PC": choose **More info**, then **Run anyway**.
 
-**Mac:** a signed Mac app is coming in a later release. Until then you can build it yourself (below).
+**Mac:** download the `Lilt-…-aarch64.dmg` from the
+[latest release](https://github.com/G9000/lilt/releases/latest), open it and drag Lilt to Applications.
+It's signed and notarized by Apple, so it opens normally, and it includes everything it needs. It's for
+Apple silicon Macs (M1 or newer); on an Intel Mac you can build it yourself (below).
 
 ## Quick start
 
