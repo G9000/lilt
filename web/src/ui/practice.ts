@@ -1292,9 +1292,9 @@ export const practice = {
   "ve-mix-tag": `[margin-left:auto] pt-[0] pr-[7px] pb-[0] pl-[7px] rounded-full text-[11px] font-semibold leading-[18px] ` +
     `bg-accent-soft [background-image:none] text-accent-ink [&.new]:[background-color:rgba(22,_147,_106,_0.14)] ` +
     `[&.new]:[background-image:none] [&.new]:text-ok`,
-  "ve-mixtape": `[max-width:none] pt-[0] pr-[0] pb-[0] pl-[0] [&_.co-head_h1]:not-italic [&_.co-head_h1]:font-bold ` +
-    `[&_.co-head_h1]:text-[44px] [&_.co-head_h1]:[line-height:1.02] [&_.co-head_h1]:font-sans ` +
-    `[&_.co-head_h1]:[letter-spacing:-0.05em]`,
+  "ve-mixtape": `[max-width:none] pt-[0] pr-[0] pb-[0] pl-[0] [&_.co-head_h1]:not-italic [&_.co-head_h1]:font-medium ` +
+    `[&_.co-head_h1]:text-[44px] [&_.co-head_h1]:[line-height:1.08] [&_.co-head_h1]:font-display ` +
+    `[&_.co-head_h1]:[letter-spacing:-0.022em]`,
   "ve-icon": `[.ve_&]:w-[40px] [.ve_&]:h-[40px] [.ve_&]:[flex:none] [.ve_&]:grid [.ve_&]:place-items-center ` +
     `[.ve_&]:[border-radius:50%] [.ve_&]:text-ink-2 [.ve_&]:[background-color:transparent] ` +
     `[.ve_&]:[background-image:none] [.ve_&]:[transition:background-color_0.15s_ease,_color_0.15s_ease] ` +

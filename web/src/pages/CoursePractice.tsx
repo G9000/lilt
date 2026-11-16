@@ -15,7 +15,7 @@ import { HomeIntroduction, FirstPractice, IntroductionStorageNotice } from "../c
 const primary = `btn ${shared.btn} ${shared["btn-primary"]}`;
 const secondary = `btn ${shared.btn} ${shared["btn-secondary"]}`;
 const quiet = `textlink ${shared.textlink}`;
-const heading = "mb-2 text-title font-semibold leading-tight tracking-tight text-pretty";
+const heading = "mb-2 text-title font-medium leading-tight tracking-[-0.02em] text-pretty";
 type Props = { course: string; view?: string; chapter?: string; item?: string; first?: string | null };
 
 export function CoursePracticePage(props: Props) {

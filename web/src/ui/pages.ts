@@ -477,8 +477,8 @@ export const pages = {
     `[&.fresh::before]:pointer-events-none [@media(prefers-reduced-motion:_reduce)]:[&.fresh::before]:animate-none ` +
     `[@media(prefers-reduced-motion:_reduce)]:[&.fresh::before]:opacity-[0]`,
   dv: String.raw`grid gap-y-[28px] gap-x-[28px] pt-[8px] text-[15px] [&_>_*]:mt-0 [&_>_*]:mr-0 [&_>_*]:mb-0 [&_>_*]:ml-0
-    [&_>_*]:min-w-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_h1]:text-[28px] [&_h1]:leading-[1.15]
-    [&_h1]:tracking-[-0.035em] [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:text-balance
+    [&_>_*]:min-w-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_h1]:text-[30px] [&_h1]:leading-[1.15]
+    [&_h1]:tracking-[-0.02em] [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:text-balance
     [&_h2]:text-[17px] [&_h2]:leading-[1.3] [&_h2]:tracking-[-0.015em] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-0
     [&_h2]:ml-0 [&_h3]:text-[15px] [&_h3]:leading-[1.35] [&_h3]:tracking-[-0.01em] [&_h3]:mt-0 [&_h3]:mr-0
     [&_h3]:mb-0 [&_h3]:ml-0 [&_ul:not([class])]:mt-0 [&_ul:not([class])]:mr-0 [&_ul:not([class])]:mb-0
@@ -641,7 +641,7 @@ export const pages = {
     [&_.pitch_svg]:bg-fill [&_.pitch_figcaption]:mt-[6px] [&_.pitch_figcaption]:text-[12px]
     [&_.pitch_figcaption]:text-ink-3 [&.fb]:gap-y-0 [&.fb]:gap-x-0 [&.fb_>_*_+_*]:mt-[24px]
     [&.fb_>_.dv-back_+_*]:mt-[10px] [&_.fb-head]:gap-y-[10px] [&_.fb-head]:gap-x-[10px]
-    [&_.fb-head_h1]:text-[26px] [&_.fb-head_h1]:tracking-[-0.03em] [&_.fb-head_h1]:leading-[1.2]
+    [&_.fb-head_h1]:text-[26px] [&_.fb-head_h1]:tracking-[-0.02em] [&_.fb-head_h1]:leading-[1.2]
     [&_.fb-head_h1]:max-w-[30ch] [&_.fb-tags]:flex [&_.fb-tags]:flex-wrap [&_.fb-tags]:items-center
     [&_.fb-tags]:gap-y-[6px] [&_.fb-tags]:gap-x-[10px] [&_.fb-tags]:text-[13px] [&_.fb-tags]:text-ink-3
     [&_.fb-next]:text-ink-3 [&_.fb-step]:grid [&_.fb-step]:gap-y-[12px] [&_.fb-step]:gap-x-[12px]
@@ -719,7 +719,7 @@ export const pages = {
   cmpM: `block text-ink font-medium [&::first-letter]:uppercase`,
   ph: `relative grid gap-y-[16px] gap-x-[16px] pt-[6px] min-h-full`,
   phHead: `flex items-end justify-between gap-y-[16px] gap-x-[16px] flex-wrap [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 ` +
-    `[&_h1]:ml-0 [&_h1]:text-[24px] [&_h1]:font-[650] [&_h1]:tracking-[-0.02em] [&_p]:mt-[2px] [&_p]:mr-0 ` +
+    `[&_h1]:ml-0 [&_h1]:text-[28px] [&_h1]:font-medium [&_h1]:tracking-[-0.02em] [&_p]:mt-[2px] [&_p]:mr-0 ` +
     `[&_p]:mb-0 [&_p]:ml-0 [&_p]:max-w-[52ch] [&_p]:text-ink-3 [&_p]:text-[13.5px]`,
   phActions: `flex gap-y-[8px] gap-x-[8px]`,
   phShuffle: `min-h-[36px] inline-flex items-center gap-y-[7px] gap-x-[7px] pt-0 pr-[14px] pb-0 pl-[14px] rounded-tl-[99px] ` +
