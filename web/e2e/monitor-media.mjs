@@ -116,7 +116,7 @@ try {
   await page.waitForFunction(() => !document.querySelector('video.room-monitor-art').paused);
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: /Sit down at the computer/ }).click();
-  await page.waitForFunction(() => location.hash.startsWith('#/deck'));
+  await page.waitForFunction(() => location.hash === '#/studio');
   await page.waitForFunction(() => document.querySelector('video.room-monitor-art').paused);
   await page.goto(`${server.resolvedUrls.local[0]}#/`);
   await page.reload();

@@ -128,7 +128,7 @@ try {
   await home.waitForFunction(()=>location.hash==='#/photos');
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.locator('.room-microphone-target').click({position:{x:190,y:110}});
-  await home.waitForFunction(()=>location.hash.startsWith('#/deck'));
+  await home.waitForFunction(()=>location.hash==='#/studio');
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.setViewportSize({width:1024,height:1366});
   await home.getByRole('group',{name:'Room shortcuts'}).getByRole('link',{name:'Photos',exact:true}).click();
@@ -145,7 +145,7 @@ try {
   if(shots) await home.screenshot({path:path.join(shots,'room-home.png')});
   await home.getByRole('button',{name:/Sit down at the computer/}).focus();
   await home.keyboard.press('Enter');
-  await home.waitForFunction(()=>location.hash.startsWith('#/deck'));
+  await home.waitForFunction(()=>location.hash==='#/studio');
   await home.waitForFunction(()=>!document.querySelector('.room-appearance'));
   await home.goto(`${server.resolvedUrls.local[0]}#/`);
   await home.setViewportSize({width:390,height:844});
