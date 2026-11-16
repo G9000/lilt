@@ -39,7 +39,7 @@ try {
   const page = await context.newPage(), requests = [];
   page.on('request', request => { if (new URL(request.url()).pathname.endsWith('.js')) requests.push(new URL(request.url()).pathname.slice(1)); });
   const yarnFile = preview.manifest['src/pages/Yarn.tsx'].file;
-  const settingsFile = preview.manifest['src/pages/Settings.tsx'].file;
+  const settingsFile = Object.values(preview.manifest).find(entry => entry.isDynamicEntry && entry.name === 'Settings').file;
   const photosFile = preview.manifest['src/pages/Photos.tsx'].file;
   await page.goto(preview.url);
   await page.getByRole('banner').getByRole('button', { name: 'Settings', exact: true }).waitFor();
@@ -47,6 +47,8 @@ try {
   const eager = new Set();
   function visit(key) { const entry = preview.manifest[key]; if (eager.has(entry.file)) return; eager.add(entry.file); (entry.imports ?? []).forEach(visit); }
   visit('index.html');
+  // The entry checks for a data reset first, then imports the app and the music sign-in.
+  preview.manifest['index.html'].dynamicImports.forEach(visit);
   assert.deepEqual([...new Set(requests)].sort(), [...eager].filter(file => file.endsWith('.js')).sort(), 'the room loads only the static entry graph');
   assert.ok(!requests.includes(yarnFile) && !requests.includes(settingsFile) && !requests.includes(photosFile), 'screens remain deferred');
 
