@@ -51,7 +51,7 @@ export const practice = {
     `[&_.notes_b:empty::before]:[background-image:none] [&_.notes_b:empty::before]:[vertical-align:0.2em] ` +
     `[&_.notes_small]:text-ink-3 [&_.notes_small]:text-[12.5px]`,
   "vloading": `text-ink-3 text-[13px] text-center mt-[72px] mr-[0] mb-[72px] ml-[0]`,
-  "vh": `text-[28px] font-semibold [letter-spacing:-0.035em] [line-height:1.12] mt-[0] mr-[0] mb-[0] ml-[0] ` +
+  "vh": `text-[30px] font-medium [letter-spacing:-0.02em] [line-height:1.12] mt-[0] mr-[0] mb-[0] ml-[0] ` +
     `[text-wrap:balance] [@media_(max-width:_760px)]:text-[24px]`,
   "vh-sm": `[.vh&]:text-[17px] [.vh&]:[letter-spacing:-0.015em] [.vh&]:text-ink-2`,
   "vphrase": `text-[32px] font-semibold [letter-spacing:-0.035em] [line-height:1.16] mt-[0] mr-[0] mb-[0] ml-[0] text-ink ` +
@@ -208,7 +208,7 @@ export const practice = {
   "vmic-noise": `mt-[14px] pt-[12px] [border-top-width:1px] [border-top-style:solid] [border-top-color:var(--hair)] text-[14px] ` +
     `[line-height:1.5] text-ink-2 [&_p]:mt-[0] [&_p]:mr-[0] [&_p]:mb-[0] [&_p]:ml-[0] [&_b]:font-semibold ` +
     `[&_b]:text-ink [&_.textlink]:mt-[6px] [&_.textlink]:text-[14px]`,
-  "vtoday": `[&_h1]:text-[28px] [&_h1]:[letter-spacing:-0.035em] [&_h1]:[line-height:1.12] [&_h1]:mt-[0] [&_h1]:mr-[0] ` +
+  "vtoday": `[&_h1]:text-[30px] [&_h1]:[letter-spacing:-0.02em] [&_h1]:[line-height:1.12] [&_h1]:mt-[0] [&_h1]:mr-[0] ` +
     `[&_h1]:mb-[0] [&_h1]:ml-[0] [@media_(max-width:_760px)]:[&_h1]:text-[24px]`,
   "vreminder": `flex items-center [row-gap:8px] [column-gap:8px] mt-[8px] mr-[0] mb-[0] ml-[0] text-[13px] font-medium ` +
     `text-accent-ink [&_i]:w-[6px] [&_i]:h-[6px] [&_i]:[border-radius:50%] [&_i]:bg-accent ` +
@@ -286,18 +286,17 @@ export const practice = {
     `[&_>_summary]:pl-[0] [&_>_summary]:[font-size:var(--type-body)] [&_>_summary]:font-semibold ` +
     `[&_>_summary_span]:[margin-inline-start:auto] [&_>_summary_span]:text-ink-2 [&_>_summary_span]:text-[13px] ` +
     `[&_>_summary_span]:font-normal [&_>_.md]:pt-[8px] [&_>_.md]:pr-[0] [&_>_.md]:pb-[24px] [&_>_.md]:pl-[0]`,
-  "ve": `[--content-width:960px] [--read:"Newsreader_Variable",_Georgia,_serif] [--ve-paper:#fff] [--ve-card:rgba(255,_255,_255,_0.72)] ` +
-    `[--ve-mk:rgba(0,_0,_0,_0.3)] [--ve-glass:rgba(250,_250,_250,_0.6)] ` +
-    `[--ve-glass-hi:rgba(250,_250,_250,_0.82)] [--ve-blur:blur(40px)_saturate(1.8)] ` +
-    `[--ve-glass-side:#f3f3f3] [flex:1] min-w-0 min-h-0 grid ` +
+  "ve": `[--content-width:960px] [--read:"Newsreader_Variable",_Georgia,_serif] [--ve-paper:var(--panel)] [--ve-card:rgba(255,_254,_252,_0.72)] ` +
+    `[--ve-mk:rgba(0,_0,_0,_0.3)] [--ve-glass:rgba(250,_248,_244,_0.6)] ` +
+    `[--ve-glass-hi:rgba(250,_248,_244,_0.82)] [--ve-blur:blur(40px)_saturate(1.8)] ` +
+    `[--ve-glass-side:var(--side)] [flex:1] min-w-0 min-h-0 grid ` +
     `[grid-template-columns:var(--ve-side-w,_272px)_minmax(0,_1fr)] [grid-template-rows:minmax(0,_1fr)] relative ` +
     `text-ink not-italic [font-weight:normal] text-[15px] [line-height:1.55] font-sans ` +
-    `[:root[data-theme="dark"]_&]:[--ve-paper:#1d1d1d] ` +
-    `[:root[data-theme="dark"]_&]:[--ve-card:rgba(255,_255,_255,_0.07)] ` +
+    `[:root[data-theme="dark"]_&]:[--ve-card:rgba(255,_244,_230,_0.07)] ` +
     `[:root[data-theme="dark"]_&]:[--ve-mk:rgba(255,_255,_255,_0.3)] ` +
-    `[:root[data-theme="dark"]_&]:[--ve-glass:rgba(24,_24,_24,_0.6)] ` +
-    `[:root[data-theme="dark"]_&]:[--ve-glass-hi:rgba(24,_24,_24,_0.8)] ` +
-    `[:root[data-theme="dark"]_&]:[--ve-glass-side:#141414] [&::before]:[content:""] ` +
+    `[:root[data-theme="dark"]_&]:[--ve-glass:rgba(26,_24,_22,_0.6)] ` +
+    `[:root[data-theme="dark"]_&]:[--ve-glass-hi:rgba(26,_24,_22,_0.8)] ` +
+    `[&::before]:[content:""] ` +
     `[&::before]:absolute [&::before]:[top:0] [&::before]:[right:0] [&::before]:[bottom:0] [&::before]:[left:0] ` +
     `[&::before]:[z-index:-1] [&::before]:pointer-events-none [&::before]:[backdrop-filter:var(--ve-blur)] ` +
     `[&::before]:[-webkit-backdrop-filter:var(--ve-blur)] ` +
@@ -450,8 +449,8 @@ export const practice = {
     `[&.side]:[left:calc(var(--ve-side-w,_272px)_-_4px)] [&.split]:hidden! [@media_(max-width:_860px)]:hidden!`,
   "ve-embed": `[.ve-col&]:max-w-[var(--content-width)]`,
   "rl-head": `grid [grid-template-columns:1fr_auto] [align-items:end] [row-gap:6px] [column-gap:16px] mt-[0] mr-[0] ` +
-    `mb-[32px] ml-[0] [&_h1]:mt-[0] [&_h1]:mr-[0] [&_h1]:mb-[0] [&_h1]:ml-[0] [&_h1]:not-italic [&_h1]:font-bold ` +
-    `[&_h1]:text-[44px] [&_h1]:[line-height:1.05] [&_h1]:font-sans [&_h1]:[letter-spacing:-0.045em] [&_h1]:text-ink ` +
+    `mb-[32px] ml-[0] [&_h1]:mt-[0] [&_h1]:mr-[0] [&_h1]:mb-[0] [&_h1]:ml-[0] [&_h1]:not-italic [&_h1]:font-medium ` +
+    `[&_h1]:text-[44px] [&_h1]:[line-height:1.08] [&_h1]:font-display [&_h1]:[letter-spacing:-0.022em] [&_h1]:text-ink ` +
     `[&_p]:[grid-column:1_/_-1] [&_p]:mt-[0] [&_p]:mr-[0] [&_p]:mb-[0] [&_p]:ml-[0] [&_p]:text-[17px] ` +
     `[&_p]:[line-height:1.5] [&_p]:text-ink-2 [@media_(max-width:_860px)]:[&_h1]:text-[34px]`,
   "rl-export": `inline-flex items-center [row-gap:6px] [column-gap:6px] pt-[7px] pr-[12px] pb-[7px] pl-[12px] mb-[4px] ` +
@@ -545,8 +544,8 @@ export const practice = {
     `[.ve_&]:[font-family:inherit] [.ve_&]:[font-variant:inherit] [.ve_&]:[font-stretch:inherit] ` +
     `[.ve_&]:text-accent-ink [.ve_&]:underline [.ve_&]:[text-underline-offset:3px] ` +
     `[.ve_&]:[text-decoration-color:color-mix(in_srgb,_var(--accent)_40%,_transparent)]`,
-  "ve-soon": `[&_h1]:mt-[0] [&_h1]:mr-[0] [&_h1]:mb-[12px] [&_h1]:ml-[0] [&_h1]:not-italic [&_h1]:font-bold ` +
-    `[&_h1]:text-[44px] [&_h1]:[line-height:1.05] [&_h1]:font-sans [&_h1]:[letter-spacing:-0.045em] [&_h1]:text-ink ` +
+  "ve-soon": `[&_h1]:mt-[0] [&_h1]:mr-[0] [&_h1]:mb-[12px] [&_h1]:ml-[0] [&_h1]:not-italic [&_h1]:font-medium ` +
+    `[&_h1]:text-[44px] [&_h1]:[line-height:1.08] [&_h1]:font-display [&_h1]:[letter-spacing:-0.022em] [&_h1]:text-ink ` +
     `[max-width:60ch] text-ink-2 text-[15px] [line-height:1.6] [&_.lede]:mt-[0] [&_.lede]:mr-[0] ` +
     `[&_.lede]:mb-[20px] [&_.lede]:ml-[0] [&_.lede]:text-[21px] [&_.lede]:font-semibold [&_.lede]:text-accent-ink ` +
     `[&_.lede]:[letter-spacing:-0.02em] [&_ul]:pl-[20px] [&_ul]:grid [&_ul]:[row-gap:8px] [&_ul]:[column-gap:8px] ` +
@@ -626,9 +625,9 @@ export const practice = {
     `[.ve-item.done_&.num]:[top:15px] [.ve-item.done_&.num]:text-ok [@media_(max-width:_860px)]:hidden ` +
     `[.sd-completed_.ve-item.done_&.num]:[left:0] [.sd-completed_.ve-item.done_&.num]:w-[16px] ` +
     `[.sd-completed_.ve-item.done_&.num]:text-ink-2`,
-  "ve-head": `mt-[0] mr-[0] [&:where(:not(.sd-heading))]:mb-[28px] ml-[0] [&_h1]:not-italic [&_h1]:font-semibold ` +
-    `[&_h1]:[font-size:var(--type-title)] [&_h1]:[line-height:1.15] [&_h1]:font-sans ` +
-    `[&_h1]:[letter-spacing:-0.035em] [&_h1]:mt-[0] [&_h1]:mr-[0] [&_h1]:[margin-bottom:var(--space-2)] ` +
+  "ve-head": `mt-[0] mr-[0] [&:where(:not(.sd-heading))]:mb-[28px] ml-[0] [&_h1]:not-italic [&_h1]:font-medium ` +
+    `[&_h1]:[font-size:var(--type-title)] [&_h1]:[line-height:1.15] [&_h1]:font-display ` +
+    `[&_h1]:[letter-spacing:-0.02em] [&_h1]:mt-[0] [&_h1]:mr-[0] [&_h1]:[margin-bottom:var(--space-2)] ` +
     `[&_h1]:ml-[0] [&_h1]:[outline:none] [&_h1]:[text-wrap:pretty]`,
   "ve-award": `flex items-center [row-gap:14px] [column-gap:14px] mt-[20px] mr-[0] mb-[0] ml-[0] pt-[14px] pr-[18px] ` +
     `pb-[14px] pl-[14px] rounded-[16px] bg-accent-soft [background-image:none] text-ink-2 text-[14px] ` +
@@ -877,7 +876,7 @@ export const practice = {
     `[&_.ve-ref]:tabular-nums [&_.ve-ref[aria-pressed="true"]]:bg-ok-soft [&_.ve-ref[aria-pressed="true"]]:text-ok`,
   "ve-note": `mt-[0] mr-[0] mb-[0] ml-[0] pt-[12px] pr-[14px] pb-[12px] pl-[14px] rounded-[12px] bg-ok-soft ` +
     `[background-image:none] text-ok font-semibold [.ve_&.ve-note]:pt-[0] [.ve_&]:pr-[13px] [.ve_&.ve-note]:pb-[0] ` +
-    `[.ve_&]:pl-[11px] [.ve_&]:h-[36px] [.ve_&]:tabular-nums [.ve_&_svg]:w-[15px] [.ve_&_svg]:h-[15px] ` +
+    `[.ve_&]:pl-[11px] [.ve_&]:h-[36px] [.ve_&.ok]:h-auto [.ve_&.ok]:min-h-[40px] [.ve_&.ok]:flex [.ve_&.ok]:items-center [.ve_&.ok]:font-medium [.ve_&]:tabular-nums [.ve_&_svg]:w-[15px] [.ve_&_svg]:h-[15px] ` +
     `[.ve_&[aria-pressed="true"]_svg]:[animation:ve-note_0.9s_ease-in-out_infinite] ` +
     `[@media_(prefers-reduced-motion:_reduce)]:[.ve_&[aria-pressed="true"]_svg]:[animation:none]`,
   "ve-now": `[grid-area:now] flex items-center justify-between [row-gap:12px] [column-gap:12px] min-w-[84px] ` +
@@ -1383,19 +1382,19 @@ export const practice = {
   "th-hz": `grid [row-gap:1px] [column-gap:1px] text-[13px] text-ink-3 [&_b]:text-[14px] [&_b]:font-semibold ` +
     `[&_b]:text-ink [&_b]:tabular-nums`,
   "th-play": `min-w-0 [@media_(max-width:_640px)]:[grid-column:1_/_-1]`,
-  "sd-page": `[.ve_&]:[--sd-paper:#ffffff] [.ve_&]:[--sd-edge:#ebebeb] [.ve_&]:[--sd-line:#6b6b6b] ` +
+  "sd-page": `[.ve_&]:[--sd-paper:var(--panel)] [.ve_&]:[--sd-edge:#ebe7e0] [.ve_&]:[--sd-line:#6e675e] ` +
     `[.ve_&]:[--sd-sage:#a9b29a] [.ve_&]:[--sd-clay:#c58968] [.ve_&]:bg-page [.ve_&]:[background-image:none] ` +
-    `[:root[data-theme="dark"]_.ve_&]:[--sd-paper:#222222] [:root[data-theme="dark"]_.ve_&]:[--sd-edge:#2f2f2f] ` +
-    `[:root[data-theme="dark"]_.ve_&]:[--sd-line:#c4c4c4] [:root[data-theme="dark"]_.ve_&]:[--sd-sage:#849680] ` +
+    `[:root[data-theme="dark"]_.ve_&]:[--sd-edge:#322e2a] ` +
+    `[:root[data-theme="dark"]_.ve_&]:[--sd-line:#c8c1b7] [:root[data-theme="dark"]_.ve_&]:[--sd-sage:#849680] ` +
     `[:root[data-theme="dark"]_.ve_&]:[--sd-clay:#ce9578]`,
   "sd-deck": `[.ve_&]:max-w-[var(--content-width)] [.ve_&]:[padding-top:var(--space-8)] [.ve_&]:[padding-right:var(--page-padding)] ` +
     `[.ve_&]:pb-[64px] [.ve_&]:[padding-left:var(--page-padding)] [@media_(max-width:_700px)]:[.ve_&]:pt-[24px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pr-[18px] [@media_(max-width:_700px)]:[.ve_&]:pb-[50px] ` +
     `[@media_(max-width:_700px)]:[.ve_&]:pl-[18px]`,
   "sd-heading": `grid [grid-template-columns:1fr_auto] [row-gap:4px] [column-gap:24px] items-baseline mb-[18px] ` +
-    `[.ve_&_h1]:[grid-column:1] [.ve_&_h1]:not-italic [.ve_&_h1]:font-semibold ` +
-    `[.ve_&_h1]:[font-size:var(--type-title)] [.ve_&_h1]:[line-height:1.15] [.ve_&_h1]:font-sans ` +
-    `[.ve_&_h1]:[letter-spacing:-0.035em] [.ve_&_h1]:mt-[0] [.ve_&_h1]:mr-[0] [.ve_&_h1]:mb-[0] [.ve_&_h1]:ml-[0] ` +
+    `[.ve_&_h1]:[grid-column:1] [.ve_&_h1]:not-italic [.ve_&_h1]:font-medium ` +
+    `[.ve_&_h1]:[font-size:var(--type-title)] [.ve_&_h1]:[line-height:1.15] [.ve_&_h1]:font-display ` +
+    `[.ve_&_h1]:[letter-spacing:-0.02em] [.ve_&_h1]:mt-[0] [.ve_&_h1]:mr-[0] [.ve_&_h1]:mb-[0] [.ve_&_h1]:ml-[0] ` +
     `[@media_(max-width:_700px)]:[row-gap:6px] [@media_(max-width:_700px)]:[column-gap:6px] ` +
     `[@media_(max-width:_700px)]:[grid-template-columns:1fr]`,
   "sd-help": `[.ve_&]:[background-color:transparent] [.ve_&]:[background-image:none] [.ve_&]:rounded-[0] [.ve_&]:mt-[0] ` +
@@ -1688,7 +1687,7 @@ export const practice = {
   // Practice Home and Chapters (direction A, November 2026): a greeting, sections with a quiet link,
   // and chapters as tiles grouped by part.
   "ve-greet": `[&_p]:mt-[0] [&_p]:mb-[0] [&_p]:text-[15px] [&_p]:font-medium [&_p]:text-ink-3 ` +
-    `[&_h1]:[font-size:clamp(30px,_3.4vw,_40px)]!`,
+    `[&_h1]:[font-size:clamp(34px,_4vw,_48px)]!`,
   "ve-home-chapters": `mt-[40px]`,
   // Learn and Practise on a chapter: a segmented control, as in DESIGN.md.
   "ve-tabs": `inline-flex p-[3px] mb-[28px] rounded-[12px] bg-fill [column-gap:2px] ` +

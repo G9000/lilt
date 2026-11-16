@@ -151,7 +151,7 @@ function GuidedChooser({ course, promptId }: { course: string; promptId?: string
     finally { creating.current = false; if (active.current) setBusy(false); }
   };
   return <>
-    <h1 className="text-title font-semibold leading-tight">Guided practice</h1>
+    <h1 className="text-title font-medium leading-tight">Guided practice</h1>
     <p className="my-4 text-ink-2">Choose one of your course's texts, try it in your own time, then save a reflection. Recording is optional.</p>
     {error && <div className="my-4"><p role="alert">{error}</p>{!texts && <button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button>}</div>}
     {!texts ? !error && <p role="status">Finding your practice texts…</p> : !choices.length ? <p>This course has no practice texts yet. You can still make an <a href={`#${recordingsPath(course)}`}>open recording</a>.</p> : <>
@@ -223,7 +223,7 @@ function GuidedSession({ course, sessionId }: { course: string; sessionId: strin
   return <>
     {error && <div className="my-4"><p role="alert">{error}</p>{!session && <button className={secondary} onClick={() => setAttempt(n => n + 1)}>Try again</button>}</div>}
     {!session ? !error && <p role="status">Opening your practice…</p> : <>
-      <h1 className="text-title font-semibold leading-tight">{session.task!.title}</h1>
+      <h1 className="text-title font-medium leading-tight">{session.task!.title}</h1>
       <p className="my-4 text-sm text-ink-2">{session.local_date} · {session.state === "completed" ? "Completed practice" : "Your practice"}</p>
       <div className="my-6 text-lg leading-relaxed"><Markdown src={session.task!.text} course={course} headingOffset={1} /></div>
       {session.task!.hint && <div className="my-6 border-y border-hair py-4 text-ink-2"><Markdown src={session.task!.hint} course={course} headingOffset={2} /></div>}
@@ -301,7 +301,7 @@ function CourseRecordings({ course }: { course: string }) {
     finally { removing.current = false; if (active.current) setDeleting(null); }
   };
   return <>
-    <h1 className="text-title font-semibold leading-tight">Recordings</h1>
+    <h1 className="text-title font-medium leading-tight">Recordings</h1>
     <p className="my-4 text-ink-2">Your audio and guided practice for this course.</p>
     <div className="flex flex-wrap gap-3"><button className={secondary} disabled={recording || deleting !== null} aria-expanded={open} onClick={() => setOpen(value => !value)}>{open ? "Hide recorder" : "Open recorder"}</button>
       <button className={secondary} disabled={busy || recording || deleting !== null} onClick={() => setAttempt(value => value + 1)}>Refresh recordings</button></div>

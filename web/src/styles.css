@@ -2,7 +2,7 @@
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/jetbrains-mono";
 @import "@fontsource-variable/caveat";
-@import "@fontsource-variable/newsreader";
+@import "@fontsource-variable/newsreader/opsz.css";
 @import "tailwindcss/theme.css" layer(theme);
 @import "./theme/base.css" layer(base);
 @import "./theme/tailwind.css";

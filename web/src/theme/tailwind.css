@@ -9,6 +9,7 @@
   --color-win: var(--win);
   --color-page: var(--page);
   --color-panel: var(--panel);
+  --color-side: var(--side);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
@@ -27,8 +28,10 @@
   --color-wave-played: var(--wave-played);
   --font-sans: var(--font);
   --font-mono: var(--mono);
+  --font-display: var(--display);
   --radius-control: var(--control-radius);
   --radius-panel: var(--radius);
+  --radius-small: 8px;
   --text-title: var(--type-title);
   --text-section: var(--type-section);
   --text-body: var(--type-body);

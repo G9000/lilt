@@ -2,7 +2,7 @@
 export const pages = {
   tx: `w-full max-w-[960px] mx-auto [container-type:inline-size]`,
   txLoading: `mt-0 mr-0 mb-0 ml-0 pt-[48px] pr-0 pb-[48px] pl-0 text-center text-[13px] text-ink-3`,
-  txHead: `mt-[10px] mr-0 mb-[22px] ml-0 [&_h1]:text-[28px] [&_h1]:leading-[1.15] [&_h1]:tracking-[-0.035em] [&_h1]:mt-0 ` +
+  txHead: `mt-[10px] mr-0 mb-[22px] ml-0 [&_h1]:text-[30px] [&_h1]:leading-[1.15] [&_h1]:tracking-[-0.02em] [&_h1]:mt-0 ` +
     `[&_h1]:mr-0 [&_h1]:mb-[8px] [&_h1]:ml-0 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
     `[&_p]:text-ink-2 [&_p]:max-w-[68ch] [&_p]:text-pretty ` +
     `[@media(max-width:_700px)]:[&_p:not(.open)]:[display:-webkit-box] [@media(max-width:_700px)]:[&_p:not(.open)]:[-webkit-box-orient:vertical] ` +
@@ -192,8 +192,8 @@ export const pages = {
     `[@media(max-width:_700px)]:pt-[20px] [@media(max-width:_700px)]:pr-[16px] [@media(max-width:_700px)]:pb-[32px] ` +
     `[@media(max-width:_700px)]:pl-[16px]`,
   sxHero: `grid gap-y-[var(--space-2)] gap-x-[var(--space-2)] pt-0 pr-0 pb-0 pl-0 [&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 ` +
-    `[&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-sans ` +
-    `[&_h1]:tracking-[-0.035em] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2 [&_p]:leading-[1.55]`,
+    `[&_h1]:ml-0 [&_h1]:font-medium [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-display ` +
+    `[&_h1]:tracking-[-0.02em] [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2 [&_p]:leading-[1.55]`,
   sxGroup: `rounded-tl-[var(--radius)] rounded-tr-[var(--radius)] rounded-br-[var(--radius)] rounded-bl-[var(--radius)] ` +
     `bg-panel [border-top:1px_solid_var(--hair)] [border-right:1px_solid_var(--hair)] ` +
     `[border-bottom:1px_solid_var(--hair)] [border-left:1px_solid_var(--hair)] pt-0 pr-[var(--space-6)] pb-0 ` +
@@ -238,8 +238,8 @@ export const pages = {
     `[&_b]:font-semibold [&_span]:text-[12px] [&_span]:text-ink-3`,
   stWhy: `mt-0 text-ink-2`,
   sxAppHead: `flex flex-wrap items-baseline justify-between gap-y-[8px] gap-x-[12px] mb-[6px] [&_h1]:mt-0 [&_h1]:mr-0 ` +
-    `[&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-sans ` +
-    `[&_h1]:tracking-[-0.035em] [&_h1]:text-ink`,
+    `[&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-medium [&_h1]:text-title [&_h1]:leading-[1.15] [&_h1]:font-display ` +
+    `[&_h1]:tracking-[-0.02em] [&_h1]:text-ink`,
   sxApp: `[&_section]:grid [&_section]:grid-cols-[minmax(0,_1fr)] [&_section]:min-w-0 [&_section]:gap-y-[10px] ` +
     `[&_section]:gap-x-[10px] [&_h2]:mt-[18px] [&_h2]:mr-0 [&_h2]:mb-0 [&_h2]:ml-[2px] [&_h2]:text-[17px] ` +
     `[&_h2]:font-semibold [&_h2]:tracking-[-0.01em] [&_h2]:text-ink [&_.sx-note]:mt-0 [&_.sx-note]:mr-[2px] ` +
@@ -264,11 +264,11 @@ export const pages = {
     `[&_.co-list_button]:text-ink [&_.co-list_button:hover]:bg-fill ` +
     `[&_.co-list_button:focus-visible]:outline-2 [&_.co-list_button:focus-visible]:outline-accent ` +
     `[&_code]:font-normal [&_code]:text-[12px] [&_code]:leading-normal [&_code]:font-mono`,
-  coHead: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] ` +
-    `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] [&_p]:mt-[8px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
+  coHead: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-medium [&_h1]:text-title [&_h1]:leading-[1.15] ` +
+    `[&_h1]:font-display [&_h1]:tracking-[-0.02em] [&_p]:mt-[8px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 ` +
     `[&_p]:text-ink-2 [&_p]:leading-[1.5] [&_p]:text-[15px] [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
-  coHero: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-semibold [&_h1]:text-title [&_h1]:leading-[1.15] ` +
-    `[&_h1]:font-sans [&_h1]:tracking-[-0.035em] flex items-start gap-y-[18px] gap-x-[18px] flex-wrap ` +
+  coHero: `[&_h1]:mt-0 [&_h1]:mr-0 [&_h1]:mb-0 [&_h1]:ml-0 [&_h1]:font-medium [&_h1]:text-title [&_h1]:leading-[1.15] ` +
+    `[&_h1]:font-display [&_h1]:tracking-[-0.02em] flex items-start gap-y-[18px] gap-x-[18px] flex-wrap ` +
     `[&_>_div]:[flex:1_1_280px] [&_>_div]:min-w-0 [&_p]:mt-[6px] [&_p]:mr-0 [&_p]:mb-0 [&_p]:ml-0 [&_p]:text-ink-2 ` +
     `[&_p]:leading-[1.5] [&_.btn-primary]:flex-none [@media(max-width:_640px)]:[&_h1]:text-[28px]`,
   coTile: `flex-none grid place-items-center rounded-tl-[24%] rounded-tr-[24%] rounded-br-[24%] rounded-bl-[24%] ` +

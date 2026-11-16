@@ -1,18 +1,19 @@
 /* Document defaults and runtime theme tokens; component styling lives in Tailwind recipes. */
 :root {
-  --ink: #171717;
-  --ink-2: #4a4a4a;
-  --ink-3: #737373;
+  --ink: #1f1b16;
+  --ink-2: #554f47;
+  --ink-3: #736c63;
   --muted: var(--ink-3);
-  --hair: rgba(0, 0, 0, 0.07);
-  --fill: rgba(0, 0, 0, 0.04);
-  --fill-2: rgba(0, 0, 0, 0.075);
-  --win: rgba(250, 250, 250, 0.94);
-  --page: #fafafa;
+  --hair: rgba(64, 48, 28, 0.09);
+  --fill: rgba(64, 48, 28, 0.05);
+  --fill-2: rgba(64, 48, 28, 0.09);
+  --win: rgba(250, 248, 244, 0.94);
+  --page: #faf8f4;
+  --side: #f3f0ea;
   --stage: var(--fill);
-  --panel: #ffffff;
+  --panel: #fffefc;
   --line: var(--hair);
-  --line-strong: rgba(0, 0, 0, 0.14);
+  --line-strong: rgba(64, 48, 28, 0.17);
   --accent: var(--chosen-light-accent, #e0643c);
   --accent-ink: var(--chosen-light-ink, #b8461f);
   --accent-rgb: var(--chosen-light-rgb, 224, 100, 60);
@@ -27,7 +28,7 @@
   --info: #3d5bd9;
   --info-soft: rgba(61, 91, 217, 0.09);
   --focus: var(--accent);
-  --wave: rgba(0, 0, 0, 0.16);
+  --wave: rgba(64, 48, 28, 0.18);
   --wave-played: var(--ink);
   --segment: rgba(var(--accent-rgb), 0.16);
   --band: rgba(var(--accent-rgb), 0.12);
@@ -40,7 +41,7 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-12: 48px;
-  --type-title: clamp(28px, 3vw, 34px);
+  --type-title: clamp(30px, 3.2vw, 38px);
   --type-section: 18px;
   --type-body: 15px;
   --type-caption: 13px;
@@ -50,21 +51,18 @@
   --page-padding: clamp(18px, 4vw, 40px);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --font: "Geist Variable", -apple-system, "SF Pro Text", system-ui, sans-serif;
+  --display: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
   --mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
-  /* the old device look, until each page is restyled */
-  --dev: #f1f0ee; --dev-2: #f7f6f4; --dev-edge: #d6d4cf;
-  --screen: #171717; --screen-ink: #f2f2f2; --screen-dim: #9a9a9a;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  --ink: #f4f4f4; --ink-2: #c8c8c8; --ink-3: #9a9a9a;
-  --hair: rgba(255, 255, 255, 0.09); --fill: rgba(255, 255, 255, 0.06); --fill-2: rgba(255, 255, 255, 0.11);
-  --win: rgba(26, 26, 26, 0.92); --page: #181818; --panel: #212121; --line-strong: rgba(255, 255, 255, 0.18);
+  --ink: #f4f1ec; --ink-2: #cdc7be; --ink-3: #a09a90;
+  --hair: rgba(255, 244, 230, 0.09); --fill: rgba(255, 244, 230, 0.06); --fill-2: rgba(255, 244, 230, 0.11);
+  --win: rgba(28, 26, 23, 0.92); --page: #1a1816; --side: #151311; --panel: #24211e; --line-strong: rgba(255, 244, 230, 0.18);
   --accent: var(--chosen-dark-accent, #e0643c); --accent-rgb: var(--chosen-dark-rgb, 224, 100, 60);
   --accent-on: var(--chosen-dark-on, #fff); --accent-ink: var(--accent-dark-ink); --accent-soft: rgba(var(--accent-rgb), 0.18);
   --ok: #4cc38a; --ok-soft: rgba(76, 195, 138, 0.14); --warn: #ffc53d; --warn-soft: rgba(255, 197, 61, 0.14);
-  --info: #a9b4ff; --info-soft: rgba(124, 140, 255, 0.14); --wave: rgba(255, 255, 255, 0.2);
-  --dev: #212121; --dev-2: #282828; --dev-edge: #0e0e0e;
+  --info: #a9b4ff; --info-soft: rgba(124, 140, 255, 0.14); --wave: rgba(255, 244, 230, 0.2);
   color-scheme: dark;
 }
 
@@ -74,10 +72,10 @@ body { margin: 0; overflow-x: clip; }
 body { background: #0b0b0b; color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; min-height: 100dvh; }
 a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
 a:hover { text-decoration-color: currentColor; }
-h1 { font-family: var(--font); font-weight: 600; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
+h1 { font-family: var(--display); font-weight: 500; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
 h2 { font-family: var(--font); font-weight: 600; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
 h3 { font-family: var(--font); font-weight: 600; line-height: 1.12; margin: 0 0 0.45em; text-wrap: balance; }
-h1 { font-size: clamp(1.7rem, 3.6vw, 2rem); letter-spacing: -0.035em; }
+h1 { font-size: clamp(1.7rem, 3.6vw, 2rem); letter-spacing: -0.02em; }
 h2 { font-size: 1.15rem; letter-spacing: -0.02em; }
 h3 { font-size: 1rem; letter-spacing: -0.01em; }
 p { margin: 0 0 0.75em; }

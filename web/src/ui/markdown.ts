@@ -11,8 +11,9 @@ export const markdown = {
     `[&_:where(h1,_h2,_h3,_h4,_h5,_h6)]:font-semibold [&_:where(h1,_h2,_h3,_h4,_h5,_h6)]:[line-height:1.25] ` +
     `[&_:where(h1,_h2,_h3,_h4,_h5,_h6)]:[text-wrap:balance] ` +
     `[&_:where(h1,_h2,_h3,_h4,_h5,_h6)]:[scroll-margin-top:24px] [&_h1]:[margin:0_0_0.6em] ` +
-    `[&_h1]:[font-size:clamp(28px,_3vw,_36px)] [&_h1]:[line-height:1.12] [&_h1]:[letter-spacing:-0.03em] ` +
-    `[&_h2]:[margin:2.2em_0_0.55em] [&_h2]:[font-size:21px] [&_h2]:[letter-spacing:-0.02em] ` +
+    `[&_h1]:[font-size:clamp(30px,_3.2vw,_38px)] [&_h1]:[line-height:1.12] [&_h1]:[letter-spacing:-0.02em] ` +
+    `[&_h1]:font-display [&_h1]:font-medium [&_h2]:font-display [&_h2]:font-medium ` +
+    `[&_h2]:[margin:2.2em_0_0.5em] [&_h2]:[font-size:25px] [&_h2]:[line-height:1.2] [&_h2]:[letter-spacing:-0.015em] ` +
     `[&_h3]:[margin:1.8em_0_0.45em] [&_h3]:[font-size:17px] [&_h3]:[letter-spacing:-0.01em] ` +
     `[&_h4]:[margin:1.6em_0_0.4em] [&_h4]:[font-size:16px] [&_h5]:[margin:1.5em_0_0.4em] [&_h5]:[font-size:15px] ` +
     `[&_h6]:[margin:1.5em_0_0.4em] [&_h6]:[font-size:14px] [&_h6]:text-ink-2 ` +
