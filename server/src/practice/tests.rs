@@ -253,6 +253,77 @@ fn missed_days_never_become_a_backlog() {
 }
 
 #[test]
+fn finishing_a_review_does_not_pull_in_another_overdue_card() {
+    let (_d, app) = app();
+    let mut state = BTreeMap::new();
+    for c in cards::all_cards(&app)
+        .iter()
+        .filter(|c| c.id != cards::REFERENCE_CARD)
+    {
+        state.insert(
+            c.id.clone(),
+            CardState {
+                due: Some("2020-01-01".into()),
+                interval_days: 3,
+                ease: 2.5,
+                reps: 2,
+                introduced_date: Some("2019-12-29".into()),
+                ..Default::default()
+            },
+        );
+    }
+    store::write_json(&app.paths.root.join("cards/state.json"), &state).unwrap();
+    let before = queue_ids(&app);
+    let review = before.iter().find(|x| x.1 == "review").unwrap().0.clone();
+    rate(&app, &review, None, "good");
+    let after = queue_ids(&app);
+    let ids = |q: &[(String, String, bool)]| {
+        let mut ids: Vec<_> = q.iter().map(|x| x.0.clone()).collect();
+        ids.sort();
+        ids
+    };
+    assert_eq!(
+        ids(&after),
+        ids(&before),
+        "today's cards stay the same once one is done"
+    );
+    assert!(after.iter().any(|x| x.0 == review && x.2), "{after:?}");
+}
+
+/// With a backlog and a new card in the deck, saying the new card never drops a waiting review.
+#[test]
+fn finishing_a_new_card_keeps_todays_unfinished_reviews() {
+    let (_d, app) = app();
+    let mut state = BTreeMap::new();
+    for c in cards::all_cards(&app)
+        .iter()
+        .filter(|c| c.stage == 1 && c.id != "text.warmup.hum" && c.id != "text.warmup.cool-down")
+        .take(7)
+    {
+        state.insert(
+            c.id.clone(),
+            CardState {
+                due: Some("2020-01-01".into()),
+                interval_days: 3,
+                ease: 2.5,
+                reps: 2,
+                introduced_date: Some("2019-12-29".into()),
+                ..Default::default()
+            },
+        );
+    }
+    store::write_json(&app.paths.root.join("cards/state.json"), &state).unwrap();
+    let before = queue_ids(&app);
+    let new = before.iter().find(|x| x.1 == "new").unwrap().0.clone();
+    rate(&app, &new, None, "good");
+    let after = queue_ids(&app);
+    for (id, _, _) in before.iter().filter(|x| x.0 != new) {
+        assert!(after.iter().any(|x| &x.0 == id && !x.2), "{id}: {after:?}");
+    }
+    assert!(after.iter().any(|x| x.0 == new && x.2), "{after:?}");
+}
+
+#[test]
 fn hurt_card_is_suspended_pauses_plan_and_resume_brings_it_back() {
     let (_d, app) = app();
     app.ensure_plan().unwrap();

@@ -617,7 +617,17 @@ pub fn today_queue_for_course(app: &App, course: &Course) -> Result<Value> {
                 && s.last_reviewed_date.as_deref() == Some(today.as_str()))
         })
         .collect();
-    due.sort_by(|a, b| a.1.due.cmp(&b.1.due).then(b.1.lapses.cmp(&a.1.lapses)));
+    // A review finished today keeps its place, so an overdue card that was waiting doesn't take it.
+    let held = |s: &CardState| {
+        s.last_reviewed_date.as_deref() == Some(today.as_str())
+            && s.introduced_date.as_deref() != Some(today.as_str())
+    };
+    due.sort_by(|a, b| {
+        held(b.1)
+            .cmp(&held(a.1))
+            .then(a.1.due.cmp(&b.1.due))
+            .then(b.1.lapses.cmp(&a.1.lapses))
+    });
     // Leave one place for a new card while today's allowance and an open stage still have some, so
     // reviews never stall the course.
     let new_waiting = new_per_day > introduced_today
