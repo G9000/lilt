@@ -62,11 +62,11 @@ try {
     await page.setViewportSize({ width, height: 950 });
     await page.goto(`${url}#/studio`);
     await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
-    await page.getByRole('heading', { name: 'Your practice', exact: true }).waitFor();
-    const start = page.getByRole('button', { name: "Start today's cards", exact: true });
+    // With no takes yet, Home is the introduction and the course's own guide.
+    await page.getByRole('heading', { name: 'A little room to learn', exact: true }).waitFor();
+    const start = page.getByRole('link', { name: 'Go to Today', exact: true });
     await usable(start);
     await capture(`home-${width}-${theme}`);
-    await page.getByText('Course guide', { exact: false }).filter({ has: page.locator('span') }).first().click();
     await page.getByRole('heading', { name: 'Find a comfortable sound' }).waitFor();
     await start.click();
     await page.getByRole('button', { name: 'Start recording', exact: true }).waitFor();
