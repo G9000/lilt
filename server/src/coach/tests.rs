@@ -343,6 +343,47 @@ fn invalid_agent_reviews_are_rejected_and_valid_ones_are_idempotent() {
     assert!(err(model).contains("model-perceived evidence is disabled"));
 }
 
+/// A recheck may only point at a real take: a made-up one would be saved in a review that no
+/// backup can then include.
+#[test]
+fn an_agent_recheck_must_compare_with_a_real_take() {
+    let (dir, app) = app();
+    let s = session(&app);
+    let t = upload(&app, &s.id, T::default(), "harmonic_240.webm");
+    let recheck = |take: &str| {
+        let mut p = measured_pointer(&t, 0.0, "Descriptive only.");
+        p.evidence[0].measure = None;
+        p.recheck = Some(Recheck {
+            prompt_id: t.prompt_id.clone(),
+            prompt_text: t.prompt_text.clone(),
+            compare_with_take: Some(take.into()),
+            ask: "Say it once more and listen for the hum.".into(),
+        });
+        p
+    };
+    for (key, made_up) in [("empty", ""), ("words", "the last take")] {
+        let saved = validate::save_agent_review(&app, agent_input(&s.id, key, recheck(made_up)))
+            .map(|(r, _)| r.id)
+            .map_err(|e| format!("{e:#}"));
+        assert!(
+            saved.as_ref().is_err_and(|e| e.contains("does not exist")),
+            "{made_up:?}: {saved:?}"
+        );
+    }
+    // The same goes for an analysis run named without a quoted measure.
+    let mut run = recheck(&t.id);
+    run.evidence[0].analysis_run = Some("".into());
+    let saved = validate::save_agent_review(&app, agent_input(&s.id, "run", run))
+        .map(|(r, _)| r.id)
+        .map_err(|e| format!("{e:#}"));
+    assert!(
+        saved.as_ref().is_err_and(|e| e.contains("does not exist")),
+        "{saved:?}"
+    );
+    validate::save_agent_review(&app, agent_input(&s.id, "real", recheck(&t.id))).unwrap();
+    store::backup_archive::create(&app.paths.root, &dir.path().join("backup.zip")).unwrap();
+}
+
 /// Forward hum is judged by what you hear (brighter and easy); where you felt the buzz is kept as
 /// information only, so "throat or chest" is no longer a miss. Lilt now ships only the newest
 /// version of each exercise, but the versions you already used stay in your data folder: an old

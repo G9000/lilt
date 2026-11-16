@@ -250,6 +250,10 @@ fn check_pointer(app: &App, p: &Pointer, received_audio: bool, errors: &mut Vec<
                 }
                 Err(_) => errors.push(format!("{ctx}: analysis run {run} does not exist")),
             }
+        } else if let Some(run) = &e.analysis_run
+            && app.analysis_by_run(run).is_err()
+        {
+            errors.push(format!("{ctx}: analysis run {run} does not exist"));
         }
     }
     if let Some(n) = &p.next_action {
@@ -275,6 +279,14 @@ fn check_pointer(app: &App, p: &Pointer, received_audio: bool, errors: &mut Vec<
             }
             Err(e) => errors.push(format!("{ctx}: {e}")),
         }
+    }
+    if let Some(tid) = p
+        .recheck
+        .as_ref()
+        .and_then(|r| r.compare_with_take.as_ref())
+        && app.take(tid).is_err()
+    {
+        errors.push(format!("{ctx}: take {tid} does not exist"));
     }
     let prose = format!(
         "{}\n{}\n{}",
