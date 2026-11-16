@@ -8,7 +8,7 @@ the room, Home, Today, Chapters, a chapter, Recordings, Studio, Practice setting
 and the desk; Home, a chapter and Recordings were also checked at 390 px. Every page's title was read
 back from the browser (font, weight and tracking) across 20 routes; Photos, Your mixtape and the
 other-course headings were found still in the old weights and corrected. Text contrast on the new
-surfaces: secondary text 6.1:1 or more, captions 4.5:1 or more on the page, panel and sidebar in both
+surfaces: secondary text 6:1 or more, captions 4.5:1 or more on the page, panel and sidebar in both
 themes, and the darker light-theme status green and amber 4.9:1 or more (they were about 3.7:1).
 
 Web typecheck, 230 unit tests, the production build, `test:styles` (failing before on a missing
