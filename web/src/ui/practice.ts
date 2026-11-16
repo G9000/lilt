@@ -598,17 +598,53 @@ export const practice = {
     `[@media_(max-width:_860px)]:[.ve_&_button[aria-current="page"]]:[background-image:none] ` +
     `[@media_(max-width:_860px)]:[.ve_&_button[aria-current="page"]]:[color:var(--ve-paper)]`,
   // Retain this small guard: removing it changes the reading column's centering in the cascade.
-  "ve-chapter": `[--content-width:960px] [&_>_.ve-head]:border-b [&_>_.ve-head]:border-hair [&_>_.ve-head]:pb-5 ` +
-    `[&_.ve-items]:grid [&_.ve-items]:gap-0 [&_.ve-items_>_.ve-item]:m-0 ` +
-    `[&_.ve-items_>_.ve-item]:rounded-none [&_.ve-items_>_.ve-item]:border-b [&_.ve-items_>_.ve-item]:border-hair ` +
-    `[&_.ve-items_>_.ve-item:last-child]:border-b-0 ` +
-    `[&_.ve-items_>_.ve-item]:py-5 [&_.ve-items_>_.ve-item]:pr-5 [&_.ve-items_>_.ve-item]:pl-14 ` +
-    `[&_.ve-items_>_.ve-item:not(.on):not(.done):hover]:bg-transparent ` +
-    `[&_.ve-item:not(.on):not(.done)_.readtext]:text-ink-2 [&_.ve-item:not(.on)_.ve-hint]:text-ink-2 ` +
-    `[&_.ve-item_.ve-hint]:[max-width:68ch] [&_.ve-item_.ve-hint]:block [&_.ve-item_.ve-hint]:text-[14px] ` +
-    `[&_.ve-item_.ve-mk.num]:top-8 [&_.ve-item:has(>_.ve-checkin)_.ve-mk.num]:top-7 ` +
-    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item]:px-4 ` +
-    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item]:py-4`,
+  // A chapter's Practise tab: the text you're on is a sheet of paper with the recorder in it, and the
+  // others are a quiet setlist around it. The header keeps to one row, with Learn/Practise beside it.
+  "ve-chapter": `[--content-width:960px] [&_.ve-items]:grid [&_.ve-items]:gap-0 [&_.ve-items_>_.ve-item]:m-0 ` +
+    `[&_.ve-items_>_.ve-item:not(.on)]:rounded-none [&_.ve-items_>_.ve-item:not(.on)]:border-b ` +
+    `[&_.ve-items_>_.ve-item:not(.on)]:border-hair [&_.ve-items_>_.ve-item:not(.on):last-child]:border-b-0 ` +
+    `[&_.ve-items_>_.ve-item:not(.on):has(+_.on)]:border-b-0 ` +
+    `[&_.ve-items_>_.ve-item:not(.on)]:grid [&_.ve-items_>_.ve-item:not(.on)]:[grid-template-columns:minmax(0,_1fr)_auto] ` +
+    `[&_.ve-items_>_.ve-item:not(.on)]:[column-gap:16px] [&_.ve-items_>_.ve-item:not(.on)]:items-baseline ` +
+    `[&_.ve-items_>_.ve-item:not(.on)]:py-[13px] [&_.ve-items_>_.ve-item:not(.on)]:pr-5 [&_.ve-items_>_.ve-item:not(.on)]:pl-14 ` +
+    `[&_.ve-item:not(.on)_>_*]:[grid-column:1] [&_.ve-item:not(.on)_>_.ve-checkin]:[grid-column:2] ` +
+    `[&_.ve-item:not(.on)_>_.ve-mk]:[grid-column:auto] ` +
+    `[&_.ve-item:not(.on)_>_.ve-checkin]:[grid-row:1] [&_.ve-item:not(.on)_>_.ve-checkin]:mb-0 ` +
+    `[&_.ve-item:not(.on)_>_.ve-hint]:hidden [&_.ve-item:not(.on)_>_.ve-then]:hidden ` +
+    `[&_.ve-item:not(.on)_>_.ve-small]:hidden [&_.ve-item:not(.on)_>_.ve-ptitle]:mb-[2px] ` +
+    `[&_.ve-item:not(.on)_>_.ve-ptitle]:text-[14px] ` +
+    `[&_.ve-item:not(.on)_.readtext]:text-[18px] [&_.ve-item:not(.on)_.readtext]:[line-height:1.4] ` +
+    `[&_.ve-item:not(.on)_.readtext]:[display:-webkit-box] [&_.ve-item:not(.on)_.readtext]:[-webkit-box-orient:vertical] ` +
+    `[&_.ve-item:not(.on)_.readtext]:[-webkit-line-clamp:2] [&_.ve-item:not(.on)_.readtext]:overflow-hidden ` +
+    `[&_.ve-items_>_.ve-item:not(.on):not(.done):hover]:bg-transparent [&_.ve-item:not(.on):not(.done)_.readtext]:text-ink-2 ` +
+    `[&_.ve-item:not(.on)_.ve-mk.num]:top-[18px] ` +
+    `[&_.ve-items_>_.ve-item.on]:my-[14px] [&_.ve-items_>_.ve-item.on:first-child]:mt-0 ` +
+    `[&_.ve-items_>_.ve-item.on]:rounded-[20px] [&_.ve-items_>_.ve-item.on]:bg-panel ` +
+    `[&_.ve-items_>_.ve-item.on]:[box-shadow:0_0_0_1px_var(--hair),_0_18px_40px_-28px_rgba(0,_0,_0,_0.35)] ` +
+    `[&_.ve-items_>_.ve-item.on]:pt-[30px] [&_.ve-items_>_.ve-item.on]:pr-[32px] [&_.ve-items_>_.ve-item.on]:pb-[28px] ` +
+    `[&_.ve-items_>_.ve-item.on]:pl-[64px] [&_.ve-item.on_.ve-mk.num]:left-[24px] [&_.ve-item.on_.ve-mk.num]:top-[42px] ` +
+    `[&_.ve-item.on:has(>_.ve-checkin)_.ve-mk.num]:top-[36px] ` +
+    `[&_.ve-item.on:not(.passage)_.readtext]:[font-size:clamp(27px,_2.5vw,_32px)] ` +
+    `[&_.ve-item.on:not(.passage)_.readtext]:[line-height:1.3] ` +
+    `[&_.ve-item.on_.ve-hint]:[max-width:68ch] [&_.ve-item.on_.ve-hint]:block [&_.ve-item.on_.ve-hint]:text-[15px] ` +
+    `[&_.ve-item.on_.ve-hint]:mt-[12px] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item:not(.on)]:px-4 ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item:not(.on)]:[grid-template-columns:minmax(0,_1fr)] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-item:not(.on)_>_.ve-checkin]:[grid-column:1] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-item:not(.on)_>_.ve-checkin]:[justify-self:start] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-item:not(.on)_>_.ve-checkin]:mb-[6px] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item.on]:px-[18px] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item.on]:pt-[20px] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item.on]:pb-[20px] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-items_>_.ve-item.on]:rounded-[16px] ` +
+    `[@media_(max-width:_860px)]:[&_.ve-item.on:not(.passage)_.readtext]:text-[24px]`,
+  "ve-chapter-top": `flex flex-wrap items-end justify-between [column-gap:24px] [row-gap:16px] border-b border-hair ` +
+    `pb-5 mb-[22px] [&_>_.ve-head]:mb-0 [&_>_.ve-head]:min-w-0 [&_>_.ve-head]:[flex:1_1_320px] ` +
+    `[&_>_.ve-head]:flex [&_>_.ve-head]:flex-wrap [&_>_.ve-head]:items-baseline [&_>_.ve-head]:[column-gap:10px] ` +
+    `[&_>_.ve-head_>_*]:[flex-basis:100%] [&_>_.ve-head_>_.ve-subtitle]:[flex-basis:auto] ` +
+    `[&_>_.ve-head_>_.ve-subtitle]:text-[15px] [&_>_.ve-head_>_.ve-subtitle]:font-normal ` +
+    `[&_>_.ve-head_>_.ve-meta]:[flex-basis:auto] [&_>_.ve-head_>_.ve-meta]:mt-0 ` +
+    `[&_>_.ve-tabs]:mb-0 [&_>_.ve-tabs]:flex-none`,
   "ve-col": `[&:where(.ve-col)]:w-full [&:where(.ve-col)]:min-w-0 [&:where(.ve-col)]:[max-width:var(--content-width)] ` +
     `[&:where(.ve-col)]:mt-[0] [&:where(.ve-col)]:[margin-right:auto] [&:where(.ve-col)]:mb-[0] ` +
     `[&:where(.ve-col)]:[margin-left:auto] [&:where(.ve-col)]:[padding-top:var(--space-8)] ` +

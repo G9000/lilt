@@ -19,7 +19,7 @@ page. Fewer boxes: a suggestion after a take is a sentence, not a tinted card; r
 under **More about this take** rather than in a box inside the take. Practice's frame is a guided
 app: the sidebar is a short list of places (no file tree), Home introduces Lilt and the creator story before a skippable first practice, with
 the next four chapters as tiles, a Chapters page holds every chapter as a tile with the cover and
-guide, a chapter splits into **Learn** and **Practise** tabs (a segmented control), and Today is
+guide, a chapter splits into **Learn** and **Practise** tabs (a segmented control, on the same row as the chapter's title), and Today is
 one card without the stacked-paper edges. Every Practice page shares one centred 960px column.
 In the room, widgets and cues wait for the painting, so nothing floats on an empty dark room. Placeholders for
 unfinished features (Remix) stay hidden until they work. Windows close with Escape, when you go to
@@ -333,9 +333,10 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document
   (720px column): a serif H1 (`--display`, 500), a sans subtitle and meta line, an "About this chapter" note on a
   soft `--fill` panel (what the skill is, how it feels, how you'll know it's working; all of it on a first
-  visit, then its first paragraph and a quiet "Read more ↓" once you've practised there), then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
-  under each and a quiet number in the margin. The active text has no card: it is in full ink with its
-  number in coral, while the others step back to `--ink-3`; done texts get a drawn green tick. Each chapter's check-in text carries a small coral pill above it,
+  visit, then its first paragraph and a quiet "Read more ↓" once you've practised there), then the texts in **Newsreader** with a quiet number in the margin. **The text you're on is a sheet of paper** (`--panel`, 20px corners, a hairline edge and a soft
+  shadow, 16px corners on phones) holding the text at 27–32px (passages 21px), its hint, the recorder and the take: one clear place to practise. **The other texts are a setlist** around it, in their
+  order: one or two lines each at 18px in `--ink-2` between hairlines, with their hints folded away, and no fill on hover (the text turns to full ink).
+  The sheet's number is coral. Each chapter's check-in text carries a small coral pill, above the text on its sheet and at the right of its row in the setlist (above it on phones),
   "Check-in · record it each visit". A chapter with a video shows a quiet card under its tips (a red play tile, title, channel, "plays
   from YouTube"); nothing loads from YouTube until it's pressed, then the no-cookie player opens in place.
   Wider than 1100px, the screen splits in half: the text on the left, the recorder on the right.
@@ -519,8 +520,8 @@ The active voice exercise keeps the plain reading surface with its recorder belo
 use compact rows with hairline dividers.
 A voice chapter is a centered 960px column, so its intro, tips, texts and players line up with
 the text width and wide screens keep even margins instead of an empty right side. It keeps its
-side padding, number gutter and introduction spacing. Selection and hover keep the reading
-surface plain.
+side padding, number gutter and introduction spacing. The text you're on is the only raised
+surface on the Practise tab; hover never adds a fill.
 
 ## Components
 

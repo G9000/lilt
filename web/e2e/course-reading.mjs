@@ -124,20 +124,25 @@ try {
         centerOffset: (el.getBoundingClientRect().left + el.getBoundingClientRect().right) / 2 - (el.closest('.ve-page').getBoundingClientRect().left + el.closest('.ve-page').getBoundingClientRect().right) / 2,
         exercisesWidth: el.querySelector('.ve-items').getBoundingClientRect().width,
         markerGap: text.getBoundingClientRect().left - marker.getBoundingClientRect().right,
-        selectedBackground: getComputedStyle(row).backgroundColor,
-        selectedBorder: ['borderTopWidth', 'borderLeftWidth', 'borderRightWidth'].map(property => getComputedStyle(row)[property]),
-        ink: getComputedStyle(other.querySelector('.readtext')).color, hint: getComputedStyle(other.querySelector('.ve-hint')).color,
+        selectedBackground: getComputedStyle(row).backgroundColor, selectedShadow: getComputedStyle(row).boxShadow,
+        otherBackground: getComputedStyle(other).backgroundColor, otherHint: getComputedStyle(other.querySelector('.ve-hint')).display,
+        otherSize: parseFloat(getComputedStyle(other.querySelector('.readtext')).fontSize), activeSize: parseFloat(getComputedStyle(row.querySelector('.readtext')).fontSize),
+        ink: getComputedStyle(other.querySelector('.readtext')).color, secondary: (() => { const probe = document.createElement('i'); probe.style.color = 'var(--ink-2)'; el.append(probe); const color = getComputedStyle(probe).color; probe.remove(); return color; })(),
         activeInk: getComputedStyle(row.querySelector('.readtext')).color };
     });
     assert.ok(!layout.overflow, 'voice chapter fits its column');
     assert.ok(Math.abs(layout.centerOffset) <= 1, 'chapter stays centered');
     if (width > 860) assert.ok(layout.markerGap >= 8, 'exercise number stays clear of the text');
     if (width >= 1440) assert.ok(Math.abs(layout.width - 960) <= 1, 'desktop chapter is a centred 960px reading column');
-    assert.equal(layout.selectedBackground, 'rgba(0, 0, 0, 0)', 'selected exercise keeps the plain reading surface');
-    assert.deepEqual(layout.selectedBorder, ['0px', '0px', '0px'], 'selected exercise has no enclosing panel');
-    assert.ok([layout.hint, layout.activeInk].includes(layout.ink), 'inactive exercise stays readable, including on hover');
-    await page.locator('.ve-item').nth(1).hover();
-    assert.equal(await page.locator('.ve-item').nth(1).evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', 'hover keeps the plain surface');
+    // The text you're on is a sheet of paper; the others are a plain one-line setlist around it.
+    assert.notEqual(layout.selectedBackground, 'rgba(0, 0, 0, 0)', 'the text you are on sits on its own sheet');
+    assert.notEqual(layout.selectedShadow, 'none', 'the sheet has an edge');
+    assert.equal(layout.otherBackground, 'rgba(0, 0, 0, 0)', 'the other texts keep the plain surface');
+    assert.equal(layout.otherHint, 'none', 'the other texts fold their hints away');
+    assert.ok(layout.otherSize < layout.activeSize, 'the text you are on is the largest');
+    assert.ok([layout.secondary, layout.activeInk].includes(layout.ink), 'inactive exercise stays readable, including on hover');
+    await page.locator('.ve-item:not(.on)').first().hover();
+    assert.equal(await page.locator('.ve-item:not(.on)').first().evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)', 'hover keeps the plain surface');
     await page.mouse.move(0, 0);
     await page.locator('.ve-page').evaluate(el => { el.scrollTop = 0; });
     await page.screenshot({ path: path.join(shots, `voice-chapter-${width}-${theme}.png`) });

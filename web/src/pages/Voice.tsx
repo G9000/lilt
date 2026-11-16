@@ -1405,6 +1405,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
     <>
       <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
         <article className={cx("ve-col ve-chapter", practice["ve-col"], practice["ve-chapter"])}>
+          <div className={cx("ve-chapter-top", practice["ve-chapter-top"])}>
           <header className={cx(pages.veHeadRemix, cx("ve-head ve-head-remix", practice["ve-head"]))}>
             <h1>{level.title}</h1>
             <p className={cx("ve-subtitle", practice["ve-subtitle"])}>{level.subtitle}</p>
@@ -1421,6 +1422,7 @@ function ChapterDoc({ texts, level, itemId, profile, onProfile, onRecording, pra
           <div className={cx("ve-tabs", practice["ve-tabs"])} role="tablist" aria-label="Chapter">
             <button role="tab" id={`tab-learn-${level.id}`} aria-selected={tab === "learn"} aria-controls={`panel-${level.id}`} disabled={recording} onClick={() => setTab("learn")}>Learn</button>
             <button role="tab" id={`tab-practise-${level.id}`} aria-selected={tab === "practise"} aria-controls={`panel-${level.id}`} aria-label={`Practise, ${n} texts`} disabled={recording} onClick={() => setTab("practise")}>Practise<span>{n} texts</span></button>
+          </div>
           </div>
           <div id={`panel-${level.id}`} role="tabpanel" aria-labelledby={`tab-${tab}-${level.id}`}>
           {tab === "learn" ? <ChapterIntro key={level.id} level={level} onPractise={practise} /> : <>

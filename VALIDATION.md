@@ -1,5 +1,18 @@
 # Lilt: validation report
 
+## 16 November 2026: One text at a time in a chapter
+
+On a chapter's Practise tab the text you're on is a sheet with its hint, recorder and take, and the
+other texts are one- or two-line rows around it; the chapter title and Learn/Practise share a row.
+Checked at 1440×900 in light and dark on Start here (first and second text selected), Everyday
+phrases with a take showing, and a Reading room passage, and at 390 px in both themes. Web
+typecheck, 230 unit tests and `test:styles` passed. On fresh data folders against a production
+build: `flow` 42/42, `practice` 26/26, `recorder-extras` 46/46, `results-extras` 18/18 and
+`flashcards` 22/22; with stubbed APIs: `course-reading` (its expectations now describe the sheet and
+the plain rows), `markdown`, `introduction`, `ui-consistency` and `stationery-deck`. The Learn tab
+and the Remix button were not looked at in this pass, and on phones the row of buttons under a text
+still scrolls sideways as it did before.
+
 ## 16 November 2026: Home leads with your next step
 
 Once there is a take, Home shows your next step and practice so far above the introduction, which
