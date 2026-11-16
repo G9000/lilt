@@ -21,9 +21,9 @@
   --accent-dark-ink: var(--chosen-dark-ink, #ff9a72);
   --accent-soft: rgba(var(--accent-rgb), 0.12);
   --rec: #ff4255;
-  --ok: #16936a;
+  --ok: #117553;
   --ok-soft: rgba(22, 147, 106, 0.11);
-  --warn: #b26a00;
+  --warn: #95590a;
   --warn-soft: rgba(255, 176, 32, 0.15);
   --info: #3d5bd9;
   --info-soft: rgba(61, 91, 217, 0.09);

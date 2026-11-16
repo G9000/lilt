@@ -276,7 +276,7 @@ Monitor uploads and playback have an isolated check with locally generated media
      cards; **Up next** lets you choose which card to practise first.
    The camera pushes into the monitor and its screen becomes a small macOS-style desktop. Every part
    of Lilt is an app on it: **Today** (today's cards), **Practice** (the chapters), **Flashcards**,
-   **Yarn** (a voice game), **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. **Leave desk**
+   **Yarn** (a voice game), **Recordings**, **Courses** and **Photos** in the dock, Settings and the light/dark switch in the menu bar. The theme starts on Auto, following your computer's light or dark setting; Settings › Appearance or the menu-bar button picks a fixed one. In both, the pages you read are warm paper with a warm ink, and their titles are set in the same serif as the practice texts. **Leave desk**
    (or the door in the dock) walks you back out to the room. Sitting down opens the selected
    course's **Home**, with an introduction to Lilt and a skippable first practice. A starting recording and comfortable range are optional.
    The desk's Today widget offers **Welcome to Lilt** while the introduction is unfinished;

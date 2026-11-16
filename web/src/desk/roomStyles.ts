@@ -182,7 +182,7 @@ export const roomStyles = {
   "cs-head": "flex items-center justify-between [gap:8px] [margin-bottom:15px]",
   "cs-chip": "[flex:none] [padding-top:3px] [padding-right:8px] [padding-bottom:3px] [padding-left:8px] [border-radius:999px] [font-size:10.5px] font-semibold [color:var(--ink-2)] [background:var(--fill)] [&.next]:[background:var(--accent-soft)] [&.next]:[color:var(--accent-ink)]",
   "cs-title": "font-semibold [font-size:13px] whitespace-nowrap",
-  "cs-phrase": "[margin-top:7px] [font-size:21px] [line-height:1.25] font-semibold [letter-spacing:-0.015em] [overflow-wrap:anywhere] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden",
+  "cs-phrase": "[margin-top:7px] font-display [font-size:23px] [line-height:1.22] font-medium [letter-spacing:-0.012em] [overflow-wrap:anywhere] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden",
   "cs-kind": "[font-size:11.5px] [color:var(--ink-2)] whitespace-nowrap overflow-hidden text-ellipsis",
   "cs-hint": "[margin-top:9px] [font-size:12.5px] [line-height:1.45] [color:var(--ink-2)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden",
   "cs-foot": "[margin-top:auto] flex items-center justify-between [gap:10px]",

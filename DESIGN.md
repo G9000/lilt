@@ -3,9 +3,18 @@
 Approved direction: mockup v7 (Oct 2026). The room painting is the world; inside its middle
 monitor is a small macOS-style desktop where every part of Lilt is an app window.
 
+**November 2026, paper and ink.** The desk now belongs to the room. Everything you read sits on
+warm paper rather than neutral grey: `--page`, `--panel`, the Practice sidebar (`--side`), hairlines
+and quiet fills all lean a little toward the painting's light, in both themes, and the ink is a warm
+near-black. Page titles, the Home greeting, the room card's prompt and the first two heading levels
+of course Markdown are set in the reading serif (`--display`, Newsreader, weight 500, about −0.02em),
+the same face as the practice texts, so a page's title and what you read aloud share one voice.
+Controls, labels, numbers and body text stay in Geist. Nothing else moved: same room, same flows,
+same words.
+
 **November 2026 refresh: clean and minimal.** The painting keeps the warmth; everything you read
-and use is quiet. Greys are neutral (no blue cast) in both themes, the Practice sidebar is a solid
-surface rather than glass over the room, and Today's card is plain white (`#222222` in dark) on the
+and use is quiet. Greys carry no blue cast in either theme, the Practice sidebar is a solid
+surface rather than glass over the room, and Today's card is plain `--panel` paper on the
 page. Fewer boxes: a suggestion after a take is a sentence, not a tinted card; resonance sits
 under **More about this take** rather than in a box inside the take. Practice's frame is a guided
 app: the sidebar is a short list of places (no file tree), Home introduces Lilt and the creator story before a skippable first practice, with
@@ -322,7 +331,7 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   Choosing a text there or in the chapter keeps the URL (`#/studio/<chapter>/<text>`) in step. Links at the bottom carry the desk's app icons
   (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document
-  (720px column): a bold Geist H1 (54px, 760, −0.05em), a sans subtitle and meta line, an "About this chapter" note on a
+  (720px column): a serif H1 (`--display`, 500), a sans subtitle and meta line, an "About this chapter" note on a
   soft `--fill` panel (what the skill is, how it feels, how you'll know it's working; all of it on a first
   visit, then its first paragraph and a quiet "Read more ↓" once you've practised there), then texts in **Newsreader** (serif, 27px, passages 21px) with a plain hint
   under each and a quiet number in the margin. The active text has no card: it is in full ink with its
@@ -457,29 +466,31 @@ they remain readable over the detailed painting. Prompts and provenance are in `
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--font` | Geist Variable | everything except texts you read aloud |
+| `--font` | Geist Variable | controls, labels, body text |
+| `--display` | Newsreader Variable (optical sizes) | page titles, the Home greeting, Markdown h1 and h2, the room card's prompt |
 | `--read` | Newsreader Variable | the practice texts in the Practice document |
-| `--mono` | Geist Mono, else system mono | kbd and numbers that must align, never labels |
-| `--ink` | `#171717` (dark `#f4f4f4`) | text, primary buttons |
-| `--ink-2` | `#4a4a4a` (dark `#c8c8c8`) | secondary text |
-| `--ink-3` | `#737373` (dark `#9a9a9a`) | captions, meta |
-| `--hair` | `rgba(0,0,0,.07)` | dividers |
-| `--fill` / `--fill-2` | `rgba(0,0,0,.04)` / `.075` | quiet surfaces, hover |
-| `--page` / `--panel` | `#fafafa` / `#fff` (dark `#181818` / `#212121`) | reading pages, raised surfaces |
-| `--win` | `rgba(250,250,250,.94)` (dark `rgba(26,26,26,.92)`) + `blur(30px) saturate(1.7)` | windows |
+| `--mono` | JetBrains Mono Variable, else system mono | kbd and numbers that must align, never labels |
+| `--ink` | `#1f1b16` (dark `#f4f1ec`) | text, primary buttons |
+| `--ink-2` | `#554f47` (dark `#cdc7be`) | secondary text |
+| `--ink-3` | `#736c63` (dark `#a09a90`) | captions, meta; at least 4.5:1 on `--page` |
+| `--hair` | `rgba(64,48,28,.09)` (dark `rgba(255,244,230,.09)`) | dividers |
+| `--fill` / `--fill-2` | `rgba(64,48,28,.05)` / `.09` (dark `rgba(255,244,230,.06)` / `.11`) | quiet surfaces, hover |
+| `--page` / `--panel` | `#faf8f4` / `#fffefc` (dark `#1a1816` / `#24211e`) | reading pages, raised surfaces |
+| `--side` | `#f3f0ea` (dark `#151311`) | the Practice sidebar |
+| `--win` | `rgba(250,248,244,.94)` (dark `rgba(28,26,23,.92)`) + `blur(30px) saturate(1.7)` | windows |
 | `--accent` / `--accent-ink` / `--accent-soft` | orange defaults: `#e0643c` / `#b8461f` / `rgba(224,100,60,.12)` | next-up, progress, current selection; custom light/dark shades from Accent color |
 | `--rec` | `#ff4255` | the record dot only |
-| `--ok` / `--warn` | `#16936a` / `#b26a00` | status text |
+| `--ok` / `--warn` | `#117553` / `#95590a` (dark `#4cc38a` / `#ffc53d`) | status text, at least 4.5:1 on paper |
 | radii | window 22, control 12, small 8, pill 999 | |
 
 ## Type
 
 Text size (Settings → Appearance, kept in this browser as `lilt.text`) scales the reading areas as a whole with CSS `zoom` (0.92, 1, 1.12, 1.25): the Practice page column, the windows' contents and the Settings sheet, so their proportions hold. The Practice frame, sidebar, recorder and the room stay at their size.
 
-Settings, Course Home and Today share tokens in `web/src/theme/base.css`: page titles 28–34px / 600,
-section headings 18px, body 15px, controls 14px and captions 13px. Help text uses `--ink-2`.
+Settings, Course Home and Today share tokens in `web/src/theme/base.css`: page titles 30–38px in
+`--display` at weight 500 (the Home greeting up to 48px, Recordings and Coming soon 44px), section headings 18px, body 15px, controls 14px and captions 13px. Help text uses `--ink-2`.
 Weights are 400, 500, 600 and 700 (200 and 300 for big live numbers). The reading serif keeps its
-own sizes. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
+own sizes, and a serif title is never bold: 500, with tracking near −0.02em. Big numbers are Geist 300 with tight tracking. Sentence case everywhere.
 
 Spacing follows 4, 8, 12, 16, 24, 32 and 48px. Every Practice page (Home, Chapters, a chapter,
 Today, Recordings, Studio, Practice settings, Mixtape) uses one centred 960px column with 18–40px
@@ -492,7 +503,8 @@ shortcuts are quiet links, and its guide is a disclosure between hairlines.
 The chapter comfort footer uses the full reading width, with 24px above its divider and 16px
 inside it. Course lists use rows between hairlines; course detail pages lead with linked chapters
 before copy management. Markdown reads like a quiet modern page (`web/src/ui/markdown.ts`):
-16px body at a 1.7 line height, prose following the containing column, headings in semibold with
+16px body at a 1.7 line height, prose following the containing column, the first two heading levels in
+`--display` (25px for an h2) and the rest in Geist semibold, with
 more room above (2.2em before an h2) than below, and links in ink with a soft accent underline that
 turns accent on hover. Quotes are a 1px hairline on the left, tables are plain rows with a stronger
 rule under the header (no zebra), and pictures are framed with a hairline and soft shadow at the
