@@ -11,7 +11,7 @@ source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Test
 written_by: Written for Lilt, from NHS Lothian's "Testosterone and voice" and "Where to start" (2026), including its throat-opening breath and the hum with a chewing or yawning mouth, and the low humming, chest tapping, yawn-talk and jaw and tongue release used in the London Gender Identity Clinic's transmasculine voice group (Mills, Stoneham and Davies 2019). The big-dog pant comes from Lilt's Resonance chapter; the texts are Lilt's own.
 ---
 
-Resonance is the size of the space your voice sounds in: the tube from your vocal folds up through your throat and mouth to your lips. A bigger space gives a darker, deeper sound; a smaller, tighter one gives a brighter, buzzier sound. Testosterone thickens the vocal folds but changes this space only a little, so a darker resonance is something you can practise with or without it. Tension tends to make the space smaller, which is why darker mostly starts with letting go.
+Resonance is the size of the space your voice sounds in: the tube from your vocal folds up through your throat and mouth to your lips. A bigger space gives a darker, deeper sound; a smaller one gives a brighter sound. Testosterone thickens the vocal folds but changes this space only a little, so a darker resonance is something you can practise with or without it. Tension tends to make the space smaller, which is why darker mostly starts with letting go.
 
 **Hear the difference.** Pant like a big dog, slow and deep: "hhuh, hhuh". Then like a tiny dog, quick and light: "hhih, hhih". The big dog's space is the one you're after. Go back to the big dog and notice how open and unhurried it feels.
 

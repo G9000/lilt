@@ -23,6 +23,8 @@ Pitch is how high or low your voice sounds: how fast your vocal folds vibrate. A
 
 **Anchor it.** Hum your spot, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
 
+**Use it in words.** Say "Hey, how's it going?" in your everyday voice, then again starting near your spot. Play them back to back: which one feels easy and sounds like you?
+
 **Let it move.** Speech isn't one held note. Start near your spot and let your pitch rise and fall with what you mean. [Emphasis and melody](#/studio/lower-emphasis) shows how to keep that movement without big jumps up.
 
 **Listen back.** The pitch scale after each take describes where it sat; it isn't a target. Once you know your spot, save the range around it as your [comfortable range](#/studio/settings), so the recorder shows it behind your pitch line. With Which way set to Lower, Lilt only offers to move that range down.

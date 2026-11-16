@@ -12,7 +12,7 @@ source_url: https://policyonline.nhslothian.scot/wp-content/uploads/2026/02/Test
 written_by: Written for Lilt, from NHS Lothian's "Testosterone and voice" and "Where to start" (2026), ASHA's "Gender affirming voice and communication" page, the London Gender Identity Clinic's transmasculine voice group (Mills, Stoneham and Davies 2019) and studies of the voice on testosterone (Nygren et al. 2016; Irwig, Childs and Hancock 2017; Ziegler et al. 2018). The texts are Lilt's own.
 ---
 
-Hi, friend. This part of the course is for a deeper, darker or fuller voice. It has its own four skill chapters, one dial each: [Pitch, going lower](#/studio/lower-pitch), [Resonance, going darker](#/studio/lower-resonance), [Vocal weight, going fuller](#/studio/lower-weight) and [Emphasis and melody](#/studio/lower-emphasis). With Which way set to Lower in [Practice settings](#/studio/settings), they're your Today's cards in place of the lighter skill chapters; open them from here whenever you like too. Warm-ups, and the texts in Bring it together and the Extras, work in any direction alongside them.
+Hi, friend. This part of the course is for a deeper, darker or fuller voice. It has its own four skill chapters, one dial each: [Pitch, going lower](#/studio/lower-pitch), [Resonance, going darker](#/studio/lower-resonance), [Vocal weight, going fuller](#/studio/lower-weight) and [Emphasis and melody](#/studio/lower-emphasis). With Which way set to Lower in [Practice settings](#/studio/settings), they're your Today's cards in place of the lighter skill chapters; open them from here whenever you like too. Warm-ups, and the texts in Bring it together and the Extras, work in any direction alongside them, and [Start here](#/studio/start-here) sets up your mic and keeps your "before" recording.
 
 **Tell Lilt your direction.** Set **Which way** to Lower in [Practice settings](#/studio/settings). Lilt then only offers to move your range down, and never nudges you up.
 
@@ -24,7 +24,7 @@ Hi, friend. This part of the course is for a deeper, darker or fuller voice. It 
 
 **Breathe low and slow.** A deeper voice rests on easy breath. Sit or stand tall and loose, let your belly move as you breathe in, and pause for a new breath before you run short. If you wear a binder, notice whether it makes these breaths harder; practise at a time when you're not wearing it if you can, and stop whenever breathing feels tight.
 
-**Never push down.** A lower voice should feel easy. Don't force your pitch to the bottom, squeeze your throat, press on your neck or try to hold your voice box down. A tight neck or jaw, an ache or "lump" in your throat, wanting to clear it, or a voice that's rough or gone by the evening all mean: stop, sip some water and rest. Come back another day with a hum.
+**Never push down.** A lower voice should feel easy. Don't force your pitch to the bottom, squeeze your throat, press on your neck or try to hold your voice box down. A tight neck or jaw, an ache or "lump" in your throat, wanting to clear it, or a voice that's rough or gone by the evening all mean: stop, sip some water and rest. Come back another day with a hum. [Looking after your voice](#/studio/your-voice) has the rest of the voice care in one place, whichever way you're going.
 
 **Where to begin.** Pitch is the natural first stop, but go in any order. Testosterone changes the space your voice sounds in only a little, so resonance is worth its own practice either way. One small change at a time, then a real phrase.
 
