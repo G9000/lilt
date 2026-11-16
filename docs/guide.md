@@ -1100,6 +1100,11 @@ is based on the idea of an NHS Fife Speech and Language Therapy activity, credit
 "Based on", and none of NHS Fife's text is reproduced, so the repository and the Mac app can be
 shared. On 4 November 2026 every course chapter and exercise was compared with the six NHS Fife
 pages they cite: no run of six words or more matches, apart from the page titles in the links.
+On 16 November 2026 an editorial pass changed ten chapter intros and four hints for clarity and
+consistency (listed in `content/courses/voice/README.md`); every id, all front matter and the words
+of all 205 texts are unchanged. It was an AI editorial pass, not clinician review. NHS Fife's pages
+returned 403 that day, so the comparison above was not re-run against them; the added lines share
+no run of six words with NHS Lothian's "Where to start" or "Testosterone and voice".
 Keep it that way: write in your own words and link to the source. Versions you already practised
 stay in your data folder (`exercises/`), so older takes keep their own wording and scoring. The
 status of every exercise is `source_checked`, and no clinician has reviewed them.
