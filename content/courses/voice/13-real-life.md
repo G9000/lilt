@@ -18,7 +18,7 @@ Practice in a quiet room is one thing; a noisy café or a phone call is another.
 
 **When you're tired or upset.** Tiredness, stress and strong feelings pull voices back to their everyday setting. That's normal. Practise a few lines with real feeling behind them, and on tired days let your voice be easier rather than forcing it.
 
-**Being heard.** In a noisy place, get closer or step away from the noise when you can, then aim your words at the person and open your mouth a little more. Getting louder from your throat makes the voice heavier and tires it. [Being heard](#/studio/being-heard) practises this on its own.
+**Being heard.** In a noisy place, get closer or step away from the noise when you can, then aim your words at the person and open your mouth a little more. Getting louder from your throat tires your voice, whichever way you're going: it makes a light voice heavier, and a pushed voice isn't a fuller one. [Being heard](#/studio/being-heard) practises this on its own for a lighter voice; going lower, [Emphasis and melody](#/studio/lower-emphasis) has a step for it.
 
 **Borrow an ear.** Once a month, if you'd like, send someone you trust two unlabelled takes of the same line, an old one and a new one, and ask which sounds more like the voice you described. One opinion, not a verdict. Think twice before posting recordings on public forums: they can be saved and shared.
 

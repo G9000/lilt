@@ -13,31 +13,31 @@ written_by: Written for Lilt, from NHS Fife's progression activities. The reacti
 
 Now you start combining. Counting and lists are words you never have to think about, so all your attention can go to the voice.
 
-**Pick one cue.** A cue is one thing you've practised: your note, the brighter "ee" space, or a light feel. Just one per take. Trying to manage everything at once is how voices get stiff.
-
-**Add a second cue.** Once one cue lasts from "Monday" to "Sunday" in the list below, keep it and add one more, in whatever order is easiest. If both fall apart, go back to one. That's how the separate skills turn into one voice.
+**Pick one cue.** A cue is one thing you've practised. Going lighter, that's your note, the small, bright "ee" space or a light feel. Going lower, it's your spot, the big, open space or a full feel. In between, it's your middle or the mix you like. Just one per take. Trying to manage everything at once is how voices get stiff.
 
 **Say it, keep it going.** Run through the list with your cue. The hard part isn't the start; it's still having it at the end. Most voices drift back towards their everyday setting as the list goes on.
 
-**Reset as often as you like.** When you notice the drift, pause, hum your note or do a quick "ee", and carry on. Resetting often is the skill, not a failure.
+**Reset as often as you like.** When you notice the drift, pause, hum your note or spot, or make the little sound that finds your cue (a quick "ee", an "uh-oh", an "mm"), and carry on. Resetting often is the skill, not a failure.
 
-**Use it off the clock.** Exercises train the skill; using the voice makes it yours. Today, talk to yourself for two minutes in your practice voice while you make tea or tidy up. Let those minutes grow slowly, as long as your voice still feels fresh in the evening.
+**Add a second cue.** Once one cue lasts from "Monday" to "Sunday" in the list below, keep it and add one more, in whatever order is easiest. If both fall apart, go back to one. That's how the separate skills turn into one voice.
 
 **Use it in words.** Finish with "Monday works for me. How about you?" or a line you actually say.
 
-**Listen back.** Compare the first item with the last. Is your cue still there at the end? Try the next take a little shorter, and reset sooner.
+**Listen back.** Compare the first item with the last. Is your cue still there at the end? If it slipped, try the next take a little shorter, and reset sooner.
+
+**Use it off the clock.** Exercises train the skill; using the voice makes it yours. Today, talk to yourself for two minutes in your practice voice while you make tea or tidy up. Let those minutes grow slowly, as long as your voice still feels fresh in the evening.
 
 ## week-days
 
 Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.
 
-> Your check-in: pick one thing you've practised (your note, the brighter "ee" space, or a light feel) and keep it from Monday to Sunday. Listen to Monday, then Sunday: the same voice?
+> Your check-in: pick one thing you've practised (your note or spot, your space, or your light or full feel) and keep it from Monday to Sunday. Listen to Monday, then Sunday: the same voice?
 
 ## one-to-ten
 
 One, two, three, four, five, six, seven, eight, nine, ten.
 
-> An easy pace, with one practised change (your note, brightness or lightness). Then try it in "Hi, how are you?" straight after.
+> An easy pace, with one practised change, whichever way you're going. Then try it in "Hi, how are you?" straight after.
 
 ## months-of-year
 
@@ -55,7 +55,7 @@ Fifty, fifty-one, fifty-two … all the way to seventy-five.
 
 A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z.
 
-> Every letter has a different vowel, so they won't all sound the same. Keep your one practised change (your note, brightness or lightness) steady underneath.
+> Every letter has a different vowel, so they won't all sound the same. Keep your one practised change steady underneath.
 
 ## reactions
 

@@ -14,7 +14,7 @@ Talking freely is the hardest step, because your brain is busy with what to say 
 
 **Think, then speak.** Take a second to decide your first sentence before you press record. Starting well makes the rest easier.
 
-**Short answers first.** Fifteen to thirty seconds is plenty to begin with. Build towards a minute over the weeks.
+**Short answers first.** Fifteen to thirty seconds is plenty to begin with. When that feels easy, go a little longer, up to about a minute. There's no date to get there by.
 
 **Pause instead of pushing.** When you notice your everyday voice coming back, stop, take a breath, and start the next sentence fresh. Pauses sound natural in conversation; nobody minds them.
 
