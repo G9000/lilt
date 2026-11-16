@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# Build (first run) and start Lilt natively on http://127.0.0.1:7878
+# Build what's missing or out of date, then start Lilt natively on http://127.0.0.1:7878
 set -euo pipefail
 cd "$(dirname "$0")"
 if [ ! -x analysis/.venv/bin/python ]; then (cd analysis && uv sync --no-dev); fi
-if [ ! -f web/dist/index.html ]; then
+# The web app is rebuilt when it's missing or anything it's made from is newer than the last build,
+# so a pull or an edit never leaves you looking at old pages.
+web_sources="web/src web/public web/index.html web/package.json web/vite.config.ts web/tsconfig.json bun.lock"
+if [ ! -f web/dist/index.html ] || [ -n "$(find $web_sources -newer web/dist/index.html 2>/dev/null | head -1)" ]; then
   bun install --frozen-lockfile
   bun run build
 fi

@@ -35,7 +35,7 @@ says how to stop. Keep that in every feature and every line of copy.
 ## Running
 
 ```bash
-./lilt.sh                                   # builds what's missing, serves http://127.0.0.1:7878
+./lilt.sh                                   # builds what's missing or out of date, serves http://127.0.0.1:7878
 bun install --frozen-lockfile              # root Bun workspace; Bun 1.4.2 and Node 22.18+
 bun dev                                    # Rust server on :7878 and web UI on :5173; Ctrl+C stops both
 bun dev:web                                # UI only, when the server is already running
