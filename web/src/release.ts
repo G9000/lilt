@@ -10,10 +10,9 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
-    version: "0.1.5",
-    date: "2026-11-10",
+    version: "0.1.6",
+    date: "2026-11-17",
     items: [
-      { title: "A lighter room", body: "Left sitting in the room, Lilt's window could slowly grow past a gigabyte of memory. The room now redraws only what moves, eases off while another window has focus, and rests while Lilt is hidden. It looks just the same." },
       { title: "One text at a time", body: "In a chapter, the text you're on now sits on its own sheet with its hint, Record and your take together. The other texts wait around it as short rows; click one, or press the down arrow, to bring it forward. The chapter's title and Learn and Practise share one row, so the texts start higher up. Learn reads more like a page, with each step's name beside what to do, and Today's Up next uses the same quiet rows.", to: "/studio/chapters" },
       { title: "Home starts with your next step", body: "Once you've made a take, Home opens on your next step and your practice so far. The introduction and the course guide are still there, whole, just underneath.", to: "/studio" },
       { title: "Paper and ink", body: "Lilt's pages are warmer. Everything you read now sits on soft paper instead of plain grey, in light and dark, so the desk feels like part of the room. Page titles use the same serif as the texts you read aloud. Nothing has moved, and your accent colour still applies.", to: "/studio" },
@@ -21,6 +20,13 @@ export const RELEASES: Release[] = [
       { title: "Today's cards finish after a break", body: "After some days away, each card you finished was replaced by another overdue one, so the deck never ended. Now the cards you've done stay done, and the rest wait their turn.", to: "/deck" },
       { title: "Keeping your own wording settles an update", body: "On Updates from Lilt, keeping yours for every change now works, including for a whole new edition. Your copy stays editable, and Undo brings the choice back without touching your words.", to: "/studio/updates" },
       { title: "Backups aren't blocked by an AI review", body: "A review from an AI app that pointed at a take or measurement that doesn't exist could stop backups and restores. Lilt now turns such a review away when it's saved.", to: "/settings" },
+    ],
+  },
+  {
+    version: "0.1.5",
+    date: "2026-11-10",
+    items: [
+      { title: "A lighter room", body: "Left sitting in the room, Lilt's window could slowly grow past a gigabyte of memory. The room now redraws only what moves, eases off while another window has focus, and rests while Lilt is hidden. It looks just the same." },
       { title: "Room tips beside your cards", body: "The room's first-visit hint used to sit underneath Today's practice, hiding its text and Got it. It now steps beside your cards, or above them on a narrow window, wherever you've moved them." },
     ],
   },
