@@ -131,6 +131,29 @@ when hoarseness hasn't improved after two weeks; the chapter says that, and keep
 three weeks as the point not to wait. Its check-in questions are Lilt's own, not a questionnaire,
 and nothing in them is scored. An AI editorial piece, like the rest.
 
+On 16 November an editorial pass read every chapter against "How a lesson teaches" above and
+changed ten of them. It was an AI editorial pass for clarity and consistency, not clinician review,
+and it adds no exercise, number or health claim. Start here no longer says the guide focuses on a
+lighter voice where you choose your goal, and its long Which way step is now two. Pitch names "your
+note" where you find it, says what a flip sounds like before calling it a change of register, and
+starts from a named text and the pitch scale; its hum-speak hint says one thing to try. Vocal
+weight links Resonance by name and answers a breathy voice with its own whimper, not Resonance's
+bratty "nyah". Automatic speech, which is in everyone's Today, runs one cue through the list before
+adding a second, and its cue and three of its hints fit any direction. Your own words lengthens
+answers by ease, not by the week. Real life says pushing from the throat tires a voice whichever
+way it's going, and points going lower to Emphasis and melody. Going lower and In between point to
+Start here and Looking after your voice, and Pitch, going lower and In between each gained a real
+phrase in their steps. Resonance, going darker no longer calls the smaller space "tighter" and
+"buzzier": Resonance says smaller is not tighter, and the weight chapters use buzz for a fuller
+sound. NHS Lothian's leaflet does say "less buzzy" for darker, so that one is a choice of terms,
+not a correction. `course.md` names In between. NHS Lothian's "Where to start" and "Testosterone
+and voice" were read again that day. The NHS Fife pages would not load (403), so the six changed
+chapters that credit them were edited without them open, and the wording check in the guide was not
+re-run against Fife. Lighter cues in the hints of Sentences and reading, Real life and the Extras
+were left: Start here says to keep your own practised change there. Ids, front matter and the
+check-in words are unchanged, and edition 3 stays, so personal copies can take these one piece at a
+time.
+
 Important next work: permitted matched audio demonstrations of pitch, resonance and weight;
 review by a voice-specialist speech and language therapist; and real-user checks of comfort,
 understanding and everyday carryover. Automated software tests do not establish training efficacy.
