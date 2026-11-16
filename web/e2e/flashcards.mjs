@@ -94,6 +94,8 @@ async function main() {
   await page.waitForURL(/#\/studio\/pitch/, { timeout: 8000 }).then(() => check("the card opens its full chapter", true), () => check("the card opens its full chapter", false, page.url()));
 
   // Damaged browser progress must not strand the learner on a blank page.
+  // The chapter screen loads on demand: Flashcards stays (hidden, with its run) until it has.
+  await page.locator(".fc").waitFor({ state: "detached" });
   await page.evaluate(() => localStorage.setItem("lilt.flashcards.v1", '{"runs":"broken"}'));
   await page.goto(`${BASE}/#/flashcards/pitch`);
   await page.locator(".fc-card.top").waitFor();
