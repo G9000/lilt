@@ -18,11 +18,11 @@ Pitch is how high or low your voice sounds. It is one important part of a lighte
 
 **How it fits together.** Your vocal folds make the sound: how fast they vibrate is pitch, and how thick and firmly they meet is weight. Your throat, mouth and nose then shape that sound: that's resonance. The next chapters take one each, so you can learn to change them separately.
 
-**Find where you are now.** Record a few everyday sentences. The middle pitch describes that sample, not your whole range. A relaxed "mm-hm!" can be a useful way into sound, but its pitch may differ from your usual speaking voice.
+**Find where you are now.** Record "Hello, how are you?" below in your everyday voice, changing nothing. The pitch scale after the take says where it sat: that describes this one take, not your whole range, and it isn't a target. A relaxed "mm-hm!" can be a useful way into sound, but its pitch may differ from your usual speaking voice.
 
-**Explore a small change.** Try a short, gentle hum glide within an easy range, then say "Hello, how are you?" near a spot you liked. Compare it with your everyday version. A useful starting place feels easy in words as well as in the hum; it does not need to be a set number of semitones higher. Stop if speaking feels strained or becomes hoarse.
+**Explore a small change.** Try a short, gentle hum glide within an easy range, then say "Hello, how are you?" near a spot you liked. Compare it with your everyday version. That easy spot is your note: the rest of this chapter starts from it. A useful starting place feels easy in words as well as in the hum; it does not need to be a set number of semitones higher. Stop if speaking feels strained or becomes hoarse.
 
-**If your voice flips.** A glide may move into a different register. A flip does not by itself mean injury or failure, and register labels do not decide what your voice should be. Return to an easy sound if the change is difficult to control. A voice-specialist speech and language therapist can help if you keep getting stuck or uncomfortable.
+**If your voice flips.** Partway through a glide, your voice may suddenly jump or crack into a different kind of sound. That's a change of register. A flip does not by itself mean injury or failure, and register labels do not decide what your voice should be. Come back to an easy sound if the change is hard to control. A voice-specialist speech and language therapist can help if you keep getting stuck or uncomfortable.
 
 **Anchor it.** Hum your note, then open the hum straight into counting. The hum gives you the note; the counting turns it into speech.
 
@@ -42,7 +42,7 @@ mm-hm!
 
 mmm
 
-> Hum on an easy note. Compare its feel with a short spoken phrase; the hum is a starting cue, not a target to hold throughout speech.
+> Hum on an easy note, then say "hello" straight after it. Did the word start as easily as the hum? The hum is a way in, not a note to hold while you talk.
 
 ## glide
 

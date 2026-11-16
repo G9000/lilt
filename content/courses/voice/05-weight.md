@@ -14,7 +14,7 @@ source_url: https://www.nhsfife.org/services/all-services/speech-and-language-th
 written_by: Written for Lilt, from NHS Fife's vocal-cord tuning-in activity and NHS Lothian's "Where to start" (2026). The slide into lightness, the HEY/aww contrast, borrowing light little sounds and the whimper are community vocal-weight exercises from online voice coaching (TransVoiceLessons, the TransVoice wiki); the uh-oh text is Lilt's own choice.
 ---
 
-Vocal weight is how thick or thin your voice sounds: whether your vocal folds meet with a lot of their mass or mostly their thin edges. A heavy voice is thick and buzzy, like a friendly "HEY!" to someone across the street. A light voice is thin and clear, like "uh-oh" to a toddler. Weight, pitch and resonance are three separate dials. Thin edges come naturally with higher notes, so listeners often hear a thinner voice as higher than its pitch; with a small space (the last chapter) it can sound light and bright without a high pitch. Light doesn't mean breathy or quiet: aim for thin and clear, at an ordinary speaking volume.
+Vocal weight is how thick or thin your voice sounds: whether your vocal folds meet with a lot of their mass or mostly their thin edges. A heavy voice is thick and buzzy, like a friendly "HEY!" to someone across the street. A light voice is thin and clear, like "uh-oh" to a toddler. Weight, pitch and resonance are three separate dials. Thin edges come naturally with higher notes, so listeners often hear a thinner voice as higher than its pitch; with a small space (see [Resonance](#/studio/resonance)) it can sound light and bright without a high pitch. Light doesn't mean breathy or quiet: aim for thin and clear, at an ordinary speaking volume.
 
 **Hear heavy and light.** Play the chapter video. Then say a friendly "HEY!" as if catching someone's attention across the street (a call, not a shout), and a soft "aww" at a puppy, at about the same pitch. Notice the thick buzz on "HEY" and how little there is on "aww". That thickness is weight.
 
@@ -24,7 +24,7 @@ Vocal weight is how thick or thin your voice sounds: whether your vocal folds me
 
 **Use it in words.** "Hello, how are you today?" with the light feel from the very start of "hello", at a normal speaking volume. If "hello" starts heavy, say "uh-oh" first and go straight into it.
 
-**Light, not breathy.** If it turns airy, whispery or quiet, you've let go too much: your vocal folds still meet, just lightly. Add back a little clarity with a crisp "uh-oh" or a small bratty "nyeh", then try again. If it gets heavy, think "uh-oh".
+**Light, not breathy.** If it turns airy, whispery or quiet, you've let go too much: your vocal folds still meet, just lightly. Add back a little clarity with a crisp "uh-oh" or the puppy-whimper "nyeh" below, then try again. If it gets heavy, think "uh-oh".
 
 **Listen back.** Lilt doesn't measure weight, so this one is your ears. Play your everyday take and your light take back to back: the light one sounds thinner and less buzzy, but still clear and easy to follow. Pitch tends to rise with it at first; over time, keep it light at your usual note.
 
