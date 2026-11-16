@@ -447,6 +447,81 @@ fn updates_to_the_original_come_in_piece_by_piece() {
     .unwrap();
 }
 
+/// When the only update is a text you both changed and you keep yours, the update is settled.
+#[test]
+fn keeping_yours_for_the_only_update_settles_it() {
+    use crate::{courses::syllabus, courses::updates};
+    let dir = tempfile::tempdir().unwrap();
+    let content = dir.path().join("content");
+    copy_dir(&root().join("content"), &content);
+    let mut cfg = config(&dir.path().join("data"));
+    cfg.content_dir = content.clone();
+    let app = App::open(cfg).unwrap();
+    let v = crate::courses::get(&app, "voice").unwrap();
+    let file = content.join("courses/voice/09-phrases.md");
+    let words = std::fs::read_to_string(&file).unwrap();
+    let first = words
+        .lines()
+        .skip_while(|l| *l != "## black-coffee")
+        .nth(2)
+        .unwrap()
+        .to_string();
+    syllabus::write(
+        &app,
+        &v,
+        "09-phrases.md",
+        &words.replace(&first, "my own first line"),
+        "mine",
+    )
+    .unwrap();
+    std::fs::write(&file, words.replace(&first, "lilt's new first line")).unwrap();
+    let l = updates::list(&app, &v);
+    assert_eq!(
+        (l["available"].clone(), l["to_choose"].clone()),
+        (true.into(), 1.into())
+    );
+
+    let r = updates::apply(
+        &app,
+        &v,
+        &BTreeMap::from([(
+            "09-phrases.md### black-coffee".to_string(),
+            "yours".to_string(),
+        )]),
+        "",
+    )
+    .unwrap();
+    assert_eq!(
+        (r["updates_taken"].as_u64(), r["kept_yours"].as_u64()),
+        (Some(0), Some(1))
+    );
+    assert!(
+        syllabus::read(&app, &v, "09-phrases.md", "mine").unwrap()["markdown"]
+            .as_str()
+            .unwrap()
+            .contains("my own first line")
+    );
+    assert_eq!(
+        updates::list(&app, &v)["available"],
+        false,
+        "nothing left to bring in"
+    );
+    assert!(
+        updates::apply(&app, &v, &BTreeMap::new(), "").is_err(),
+        "nothing more to apply"
+    );
+
+    // Undo brings the choice back and leaves your wording alone.
+    syllabus::undo(&app, &v).unwrap();
+    assert_eq!(updates::list(&app, &v)["available"], true);
+    assert!(
+        syllabus::read(&app, &v, "09-phrases.md", "mine").unwrap()["markdown"]
+            .as_str()
+            .unwrap()
+            .contains("my own first line")
+    );
+}
+
 /// Courses: a second one beside voice, kept apart; `locked` from its course.md; pictures served per
 /// course; and an older `<data>/syllabus` copy moved to `<data>/courses/voice` on start.
 #[tokio::test]

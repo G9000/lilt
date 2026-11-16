@@ -343,7 +343,8 @@ pub fn commit_with_base(
     } else {
         files(&mine(app, c))
     };
-    if current == next {
+    // Keeping yours for every update changes no file, but your version now follows the newer original.
+    if current == next && new_base.as_ref().is_none_or(|b| *b == base_files(app, c)) {
         bail!("nothing changed");
     }
     // Check the whole course as it would be, in a scratch folder.
