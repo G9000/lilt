@@ -179,7 +179,7 @@ The compact player in the top bar shows your selection and play/pause; click
 the artwork or title to reopen Music, including when paused. Click the camera for Photos; hold it
 to choose Classic black, Silver film, Cream instant or Sage compact.
 Click the microphone for Practice; hold it to choose Original black, Warm cream, Soft sage or
-Brushed silver. Practice uses the same next-card/Start here entry as the computer. Both monitor frames have
+Brushed silver. Practice opens the same Home as sitting down at the computer. Both monitor frames have
 independent choices: **Cream retro** has a chunky shell and little buttons, **Sage rounded** has
 soft corners and an oval base, and **Silver studio** has a broad lower bezel and aluminium stand.
 The four original finishes are still available. Hold a frame or stand, or open **Make it yours → Desk finishes**.
@@ -871,7 +871,8 @@ Practice home page says so under the chapters and links to **Updates from Lilt**
 home page section by its heading. A piece the original changed that you hadn't touched comes straight
 in; where you both changed it, you see yours and Lilt's new version side by side and pick one; pieces
 only you changed stay yours. New chapters in the original come in too. It's one change in the history,
-so it can be undone. Agents can do the same with `syllabus_updates` and `syllabus_apply_updates`,
+so it can be undone. Keeping yours everywhere is a change too: your files stay as they are, your
+version follows the newer original, and Undo brings the choice back. Agents can do the same with `syllabus_updates` and `syllabus_apply_updates`,
 asking you where you both changed something.
 
 **HTTP, while Lilt is running.** Use this with Claude Code:
