@@ -1,5 +1,38 @@
 # Lilt: validation report
 
+## 16 November 2026: Paper and ink, and an editorial pass on the voice course
+
+The warmer palette and serif titles were checked on macOS against a scratch server (its own data
+folder, port 7979) and a dev server pointed at it. Screenshots at 1440×900 in light and dark covered
+the room, Home, Today, Chapters, a chapter, Recordings, Studio, Practice settings, Courses, Settings
+and the desk; Home, a chapter and Recordings were also checked at 390 px. Every page's title was read
+back from the browser (font, weight and tracking) across 20 routes; Photos, Your mixtape and the
+other-course headings were found still in the old weights and corrected. Text contrast on the new
+surfaces: secondary text 6.1:1 or more, captions 4.5:1 or more on the page, panel and sidebar in both
+themes, and the darker light-theme status green and amber 4.9:1 or more (they were about 3.7:1).
+
+Web typecheck, 230 unit tests, the production build, `test:styles` (failing before on a missing
+`rounded-small` radius, now passing), server formatting and 146 server tests passed. Browser suites
+that passed: `flow` 42/42, `results-extras` 18/18, `practice` 25/25 and `recorder-extras` 46/46 on
+fresh data folders, and `markdown`, `introduction`, `course-reading`, `stationery-deck`,
+`settings-comparison`, `accent`, `room-layout`, `sticky-note`, `room-tips`, `feedback`, `music` and
+`yarn-ui` with stubbed APIs. `course-recording`, `photos`, `long-take`, `deck-extras`, `yarn`,
+`course-review` and the Safari suite were not run. Clippy and the Python tests were not run for this
+change, which touches neither.
+
+These fail the same way on the commit before this work (5691860), checked by building that commit
+and running them against it: `flashcards` 21/22 ("a broken saved container opens a fresh chapter"),
+`any-course-practice` 6/8 (two timeouts), `ui-consistency` (waits for a "Your practice" heading Home
+no longer has), `test:loading` (`Settings.tsx` is missing from the build manifest) and `test:bundle`
+(JavaScript is 1,465,410 bytes against a 1,400,000 budget; the restyle added about 400 bytes).
+`room-appearance` is as recorded on 10 November.
+
+The voice course's editorial pass changed ten chapter intros and four hints. `/api/texts` before and
+after is identical for all 26 chapters, 205 text ids and 26 check-ins, including the words of every
+text; front matter is unchanged; all 62 in-app links resolve. A scratch server started with the
+edited course. It was an AI editorial pass, not clinician review, and NHS Fife's pages returned 403,
+so the changed chapters that credit them were edited without them open.
+
 ## 10 November 2026: A lighter room
 
 Left idle in the room, the installed 0.1.4 app's WebView2 renderer grew from 323 MB to 1,026 MB of
