@@ -246,7 +246,7 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   the sidebar, like a Mac app). **Home** introduces Lilt and restores the voice course's creator story.
   Your first practice opens a skippable introduction; Go to Today is always available.
   A starting recording at `#/studio/start` is optional, and can set a comfortable range.
-  Existing **practice** appears below the introduction, led by one **next step** (today's cards
+  Once you have a take, your **practice** leads Home, above the introduction (which stays whole underneath), led by one **next step** (today's cards
   with a "Start today's cards"
   button, a rest day, or the next unfinished chapter once the cards are done), then: days this month, the last two weeks as dots
   (today ringed), and **Then and now** (your first and latest take of the same text, the reference line first, with how far

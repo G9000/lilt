@@ -1061,7 +1061,7 @@ export const practice = {
     `[&_.ic_svg]:w-[16px] [&_.ic_svg]:h-[16px] [&_p]:mt-[0] [&_p]:mr-[0] [&_p]:mb-[0] [&_p]:ml-[0] ` +
     `[&_p]:text-[15px] [&_p]:[line-height:1.6] [&_p]:text-ink-2 [&_b]:text-ink [&_b]:font-semibold ` +
     `[&_.btn-primary]:[justify-self:start] [&_.btn-primary]:[margin-top:var(--space-3)]`,
-  "ve-practice": `[max-width:none] [margin-top:var(--space-6)] mr-[0] [margin-bottom:var(--space-2)] ml-[0] ` +
+  "ve-practice": `[max-width:none] [margin-top:var(--space-6)] mr-[0] mb-[40px] ml-[0] ` +
     `[padding-top:var(--space-6)] [padding-right:var(--space-6)] [padding-bottom:var(--space-6)] ` +
     `[padding-left:var(--space-6)] [border-top-width:1px] [border-top-style:solid] [border-top-color:var(--hair)] ` +
     `[border-right-width:1px] [border-right-style:solid] [border-right-color:var(--hair)] [border-bottom-width:1px] ` +

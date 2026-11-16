@@ -1001,12 +1001,12 @@ function HomeDoc({ texts, deck, practised, history, profile }: {
     <div className={cx(cx("ve-page", practice["ve-page"]), shared["ve-page"])}>
       <article className={cx("ve-col ve-home-col", practice["ve-col"], practice["ve-home-col"])}>
         <header className={cx("ve-head ve-greet", practice["ve-head"], practice["ve-greet"])}><h1>{greeting()}</h1><p>{today}</p></header>
-        <HomeIntroduction course={COURSE} home={texts.home} />
-        {/* The introduction stays available alongside existing practice. */}
+        {/* Once you've practised, your next step leads; the introduction stays available under it. */}
         {history.length > 0 && <YourPractice history={history} band={band} texts={texts} next={<>
           <NextStep deck={deck} texts={texts} practised={practised} />
           {!band && <p className={cx("ve-small", practice["ve-small"])}>No comfortable range yet. <a href="#/studio/start">Find your starting voice</a> to set one, and it shows behind your pitch lines.</p>}
         </>} />}
+        <HomeIntroduction course={COURSE} home={texts.home} />
         <section className={cx("ve-home-chapters", practice["ve-home-chapters"])} aria-label="Chapters">
           <div className={cx("ve-sec-h", practice["ve-sec-h"])}><h2>Chapters</h2><a href="#/studio/chapters">All chapters</a></div>
           <ChapterGrid texts={texts} practised={practised} compact upNext />

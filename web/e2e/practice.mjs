@@ -67,13 +67,17 @@ async function main() {
   check("the comfortable range is saved", Array.isArray(profile.comfort_range_hz), JSON.stringify(profile.comfort_range_hz));
   await shot(page, "1-start");
 
-  // Home again: the introduction stays alongside your practice.
+  // Home again: your practice leads, and the introduction stays underneath it.
   check("after the range, Start here is offered next", await page.getByRole("button", { name: "Next: Start here" }).isVisible());
   await page.goto(`${BASE}/#/studio`);
   await page.locator(".ve-practice").waitFor({ timeout: 10000 });
   const days = await page.locator(".ve-days").innerText();
   check("home shows your practice", /1 day of practice this month/.test(days), days);
   check("introduction remains after a starting recording", await page.locator(".home-introduction").isVisible());
+  check("your practice sits above the introduction", await page.evaluate(() => {
+    const mine = document.querySelector(".ve-practice"), intro = document.querySelector(".home-introduction");
+    return !!mine && !!intro && !!(mine.compareDocumentPosition(intro) & Node.DOCUMENT_POSITION_FOLLOWING);
+  }));
   check("Home has no recorder: free talk lives in Studio", (await page.locator(".ve-dock").count()) === 0);
 
   // Free recording in Studio: the result shows in the page, under "Your take"; the recorder stays a small floating pill.

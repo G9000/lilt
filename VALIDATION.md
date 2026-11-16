@@ -1,5 +1,17 @@
 # Lilt: validation report
 
+## 16 November 2026: Home leads with your next step
+
+Once there is a take, Home shows your next step and practice so far above the introduction, which
+stays whole underneath. Checked at 1440×900 in light and dark against a scratch server with takes.
+Web typecheck, 230 unit tests and `test:styles` passed. On fresh data folders `practice` passed 26/26
+(with a new check that your practice sits above the introduction) and `flow` 42/42; `introduction`,
+`ui-consistency` and `any-course-practice` passed with stubbed APIs. The room's pickers were checked
+again the same evening: `artwork-hold`, `room-cats` and `chair` passed, and holding the iced coffee
+and the camera in the running app opened their pickers. `room-props` stops at its last step on
+macOS, a Control-click on the support link that it expects to open a new tab (on a Mac that is a
+context click); its picker steps before that pass.
+
 ## 16 November 2026: Logic fixes and stale browser suites
 
 Today's deck keeps finished reviews in place when overdue cards exceed the day's cap; keeping yours

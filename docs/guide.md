@@ -474,7 +474,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    listed under Chapters by part, and the one you're in opens to its texts (a tick once
    practised), so you can jump to any of them. The arrow beside Chapters folds the list away,
    leaving just the chapter you're in, and this browser remembers your choice. **Home** greets
-   you and explains what Lilt is before offering practice. Home displays the complete course introduction, including the original
+   you. Before your first take it explains what Lilt is, then offers practice; once you have a take, your next step and
+   your practice so far come first, with the introduction underneath. Home displays the complete course introduction, including the original
    **Why this exists** story, **Where I’m at**, practice guidance and resources in the voice course. **Your first practice** explains how to begin;
    **Go to Today** skips it. The next four chapters remain available as tiles. **Chapters**
    (`#/studio/chapters`) has the course's cover, then the **Course guide**, then every chapter as a
