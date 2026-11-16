@@ -167,7 +167,10 @@ test('room, desk, back and reload keep the selected course, while explicit URLs 
   await page.goBack();
   await page.getByRole('button', { name: /^Flashcards: Drawing gently/ }).waitFor();
   await page.locator('body').click({ position: { x: 2, y: 2 } });
+  // Sitting down opens the course's Home; Go to Today skips its introduction.
   await page.keyboard.press('Enter');
+  await page.waitForURL('**/#/learn/drawing');
+  await page.getByRole('link', { name: 'Go to Today', exact: true }).click();
   await page.waitForURL('**/#/learn/drawing/today');
   await page.getByRole('link', { name: 'Back to the desk', exact: true }).click();
   await page.getByRole('article', { name: "Today's practice", exact: true }).getByRole('button', { name: 'Start', exact: true }).click();
@@ -190,7 +193,7 @@ test('empty, missing and failed course requests show useful states and can retry
   const { page, state, open } = await fixture(t);
   await open('/learn/empty');
   await page.getByText('This course has no chapters yet.', { exact: true }).waitFor();
-  await page.getByRole('link', { name: "Start today's cards", exact: true }).click();
+  await page.getByRole('link', { name: 'Go to Today', exact: true }).click();
   await page.getByRole('heading', { name: 'No cards for today', exact: true }).waitFor();
   await open('/learn/missing');
   await page.getByRole('alert').waitFor();
