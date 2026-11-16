@@ -262,7 +262,7 @@ its artwork/title reopens Music, even when paused. Spotify stays mounted across 
   G5–D6 chime, synthesised quietly and silent whenever the microphone is in use. The prompt leads in the reading serif, followed by one hint
   and optional **Reading tips**. Record, replay and neutral Again/Hard/Good/Easy buttons share
   the area below the prompt. **How to practise**, **Up next** and **Practised today** fold away;
-  upcoming choices are keyboard buttons, disabled while recording or reviewing. The centred
+  upcoming choices are keyboard buttons, disabled while recording or reviewing. Opened, Up next is the same setlist as a chapter's: one row per card between hairlines, its words in the reading serif at 18px in `--ink-2` (full ink on hover or focus, no fill), its number in the margin and its chapter and kind at the right (under the words on phones). The centred
   column caps at 920px; controls wrap on phones and the page scrolls for longer text. A brief
   card entrance and recorder scrolling respect reduced motion. If the microphone can't be used, a calm help box says what happened and
   the one step that fixes it, with **Try again**.
@@ -331,9 +331,8 @@ updates" pill, enabled once every choice is made, and "You can undo this afterwa
   Choosing a text there or in the chapter keeps the URL (`#/studio/<chapter>/<text>`) in step. Links at the bottom carry the desk's app icons
   (Guided session, All practice texts, Back to the room). A finished chapter shows a "Chapter complete" badge under
   its title, which pops in with a spring (and a toast) when you earn it on that visit. The chapter reads as a document
-  (720px column): a serif H1 (`--display`, 500), a sans subtitle and meta line, an "About this chapter" note on a
-  soft `--fill` panel (what the skill is, how it feels, how you'll know it's working; all of it on a first
-  visit, then its first paragraph and a quiet "Read more ↓" once you've practised there), then the texts in **Newsreader** with a quiet number in the margin. **The text you're on is a sheet of paper** (`--panel`, 20px corners, a hairline edge and a soft
+  (720px column): a serif H1 (`--display`, 500), a sans subtitle and meta line, and the Learn/Practise control on the same row. **Learn** reads like a page: the chapter's opening in `--display` at 23px (20px on phones), the video card, then each step as a row between hairlines with
+  a quiet serif numeral, its label in `--display` at 19px in a 220px column and its body beside it at 16px, ending at the row's right edge (label above body on phones); care steps keep their tinted heart. **Practise** holds the texts in **Newsreader** with a quiet number in the margin. **The text you're on is a sheet of paper** (`--panel`, 20px corners, a hairline edge and a soft
   shadow, 16px corners on phones) holding the text at 27–32px (passages 21px), its hint, the recorder and the take: one clear place to practise. **The other texts are a setlist** around it, in their
   order: one or two lines each at 18px in `--ink-2` between hairlines, with their hints folded away, and no fill on hover (the text turns to full ink).
   The sheet's number is coral. Each chapter's check-in text carries a small coral pill, above the text on its sheet and at the right of its row in the setlist (above it on phones),

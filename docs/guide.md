@@ -484,7 +484,7 @@ Monitor uploads and playback have an isolated check with locally generated media
    up** is where you left off: the furthest chapter you've practised in, until about half its texts
    are practised, then the one after it, so skipping a text never pins a chapter as next. Home
    always keeps the introduction available, alongside your practice history when you have recorded. A comfortable range remains optional. A chapter
-   has two tabs. **Learn** holds its opening, the video and each step, with **Start practising**
+   has two tabs. **Learn** holds its opening, the video and each step (its name beside what to do), with **Start practising**
    at the end; **Practise** holds its texts in a reading serif. The text you're on opens as a
    sheet with its hint, the recorder and your take; the others wait around it as one-line rows, and
    clicking one brings it forward. A

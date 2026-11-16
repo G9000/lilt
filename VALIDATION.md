@@ -1,5 +1,17 @@
 # Lilt: validation report
 
+## 17 November 2026: Learn reads like a page, and Up next matches the setlist
+
+A chapter's Learn tab sets its opening in the serif and each step as a label beside its body; Today's
+Up next rows use the chapter setlist's look. Folding, labels and what each control does are
+unchanged. Checked at 1440×900 on Pitch (dark) and Warm-ups (light, to the foot of the page), Today
+with Up next open (dark), and at 390 px for Learn (light) and Today (dark). Web typecheck, 230 unit
+tests and `test:styles` passed. On fresh data folders against a production build: `flow` 42/42,
+`practice` 26/26, `results-extras` 18/18 and `flashcards` 22/22; with stubbed APIs:
+`course-reading`, `markdown`, `introduction`, `stationery-deck` and `ui-consistency`. Not looked at:
+a chapter with no steps, Practised today opened, and Today's card while rating. `deck-extras` and
+`recorder-extras` were not rerun for this change.
+
 ## 16 November 2026: One text at a time in a chapter
 
 On a chapter's Practise tab the text you're on is a sheet with its hint, recorder and take, and the

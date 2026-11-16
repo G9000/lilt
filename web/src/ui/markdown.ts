@@ -3,7 +3,7 @@
 // below, links are ink with a fine underline (accent on hover), and quotes, tables and images
 // stay flat, without filled boxes or zebra stripes.
 export const markdown = {
-  "md": `min-w-0 text-ink-2 [font:var(--md-body-size,_16px)/1.7_var(--font)] [overflow-wrap:anywhere] ` +
+  "md": `min-w-0 text-ink-2 [font:var(--md-body-size,_16px)/var(--md-leading,_1.7)_var(--md-body-font,_var(--font))] [overflow-wrap:anywhere] ` +
     `[&_:where(p,_ul,_ol,_blockquote,_pre,_.md-table,_hr)]:[margin:0_0_1.1em] [&_>_:first-child]:[margin-top:0] ` +
     `[&_>_:last-child]:[margin-bottom:0] [&_:where(li,_blockquote)_>_:last-child]:[margin-bottom:0] ` +
     `[&_p]:[text-wrap:pretty] ` +
