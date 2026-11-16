@@ -1,5 +1,33 @@
 # Lilt: validation report
 
+## 16 November 2026: Logic fixes and stale browser suites
+
+Today's deck keeps finished reviews in place when overdue cards exceed the day's cap; keeping yours
+on Updates from Lilt (piece by piece or for a whole edition) is one undoable change and leaves the
+copy editable; a review from an AI app that names a missing take or analysis run is refused when it
+is saved, so it can no longer block backups. Each fix has a test that fails without it; two were
+re-checked by putting the old code back (`finishing_a_review_does_not_pull_in_another_overdue_card`
+and `an_agent_recheck_must_compare_with_a_real_take` both failed, then passed with the fix).
+
+On the merged result: web typecheck, 230 unit tests, `test:styles`, `test:loading`, server
+formatting, Clippy, 48 Python tests and desktop formatting passed. The 151 server tests passed in
+six of eight full runs; the two failures were in `backup::reset_tests`
+(`reset_cleanup_failure_retires_app_and_restart_finishes_deletion`, reopening the data folder while
+its lock is still held). The same tests fail in three of ten runs on the server code from before
+this work, so the race is older than these fixes and is not fixed here. Against a release build and
+web build of the merged result, on fresh data folders: `flow` 42/42, `practice` 25/25, `flashcards`
+22/22 and `results-extras` 18/18; with stubbed APIs: `ui-consistency`, `any-course-practice` (8/8),
+`room-appearance`, `monitor-media`, `introduction` and `markdown`. `deck-extras` passed 16/16 in the
+fixing worktree, with one timeout at its before-and-after step in four runs there; it was not rerun
+on the merged result.
+
+Seven suites were brought up to date without changing the app: `room-appearance` and `monitor-media`
+(sitting down and the painted microphone open Home, not `#/deck`), `flashcards` (waits for the
+chapter screen to load before damaging saved progress), `ui-consistency` and `any-course-practice`
+(Home's introduction and Go to Today), `lazy-loading` (finds the Settings chunk by name) and
+`deck-extras` (a first visit sits down at Home). A review saved before the fix that names a missing
+take still blocks backups until it is deleted by hand.
+
 ## 16 November 2026: Paper and ink, and an editorial pass on the voice course
 
 The warmer palette and serif titles were checked on macOS against a scratch server (its own data
@@ -20,12 +48,12 @@ fresh data folders, and `markdown`, `introduction`, `course-reading`, `stationer
 `course-review` and the Safari suite were not run. Clippy and the Python tests were not run for this
 change, which touches neither.
 
-These fail the same way on the commit before this work (5691860), checked by building that commit
-and running them against it: `flashcards` 21/22 ("a broken saved container opens a fresh chapter"),
-`any-course-practice` 6/8 (two timeouts), `ui-consistency` (waits for a "Your practice" heading Home
-no longer has), `test:loading` (`Settings.tsx` is missing from the build manifest) and `test:bundle`
-(JavaScript is 1,465,410 bytes against a 1,400,000 budget; the restyle added about 400 bytes).
-`room-appearance` is as recorded on 10 November.
+Before this work (at 5691860) these failed, each confirmed by building that commit and running the
+suite against it: `flashcards` 21/22, `any-course-practice` 6/8, `ui-consistency`, `test:loading`
+and `test:bundle`, with `room-appearance` as recorded on 10 November. All but `test:bundle` turned
+out to be suites that had not followed the 9 November Home change or on-demand screen loading; see
+the next entry. `test:bundle` still fails: JavaScript is 1,465,910 bytes against a 1,400,000 budget
+(1,464,990 before; the restyle and What's new lines added about 900 bytes).
 
 The voice course's editorial pass changed ten chapter intros and four hints. `/api/texts` before and
 after is identical for all 26 chapters, 205 text ids and 26 check-ins, including the words of every
