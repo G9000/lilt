@@ -280,12 +280,13 @@ pub fn compare(app: &App, c: &Course, name: Option<&str>) -> Result<Value> {
 }
 
 /// Each locked section must read as in the original now, or as in the original your copy follows
-/// (until you bring its update in), in the same file.
-fn check_locked(app: &App, c: &Course, next: &Files) -> Result<()> {
+/// (until you bring its update in), in the same file. A copy kept from an older edition may leave
+/// its own wording as it is.
+fn check_locked(app: &App, c: &Course, current: &Files, next: &Files) -> Result<()> {
     let (orig, base) = (files(&c.dir), base_files(app, c));
     for heading in &c.locked {
         for name in orig.keys().chain(base.keys()) {
-            let allowed: Vec<String> = [&orig, &base]
+            let allowed: Vec<String> = [&orig, &base, current]
                 .iter()
                 .filter_map(|f| f.get(name).and_then(|s| section(s, heading)))
                 .collect();
@@ -317,12 +318,6 @@ fn commit(
 /// Check, keep the current files in history, then write `next` as your version and reload the app.
 /// Bringing in updates also moves the base to the original it came from (`new_base`); the old
 /// base is kept with the history, so undo puts it back.
-/// Follow a newer original without changing your copy: you kept your version of an older edition.
-pub fn set_base(app: &App, c: &Course, base: &Files) -> Result<()> {
-    let _g = app.write_lock.lock().unwrap();
-    write_files(&mine(app, c).join(".base"), base)
-}
-
 pub fn commit_with_base(
     app: &App,
     c: &Course,
@@ -357,7 +352,7 @@ pub fn commit_with_base(
         let why = format!("{e:#}").replace(&format!("{}/", staging.display()), "");
         bail!("the course would not load after this change, so nothing was saved: {why}");
     }
-    check_locked(app, c, &next)?;
+    check_locked(app, c, &current, &next)?;
 
     let n = history_ids(app, c)
         .last()

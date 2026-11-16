@@ -928,3 +928,68 @@ fn a_new_edition_comes_in_whole_or_not_at_all() {
         );
     }
 }
+
+/// Keeping your copy of an older edition leaves it yours: you can still edit it, though its safety
+/// section reads as the older edition's, and Undo brings the edition's choice back.
+#[test]
+fn keeping_yours_of_an_older_edition_stays_editable_and_can_be_undone() {
+    use crate::courses::{syllabus, updates};
+    let dir = tempfile::tempdir().unwrap();
+    let content = dir.path().join("content");
+    copy_dir(&root().join("content"), &content);
+    let texts = content.join("courses/voice");
+    let read = |n: &str| std::fs::read_to_string(texts.join(n)).unwrap();
+    // The older edition: version 2, with the safety section worded differently.
+    let (about, home, warmup) = (read("_about.md"), read("index.md"), read("02-warmup.md"));
+    assert!(home.contains("It should never hurt."));
+    std::fs::write(
+        texts.join("_about.md"),
+        about.replace("version: 3", "version: 2"),
+    )
+    .unwrap();
+    std::fs::write(
+        texts.join("index.md"),
+        home.replace("It should never hurt.", "It shouldn't hurt."),
+    )
+    .unwrap();
+    let mut cfg = config(&dir.path().join("data"));
+    cfg.content_dir = content.clone();
+    let app = App::open(cfg).unwrap();
+    let v = crate::courses::get(&app, "voice").unwrap();
+    let mine = |n: &str| {
+        syllabus::read(&app, &v, n, "mine").unwrap()["markdown"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    syllabus::write(
+        &app,
+        &v,
+        "02-warmup.md",
+        &warmup.replace("title: Warm-ups", "title: Warm-ups, my way"),
+        "mine",
+    )
+    .unwrap();
+    // Lilt ships version 3; you keep yours.
+    std::fs::write(texts.join("_about.md"), &about).unwrap();
+    std::fs::write(texts.join("index.md"), &home).unwrap();
+    let keep = BTreeMap::from([("edition".to_string(), "yours".to_string())]);
+    let r = updates::apply(&app, &v, &keep, "").unwrap();
+    assert_eq!(r["kept_yours"], 1);
+    assert_eq!(updates::list(&app, &v)["available"], false);
+
+    syllabus::write(
+        &app,
+        &v,
+        "02-warmup.md",
+        &mine("02-warmup.md").replace("Warm-ups, my way", "Warm-ups, still mine"),
+        "rename again",
+    )
+    .unwrap();
+    syllabus::undo(&app, &v).unwrap();
+
+    // Undo after keeping yours undoes that choice, not your own last edit.
+    syllabus::undo(&app, &v).unwrap();
+    assert!(mine("02-warmup.md").contains("Warm-ups, my way"));
+    assert_eq!(updates::list(&app, &v)["available"], true);
+}

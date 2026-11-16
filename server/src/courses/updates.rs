@@ -351,10 +351,17 @@ pub fn apply(
                 _ => bail!("a new edition: choose \"yours\" or \"original\" for `{EDITION}`"),
             };
         if !wants {
-            syllabus::set_base(app, course, &orig)?;
-            return Ok(
-                json!({ "course": course.id, "using": "mine", "updates_taken": 0, "kept_yours": 1 }),
-            );
+            // Your copy stays as it is and follows the newer original; one change, so undo works.
+            let note = if note.trim().is_empty() {
+                "Kept your version of the older edition"
+            } else {
+                note
+            };
+            let mut r =
+                syllabus::commit_with_base(app, course, mine, "update", "", note, Some(orig))?;
+            r["updates_taken"] = json!(0);
+            r["kept_yours"] = json!(1);
+            return Ok(r);
         }
         let note = if note.trim().is_empty() {
             "Took the new edition of Lilt's course"
