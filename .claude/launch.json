@@ -11,6 +11,22 @@
       "port": 5173
     },
     {
+      "name": "web-scratch",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "LILT_API=http://127.0.0.1:7979",
+        "bun",
+        "run",
+        "--cwd",
+        "web",
+        "dev",
+        "--port",
+        "5174",
+        "--strictPort"
+      ],
+      "port": 5174
+    },
+    {
       "name": "mockups",
       "runtimeExecutable": "python3",
       "runtimeArgs": [
