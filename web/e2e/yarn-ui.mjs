@@ -50,6 +50,10 @@ try {
   await page.keyboard.press('ArrowLeft');
   await page.locator('.yn-help summary').first().click();
   assert.ok(await page.locator('.yn-how').isVisible(), 'instructions open on demand');
+  await page.locator('.yn-help summary', { hasText: 'Sounds' }).click();
+  assert.equal(await page.getByRole('checkbox').count(), 3, 'Sounds holds the two sound options');
+  if (shots) await page.screenshot({ path: path.join(shots, 'yarn-setup-open-1440.png') });
+  await page.locator('.yn-help summary', { hasText: 'Sounds' }).click();
   await page.locator('.yn-help summary').first().click();
   const fits = async control => {
     await control.scrollIntoViewIfNeeded();
@@ -83,6 +87,7 @@ try {
   await page.getByRole('button', { name: 'Take a breath', exact: true }).click();
   await page.getByRole('region', { name: 'Breathing break' }).waitFor();
   await page.waitForTimeout(300);
+  if (shots) await page.screenshot({ path: path.join(shots, 'yarn-breath-1440.png') });
   const pausedTime = await page.locator('.yn-scene').getAttribute('data-time');
   await page.waitForTimeout(400);
   assert.equal(await page.locator('.yn-scene').getAttribute('data-time'), pausedTime, 'break freezes reaction time');
@@ -132,6 +137,9 @@ try {
   await page.getByRole('heading', { name: 'Let’s stop here' }).waitFor();
   await page.waitForTimeout(300);
   if (shots) await page.screenshot({ path: path.join(shots, 'yarn-hurt-phone-dark.png') });
+  await page.setViewportSize({ width: 1440, height: 950 });
+  await page.waitForTimeout(300);
+  if (shots) await page.screenshot({ path: path.join(shots, 'yarn-hurt-dark.png') });
   assert.equal(await page.locator('.yn-stage.playing').count(), 0);
   await page.reload();
   const free = page.getByRole('checkbox', { name: /Free play/ });
@@ -160,12 +168,14 @@ try {
   profile = { ...profile, comfort_range_hz: null };
   await page.reload();
   await page.getByRole('button', { name: 'Find my range', exact: true }).click();
+  await page.setViewportSize({ width: 1440, height: 950 });
   await page.getByText('Hum a comfortable low note').waitFor();
   await page.waitForTimeout(300);
-  if (shots) await page.screenshot({ path: path.join(shots, 'yarn-calibrate-1440.png') });
+  if (shots) await page.screenshot({ path: path.join(shots, 'yarn-calibrate-dark.png') });
   await page.getByText('Now a comfortable high note').waitFor({ timeout: 20000 });
   await page.getByRole('button', { name: 'Save as my comfortable range' }).waitFor({ timeout: 20000 });
   await fits(page.getByRole('button', { name: 'Just for this game' }));
+  if (shots) await page.screenshot({ path: path.join(shots, 'yarn-range-found-dark.png') });
   await page.getByRole('button', { name: 'Just for this game' }).click();
   await page.getByRole('button', { name: 'Start playing', exact: true }).waitFor();
   assert.equal(profile.comfort_range_hz, null, 'temporary calibration does not save a profile');
