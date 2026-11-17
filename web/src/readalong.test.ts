@@ -1,7 +1,7 @@
 // node --test src/readalong.test.ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { tokenize, createFollower, estimateSyllables, notesFor } from "./readalong.ts";
+import { tokenize, createFollower, estimateSyllables, HELD_TUNING, notesFor } from "./readalong.ts";
 
 test("syllable estimates", () => {
   assert.equal(estimateSyllables("coffee"), 2);
@@ -81,4 +81,33 @@ test("calibrated on synthetic speech: estimated syllables within 15% (fixtures i
     const est = f.current() + 1;
     assert.ok(Math.abs(est - s.syllables) / s.syllables <= 0.15, `${s.name}: estimated ${est}, true ${s.syllables}`);
   }
+});
+
+/** Smooth speech: your voice carries on at an even loudness, with no dips to count. */
+function legato(f: ReturnType<typeof createFollower>, seconds: number, t0 = 0) {
+  let t = t0;
+  for (; t < t0 + seconds; t += 0.025) f.push(t, 0.1 + 0.004 * Math.sin(t * 9), true);
+  return t;
+}
+
+test("smooth speech with no dips still moves the highlight along", () => {
+  const f = createFollower(tokenize("I'm starting something new today"));
+  legato(f, 1.5);
+  assert.ok(f.current() >= 2, `after a second and a half it's past the first words (on ${f.current()})`);
+  assert.ok(f.current() <= 4);
+});
+
+test("a long held note moves it only a little, and a pause stops it", () => {
+  const f = createFollower(tokenize("one two three four five six seven eight nine ten eleven twelve"));
+  let t = legato(f, 8);
+  const held = f.current();
+  assert.ok(held <= 5, `eight seconds on one note stops after a few words (on ${held})`);
+  for (let k = 0; k < 80; k++) { f.push(t, 0.003, false); t += 0.025; }
+  assert.equal(f.current(), held, "silence never moves it");
+});
+
+test("hums and held sounds count only real beats", () => {
+  const f = createFollower(tokenize("mmmm mmmm mmmm"), HELD_TUNING);
+  legato(f, 6);
+  assert.equal(f.current(), 0);
 });

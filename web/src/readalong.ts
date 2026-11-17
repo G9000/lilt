@@ -23,7 +23,8 @@ export function estimateSyllables(w: string): number {
   return Math.max(1, groups ? groups.length : 1);
 }
 
-// Tuned by grid search on three macOS synthetic voices (Samantha, Daniel, Karen).
+// Tuned by grid search on three macOS synthetic voices (Samantha, Daniel, Karen); the smooth-speech
+// rule was then checked on those voices at three speeds and on real takes.
 // Connected speech merges some syllables, so detected beats undercount by about a
 // third; BEAT_GAIN compensates. Approximate for real voices; tapping a word corrects it.
 const RISE_SMOOTH = 0.3;
@@ -42,8 +43,18 @@ export interface Follower {
   current: () => number;
 }
 
-export interface FollowerTuning { riseSmooth: number; riseRatio: number; dipRatio: number; minGapS: number; gain: number }
-export const DEFAULT_TUNING: FollowerTuning = { riseSmooth: RISE_SMOOTH, riseRatio: RISE_RATIO, dipRatio: DIP_RATIO, minGapS: MIN_GAP_S, gain: BEAT_GAIN };
+export interface FollowerTuning {
+  riseSmooth: number; riseRatio: number; dipRatio: number; minGapS: number; gain: number;
+  /**
+   * Smooth, connected speech has few dips in loudness to count. While your voice carries on with no
+   * beat for `fillS` (longer than a syllable usually lasts), one is counted anyway; at most `fillRun`
+   * in a row, so a held note doesn't run through the text. `fillS: 0` turns it off.
+   */
+  fillS: number; fillRun: number;
+}
+export const DEFAULT_TUNING: FollowerTuning = { riseSmooth: RISE_SMOOTH, riseRatio: RISE_RATIO, dipRatio: DIP_RATIO, minGapS: MIN_GAP_S, gain: BEAT_GAIN, fillS: 0.45, fillRun: 5 };
+/** For hums and held sounds, where a long steady note is the point: only real beats count. */
+export const HELD_TUNING: FollowerTuning = { ...DEFAULT_TUNING, fillS: 0 };
 
 export function createFollower(tokens: Token[], tune: FollowerTuning = DEFAULT_TUNING): Follower {
   const words = tokens.filter((t) => t.word);
@@ -57,6 +68,8 @@ export function createFollower(tokens: Token[], tune: FollowerTuning = DEFAULT_T
   // re-armed once loudness falls back from its local peak. Connected speech rarely goes
   // quiet between syllables, so this looks for modulation rather than silence.
   let env = 0, peak = 0.02, armed = true, lastOnset = -1, localMin = 1, localMax = 0;
+  // for smooth speech: when your voice last started and when a beat was last counted
+  let soundingSince = -1, lastCount = -1, run = 0;
 
   const indexFor = (c: number) => {
     let i = 0;
@@ -75,6 +88,10 @@ export function createFollower(tokens: Token[], tune: FollowerTuning = DEFAULT_T
       env = env * tune.riseSmooth + rms * (1 - tune.riseSmooth);
       peak = Math.max(peak * 0.997, env);
       const floor = Math.max(0.01, peak * 0.1);
+      const sounding = voiced && env > floor;
+      if (!sounding) soundingSince = -1;
+      else if (soundingSince < 0) soundingSince = t;
+      let beat = false;
       if (armed) {
         localMin = Math.min(localMin, env);
         if (env > floor && env > localMin * tune.riseRatio + 0.003 && voiced && t - lastOnset > tune.minGapS) {
@@ -84,16 +101,23 @@ export function createFollower(tokens: Token[], tune: FollowerTuning = DEFAULT_T
           if (cur === -1) setCur(0, t);
           else count = Math.min(total - 0.5, count + tune.gain);
           setCur(indexFor(count), t);
+          beat = true; lastCount = t; run = 0;
         }
       } else {
         localMax = Math.max(localMax, env);
         if (env < localMax * tune.dipRatio || env < floor) { armed = true; localMin = env; }
+      }
+      if (!beat && tune.fillS > 0 && cur >= 0 && sounding && run < tune.fillRun && t - Math.max(lastCount, soundingSince) > tune.fillS) {
+        count = Math.min(total - 0.5, count + 1);
+        setCur(indexFor(count), t);
+        lastCount = t; run++;
       }
       return cur;
     },
     jumpTo(i, t) {
       count = cum[Math.max(0, Math.min(i, cum.length - 1))] ?? 0;
       cur = -2; // force setCur to record
+      lastCount = t; run = 0;
       setCur(Math.max(0, Math.min(i, words.length - 1)), t);
     },
     starts: () => starts,

@@ -1,7 +1,7 @@
 import { cx } from "../ui/cx";
 import { practice } from "../ui/practice";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createFollower, notesFor, tokenize, Follower } from "../readalong";
+import { createFollower, DEFAULT_TUNING, HELD_TUNING, notesFor, tokenize, Follower } from "../readalong";
 import { trackLive } from "../pitch";
 import { PRE_ROLL_S } from "../recorder";
 import { PitchPoint } from "./PianoRoll";
@@ -35,7 +35,7 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
 
   useEffect(() => {
     if (!active || !stream) return;
-    const f = createFollower(tokens);
+    const f = createFollower(tokens, kind === "hum" ? HELD_TUNING : DEFAULT_TUNING);
     follower.current = f;
     setCur(-1);
     const tr = trackLive(stream, (t, fr) => {
@@ -50,7 +50,7 @@ export function ReadAlong({ text, levelId, hint, kind, stream, active, onStarts,
       // move by that much to line up with the measured contour.
       startsCb.current?.(f.starts().map((x) => (x === null ? null : x + PRE_ROLL_S)));
     };
-  }, [active, stream, tokens]);
+  }, [active, stream, tokens, kind]);
 
   // Per-word pitch sketches after a take (approximate alignment).
   const sketches = useMemo(() => {

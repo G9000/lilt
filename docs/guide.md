@@ -633,7 +633,9 @@ Monitor uploads and playback have an isolated check with locally generated media
    (Geist), soft glass windows, black primary buttons, one warm coral accent, and a white record
    button whose red dot turns into a square while recording.
    - **Read-along:** it follows the beat of your syllables in the browser, with no speech recognition
-     and nothing sent anywhere. It's approximate; tap a word if it loses your place. After a take, your
+     and nothing sent anywhere. If you speak smoothly, with few dips in loudness, it keeps moving
+     while your voice carries on, a little slower than a syllable at a time, and it waits when you
+     pause; hums and held sounds count only real beats. It's approximate; tap a word if it loses your place. After a take, your
      measured pitch is drawn under each word.
    - **Theme:** light or dark from the sun/moon button in the menu bar. Fonts (Geist, JetBrains
      Mono, Newsreader for the texts you read) are bundled, so nothing loads from the internet.
