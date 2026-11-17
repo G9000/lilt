@@ -110,7 +110,7 @@ async function main() {
   await page.getByText("Your range:").waitFor();
   await shot(page, "yarn-setup-light");
   await page.getByRole("radio", { name: /Hum or lip trill/ }).click();
-  await page.locator('.yn-help summary').click();
+  await page.locator('.yn-help summary').first().click();
   check("hum mode explains a lip trill in one line", /Lip trill:/.test(await page.locator(".yn-how").innerText()));
   await page.evaluate(() => window.addEventListener("lilt:mic", (e) => { window.__mic = e.detail; }));
   await page.getByRole("button", { name: "Start playing" }).click();

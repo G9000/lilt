@@ -6,7 +6,6 @@ import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { api, Profile } from "../api";
 import { go } from "../App";
 import { useMic } from "../components/Recording";
-import { Art, Illustration, wash } from "../components/Illustrations";
 import { claimMic } from "../micuse";
 import { LOOP_WOOL, paintLights, paintLoop, paintRangeMark, paintThread, paintYarnBall, paintYarnCat, paintYarnRoom } from "../yarn-art";
 import { artReady, loadYarnArt, type YarnArt } from "../yarn-assets";
@@ -107,24 +106,16 @@ export function YarnPage() {
       ) : (
         <main className={[`yn-stage${phase === "setup" ? " yn-setup" : ""}`, roomStyles["yn-stage"], phase === "setup" ? roomStyles["yn-setup"] : ""].join(" ")}>
           <Scene range={phase === "setup" ? range : null} reduced={reduced} preview={phase === "setup"} />
-          {phase === "setup" && <div className={["yn-intro", roomStyles["yn-intro"]].join(" ")}>
-            <h1>A little room to play</h1>
-            <p>Lift the yarn with your voice.<br />The cat will keep you company.</p>
-          </div>}
           <div className={["yn-over", roomStyles["yn-over"]].join(" ")}>
             <AnimatePresence mode="wait" initial={false}>
               {phase === "setup" ? (
-                <Card key="setup" art="yarn" chip="Play" setup>
-                  <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>Play at your own pace</h2>
-                  <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>Higher lifts the yarn; lower lets it drift down. Your curious little companion follows along. Nothing is counted.</p>
+                <Card key="setup" setup>
+                  <h1 className={["yn-title", roomStyles["yn-title"]].join(" ")}>A little room to play</h1>
+                  <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>Your voice lifts the yarn: higher floats it up, lower lets it drift down. The cat keeps you company, and nothing is counted.</p>
                   <div className={["yn-modes", roomStyles["yn-modes"]].join(" ")} role="radiogroup" aria-label="How to play">
-                    <ModeButton on={mode === "hum"} onClick={() => setMode("hum")} title="Hum or lip trill" body="Easy on the throat; good for breath" />
-                    <ModeButton on={mode === "speak"} onClick={() => setMode("speak")} title="Speak sentences" body="Everyday lines, real speech" />
+                    <ModeButton on={mode === "hum"} onClick={() => setMode("hum")} title="Hum or lip trill" body="Easy on the throat" />
+                    <ModeButton on={mode === "speak"} onClick={() => setMode("speak")} title="Speak sentences" body="Everyday lines" />
                   </div>
-                  <details className={["yn-help", roomStyles["yn-help"]].join(" ")}><summary>How to play</summary>
-                    <p className={["yn-how", roomStyles["yn-how"]].join(" ")}>{mode === "hum" ? TRILL : "A short line shows at the top. Say it in your everyday voice; the yarn follows the tune of it and waits between words."}</p>
-                    <p className={["yn-foot", roomStyles["yn-foot"]].join(" ")}>Stay comfortable. Stop if anything hurts or feels strained.</p>
-                  </details>
                   {!loaded ? <p className={["yn-quiet", roomStyles["yn-quiet"]].join(" ")}>Getting your range…</p> : range ? (
                     <div className={["yn-range", roomStyles["yn-range"]].join(" ")}>
                       <span>Your range: <b>{rangeWords(range)}</b></span>
@@ -138,21 +129,29 @@ export function YarnPage() {
                     <input type="checkbox" checked={free} onChange={(e) => { setFree(e.target.checked); writePref("lilt.yarn.free", e.target.checked ? "on" : "off"); }} />
                     Free play · just you, the yarn and the cat
                   </label>
-                  {!free && <label className={["yn-check", roomStyles["yn-check"]].join(" ")}>
-                    <input type="checkbox" checked={cue} onChange={(e) => setCue(e.target.checked)} />
-                    Play each loop&rsquo;s note when you pause
-                  </label>}
-                  {!free && <label className={["yn-check", roomStyles["yn-check"]].join(" ")}>
-                    <input type="checkbox" checked={pluck} onChange={(e) => { setPluck(e.target.checked); writePref("lilt.yarn.pluck", e.target.checked ? "on" : "off"); }} />
-                    A soft sound when the yarn goes through a loop
-                  </label>}
                   {mic.error && <p className={["yn-err", roomStyles["yn-err"]].join(" ")} role="alert">{mic.error}</p>}
                   <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
                     <button className={["yn-primary", roomStyles["yn-primary"]].join(" ")} disabled={!loaded || starting} onClick={() => void start(range ? "play" : "calibrate")}>
                       {range ? "Start playing" : "Find my range"}
                     </button>
                   </div>
-                  <p className={["yn-foot", roomStyles["yn-foot"]].join(" ")}>Somewhere quiet works best. Nothing is recorded or saved. A breathing break comes every couple of minutes.</p>
+                  <p className={["yn-foot", roomStyles["yn-foot"]].join(" ")}>Stay comfortable, and stop if anything hurts or feels strained. A breathing break comes every couple of minutes. Nothing is recorded or saved.</p>
+                  <div className={["yn-more", roomStyles["yn-more"]].join(" ")}>
+                    <details className={["yn-help", roomStyles["yn-help"]].join(" ")}><summary>How to play</summary>
+                      <p className={["yn-how", roomStyles["yn-how"]].join(" ")}>{mode === "hum" ? TRILL : "A short line shows at the top. Say it in your everyday voice; the yarn follows the tune of it and waits between words."}</p>
+                      <p className={["yn-foot", roomStyles["yn-foot"]].join(" ")}>Somewhere quiet works best.</p>
+                    </details>
+                    {!free && <details className={["yn-help", roomStyles["yn-help"]].join(" ")}><summary>Sounds</summary>
+                      <label className={["yn-check", roomStyles["yn-check"]].join(" ")}>
+                        <input type="checkbox" checked={cue} onChange={(e) => setCue(e.target.checked)} />
+                        Play each loop&rsquo;s note when you pause
+                      </label>
+                      <label className={["yn-check", roomStyles["yn-check"]].join(" ")}>
+                        <input type="checkbox" checked={pluck} onChange={(e) => { setPluck(e.target.checked); writePref("lilt.yarn.pluck", e.target.checked ? "on" : "off"); }} />
+                        A soft sound when the yarn goes through a loop
+                      </label>
+                    </details>}
+                  </div>
                 </Card>
               ) : phase === "calibrate" ? (
                 <Calibrate key="cal" stream={mic.stream} canSave={!!profile} reduced={reduced}
@@ -165,7 +164,7 @@ export function YarnPage() {
                   }}
                   onCancel={() => setPhase("setup")} />
               ) : phase === "hurt" ? (
-                <Card key="hurt" art="tea" chip="Resting">
+                <Card key="hurt">
                   <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>Let&rsquo;s stop here</h2>
                   <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>Sip water, breathe, talk normally. If discomfort lasts more than a couple of days, or speaking hurts, please check in with a GP or a speech and language therapist.</p>
                   <div className={["yn-row", roomStyles["yn-row"]].join(" ")}>
@@ -174,7 +173,7 @@ export function YarnPage() {
                   </div>
                 </Card>
               ) : (
-                <Card key="summary" art="yarn" chip="All wound up">
+                <Card key="summary">
                   <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>The cat&rsquo;s curled up with the yarn</h2>
                   <SpunThread thread={summary.thread} />
                   <div className={["yn-p", roomStyles["yn-p"]].join(" ")}>{summary.lines.map((l) => <p key={l}>{l}</p>)}</div>
@@ -239,16 +238,11 @@ function ModeButton({ on, onClick, title, body }: { on: boolean; onClick: () => 
   );
 }
 
-function Card({ art, chip, children, setup = false }: { art: Art; chip: string; children: ReactNode; setup?: boolean }) {
+function Card({ children, setup = false }: { children: ReactNode; setup?: boolean }) {
   const reduced = useYarnReducedMotion();
   return (
     <motion.section className={[`yn-card${setup ? " yn-setup-card" : ""}`, roomStyles["yn-card"]].join(" ")} initial={{ y: reduced ? 0 : 14, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: reduced ? 0 : -8, opacity: 0 }}
       transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 30 }}>
-      {!setup && <div className={["yn-head", roomStyles["yn-head"]].join(" ")}>
-        <div className={["yn-wash", roomStyles["yn-wash"]].join(" ")} style={{ background: wash(art) }} />
-        <Illustration art={art} className={["yn-illo", roomStyles["yn-illo"]].join(" ")} />
-        <span className={["yn-chip", roomStyles["yn-chip"]].join(" ")}>{chip}</span>
-      </div>}
       <div className={["yn-body", roomStyles["yn-body"]].join(" ")}>{children}</div>
     </motion.section>
   );
@@ -335,11 +329,12 @@ function Calibrate({ stream, canSave, reduced, onUse, onCancel }: {
   const pct = Math.min(1, heard.n / HUM_READINGS);
 
   return (
-    <Card art="yarn" chip={step === "done" ? "Your range" : step === "low" ? "Hum 1 of 2" : "Hum 2 of 2"}>
+    <Card>
       {step !== "done" ? (
         <>
           <h2 className={["yn-title", roomStyles["yn-title"]].join(" ")}>{step === "low" ? "Hum a comfortable low note" : "Now a comfortable high note"}</h2>
           <p className={["yn-p", roomStyles["yn-p"]].join(" ")}>{step === "low" ? "Low, but easy: no pushing down. Hold it for a couple of seconds, on “mmm” or a lip trill." : "Up where it still feels easy, not a squeak. Hold it for a couple of seconds."}</p>
+          <p className={["yn-quiet", roomStyles["yn-quiet"]].join(" ")}>{step === "low" ? "The first of two hums." : "The second of two hums."}</p>
           <div className={["yn-listen", roomStyles["yn-listen"]].join(" ")} aria-live="polite">
             <svg viewBox="0 0 48 48" aria-hidden="true">
               <circle cx="24" cy="24" r="20" fill="none" stroke="var(--fill-2)" strokeWidth="4" />
@@ -676,7 +671,9 @@ function draw(c: CanvasRenderingContext2D, G: Game, d: Dims, reduced: boolean, r
   // the two ends of your range, stitched faintly across the wall, with their notes
   if (G.range && !preview) {
     for (const [u, word] of [[1, "High"], [0, "Low"]] as const) {
-      paintRangeMark(c, W, uToY(u) * F, `${word} · ${noteName(u ? G.range[1] : G.range[0])}`, u === 1, dark, narrow);
+      // on a phone the line to say sits where the High tag would be; the header names the range
+      const tag = narrow && G.mode === "speak" && u === 1 ? "" : `${word} · ${noteName(u ? G.range[1] : G.range[0])}`;
+      paintRangeMark(c, W, uToY(u) * F, tag, u === 1, dark, narrow);
     }
   }
 

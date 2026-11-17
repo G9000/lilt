@@ -260,6 +260,7 @@ export function paintRangeMark(c: Pen, W: number, y: number, label: string, abov
   c.strokeStyle = dark ? 'rgba(255,232,206,.3)' : 'rgba(118,78,48,.3)'; c.lineWidth = 1.6;
   c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
   c.setLineDash([]);
+  if (!label) { c.restore(); return; }
   c.font = `550 ${narrow ? 11 : 12}px "Geist Variable", system-ui, sans-serif`;
   const h = narrow ? 20 : 22, pw = c.measureText(label).width + 20;
   const px = narrow ? W - pw - 10 : 12, py = above ? y - h - 5 : y + 5;

@@ -581,8 +581,12 @@ Monitor uploads and playback have an isolated check with locally generated media
      the thread you spun across the whole game between the two ends of your range. Every two
      minutes it pauses for a breath; **It hurts or feels strained** stops it with Lilt's rest
      advice. It shows a hint when the room sounds noisy. Nothing is recorded or saved, and the
-     lo-fi radio steps aside while you play. Setup sits beside the illustration on desktop and
-     below it on phones; scroll to reach its start button. The play area stays within a comfortable
+     lo-fi radio steps aside while you play. Setup is one sheet of paper: how you'd like to play,
+     your range, Free play and the start button, with **How to play** and **Sounds** (the two
+     sound options) folded underneath. It sits beside the illustration on desktop and below it on
+     phones, where the start button shows without scrolling on a tall screen. The sheets, the
+     bottom row and the line to say are warm paper with serif titles, like the rest of Lilt, and
+     on a phone the bottom row is only its three buttons. The play area stays within a comfortable
      size on ultrawide and 4K displays. Light and dark themes have their own scenery, and reduced
      motion keeps decorative movement still while the yarn continues following your voice.
      The painted room has embroidered curtains, a garden view, a woven rug and a knitting corner.
