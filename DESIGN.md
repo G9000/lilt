@@ -546,7 +546,10 @@ uses the same utilities, while animation keyframes and document defaults stay ce
   on a semitone grid (C lines strongest), a soft accent band for the comfortable range, faint accent
   dots for each reading, a smooth accent line, the middle pitch dashed, last time as a grey line, and
   after a take a playhead with a dot where it meets the line; click to play from there. Hovering shows
-  what's there in a small ink label above the line ("1.8 s · 172 Hz · F3").
+  what's there in a small ink label above the line ("1.8 s · 172 Hz · F3"). The live chart's window
+  (80–400 Hz to start, or around your comfortable range) keeps its size and slides half an octave when
+  your voice settles within three semitones of an edge, so the line is never pinned to the top or bottom
+  (`web/src/livewindow.ts`).
 
 ## Motion
 

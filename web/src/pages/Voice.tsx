@@ -29,6 +29,7 @@ import { StatusBadge, TakeFlags, Toast, useTakeStatus, useToast } from "../compo
 import { Measured, ResonanceNote, TakeInsight, TakeResult as Measures } from "../components/DeckPitch";
 import type { CardKind } from "../insight";
 import { useLivePitch } from "../components/LivePitch";
+import { slide, startWindow } from "../livewindow";
 import { PianoRoll, PitchPoint } from "../components/PianoRoll";
 import { useTakeAudio } from "../components/takeAudio";
 import { useMic } from "../components/Recording";
@@ -615,8 +616,6 @@ function useSplit() {
 }
 
 type Pt = PitchPoint;
-/** The live chart's fixed pitch range, so it never rescales while you speak. */
-const LO = 80, HI = 400;
 
 /**
  * The room's cat asleep on its blanket, filling the right half while the recorder is idle: the whole
@@ -706,6 +705,14 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
   const kept = useRef<Pt[]>([]);
   if (points.length) kept.current = points;
   const shown = points.length ? points : kept.current;
+  // The chart's window keeps its size and slides towards a voice that settles near an edge.
+  const [win, setWin] = useState(() => startWindow(band));
+  useEffect(() => {
+    if (!points.length) return;
+    const end = points[points.length - 1].t;
+    const next = slide(win, points.filter((p) => p.t > end - 0.6).map((p) => p.hz));
+    if (next !== win) setWin(next);
+  }, [points, win]);
   const amps = useRef<{ t: number; v: number }[]>([]);
   // Narrower than the split view, the recorder docks at the bottom with a slim chart: no note labels.
   const [narrow, setNarrow] = useState(() => window.matchMedia("(max-width: 1100px)").matches);
@@ -861,7 +868,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
         <span className={cx(`ve-state ${recording ? "rec" : listening ? "live" : state}`, practice["ve-state"])}><i aria-hidden="true" />{status}</span>
       </div>
       <div className={cx("ve-scope", practice["ve-scope"])}>
-        <PianoRoll live points={shown} duration={shown.length ? shown[shown.length - 1].t : 0} band={band} range={[LO, HI]}
+        <PianoRoll live points={shown} duration={shown.length ? shown[shown.length - 1].t : 0} band={band} range={win}
           levels={amps.current} compact={narrow} height="100%" label="Your pitch, live, over the last eight seconds" />
         {!active && <span className={cx("ve-scope-idle", practice["ve-scope-idle"])}>{idleHint}</span>}
         {eyesOff && active && <span className={cx("ve-eyes", practice["ve-eyes"])}>Eyes off: listen to yourself, not the line</span>}
@@ -895,7 +902,7 @@ export function Dock({ meta, band, allowRetake, onSaved, onRecording, children, 
       <div className={cx("ve-dock-sub", practice["ve-dock-sub"])}>
         <span className={cx(`ve-dock-msg${tooQuiet ? " quiet-mic" : ""}`, practice["ve-dock-msg"])}>
           {tooQuiet ? "Your mic hears you very quietly. Come a little closer to it."
-            : recording ? limitNote(elapsed) ?? "Read the highlighted text"
+            : recording ? limitNote(elapsed) ?? ""
             : listening ? "Listening only. Nothing is saved."
             : state === "saving" ? "Saving to your computer…" : ""}
         </span>

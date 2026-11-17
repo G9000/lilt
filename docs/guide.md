@@ -429,7 +429,8 @@ Monitor uploads and playback have an isolated check with locally generated media
    - **It hurt or felt strained** pauses that card and your plan until you choose to resume.
    - **Live pitch while recording,** below the card's prompt: the waveform with your
      pitch line over it and your comfortable range as a band, plus the current Hz and note, middle
-     pitch, usual range and steadiness. Display only.
+     pitch, usual range and steadiness. Display only. The chart keeps its size and slides up or
+     down to follow your voice when it settles near the top or bottom, so the line stays in view.
    - **Results after each take:** middle pitch, usual range (10th to 90th percentile) and how
      much of the take was voiced, from the Praat analysis, plus the measured contour. With a
      comfortable range saved, one sentence says how much of what you voiced sat in it ("About two
@@ -1066,6 +1067,7 @@ cd web && LILT_URL=http://127.0.0.1:7979 node e2e/practice.mjs /tmp/shots   # th
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/flashcards.mjs   # Flashcards: widget, swipes, a text locked until recorded
 cd web && node --test src/flashcards.test.ts   # a chapter dealt as cards, and a run through them
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/photos.mjs   # Photos: add, show on the clock, delete, hide and restore
+cd web && node --test src/livewindow.test.ts   # the live pitch chart's window: slides towards your voice, never stretches
 cd web && node --test src/yarn.test.ts   # Yarn: pitch to height, smoothing, loops, breaks, the words at the end
 cd web && LILT_URL=http://127.0.0.1:7979 node e2e/yarn.mjs /tmp/shots   # Yarn: widget, dock, calibration, the yarn follows the voice, speak mode, hurt
 ```
